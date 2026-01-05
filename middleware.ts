@@ -1,6 +1,6 @@
-import { auth } from '@/auth'
+import { auth } from './auth'
 import { NextResponse } from 'next/server'
-import { getModuleFromPath, canAccessModule } from '@/lib/auth/permissions'
+import { getModuleFromPath, canAccessModule } from './lib/auth/permissions'
 
 // Routes that don't require authentication
 const publicRoutes = ['/login', '/api/auth']
@@ -32,6 +32,14 @@ export default auth((req) => {
     if (module) {
         const user = req.auth?.user as any
         if (!canAccessModule(user, module)) {
+            return NextResponse.redirect(new URL('/unauthorized', nextUrl.origin))
+        }
+    }
+
+    // Check admin routes - require ADMIN role
+    if (path.startsWith('/admin')) {
+        const user = req.auth?.user as any
+        if (user?.role !== 'ADMIN') {
             return NextResponse.redirect(new URL('/unauthorized', nextUrl.origin))
         }
     }

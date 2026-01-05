@@ -2,51 +2,80 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, BarChart3, ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, BarChart3, ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield } from 'lucide-react'
 import { clsx } from 'clsx'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { canAccessModule } from '@/lib/auth/permissions'
+import { MODULES, type ModuleName } from '@/lib/auth/config'
 
 interface NavItem {
     name: string
     href: string
     icon: React.ElementType
+    module?: ModuleName  // Optional module for permission check
+    adminOnly?: boolean  // Only visible to ADMIN role
     children?: { name: string; href: string; icon: React.ElementType }[]
 }
 
-const navigation: NavItem[] = [
+const allNavigation: NavItem[] = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     {
         name: 'Finanzas',
         href: '/finanzas',
         icon: TrendingUp,
+        module: MODULES.FINANZAS,
         children: [
             { name: 'Portfolio Master', href: '/finanzas/portfolio', icon: TrendingUp },
             { name: 'Simulador Financiero', href: '/finanzas/simulador', icon: BarChart3 },
         ]
     },
-    { name: 'FP Informática', href: '/fp-informatica', icon: GraduationCap },
-    { name: 'Master UNIE', href: '/master-unie', icon: BookOpen },
+    { name: 'FP Informática', href: '/fp-informatica', icon: GraduationCap, module: MODULES.FP_INFORMATICA },
+    { name: 'Master UNIE', href: '/master-unie', icon: BookOpen, module: MODULES.MASTER_UNIE },
     {
         name: 'Casa Rural',
         href: '/casa-rural',
         icon: Home,
+        module: MODULES.CASA_RURAL,
         children: [
             { name: 'Tareas', href: '/casa-rural/tareas', icon: ClipboardList },
             { name: 'Contabilidad', href: '/casa-rural/contabilidad', icon: Calculator },
         ]
     },
-    { name: 'Hogar', href: '/hogar', icon: Coffee },
+    { name: 'Hogar', href: '/hogar', icon: Coffee, module: MODULES.HOGAR },
+    { name: 'Admin Usuarios', href: '/admin/users', icon: Shield, adminOnly: true },
 ]
 
 export function Sidebar() {
     const pathname = usePathname()
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [expandedItems, setExpandedItems] = useState<string[]>(
-        navigation.filter(item => item.children).map(item => item.name)
-    )
+    const { data: session } = useSession()
+
+    // Filter navigation based on user permissions
+    const navigation = useMemo(() => {
+        if (!session?.user) return allNavigation.filter(item => !item.module && !item.adminOnly) // Only show Dashboard if not logged in
+
+        return allNavigation.filter(item => {
+            // Admin-only items
+            if (item.adminOnly) {
+                return session.user.role === 'ADMIN'
+            }
+            // Items without module restriction are always shown (like Dashboard)
+            if (!item.module) return true
+            // Check if user can access this module
+            return canAccessModule(session.user, item.module)
+        })
+    }, [session?.user])
+
+    const [expandedItems, setExpandedItems] = useState<string[]>([])
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
+
+    // Initialize expanded items when navigation changes
+    useEffect(() => {
+        setExpandedItems(navigation.filter(item => item.children).map(item => item.name))
+    }, [navigation])
 
     // Sync search with URL
     useEffect(() => {
@@ -62,7 +91,7 @@ export function Sidebar() {
                 }
             }
         })
-    }, [pathname])
+    }, [pathname, navigation])
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()

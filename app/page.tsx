@@ -4,15 +4,39 @@ import { ArrowRight, CheckCircle2, Circle, Clock, TrendingUp } from "lucide-reac
 import { clsx } from "clsx";
 import type { ActionItem, Category } from "@/prisma/generated/prisma";
 import { AlertsSection, type Alert } from "@/components/dashboard/AlertsSection";
+import { auth } from "@/auth";
+import { canAccessModule, getAccessibleModules } from "@/lib/auth/permissions";
+import { MODULES, type ModuleName } from "@/lib/auth/config";
+
+// Map category slugs to module names
+const SLUG_TO_MODULE: Record<string, ModuleName> = {
+  'casa-rural': MODULES.CASA_RURAL,
+  'finanzas': MODULES.FINANZAS,
+  'fp-informatica': MODULES.FP_INFORMATICA,
+  'hogar': MODULES.HOGAR,
+  'master-unie': MODULES.MASTER_UNIE,
+};
 
 /* Server Component */
 export default async function Home() {
-  const categories = await prisma.category.findMany({
+  const session = await auth();
+  const user = session?.user;
+
+  const allCategories = await prisma.category.findMany({
     include: {
       _count: {
         select: { items: { where: { status: { not: "DONE" } } } }, // Count active tasks
       },
     },
+  });
+
+  // Filter categories based on user permissions
+  const categories = allCategories.filter(category => {
+    const module = SLUG_TO_MODULE[category.slug];
+    // If no module mapping, show the category (e.g., dashboard)
+    if (!module) return true;
+    // Check if user can access this module
+    return canAccessModule(user || null, module);
   });
 
   const recentItems = await prisma.actionItem.findMany({
@@ -26,78 +50,84 @@ export default async function Home() {
 
   // ... (keeping alerts logic same)
 
-  // 1. Casa Rural Logic
-  const casaRural = categories.find(c => c.slug === 'casa-rural');
-  const pendingTasks = casaRural?._count.items || 0;
+  // 1. Casa Rural Logic - Only show if user has access
+  if (canAccessModule(user || null, MODULES.CASA_RURAL)) {
+    const casaRural = allCategories.find(c => c.slug === 'casa-rural');
+    const pendingTasks = casaRural?._count.items || 0;
 
-  if (pendingTasks > 0) {
-    alerts.push({
-      id: 'casa-rural-tasks',
-      type: 'warning',
-      title: 'Casa Rural: Tareas Pendientes',
-      message: `Tienes ${pendingTasks} tareas sin finalizar en la Casa Rural.`,
-      link: '/casa-rural/tareas',
-      linkText: 'Ver Tareas',
-    });
+    if (pendingTasks > 0) {
+      alerts.push({
+        id: 'casa-rural-tasks',
+        type: 'warning',
+        title: 'Casa Rural: Tareas Pendientes',
+        message: `Tienes ${pendingTasks} tareas sin finalizar en la Casa Rural.`,
+        link: '/casa-rural/tareas',
+        linkText: 'Ver Tareas',
+      });
+    }
   }
 
-  // 2. Financial Simulator Logic (Real Data via Shared File)
-  try {
-    const fs = await import('fs');
-    const path = await import('path');
-    const statusFilePath = path.join(process.cwd(), 'public', 'financial_status.json');
+  // 2. Financial Simulator Logic - Only show if user has access to Finanzas
+  if (canAccessModule(user || null, MODULES.FINANZAS)) {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const statusFilePath = path.join(process.cwd(), 'public', 'financial_status.json');
 
-    if (fs.existsSync(statusFilePath)) {
-      const fileContent = fs.readFileSync(statusFilePath, 'utf-8');
-      const financialData = JSON.parse(fileContent);
-      const balance = financialData.balance;
+      if (fs.existsSync(statusFilePath)) {
+        const fileContent = fs.readFileSync(statusFilePath, 'utf-8');
+        const financialData = JSON.parse(fileContent);
+        const balance = financialData.balance;
 
-      if (balance >= 0) {
-        alerts.push({
-          id: 'financial-health',
-          type: 'success',
-          title: 'Plan Financiero Saludable',
-          message: `El saldo proyectado es positivo (€${balance.toLocaleString()}). Tu plan de ahorro cubre la hipoteca.`,
-          link: '/finanzas/simulador',
-          linkText: 'Ver Detalles',
-        });
-      } else {
-        alerts.push({
-          id: 'financial-risk',
-          type: 'error',
-          title: 'Riesgo Financiero Detectado',
-          message: `El saldo final proyectado es negativo (€${balance.toLocaleString()}). Tu hipoteca podría no estar cubierta.`,
-          link: '/finanzas/simulador',
-          linkText: 'Revisar Simulador',
-        });
+        if (balance >= 0) {
+          alerts.push({
+            id: 'financial-health',
+            type: 'success',
+            title: 'Plan Financiero Saludable',
+            message: `El saldo proyectado es positivo (€${balance.toLocaleString()}). Tu plan de ahorro cubre la hipoteca.`,
+            link: '/finanzas/simulador',
+            linkText: 'Ver Detalles',
+          });
+        } else {
+          alerts.push({
+            id: 'financial-risk',
+            type: 'error',
+            title: 'Riesgo Financiero Detectado',
+            message: `El saldo final proyectado es negativo (€${balance.toLocaleString()}). Tu hipoteca podría no estar cubierta.`,
+            link: '/finanzas/simulador',
+            linkText: 'Revisar Simulador',
+          });
+        }
       }
+    } catch (error) {
+      console.error('Error reading financial status:', error);
     }
-  } catch (error) {
-    console.error('Error reading financial status:', error);
   }
 
-  // 3. Portfolio Master Logic - Read live data from shared status file
-  try {
-    const statusRes = await fetch("http://localhost:8000/api/portfolio/status", { cache: 'no-store' });
+  // 3. Portfolio Master Logic - Only show if user has access to Finanzas
+  if (canAccessModule(user || null, MODULES.FINANZAS)) {
+    try {
+      const statusRes = await fetch("http://localhost:8000/api/portfolio/status", { cache: 'no-store' });
 
-    if (statusRes.ok) {
-      const status = await statusRes.json();
+      if (statusRes.ok) {
+        const status = await statusRes.json();
 
-      if (status.current_value > 0) {
-        alerts.push({
-          id: 'portfolio-master-alert',
-          type: status.change_percent >= 0 ? 'success' : 'warning',
-          title: 'Portfolio Master',
-          message: `Tu patrimonio es de €${status.current_value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}.`,
-          link: '/finanzas/portfolio',
-          linkText: 'Ver Cartera',
-          chartData: status.history || [],
-          trend: status.change_percent
-        });
+        if (status.current_value > 0) {
+          alerts.push({
+            id: 'portfolio-master-alert',
+            type: status.change_percent >= 0 ? 'success' : 'warning',
+            title: 'Portfolio Master',
+            message: `Tu patrimonio es de €${status.current_value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}.`,
+            link: '/finanzas/portfolio',
+            linkText: 'Ver Cartera',
+            chartData: status.history || [],
+            trend: status.change_percent
+          });
+        }
       }
+    } catch (error) {
+      console.error('Error fetching Portfolio Master data:', error);
     }
-  } catch (error) {
-    console.error('Error fetching Portfolio Master data:', error);
   }
 
   return (

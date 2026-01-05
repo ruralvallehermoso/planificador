@@ -78,6 +78,7 @@ export namespace $Enums {
   OWNER: 'OWNER',
   TEACHER: 'TEACHER',
   FAMILY: 'FAMILY',
+  CASA_RURAL: 'CASA_RURAL',
   GUEST: 'GUEST'
 };
 

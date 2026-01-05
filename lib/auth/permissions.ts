@@ -1,7 +1,16 @@
-import { Role, User } from '@/prisma/generated/prisma'
 import { ROLE_PERMISSIONS, MODULES, ModuleName } from './config'
 
-type UserForPermissions = Pick<User, 'role' | 'canAccessCasaRural' | 'canAccessFinanzas' | 'canAccessFpInformatica' | 'canAccessHogar' | 'canAccessMasterUnie'>
+// Use simple types that work on both client and server
+type Role = 'ADMIN' | 'OWNER' | 'TEACHER' | 'FAMILY' | 'CASA_RURAL' | 'GUEST'
+
+type UserForPermissions = {
+    role: Role | string
+    canAccessCasaRural?: boolean
+    canAccessFinanzas?: boolean
+    canAccessFpInformatica?: boolean
+    canAccessHogar?: boolean
+    canAccessMasterUnie?: boolean
+}
 
 /**
  * Check if a user can access a specific module
@@ -32,7 +41,8 @@ export function canAccessModule(user: UserForPermissions | null, module: ModuleN
     }
 
     // Fall back to role-based permissions
-    return ROLE_PERMISSIONS[user.role].includes(module)
+    const rolePermissions = ROLE_PERMISSIONS[user.role as Role]
+    return rolePermissions ? rolePermissions.includes(module) : false
 }
 
 /**
@@ -40,7 +50,7 @@ export function canAccessModule(user: UserForPermissions | null, module: ModuleN
  */
 export function hasRole(user: UserForPermissions | null, roles: Role[]): boolean {
     if (!user) return false
-    return roles.includes(user.role)
+    return roles.includes(user.role as Role)
 }
 
 /**

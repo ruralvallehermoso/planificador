@@ -21,6 +21,7 @@ enum Role {
   OWNER
   TEACHER
   FAMILY
+  CASA_RURAL
   GUEST
 }
 

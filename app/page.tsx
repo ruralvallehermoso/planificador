@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Circle, Clock, TrendingUp } from "lucide-react";
 import { clsx } from "clsx";
-import type { ActionItem, Category } from "@prisma/client";
+import type { ActionItem, Category } from "@/prisma/generated/prisma";
 import { AlertsSection, type Alert } from "@/components/dashboard/AlertsSection";
 
 /* Server Component */

@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED") // For migrations (bypasses connection pooling)
+}
+
+// Areas / Categories (The 4 main pillars)
+model Category {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  color       String? // Hex code for UI representation
+  icon        String? // Icon name (e.g. Lucide icon name)
+
+  items    ActionItem[]
+  sections TaskSection[]
+  sessions ClassSession[]
+  projects Project[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Task Sections for organizing tasks within a category
+model TaskSection {
+  id    String @id @default(cuid())
+  name  String
+  order Int    @default(0) // For ordering sections
+
+  // Relations
+  categoryId String
+  category   Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  items      ActionItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// General Task / Action Item
+model ActionItem {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+
+  // Status: TODO, IN_PROGRESS, DONE, ARCHIVED
+  status String @default("TODO")
+
+  // Priority: LOW, MEDIUM, HIGH, URGENT
+  priority String @default("MEDIUM")
+
+  dueDate DateTime?
+
+  isCompleted Boolean @default(false) // Helper for quick check
+
+  // Relations
+  categoryId String
+  category   Category     @relation(fields: [categoryId], references: [id])
+  sectionId  String?
+  section    TaskSection? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  subjectId  String?
+  subject    Subject?     @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Teacher Module: Class Sessions / Calendar Events
+model ClassSession {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime // The day of the class
+  startTime   String? // e.g. "08:30"
+  endTime     String? // e.g. "09:20"
+
+  // Relations
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Teacher Module: Project Management
+model Project {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+
+  status String @default("PLANNING") // PLANNING, IN_PROGRESS, COMPLETED
+
+  images ProjectImage[]
+
+  // Relations
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectImage {
+  id  String @id @default(cuid())
+  url String // /uploads/filename.jpg
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  createdAt DateTime @default(now())
+}
+
+// Master UNIE Module
+model Subject {
+  id        String  @id @default(cuid())
+  name      String
+  code      String? // e.g. "MU-01"
+  professor String?
+  credits   Float   @default(6.0) // ECTS
+  semester  Int     @default(1)
+
+  // Status: ENROLLED, IN_PROGRESS, PASSED, FAILED
+  status String @default("ENROLLED")
+
+  // Grades
+  finalGrade Float? // 0-10
+
+  // Relations
+  assessments Assessment[]
+  tasks       ActionItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Assessment {
+  id     String @id @default(cuid())
+  title  String // e.g. "Examen Final", "Práctica 1"
+  weight Float // Percentage 0-100
+  grade  Float? // 0-10
+
+  // Relations
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,9 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, User, Calendar, Book, Clock, CheckCircle, FileText } from 'lucide-react';
-import { AddAssessmentForm } from './AddAssessmentForm';
-import { AddTaskForm } from './AddTaskForm';
+import { ArrowLeft, User, Calendar, Book, Clock, CheckCircle, FileText, Plus } from 'lucide-react';
 
 // Server Action for adding assessments (inline for now)
 import { revalidatePath } from 'next/cache';
@@ -231,6 +229,3 @@ export default async function SubjectDetailPage({ params }: { params: { id: stri
         </div>
     );
 }
-
-// Icon helper
-import { Plus } from 'lucide-react';

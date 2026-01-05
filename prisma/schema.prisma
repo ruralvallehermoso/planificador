@@ -12,6 +12,67 @@ datasource db {
   directUrl = env("DATABASE_URL_UNPOOLED") // For migrations (bypasses connection pooling)
 }
 
+// =====================
+// AUTHENTICATION MODELS
+// =====================
+
+enum Role {
+  ADMIN
+  OWNER
+  TEACHER
+  FAMILY
+  GUEST
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?   // null if using OAuth
+  name          String?
+  image         String?
+  role          Role      @default(GUEST)
+  
+  // Per-module access overrides
+  canAccessCasaRural     Boolean @default(false)
+  canAccessFinanzas      Boolean @default(false)
+  canAccessFpInformatica Boolean @default(false)
+  canAccessHogar         Boolean @default(false)
+  canAccessMasterUnie    Boolean @default(false)
+  
+  sessions      Session[]
+  accounts      Account[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([provider, providerAccountId])
+}
+
 // Areas / Categories (The 4 main pillars)
 model Category {
   id          String   @id @default(cuid())

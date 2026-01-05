@@ -122,6 +122,44 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  passwordHash: 'passwordHash',
+  name: 'name',
+  image: 'image',
+  role: 'role',
+  canAccessCasaRural: 'canAccessCasaRural',
+  canAccessFinanzas: 'canAccessFinanzas',
+  canAccessFpInformatica: 'canAccessFpInformatica',
+  canAccessHogar: 'canAccessHogar',
+  canAccessMasterUnie: 'canAccessMasterUnie',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  sessionToken: 'sessionToken',
+  userId: 'userId',
+  expires: 'expires'
+};
+
+exports.Prisma.AccountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  provider: 'provider',
+  providerAccountId: 'providerAccountId',
+  refresh_token: 'refresh_token',
+  access_token: 'access_token',
+  expires_at: 'expires_at',
+  token_type: 'token_type',
+  scope: 'scope',
+  id_token: 'id_token',
+  session_state: 'session_state'
+};
+
 exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -223,9 +261,18 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.Role = exports.$Enums.Role = {
+  ADMIN: 'ADMIN',
+  OWNER: 'OWNER',
+  TEACHER: 'TEACHER',
+  FAMILY: 'FAMILY',
+  GUEST: 'GUEST'
+};
 
 exports.Prisma.ModelName = {
+  User: 'User',
+  Session: 'Session',
+  Account: 'Account',
   Category: 'Category',
   TaskSection: 'TaskSection',
   ActionItem: 'ActionItem',

@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Arquitectura Profesional - Planificador</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-bg"></div>
+        <nav class="navbar">
+            <div class="logo">
+                <span class="logo-icon">🏗️</span>
+                <span>Planificador Pro</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#current">Estado Actual</a></li>
+                <li><a href="#solutions">Soluciones</a></li>
+                <li><a href="#comparison">Comparativa</a></li>
+                <li><a href="#recommendation">Recomendación</a></li>
+            </ul>
+        </nav>
+        <div class="hero-content">
+            <span class="hero-badge">Análisis de Arquitectura 2024</span>
+            <h1>De Local a <span class="gradient-text">Profesional</span></h1>
+            <p class="hero-subtitle">Análisis exhaustivo de opciones para escalar tu aplicación Planificador hacia una arquitectura empresarial moderna, mantenible y escalable.</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value">6</span>
+                    <span class="stat-label">Microfrontends</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">3</span>
+                    <span class="stat-label">Lenguajes</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">5</span>
+                    <span class="stat-label">Soluciones</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Current State Section -->
+    <section id="current" class="section current-state">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Diagnóstico</span>
+                <h2>Estado Actual de la Arquitectura</h2>
+                <p>Tu aplicación actual tiene una arquitectura de microfrontends con diferentes tecnologías.</p>
+            </div>
+
+            <div class="current-grid">
+                <!-- Tech Stack Cards -->
+                <div class="tech-card">
+                    <div class="tech-icon">⚛️</div>
+                    <h3>Frontend Principal</h3>
+                    <div class="tech-stack">
+                        <span class="tech-badge next">Next.js 16</span>
+                        <span class="tech-badge react">React 19</span>
+                        <span class="tech-badge ts">TypeScript 5</span>
+                        <span class="tech-badge tailwind">TailwindCSS 4</span>
+                    </div>
+                    <p>Planificador Main, Hogar, Casa Rural</p>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-icon">⚡</div>
+                    <h3>Dashboard Finanzas</h3>
+                    <div class="tech-stack">
+                        <span class="tech-badge vite">Vite 5</span>
+                        <span class="tech-badge js">Vanilla JS</span>
+                        <span class="tech-badge chart">Chart.js</span>
+                    </div>
+                    <p>Frontend ligero para visualización de datos</p>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-icon">🐍</div>
+                    <h3>Backend API</h3>
+                    <div class="tech-stack">
+                        <span class="tech-badge python">Python</span>
+                        <span class="tech-badge fastapi">FastAPI</span>
+                        <span class="tech-badge sqlalchemy">SQLAlchemy</span>
+                    </div>
+                    <p>Portfolio Master API con endpoints REST</p>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-icon">🗄️</div>
+                    <h3>Base de Datos</h3>
+                    <div class="tech-stack">
+                        <span class="tech-badge sqlite">SQLite</span>
+                        <span class="tech-badge prisma">Prisma ORM</span>
+                    </div>
+                    <p>Base de datos embebida, archivos locales</p>
+                </div>
+            </div>
+
+            <!-- Problems Section -->
+            <div class="problems-section">
+                <h3>🚨 Limitaciones Identificadas</h3>
+                <div class="problems-grid">
+                    <div class="problem-card">
+                        <span class="problem-icon">🔴</span>
+                        <h4>Fragmentación Tecnológica</h4>
+                        <p>3 lenguajes diferentes (TypeScript, Python, JavaScript puro) dificultan el mantenimiento y onboarding.</p>
+                    </div>
+                    <div class="problem-card">
+                        <span class="problem-icon">🔴</span>
+                        <h4>SQLite No Escalable</h4>
+                        <p>Sin soporte para concurrencia, backup automático, replicación ni alta disponibilidad.</p>
+                    </div>
+                    <div class="problem-card">
+                        <span class="problem-icon">🟡</span>
+                        <h4>Ejecución Local</h4>
+                        <p>Toda la aplicación depende de ejecutarse en tu máquina local. Sin acceso remoto.</p>
+                    </div>
+                    <div class="problem-card">
+                        <span class="problem-icon">🟡</span>
+                        <h4>Sin CI/CD</h4>
+                        <p>Despliegues manuales, sin tests automatizados ni pipeline de integración continua.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solutions Section -->
+    <section id="solutions" class="section solutions">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">5 Opciones</span>
+                <h2>Soluciones Profesionales</h2>
+                <p>Análisis detallado de 5 arquitecturas diferentes para profesionalizar tu aplicación.</p>
+            </div>
+
+            <!-- Solution 1: Full Next.js + PostgreSQL + Vercel -->
+            <div class="solution-card" id="solution-1">
+                <div class="solution-header">
+                    <div class="solution-number">01</div>
+                    <div class="solution-title">
+                        <h3>Full-Stack Next.js + PostgreSQL</h3>
+                        <span class="solution-subtitle">Vercel + Supabase/Neon</span>
+                    </div>
+                    <div class="solution-badges">
+                        <span class="badge recommended">⭐ Recomendado</span>
+                        <span class="badge easy">Fácil Migración</span>
+                    </div>
+                </div>
+                
+                <div class="solution-content">
+                    <div class="solution-description">
+                        <h4>📋 Descripción</h4>
+                        <p>Unifica todos los microfrontends en una única aplicación Next.js monorepo, utilizando sus API Routes o Server Actions para eliminar el backend Python. La base de datos migra a PostgreSQL en la nube.</p>
+                    </div>
+
+                    <div class="architecture-diagram">
+                        <div class="arch-layer client">
+                            <span class="layer-label">Cliente</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box">Next.js App Router</div>
+                                <div class="arch-box">React 19</div>
+                                <div class="arch-box">TailwindCSS</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-layer server">
+                            <span class="layer-label">Backend</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box">Next.js API Routes</div>
+                                <div class="arch-box">Server Actions</div>
+                                <div class="arch-box">Prisma ORM</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-layer database">
+                            <span class="layer-label">Datos</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box highlight">PostgreSQL (Supabase/Neon)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="solution-details">
+                        <div class="detail-column pros">
+                            <h4>✅ Ventajas</h4>
+                            <ul>
+                                <li><strong>Un solo lenguaje:</strong> TypeScript para todo</li>
+                                <li><strong>Deploy instantáneo:</strong> Git push → producción en segundos</li>
+                                <li><strong>Tier gratuito generoso:</strong> Vercel + Supabase gratis para proyectos personales</li>
+                                <li><strong>Migración suave:</strong> Ya usas Next.js y Prisma</li>
+                                <li><strong>SSL y CDN incluidos:</strong> Sin configuración adicional</li>
+                                <li><strong>Backups automáticos:</strong> PostgreSQL gestionado</li>
+                                <li><strong>Edge Functions:</strong> Latencia mínima global</li>
+                            </ul>
+                        </div>
+                        <div class="detail-column cons">
+                            <h4>❌ Desventajas</h4>
+                            <ul>
+                                <li><strong>Vendor lock-in:</strong> Dependencia de Vercel</li>
+                                <li><strong>Límites en tier gratis:</strong> 100GB bandwidth/mes, 10K filas DB gratis</li>
+                                <li><strong>Reescribir backend Python:</strong> FastAPI → API Routes</li>
+                                <li><strong>Cold starts:</strong> En funciones serverless</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="cost-section">
+                        <h4>💰 Costes Estimados</h4>
+                        <div class="cost-grid">
+                            <div class="cost-item">
+                                <span class="cost-label">Desarrollo Personal</span>
+                                <span class="cost-value free">GRATIS</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Producción Pequeña</span>
+                                <span class="cost-value">~€20/mes</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Producción Media</span>
+                                <span class="cost-value">~€50-100/mes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tech-requirements">
+                        <h4>🔧 Stack Tecnológico</h4>
+                        <div class="tech-list">
+                            <span class="tech-pill">Next.js 14+</span>
+                            <span class="tech-pill">TypeScript</span>
+                            <span class="tech-pill">Prisma</span>
+                            <span class="tech-pill">PostgreSQL</span>
+                            <span class="tech-pill">Supabase / Neon</span>
+                            <span class="tech-pill">Vercel</span>
+                            <span class="tech-pill">TailwindCSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solution 2: Monorepo NX + PostgreSQL + Railway -->
+            <div class="solution-card" id="solution-2">
+                <div class="solution-header">
+                    <div class="solution-number">02</div>
+                    <div class="solution-title">
+                        <h3>Monorepo NX Enterprise</h3>
+                        <span class="solution-subtitle">Railway / Render + PostgreSQL</span>
+                    </div>
+                    <div class="solution-badges">
+                        <span class="badge enterprise">Empresarial</span>
+                    </div>
+                </div>
+                
+                <div class="solution-content">
+                    <div class="solution-description">
+                        <h4>📋 Descripción</h4>
+                        <p>Organiza todos tus proyectos en un monorepo con NX, manteniendo la arquitectura de microfrontends pero con builds optimizados, cache compartido y gestión centralizada de dependencias.</p>
+                    </div>
+
+                    <div class="architecture-diagram">
+                        <div class="arch-layer monorepo">
+                            <span class="layer-label">Monorepo NX</span>
+                            <div class="arch-boxes horizontal">
+                                <div class="arch-box small">Planificador</div>
+                                <div class="arch-box small">Hogar</div>
+                                <div class="arch-box small">Casa Rural</div>
+                                <div class="arch-box small">Finanzas</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-layer shared">
+                            <span class="layer-label">Librerías Compartidas</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box">@planificador/ui</div>
+                                <div class="arch-box">@planificador/api</div>
+                                <div class="arch-box">@planificador/db</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-layer infra">
+                            <span class="layer-label">Infraestructura</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box">Railway / Render</div>
+                                <div class="arch-box highlight">PostgreSQL</div>
+                                <div class="arch-box">Redis Cache</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="solution-details">
+                        <div class="detail-column pros">
+                            <h4>✅ Ventajas</h4>
+                            <ul>
+                                <li><strong>Máxima reutilización:</strong> Componentes y lógica compartidos</li>
+                                <li><strong>Builds inteligentes:</strong> Solo compila lo modificado</li>
+                                <li><strong>Cache distribuido:</strong> Builds 10x más rápidos</li>
+                                <li><strong>Flexibilidad total:</strong> Cada app puede usar su stack</li>
+                                <li><strong>Testing centralizado:</strong> Suite de tests unificada</li>
+                                <li><strong>TypeScript estricto:</strong> Types compartidos entre apps</li>
+                            </ul>
+                        </div>
+                        <div class="detail-column cons">
+                            <h4>❌ Desventajas</h4>
+                            <ul>
+                                <li><strong>Curva de aprendizaje:</strong> NX requiere tiempo para dominar</li>
+                                <li><strong>Configuración compleja:</strong> Setup inicial extenso</li>
+                                <li><strong>Overhead de mantenimiento:</strong> Más configuración que mantener</li>
+                                <li><strong>Migración costosa:</strong> Reestructurar todo el código</li>
+                                <li><strong>Overkill para proyecto personal:</strong> Diseñado para equipos grandes</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="cost-section">
+                        <h4>💰 Costes Estimados</h4>
+                        <div class="cost-grid">
+                            <div class="cost-item">
+                                <span class="cost-label">Desarrollo Personal</span>
+                                <span class="cost-value">~€5/mes</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Producción Pequeña</span>
+                                <span class="cost-value">~€30-50/mes</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Producción Media</span>
+                                <span class="cost-value">~€100-200/mes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tech-requirements">
+                        <h4>🔧 Stack Tecnológico</h4>
+                        <div class="tech-list">
+                            <span class="tech-pill">NX Workspace</span>
+                            <span class="tech-pill">Next.js</span>
+                            <span class="tech-pill">TypeScript</span>
+                            <span class="tech-pill">PostgreSQL</span>
+                            <span class="tech-pill">Railway</span>
+                            <span class="tech-pill">Redis</span>
+                            <span class="tech-pill">Docker</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solution 3: Containerized with Docker + AWS/GCP -->
+            <div class="solution-card" id="solution-3">
+                <div class="solution-header">
+                    <div class="solution-number">03</div>
+                    <div class="solution-title">
+                        <h3>Contenedores Docker + Cloud</h3>
+                        <span class="solution-subtitle">AWS ECS / Google Cloud Run</span>
+                    </div>
+                    <div class="solution-badges">
+                        <span class="badge scalable">Alta Escalabilidad</span>
+                    </div>
+                </div>
+                
+                <div class="solution-content">
+                    <div class="solution-description">
+                        <h4>📋 Descripción</h4>
+                        <p>Conteneriza cada microservicio con Docker y despliégalos en servicios gestionados de contenedores. Mantiene la arquitectura de microfrontends con máxima flexibilidad y escalabilidad independiente.</p>
+                    </div>
+
+                    <div class="architecture-diagram">
+                        <div class="arch-layer containers">
+                            <span class="layer-label">Contenedores</span>
+                            <div class="arch-boxes horizontal">
+                                <div class="arch-box docker">🐳 Planificador</div>
+                                <div class="arch-box docker">🐳 Hogar</div>
+                                <div class="arch-box docker">🐳 Finanzas API</div>
+                                <div class="arch-box docker">🐳 Dashboard</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-layer orchestration">
+                            <span class="layer-label">Orquestación</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box">AWS ECS / Cloud Run</div>
+                                <div class="arch-box">Load Balancer</div>
+                                <div class="arch-box">Auto Scaling</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-layer managed">
+                            <span class="layer-label">Servicios Gestionados</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box highlight">RDS PostgreSQL / Cloud SQL</div>
+                                <div class="arch-box">S3 / Cloud Storage</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="solution-details">
+                        <div class="detail-column pros">
+                            <h4>✅ Ventajas</h4>
+                            <ul>
+                                <li><strong>Portabilidad total:</strong> Funciona en cualquier cloud</li>
+                                <li><strong>Escalado independiente:</strong> Cada servicio escala según demanda</li>
+                                <li><strong>Tech-agnostic:</strong> Cada servicio puede usar su lenguaje</li>
+                                <li><strong>Aislamiento:</strong> Fallos contenidos por servicio</li>
+                                <li><strong>CI/CD maduro:</strong> Pipelines de Docker bien establecidos</li>
+                                <li><strong>Sin vendor lock-in:</strong> Migraciones entre clouds simples</li>
+                            </ul>
+                        </div>
+                        <div class="detail-column cons">
+                            <h4>❌ Desventajas</h4>
+                            <ul>
+                                <li><strong>Complejidad DevOps:</strong> Requiere conocimientos de infraestructura</li>
+                                <li><strong>Costes mayores:</strong> Múltiples contenedores = más recursos</li>
+                                <li><strong>Networking complejo:</strong> Service discovery, load balancing</li>
+                                <li><strong>Observabilidad:</strong> Necesita herramientas de monitoring</li>
+                                <li><strong>Cold starts:</strong> Containers pueden tardar en arrancar</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="cost-section">
+                        <h4>💰 Costes Estimados</h4>
+                        <div class="cost-grid">
+                            <div class="cost-item">
+                                <span class="cost-label">Desarrollo Personal</span>
+                                <span class="cost-value">~€20-40/mes</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Producción Pequeña</span>
+                                <span class="cost-value">~€80-150/mes</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Producción Media</span>
+                                <span class="cost-value">~€200-500/mes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tech-requirements">
+                        <h4>🔧 Stack Tecnológico</h4>
+                        <div class="tech-list">
+                            <span class="tech-pill">Docker</span>
+                            <span class="tech-pill">Docker Compose</span>
+                            <span class="tech-pill">AWS ECS / Cloud Run</span>
+                            <span class="tech-pill">PostgreSQL RDS</span>
+                            <span class="tech-pill">GitHub Actions</span>
+                            <span class="tech-pill">Terraform (opcional)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solution 4: Full Python Backend + Vue/React SPA -->
+            <div class="solution-card" id="solution-4">
+                <div class="solution-header">
+                    <div class="solution-number">04</div>
+                    <div class="solution-title">
+                        <h3>Python Unified Backend + SPA</h3>
+                        <span class="solution-subtitle">FastAPI + React/Vue + PostgreSQL</span>
+                    </div>
+                    <div class="solution-badges">
+                        <span class="badge python-focus">Python-Centric</span>
+                    </div>
+                </div>
+                
+                <div class="solution-content">
+                    <div class="solution-description">
+                        <h4>📋 Descripción</h4>
+                        <p>Consolida todo el backend en FastAPI (ya tienes experiencia), con un frontend SPA unificado. Mantiene Python como lenguaje principal del servidor, ideal si prefieres este ecosistema.</p>
+                    </div>
+
+                    <div class="architecture-diagram">
+                        <div class="arch-layer spa">
+                            <span class="layer-label">SPA Frontend</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box">React / Vue 3</div>
+                                <div class="arch-box">Vite</div>
+                                <div class="arch-box">TypeScript</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓ API REST / GraphQL</div>
+                        <div class="arch-layer python-backend">
+                            <span class="layer-label">Backend Unificado</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box">FastAPI</div>
+                                <div class="arch-box">SQLAlchemy / SQLModel</div>
+                                <div class="arch-box">Alembic Migrations</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-layer data-layer">
+                            <span class="layer-label">Datos</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box highlight">PostgreSQL</div>
+                                <div class="arch-box">Redis</div>
+                                <div class="arch-box">Celery (tareas async)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="solution-details">
+                        <div class="detail-column pros">
+                            <h4>✅ Ventajas</h4>
+                            <ul>
+                                <li><strong>Backend consistente:</strong> Un solo lenguaje servidor</li>
+                                <li><strong>FastAPI excelente:</strong> Rápido, tipado, documentación auto</li>
+                                <li><strong>Ecosistema Python:</strong> ML, data science, scripting</li>
+                                <li><strong>Separación clara:</strong> Frontend y backend independientes</li>
+                                <li><strong>Testing robusto:</strong> pytest muy maduro</li>
+                                <li><strong>Migraciones:</strong> Alembic para schema changes</li>
+                            </ul>
+                        </div>
+                        <div class="detail-column cons">
+                            <h4>❌ Desventajas</h4>
+                            <ul>
+                                <li><strong>Dos stacks:</strong> Python + TypeScript separados</li>
+                                <li><strong>Sin SSR fácil:</strong> SPAs no tienen SEO nativo</li>
+                                <li><strong>Deploy más complejo:</strong> Frontend + Backend separados</li>
+                                <li><strong>Reescribir frontend:</strong> Migrar de Next.js a SPA</li>
+                                <li><strong>Hosting más caro:</strong> Necesita servidor Python activo</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="cost-section">
+                        <h4>💰 Costes Estimados</h4>
+                        <div class="cost-grid">
+                            <div class="cost-item">
+                                <span class="cost-label">Desarrollo Personal</span>
+                                <span class="cost-value">~€10-20/mes</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Producción Pequeña</span>
+                                <span class="cost-value">~€40-80/mes</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">Producción Media</span>
+                                <span class="cost-value">~€100-200/mes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tech-requirements">
+                        <h4>🔧 Stack Tecnológico</h4>
+                        <div class="tech-list">
+                            <span class="tech-pill">FastAPI</span>
+                            <span class="tech-pill">Python 3.11+</span>
+                            <span class="tech-pill">SQLAlchemy</span>
+                            <span class="tech-pill">React / Vue</span>
+                            <span class="tech-pill">Vite</span>
+                            <span class="tech-pill">PostgreSQL</span>
+                            <span class="tech-pill">Redis</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solution 5: Self-Hosted VPS + Docker Compose -->
+            <div class="solution-card" id="solution-5">
+                <div class="solution-header">
+                    <div class="solution-number">05</div>
+                    <div class="solution-title">
+                        <h3>VPS Self-Hosted</h3>
+                        <span class="solution-subtitle">Hetzner/DigitalOcean + Docker Compose</span>
+                    </div>
+                    <div class="solution-badges">
+                        <span class="badge budget">Máximo Control</span>
+                        <span class="badge cheap">Bajo Coste</span>
+                    </div>
+                </div>
+                
+                <div class="solution-content">
+                    <div class="solution-description">
+                        <h4>📋 Descripción</h4>
+                        <p>Alquila un VPS potente (€5-20/mes) y despliega toda la aplicación con Docker Compose. Control total sobre la infraestructura con el menor coste posible para producción real.</p>
+                    </div>
+
+                    <div class="architecture-diagram">
+                        <div class="arch-layer vps">
+                            <span class="layer-label">VPS (4GB RAM, 2 CPU)</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box">Nginx Reverse Proxy</div>
+                                <div class="arch-box">Let's Encrypt SSL</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-layer compose">
+                            <span class="layer-label">Docker Compose Stack</span>
+                            <div class="arch-boxes horizontal">
+                                <div class="arch-box docker">App Container</div>
+                                <div class="arch-box docker">API Container</div>
+                                <div class="arch-box highlight">PostgreSQL</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-layer tools">
+                            <span class="layer-label">Herramientas</span>
+                            <div class="arch-boxes">
+                                <div class="arch-box">Portainer (gestión)</div>
+                                <div class="arch-box">Watchtower (updates)</div>
+                                <div class="arch-box">Backup Script</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="solution-details">
+                        <div class="detail-column pros">
+                            <h4>✅ Ventajas</h4>
+                            <ul>
+                                <li><strong>Coste mínimo:</strong> €5-20/mes por TODO</li>
+                                <li><strong>Control absoluto:</strong> Acceso root, configura todo</li>
+                                <li><strong>Sin límites:</strong> Storage, bandwidth, requests ilimitados</li>
+                                <li><strong>Privacidad:</strong> Datos solo en tu servidor</li>
+                                <li><strong>Aprendizaje:</strong> Excelente para entender DevOps</li>
+                                <li><strong>Flexibilidad:</strong> Instala lo que quieras</li>
+                            </ul>
+                        </div>
+                        <div class="detail-column cons">
+                            <h4>❌ Desventajas</h4>
+                            <ul>
+                                <li><strong>Mantenimiento manual:</strong> Updates, seguridad, backups</li>
+                                <li><strong>Sin alta disponibilidad:</strong> Un servidor = un punto de fallo</li>
+                                <li><strong>Conocimientos requeridos:</strong> Linux, Docker, Nginx, SSL</li>
+                                <li><strong>Monitoreo DIY:</strong> Configurar alertas manualmente</li>
+                                <li><strong>Escalado manual:</strong> Migrar a servidor más grande</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="cost-section">
+                        <h4>💰 Costes Estimados</h4>
+                        <div class="cost-grid">
+                            <div class="cost-item">
+                                <span class="cost-label">VPS Básico (4GB)</span>
+                                <span class="cost-value">~€5-10/mes</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">VPS Medio (8GB)</span>
+                                <span class="cost-value">~€15-25/mes</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">VPS Potente (16GB)</span>
+                                <span class="cost-value">~€30-50/mes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tech-requirements">
+                        <h4>🔧 Stack Tecnológico</h4>
+                        <div class="tech-list">
+                            <span class="tech-pill">Docker</span>
+                            <span class="tech-pill">Docker Compose</span>
+                            <span class="tech-pill">Nginx</span>
+                            <span class="tech-pill">Let's Encrypt</span>
+                            <span class="tech-pill">PostgreSQL</span>
+                            <span class="tech-pill">Ubuntu Server</span>
+                            <span class="tech-pill">GitHub Actions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table Section -->
+    <section id="comparison" class="section comparison">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Comparativa</span>
+                <h2>Tabla Comparativa</h2>
+                <p>Resumen visual de todas las opciones para facilitar tu decisión.</p>
+            </div>
+
+            <div class="comparison-table-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Criterio</th>
+                            <th class="highlight-col">
+                                <span class="th-badge">⭐</span>
+                                Next.js + Vercel
+                            </th>
+                            <th>NX Monorepo</th>
+                            <th>Docker + Cloud</th>
+                            <th>Python + SPA</th>
+                            <th>VPS Self-Hosted</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="criterion">💰 Coste Mensual</td>
+                            <td class="highlight-col"><span class="rating excellent">GRATIS - €20</span></td>
+                            <td><span class="rating good">€5 - €50</span></td>
+                            <td><span class="rating medium">€20 - €150</span></td>
+                            <td><span class="rating good">€10 - €80</span></td>
+                            <td><span class="rating excellent">€5 - €25</span></td>
+                        </tr>
+                        <tr>
+                            <td class="criterion">📚 Curva de Aprendizaje</td>
+                            <td class="highlight-col"><span class="rating excellent">Baja</span></td>
+                            <td><span class="rating medium">Alta</span></td>
+                            <td><span class="rating medium">Alta</span></td>
+                            <td><span class="rating good">Media</span></td>
+                            <td><span class="rating medium">Media-Alta</span></td>
+                        </tr>
+                        <tr>
+                            <td class="criterion">🚀 Facilidad de Deploy</td>
+                            <td class="highlight-col"><span class="rating excellent">Excelente</span></td>
+                            <td><span class="rating good">Buena</span></td>
+                            <td><span class="rating medium">Compleja</span></td>
+                            <td><span class="rating good">Buena</span></td>
+                            <td><span class="rating medium">Manual</span></td>
+                        </tr>
+                        <tr>
+                            <td class="criterion">📈 Escalabilidad</td>
+                            <td class="highlight-col"><span class="rating good">Automática</span></td>
+                            <td><span class="rating excellent">Excelente</span></td>
+                            <td><span class="rating excellent">Excelente</span></td>
+                            <td><span class="rating good">Buena</span></td>
+                            <td><span class="rating medium">Manual</span></td>
+                        </tr>
+                        <tr>
+                            <td class="criterion">🔧 Mantenimiento</td>
+                            <td class="highlight-col"><span class="rating excellent">Mínimo</span></td>
+                            <td><span class="rating medium">Alto</span></td>
+                            <td><span class="rating medium">Medio</span></td>
+                            <td><span class="rating good">Medio</span></td>
+                            <td><span class="rating poor">Alto</span></td>
+                        </tr>
+                        <tr>
+                            <td class="criterion">🔒 Vendor Lock-in</td>
+                            <td class="highlight-col"><span class="rating medium">Medio</span></td>
+                            <td><span class="rating good">Bajo</span></td>
+                            <td><span class="rating excellent">Muy Bajo</span></td>
+                            <td><span class="rating good">Bajo</span></td>
+                            <td><span class="rating excellent">Ninguno</span></td>
+                        </tr>
+                        <tr>
+                            <td class="criterion">⏱️ Tiempo de Migración</td>
+                            <td class="highlight-col"><span class="rating excellent">2-4 semanas</span></td>
+                            <td><span class="rating poor">6-10 semanas</span></td>
+                            <td><span class="rating medium">4-8 semanas</span></td>
+                            <td><span class="rating medium">4-6 semanas</span></td>
+                            <td><span class="rating good">2-4 semanas</span></td>
+                        </tr>
+                        <tr>
+                            <td class="criterion">🧑‍💻 Unificación de Stack</td>
+                            <td class="highlight-col"><span class="rating excellent">100% TypeScript</span></td>
+                            <td><span class="rating excellent">100% TypeScript</span></td>
+                            <td><span class="rating medium">Multi-lenguaje</span></td>
+                            <td><span class="rating good">Python + TS</span></td>
+                            <td><span class="rating medium">Depende</span></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td class="criterion">🏆 Puntuación Total</td>
+                            <td class="highlight-col"><span class="score">9.2/10</span></td>
+                            <td><span class="score">7.5/10</span></td>
+                            <td><span class="score">7.8/10</span></td>
+                            <td><span class="score">7.2/10</span></td>
+                            <td><span class="score">7.0/10</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Database Comparison -->
+    <section class="section databases">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Base de Datos</span>
+                <h2>Comparativa de Bases de Datos</h2>
+                <p>Alternativas profesionales a SQLite para producción.</p>
+            </div>
+
+            <div class="db-grid">
+                <div class="db-card recommended">
+                    <div class="db-header">
+                        <span class="db-icon">🐘</span>
+                        <h3>PostgreSQL</h3>
+                        <span class="db-badge">Recomendado</span>
+                    </div>
+                    <div class="db-features">
+                        <div class="feature">✅ ACID completo</div>
+                        <div class="feature">✅ JSON nativo</div>
+                        <div class="feature">✅ Full-text search</div>
+                        <div class="feature">✅ Extensiones (PostGIS, pgvector)</div>
+                        <div class="feature">✅ Compatibilidad Prisma perfecta</div>
+                    </div>
+                    <div class="db-providers">
+                        <strong>Providers:</strong>
+                        <span class="provider">Supabase (gratuito)</span>
+                        <span class="provider">Neon (gratuito)</span>
+                        <span class="provider">Railway</span>
+                        <span class="provider">AWS RDS</span>
+                    </div>
+                </div>
+
+                <div class="db-card">
+                    <div class="db-header">
+                        <span class="db-icon">🌙</span>
+                        <h3>MySQL / PlanetScale</h3>
+                    </div>
+                    <div class="db-features">
+                        <div class="feature">✅ Muy popular</div>
+                        <div class="feature">✅ Fácil de usar</div>
+                        <div class="feature">✅ Branching (PlanetScale)</div>
+                        <div class="feature">⚠️ Menos features que PostgreSQL</div>
+                    </div>
+                    <div class="db-providers">
+                        <strong>Providers:</strong>
+                        <span class="provider">PlanetScale</span>
+                        <span class="provider">AWS RDS</span>
+                    </div>
+                </div>
+
+                <div class="db-card">
+                    <div class="db-header">
+                        <span class="db-icon">🍃</span>
+                        <h3>MongoDB</h3>
+                    </div>
+                    <div class="db-features">
+                        <div class="feature">✅ Flexible schema</div>
+                        <div class="feature">✅ Escala horizontal</div>
+                        <div class="feature">⚠️ No relacional</div>
+                        <div class="feature">⚠️ Prisma limitado</div>
+                    </div>
+                    <div class="db-providers">
+                        <strong>Providers:</strong>
+                        <span class="provider">MongoDB Atlas (gratuito)</span>
+                    </div>
+                </div>
+
+                <div class="db-card">
+                    <div class="db-header">
+                        <span class="db-icon">⚡</span>
+                        <h3>Turso (SQLite Cloud)</h3>
+                    </div>
+                    <div class="db-features">
+                        <div class="feature">✅ SQLite en la nube</div>
+                        <div class="feature">✅ Migración fácil</div>
+                        <div class="feature">✅ Edge locations</div>
+                        <div class="feature">⚠️ Menos maduro</div>
+                    </div>
+                    <div class="db-providers">
+                        <strong>Providers:</strong>
+                        <span class="provider">Turso (gratuito)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recommendation Section -->
+    <section id="recommendation" class="section recommendation">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Veredicto</span>
+                <h2>Recomendación Final</h2>
+            </div>
+
+            <div class="recommendation-card">
+                <div class="rec-header">
+                    <span class="rec-number">01</span>
+                    <div class="rec-title">
+                        <h3>Full-Stack Next.js + PostgreSQL + Vercel</h3>
+                        <p>La mejor opción para tu caso específico</p>
+                    </div>
+                </div>
+
+                <div class="rec-content">
+                    <div class="rec-reasons">
+                        <h4>¿Por qué esta opción?</h4>
+                        <div class="reason-grid">
+                            <div class="reason">
+                                <span class="reason-icon">🔄</span>
+                                <h5>Mínima Fricción</h5>
+                                <p>Ya usas Next.js 16, React 19, TypeScript y Prisma. Solo necesitas migrar la BD y consolidar el backend Python.</p>
+                            </div>
+                            <div class="reason">
+                                <span class="reason-icon">💰</span>
+                                <h5>Coste Cero Inicial</h5>
+                                <p>Vercel + Supabase ofrecen tiers gratuitos suficientes para desarrollo y producción pequeña.</p>
+                            </div>
+                            <div class="reason">
+                                <span class="reason-icon">🧹</span>
+                                <h5>Limpieza de Stack</h5>
+                                <p>Pasas de 3 lenguajes (TS + Python + JS) a solo TypeScript. Mantenimiento 3x más simple.</p>
+                            </div>
+                            <div class="reason">
+                                <span class="reason-icon">⚡</span>
+                                <h5>DX Excelente</h5>
+                                <p>Git push = deploy. Preview automáticos por PR. Rollbacks instantáneos. Logs integrados.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="migration-steps">
+                        <h4>📋 Plan de Migración Sugerido</h4>
+                        <div class="step">
+                            <span class="step-num">1</span>
+                            <div class="step-content">
+                                <h5>Semana 1-2: Preparación</h5>
+                                <ul>
+                                    <li>Crear cuenta en Vercel y Supabase</li>
+                                    <li>Migrar schema Prisma a PostgreSQL</li>
+                                    <li>Crear API Routes equivalentes al backend FastAPI</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <span class="step-num">2</span>
+                            <div class="step-content">
+                                <h5>Semana 2-3: Consolidación</h5>
+                                <ul>
+                                    <li>Integrar microfrontends en app única o usar module federation</li>
+                                    <li>Migrar lógica de FastAPI a Server Actions / API Routes</li>
+                                    <li>Adaptar Dashboard Finanzas a React</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <span class="step-num">3</span>
+                            <div class="step-content">
+                                <h5>Semana 3-4: Deploy y Validación</h5>
+                                <ul>
+                                    <li>Configurar CI/CD en Vercel</li>
+                                    <li>Migrar datos de producción a Supabase</li>
+                                    <li>Testing end-to-end</li>
+                                    <li>Go live 🚀</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alternatives-hint">
+                <h4>🔀 Alternativas según tu situación</h4>
+                <div class="alt-grid">
+                    <div class="alt-item">
+                        <strong>Si prefieres control total:</strong>
+                        <p>VPS Self-Hosted (Solución 5) - €10/mes todo incluido</p>
+                    </div>
+                    <div class="alt-item">
+                        <strong>Si quieres mantener Python:</strong>
+                        <p>Python Backend + SPA (Solución 4) - Mantiene FastAPI</p>
+                    </div>
+                    <div class="alt-item">
+                        <strong>Si planeas crecer mucho:</strong>
+                        <p>Docker + Cloud (Solución 3) - Máxima escalabilidad</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏗️</span>
+                    <span>Planificador Architecture Analysis</span>
+                </div>
+                <p>Generado el 30 de Diciembre de 2024</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

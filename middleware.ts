@@ -36,9 +36,18 @@ export default auth((req) => {
         }
     }
 
+    // EMPLEADO role restrictions - only SES Hospedajes and Actividades within Casa Rural
+    const user = req.auth?.user as any
+    if (user?.role === 'EMPLEADO' && path.startsWith('/casa-rural')) {
+        const allowedPaths = ['/casa-rural', '/casa-rural/ses-hospedajes', '/casa-rural/actividades']
+        const isAllowed = allowedPaths.some(p => path === p || path.startsWith(p + '/'))
+        if (!isAllowed) {
+            return NextResponse.redirect(new URL('/unauthorized', nextUrl.origin))
+        }
+    }
+
     // Check admin routes - require ADMIN role
     if (path.startsWith('/admin')) {
-        const user = req.auth?.user as any
         if (user?.role !== 'ADMIN') {
             return NextResponse.redirect(new URL('/unauthorized', nextUrl.origin))
         }

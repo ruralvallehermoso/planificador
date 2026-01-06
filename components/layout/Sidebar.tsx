@@ -40,6 +40,8 @@ const allNavigation: NavItem[] = [
         children: [
             { name: 'Tareas', href: '/casa-rural/tareas', icon: ClipboardList },
             { name: 'Contabilidad', href: '/casa-rural/contabilidad', icon: Calculator },
+            { name: 'SES Hospedajes', href: '/casa-rural/ses-hospedajes', icon: ClipboardList },
+            { name: 'Actividades', href: '/casa-rural/actividades', icon: ClipboardList },
         ]
     },
     { name: 'Hogar', href: '/hogar', icon: Coffee, module: MODULES.HOGAR },
@@ -56,7 +58,7 @@ export function Sidebar() {
     const navigation = useMemo(() => {
         if (!session?.user) return allNavigation.filter(item => !item.module && !item.adminOnly) // Only show Dashboard if not logged in
 
-        return allNavigation.filter(item => {
+        const filtered = allNavigation.filter(item => {
             // Admin-only items
             if (item.adminOnly) {
                 return session.user.role === 'ADMIN'
@@ -66,6 +68,24 @@ export function Sidebar() {
             // Check if user can access this module
             return canAccessModule(session.user, item.module)
         })
+
+        // For EMPLEADO role, filter Casa Rural children to only show allowed sections
+        if (session.user.role === 'EMPLEADO') {
+            return filtered.map(item => {
+                if (item.name === 'Casa Rural' && item.children) {
+                    return {
+                        ...item,
+                        children: item.children.filter(child =>
+                            child.href === '/casa-rural/actividades' ||
+                            child.href.startsWith('/casa-rural/ses-hospedajes')
+                        )
+                    }
+                }
+                return item
+            })
+        }
+
+        return filtered
     }, [session?.user])
 
     const [expandedItems, setExpandedItems] = useState<string[]>([])

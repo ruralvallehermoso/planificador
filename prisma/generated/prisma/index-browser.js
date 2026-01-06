@@ -247,6 +247,17 @@ exports.Prisma.AssessmentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.EmployeeActivityScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  category: 'category',
+  date: 'date',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -267,6 +278,7 @@ exports.Role = exports.$Enums.Role = {
   TEACHER: 'TEACHER',
   FAMILY: 'FAMILY',
   CASA_RURAL: 'CASA_RURAL',
+  EMPLEADO: 'EMPLEADO',
   GUEST: 'GUEST'
 };
 
@@ -281,7 +293,8 @@ exports.Prisma.ModelName = {
   Project: 'Project',
   ProjectImage: 'ProjectImage',
   Subject: 'Subject',
-  Assessment: 'Assessment'
+  Assessment: 'Assessment',
+  EmployeeActivity: 'EmployeeActivity'
 };
 
 /**

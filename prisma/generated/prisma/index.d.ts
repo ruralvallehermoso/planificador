@@ -68,6 +68,11 @@ export type Subject = $Result.DefaultSelection<Prisma.$SubjectPayload>
  * 
  */
 export type Assessment = $Result.DefaultSelection<Prisma.$AssessmentPayload>
+/**
+ * Model EmployeeActivity
+ * 
+ */
+export type EmployeeActivity = $Result.DefaultSelection<Prisma.$EmployeeActivityPayload>
 
 /**
  * Enums
@@ -79,6 +84,7 @@ export namespace $Enums {
   TEACHER: 'TEACHER',
   FAMILY: 'FAMILY',
   CASA_RURAL: 'CASA_RURAL',
+  EMPLEADO: 'EMPLEADO',
   GUEST: 'GUEST'
 };
 
@@ -322,6 +328,16 @@ export class PrismaClient<
     * ```
     */
   get assessment(): Prisma.AssessmentDelegate<ExtArgs>;
+
+  /**
+   * `prisma.employeeActivity`: Exposes CRUD operations for the **EmployeeActivity** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EmployeeActivities
+    * const employeeActivities = await prisma.employeeActivity.findMany()
+    * ```
+    */
+  get employeeActivity(): Prisma.EmployeeActivityDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -773,7 +789,8 @@ export namespace Prisma {
     Project: 'Project',
     ProjectImage: 'ProjectImage',
     Subject: 'Subject',
-    Assessment: 'Assessment'
+    Assessment: 'Assessment',
+    EmployeeActivity: 'EmployeeActivity'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -789,7 +806,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "session" | "account" | "category" | "taskSection" | "actionItem" | "classSession" | "project" | "projectImage" | "subject" | "assessment"
+      modelProps: "user" | "session" | "account" | "category" | "taskSection" | "actionItem" | "classSession" | "project" | "projectImage" | "subject" | "assessment" | "employeeActivity"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1563,6 +1580,76 @@ export namespace Prisma {
           }
         }
       }
+      EmployeeActivity: {
+        payload: Prisma.$EmployeeActivityPayload<ExtArgs>
+        fields: Prisma.EmployeeActivityFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EmployeeActivityFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EmployeeActivityFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload>
+          }
+          findFirst: {
+            args: Prisma.EmployeeActivityFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EmployeeActivityFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload>
+          }
+          findMany: {
+            args: Prisma.EmployeeActivityFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload>[]
+          }
+          create: {
+            args: Prisma.EmployeeActivityCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload>
+          }
+          createMany: {
+            args: Prisma.EmployeeActivityCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EmployeeActivityCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload>[]
+          }
+          delete: {
+            args: Prisma.EmployeeActivityDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload>
+          }
+          update: {
+            args: Prisma.EmployeeActivityUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload>
+          }
+          deleteMany: {
+            args: Prisma.EmployeeActivityDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EmployeeActivityUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.EmployeeActivityUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmployeeActivityPayload>
+          }
+          aggregate: {
+            args: Prisma.EmployeeActivityAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEmployeeActivity>
+          }
+          groupBy: {
+            args: Prisma.EmployeeActivityGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EmployeeActivityGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EmployeeActivityCountArgs<ExtArgs>
+            result: $Utils.Optional<EmployeeActivityCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1726,11 +1813,13 @@ export namespace Prisma {
   export type UserCountOutputType = {
     sessions: number
     accounts: number
+    activities: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
+    activities?: boolean | UserCountOutputTypeCountActivitiesArgs
   }
 
   // Custom InputTypes
@@ -1756,6 +1845,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AccountWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmployeeActivityWhereInput
   }
 
 
@@ -2153,6 +2249,7 @@ export namespace Prisma {
     updatedAt?: boolean
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
+    activities?: boolean | User$activitiesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2191,6 +2288,7 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
+    activities?: boolean | User$activitiesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2200,6 +2298,7 @@ export namespace Prisma {
     objects: {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
+      activities: Prisma.$EmployeeActivityPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2581,6 +2680,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany"> | Null>
+    activities<T extends User$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2974,6 +3074,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AccountScalarFieldEnum | AccountScalarFieldEnum[]
+  }
+
+  /**
+   * User.activities
+   */
+  export type User$activitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    where?: EmployeeActivityWhereInput
+    orderBy?: EmployeeActivityOrderByWithRelationInput | EmployeeActivityOrderByWithRelationInput[]
+    cursor?: EmployeeActivityWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EmployeeActivityScalarFieldEnum | EmployeeActivityScalarFieldEnum[]
   }
 
   /**
@@ -13038,6 +13158,975 @@ export namespace Prisma {
 
 
   /**
+   * Model EmployeeActivity
+   */
+
+  export type AggregateEmployeeActivity = {
+    _count: EmployeeActivityCountAggregateOutputType | null
+    _min: EmployeeActivityMinAggregateOutputType | null
+    _max: EmployeeActivityMaxAggregateOutputType | null
+  }
+
+  export type EmployeeActivityMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    category: string | null
+    date: Date | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EmployeeActivityMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    category: string | null
+    date: Date | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EmployeeActivityCountAggregateOutputType = {
+    id: number
+    title: number
+    description: number
+    category: number
+    date: number
+    userId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type EmployeeActivityMinAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    category?: true
+    date?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EmployeeActivityMaxAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    category?: true
+    date?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EmployeeActivityCountAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    category?: true
+    date?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type EmployeeActivityAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EmployeeActivity to aggregate.
+     */
+    where?: EmployeeActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmployeeActivities to fetch.
+     */
+    orderBy?: EmployeeActivityOrderByWithRelationInput | EmployeeActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EmployeeActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmployeeActivities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmployeeActivities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EmployeeActivities
+    **/
+    _count?: true | EmployeeActivityCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EmployeeActivityMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EmployeeActivityMaxAggregateInputType
+  }
+
+  export type GetEmployeeActivityAggregateType<T extends EmployeeActivityAggregateArgs> = {
+        [P in keyof T & keyof AggregateEmployeeActivity]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEmployeeActivity[P]>
+      : GetScalarType<T[P], AggregateEmployeeActivity[P]>
+  }
+
+
+
+
+  export type EmployeeActivityGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmployeeActivityWhereInput
+    orderBy?: EmployeeActivityOrderByWithAggregationInput | EmployeeActivityOrderByWithAggregationInput[]
+    by: EmployeeActivityScalarFieldEnum[] | EmployeeActivityScalarFieldEnum
+    having?: EmployeeActivityScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EmployeeActivityCountAggregateInputType | true
+    _min?: EmployeeActivityMinAggregateInputType
+    _max?: EmployeeActivityMaxAggregateInputType
+  }
+
+  export type EmployeeActivityGroupByOutputType = {
+    id: string
+    title: string
+    description: string | null
+    category: string
+    date: Date
+    userId: string
+    createdAt: Date
+    updatedAt: Date
+    _count: EmployeeActivityCountAggregateOutputType | null
+    _min: EmployeeActivityMinAggregateOutputType | null
+    _max: EmployeeActivityMaxAggregateOutputType | null
+  }
+
+  type GetEmployeeActivityGroupByPayload<T extends EmployeeActivityGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EmployeeActivityGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EmployeeActivityGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EmployeeActivityGroupByOutputType[P]>
+            : GetScalarType<T[P], EmployeeActivityGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EmployeeActivitySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    category?: boolean
+    date?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["employeeActivity"]>
+
+  export type EmployeeActivitySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    category?: boolean
+    date?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["employeeActivity"]>
+
+  export type EmployeeActivitySelectScalar = {
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    category?: boolean
+    date?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type EmployeeActivityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type EmployeeActivityIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $EmployeeActivityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EmployeeActivity"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      description: string | null
+      category: string
+      date: Date
+      userId: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["employeeActivity"]>
+    composites: {}
+  }
+
+  type EmployeeActivityGetPayload<S extends boolean | null | undefined | EmployeeActivityDefaultArgs> = $Result.GetResult<Prisma.$EmployeeActivityPayload, S>
+
+  type EmployeeActivityCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<EmployeeActivityFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: EmployeeActivityCountAggregateInputType | true
+    }
+
+  export interface EmployeeActivityDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EmployeeActivity'], meta: { name: 'EmployeeActivity' } }
+    /**
+     * Find zero or one EmployeeActivity that matches the filter.
+     * @param {EmployeeActivityFindUniqueArgs} args - Arguments to find a EmployeeActivity
+     * @example
+     * // Get one EmployeeActivity
+     * const employeeActivity = await prisma.employeeActivity.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EmployeeActivityFindUniqueArgs>(args: SelectSubset<T, EmployeeActivityFindUniqueArgs<ExtArgs>>): Prisma__EmployeeActivityClient<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one EmployeeActivity that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {EmployeeActivityFindUniqueOrThrowArgs} args - Arguments to find a EmployeeActivity
+     * @example
+     * // Get one EmployeeActivity
+     * const employeeActivity = await prisma.employeeActivity.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EmployeeActivityFindUniqueOrThrowArgs>(args: SelectSubset<T, EmployeeActivityFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EmployeeActivityClient<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first EmployeeActivity that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmployeeActivityFindFirstArgs} args - Arguments to find a EmployeeActivity
+     * @example
+     * // Get one EmployeeActivity
+     * const employeeActivity = await prisma.employeeActivity.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EmployeeActivityFindFirstArgs>(args?: SelectSubset<T, EmployeeActivityFindFirstArgs<ExtArgs>>): Prisma__EmployeeActivityClient<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first EmployeeActivity that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmployeeActivityFindFirstOrThrowArgs} args - Arguments to find a EmployeeActivity
+     * @example
+     * // Get one EmployeeActivity
+     * const employeeActivity = await prisma.employeeActivity.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EmployeeActivityFindFirstOrThrowArgs>(args?: SelectSubset<T, EmployeeActivityFindFirstOrThrowArgs<ExtArgs>>): Prisma__EmployeeActivityClient<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more EmployeeActivities that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmployeeActivityFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EmployeeActivities
+     * const employeeActivities = await prisma.employeeActivity.findMany()
+     * 
+     * // Get first 10 EmployeeActivities
+     * const employeeActivities = await prisma.employeeActivity.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const employeeActivityWithIdOnly = await prisma.employeeActivity.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EmployeeActivityFindManyArgs>(args?: SelectSubset<T, EmployeeActivityFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a EmployeeActivity.
+     * @param {EmployeeActivityCreateArgs} args - Arguments to create a EmployeeActivity.
+     * @example
+     * // Create one EmployeeActivity
+     * const EmployeeActivity = await prisma.employeeActivity.create({
+     *   data: {
+     *     // ... data to create a EmployeeActivity
+     *   }
+     * })
+     * 
+     */
+    create<T extends EmployeeActivityCreateArgs>(args: SelectSubset<T, EmployeeActivityCreateArgs<ExtArgs>>): Prisma__EmployeeActivityClient<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many EmployeeActivities.
+     * @param {EmployeeActivityCreateManyArgs} args - Arguments to create many EmployeeActivities.
+     * @example
+     * // Create many EmployeeActivities
+     * const employeeActivity = await prisma.employeeActivity.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EmployeeActivityCreateManyArgs>(args?: SelectSubset<T, EmployeeActivityCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EmployeeActivities and returns the data saved in the database.
+     * @param {EmployeeActivityCreateManyAndReturnArgs} args - Arguments to create many EmployeeActivities.
+     * @example
+     * // Create many EmployeeActivities
+     * const employeeActivity = await prisma.employeeActivity.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EmployeeActivities and only return the `id`
+     * const employeeActivityWithIdOnly = await prisma.employeeActivity.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EmployeeActivityCreateManyAndReturnArgs>(args?: SelectSubset<T, EmployeeActivityCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a EmployeeActivity.
+     * @param {EmployeeActivityDeleteArgs} args - Arguments to delete one EmployeeActivity.
+     * @example
+     * // Delete one EmployeeActivity
+     * const EmployeeActivity = await prisma.employeeActivity.delete({
+     *   where: {
+     *     // ... filter to delete one EmployeeActivity
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EmployeeActivityDeleteArgs>(args: SelectSubset<T, EmployeeActivityDeleteArgs<ExtArgs>>): Prisma__EmployeeActivityClient<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one EmployeeActivity.
+     * @param {EmployeeActivityUpdateArgs} args - Arguments to update one EmployeeActivity.
+     * @example
+     * // Update one EmployeeActivity
+     * const employeeActivity = await prisma.employeeActivity.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EmployeeActivityUpdateArgs>(args: SelectSubset<T, EmployeeActivityUpdateArgs<ExtArgs>>): Prisma__EmployeeActivityClient<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more EmployeeActivities.
+     * @param {EmployeeActivityDeleteManyArgs} args - Arguments to filter EmployeeActivities to delete.
+     * @example
+     * // Delete a few EmployeeActivities
+     * const { count } = await prisma.employeeActivity.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EmployeeActivityDeleteManyArgs>(args?: SelectSubset<T, EmployeeActivityDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EmployeeActivities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmployeeActivityUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EmployeeActivities
+     * const employeeActivity = await prisma.employeeActivity.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EmployeeActivityUpdateManyArgs>(args: SelectSubset<T, EmployeeActivityUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one EmployeeActivity.
+     * @param {EmployeeActivityUpsertArgs} args - Arguments to update or create a EmployeeActivity.
+     * @example
+     * // Update or create a EmployeeActivity
+     * const employeeActivity = await prisma.employeeActivity.upsert({
+     *   create: {
+     *     // ... data to create a EmployeeActivity
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EmployeeActivity we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EmployeeActivityUpsertArgs>(args: SelectSubset<T, EmployeeActivityUpsertArgs<ExtArgs>>): Prisma__EmployeeActivityClient<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of EmployeeActivities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmployeeActivityCountArgs} args - Arguments to filter EmployeeActivities to count.
+     * @example
+     * // Count the number of EmployeeActivities
+     * const count = await prisma.employeeActivity.count({
+     *   where: {
+     *     // ... the filter for the EmployeeActivities we want to count
+     *   }
+     * })
+    **/
+    count<T extends EmployeeActivityCountArgs>(
+      args?: Subset<T, EmployeeActivityCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EmployeeActivityCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EmployeeActivity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmployeeActivityAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EmployeeActivityAggregateArgs>(args: Subset<T, EmployeeActivityAggregateArgs>): Prisma.PrismaPromise<GetEmployeeActivityAggregateType<T>>
+
+    /**
+     * Group by EmployeeActivity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmployeeActivityGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EmployeeActivityGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EmployeeActivityGroupByArgs['orderBy'] }
+        : { orderBy?: EmployeeActivityGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EmployeeActivityGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEmployeeActivityGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EmployeeActivity model
+   */
+  readonly fields: EmployeeActivityFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EmployeeActivity.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EmployeeActivityClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EmployeeActivity model
+   */ 
+  interface EmployeeActivityFieldRefs {
+    readonly id: FieldRef<"EmployeeActivity", 'String'>
+    readonly title: FieldRef<"EmployeeActivity", 'String'>
+    readonly description: FieldRef<"EmployeeActivity", 'String'>
+    readonly category: FieldRef<"EmployeeActivity", 'String'>
+    readonly date: FieldRef<"EmployeeActivity", 'DateTime'>
+    readonly userId: FieldRef<"EmployeeActivity", 'String'>
+    readonly createdAt: FieldRef<"EmployeeActivity", 'DateTime'>
+    readonly updatedAt: FieldRef<"EmployeeActivity", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EmployeeActivity findUnique
+   */
+  export type EmployeeActivityFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which EmployeeActivity to fetch.
+     */
+    where: EmployeeActivityWhereUniqueInput
+  }
+
+  /**
+   * EmployeeActivity findUniqueOrThrow
+   */
+  export type EmployeeActivityFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which EmployeeActivity to fetch.
+     */
+    where: EmployeeActivityWhereUniqueInput
+  }
+
+  /**
+   * EmployeeActivity findFirst
+   */
+  export type EmployeeActivityFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which EmployeeActivity to fetch.
+     */
+    where?: EmployeeActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmployeeActivities to fetch.
+     */
+    orderBy?: EmployeeActivityOrderByWithRelationInput | EmployeeActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EmployeeActivities.
+     */
+    cursor?: EmployeeActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmployeeActivities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmployeeActivities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EmployeeActivities.
+     */
+    distinct?: EmployeeActivityScalarFieldEnum | EmployeeActivityScalarFieldEnum[]
+  }
+
+  /**
+   * EmployeeActivity findFirstOrThrow
+   */
+  export type EmployeeActivityFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which EmployeeActivity to fetch.
+     */
+    where?: EmployeeActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmployeeActivities to fetch.
+     */
+    orderBy?: EmployeeActivityOrderByWithRelationInput | EmployeeActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EmployeeActivities.
+     */
+    cursor?: EmployeeActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmployeeActivities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmployeeActivities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EmployeeActivities.
+     */
+    distinct?: EmployeeActivityScalarFieldEnum | EmployeeActivityScalarFieldEnum[]
+  }
+
+  /**
+   * EmployeeActivity findMany
+   */
+  export type EmployeeActivityFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    /**
+     * Filter, which EmployeeActivities to fetch.
+     */
+    where?: EmployeeActivityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmployeeActivities to fetch.
+     */
+    orderBy?: EmployeeActivityOrderByWithRelationInput | EmployeeActivityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EmployeeActivities.
+     */
+    cursor?: EmployeeActivityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmployeeActivities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmployeeActivities.
+     */
+    skip?: number
+    distinct?: EmployeeActivityScalarFieldEnum | EmployeeActivityScalarFieldEnum[]
+  }
+
+  /**
+   * EmployeeActivity create
+   */
+  export type EmployeeActivityCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    /**
+     * The data needed to create a EmployeeActivity.
+     */
+    data: XOR<EmployeeActivityCreateInput, EmployeeActivityUncheckedCreateInput>
+  }
+
+  /**
+   * EmployeeActivity createMany
+   */
+  export type EmployeeActivityCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EmployeeActivities.
+     */
+    data: EmployeeActivityCreateManyInput | EmployeeActivityCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EmployeeActivity createManyAndReturn
+   */
+  export type EmployeeActivityCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many EmployeeActivities.
+     */
+    data: EmployeeActivityCreateManyInput | EmployeeActivityCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EmployeeActivity update
+   */
+  export type EmployeeActivityUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    /**
+     * The data needed to update a EmployeeActivity.
+     */
+    data: XOR<EmployeeActivityUpdateInput, EmployeeActivityUncheckedUpdateInput>
+    /**
+     * Choose, which EmployeeActivity to update.
+     */
+    where: EmployeeActivityWhereUniqueInput
+  }
+
+  /**
+   * EmployeeActivity updateMany
+   */
+  export type EmployeeActivityUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EmployeeActivities.
+     */
+    data: XOR<EmployeeActivityUpdateManyMutationInput, EmployeeActivityUncheckedUpdateManyInput>
+    /**
+     * Filter which EmployeeActivities to update
+     */
+    where?: EmployeeActivityWhereInput
+  }
+
+  /**
+   * EmployeeActivity upsert
+   */
+  export type EmployeeActivityUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    /**
+     * The filter to search for the EmployeeActivity to update in case it exists.
+     */
+    where: EmployeeActivityWhereUniqueInput
+    /**
+     * In case the EmployeeActivity found by the `where` argument doesn't exist, create a new EmployeeActivity with this data.
+     */
+    create: XOR<EmployeeActivityCreateInput, EmployeeActivityUncheckedCreateInput>
+    /**
+     * In case the EmployeeActivity was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EmployeeActivityUpdateInput, EmployeeActivityUncheckedUpdateInput>
+  }
+
+  /**
+   * EmployeeActivity delete
+   */
+  export type EmployeeActivityDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+    /**
+     * Filter which EmployeeActivity to delete.
+     */
+    where: EmployeeActivityWhereUniqueInput
+  }
+
+  /**
+   * EmployeeActivity deleteMany
+   */
+  export type EmployeeActivityDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EmployeeActivities to delete
+     */
+    where?: EmployeeActivityWhereInput
+  }
+
+  /**
+   * EmployeeActivity without action
+   */
+  export type EmployeeActivityDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeActivity
+     */
+    select?: EmployeeActivitySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeActivityInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -13209,6 +14298,20 @@ export namespace Prisma {
   export type AssessmentScalarFieldEnum = (typeof AssessmentScalarFieldEnum)[keyof typeof AssessmentScalarFieldEnum]
 
 
+  export const EmployeeActivityScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    category: 'category',
+    date: 'date',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type EmployeeActivityScalarFieldEnum = (typeof EmployeeActivityScalarFieldEnum)[keyof typeof EmployeeActivityScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -13337,6 +14440,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
+    activities?: EmployeeActivityListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -13355,6 +14459,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
+    activities?: EmployeeActivityOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -13376,6 +14481,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
+    activities?: EmployeeActivityListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -14144,6 +15250,76 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Assessment"> | Date | string
   }
 
+  export type EmployeeActivityWhereInput = {
+    AND?: EmployeeActivityWhereInput | EmployeeActivityWhereInput[]
+    OR?: EmployeeActivityWhereInput[]
+    NOT?: EmployeeActivityWhereInput | EmployeeActivityWhereInput[]
+    id?: StringFilter<"EmployeeActivity"> | string
+    title?: StringFilter<"EmployeeActivity"> | string
+    description?: StringNullableFilter<"EmployeeActivity"> | string | null
+    category?: StringFilter<"EmployeeActivity"> | string
+    date?: DateTimeFilter<"EmployeeActivity"> | Date | string
+    userId?: StringFilter<"EmployeeActivity"> | string
+    createdAt?: DateTimeFilter<"EmployeeActivity"> | Date | string
+    updatedAt?: DateTimeFilter<"EmployeeActivity"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type EmployeeActivityOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    category?: SortOrder
+    date?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type EmployeeActivityWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: EmployeeActivityWhereInput | EmployeeActivityWhereInput[]
+    OR?: EmployeeActivityWhereInput[]
+    NOT?: EmployeeActivityWhereInput | EmployeeActivityWhereInput[]
+    title?: StringFilter<"EmployeeActivity"> | string
+    description?: StringNullableFilter<"EmployeeActivity"> | string | null
+    category?: StringFilter<"EmployeeActivity"> | string
+    date?: DateTimeFilter<"EmployeeActivity"> | Date | string
+    userId?: StringFilter<"EmployeeActivity"> | string
+    createdAt?: DateTimeFilter<"EmployeeActivity"> | Date | string
+    updatedAt?: DateTimeFilter<"EmployeeActivity"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type EmployeeActivityOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    category?: SortOrder
+    date?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: EmployeeActivityCountOrderByAggregateInput
+    _max?: EmployeeActivityMaxOrderByAggregateInput
+    _min?: EmployeeActivityMinOrderByAggregateInput
+  }
+
+  export type EmployeeActivityScalarWhereWithAggregatesInput = {
+    AND?: EmployeeActivityScalarWhereWithAggregatesInput | EmployeeActivityScalarWhereWithAggregatesInput[]
+    OR?: EmployeeActivityScalarWhereWithAggregatesInput[]
+    NOT?: EmployeeActivityScalarWhereWithAggregatesInput | EmployeeActivityScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"EmployeeActivity"> | string
+    title?: StringWithAggregatesFilter<"EmployeeActivity"> | string
+    description?: StringNullableWithAggregatesFilter<"EmployeeActivity"> | string | null
+    category?: StringWithAggregatesFilter<"EmployeeActivity"> | string
+    date?: DateTimeWithAggregatesFilter<"EmployeeActivity"> | Date | string
+    userId?: StringWithAggregatesFilter<"EmployeeActivity"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"EmployeeActivity"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"EmployeeActivity"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -14160,6 +15336,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -14178,6 +15355,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -14196,6 +15374,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -14214,6 +15393,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -15049,6 +16229,82 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type EmployeeActivityCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    category: string
+    date?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutActivitiesInput
+  }
+
+  export type EmployeeActivityUncheckedCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    category: string
+    date?: Date | string
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmployeeActivityUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutActivitiesNestedInput
+  }
+
+  export type EmployeeActivityUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmployeeActivityCreateManyInput = {
+    id?: string
+    title: string
+    description?: string | null
+    category: string
+    date?: Date | string
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmployeeActivityUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmployeeActivityUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -15114,6 +16370,12 @@ export namespace Prisma {
     none?: AccountWhereInput
   }
 
+  export type EmployeeActivityListRelationFilter = {
+    every?: EmployeeActivityWhereInput
+    some?: EmployeeActivityWhereInput
+    none?: EmployeeActivityWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -15124,6 +16386,10 @@ export namespace Prisma {
   }
 
   export type AccountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type EmployeeActivityOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -15836,6 +17102,39 @@ export namespace Prisma {
     grade?: SortOrder
   }
 
+  export type EmployeeActivityCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    date?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EmployeeActivityMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    date?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EmployeeActivityMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    category?: SortOrder
+    date?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type SessionCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -15850,6 +17149,13 @@ export namespace Prisma {
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
   }
 
+  export type EmployeeActivityCreateNestedManyWithoutUserInput = {
+    create?: XOR<EmployeeActivityCreateWithoutUserInput, EmployeeActivityUncheckedCreateWithoutUserInput> | EmployeeActivityCreateWithoutUserInput[] | EmployeeActivityUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmployeeActivityCreateOrConnectWithoutUserInput | EmployeeActivityCreateOrConnectWithoutUserInput[]
+    createMany?: EmployeeActivityCreateManyUserInputEnvelope
+    connect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -15862,6 +17168,13 @@ export namespace Prisma {
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
     createMany?: AccountCreateManyUserInputEnvelope
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
+  }
+
+  export type EmployeeActivityUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<EmployeeActivityCreateWithoutUserInput, EmployeeActivityUncheckedCreateWithoutUserInput> | EmployeeActivityCreateWithoutUserInput[] | EmployeeActivityUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmployeeActivityCreateOrConnectWithoutUserInput | EmployeeActivityCreateOrConnectWithoutUserInput[]
+    createMany?: EmployeeActivityCreateManyUserInputEnvelope
+    connect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -15912,6 +17225,20 @@ export namespace Prisma {
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
   }
 
+  export type EmployeeActivityUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EmployeeActivityCreateWithoutUserInput, EmployeeActivityUncheckedCreateWithoutUserInput> | EmployeeActivityCreateWithoutUserInput[] | EmployeeActivityUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmployeeActivityCreateOrConnectWithoutUserInput | EmployeeActivityCreateOrConnectWithoutUserInput[]
+    upsert?: EmployeeActivityUpsertWithWhereUniqueWithoutUserInput | EmployeeActivityUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EmployeeActivityCreateManyUserInputEnvelope
+    set?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+    disconnect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+    delete?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+    connect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+    update?: EmployeeActivityUpdateWithWhereUniqueWithoutUserInput | EmployeeActivityUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EmployeeActivityUpdateManyWithWhereWithoutUserInput | EmployeeActivityUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EmployeeActivityScalarWhereInput | EmployeeActivityScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -15938,6 +17265,20 @@ export namespace Prisma {
     update?: AccountUpdateWithWhereUniqueWithoutUserInput | AccountUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AccountUpdateManyWithWhereWithoutUserInput | AccountUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
+  }
+
+  export type EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EmployeeActivityCreateWithoutUserInput, EmployeeActivityUncheckedCreateWithoutUserInput> | EmployeeActivityCreateWithoutUserInput[] | EmployeeActivityUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmployeeActivityCreateOrConnectWithoutUserInput | EmployeeActivityCreateOrConnectWithoutUserInput[]
+    upsert?: EmployeeActivityUpsertWithWhereUniqueWithoutUserInput | EmployeeActivityUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EmployeeActivityCreateManyUserInputEnvelope
+    set?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+    disconnect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+    delete?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+    connect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+    update?: EmployeeActivityUpdateWithWhereUniqueWithoutUserInput | EmployeeActivityUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EmployeeActivityUpdateManyWithWhereWithoutUserInput | EmployeeActivityUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EmployeeActivityScalarWhereInput | EmployeeActivityScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -16456,6 +17797,20 @@ export namespace Prisma {
     update?: XOR<XOR<SubjectUpdateToOneWithWhereWithoutAssessmentsInput, SubjectUpdateWithoutAssessmentsInput>, SubjectUncheckedUpdateWithoutAssessmentsInput>
   }
 
+  export type UserCreateNestedOneWithoutActivitiesInput = {
+    create?: XOR<UserCreateWithoutActivitiesInput, UserUncheckedCreateWithoutActivitiesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutActivitiesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutActivitiesNestedInput = {
+    create?: XOR<UserCreateWithoutActivitiesInput, UserUncheckedCreateWithoutActivitiesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutActivitiesInput
+    upsert?: UserUpsertWithoutActivitiesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutActivitiesInput, UserUpdateWithoutActivitiesInput>, UserUncheckedUpdateWithoutActivitiesInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -16766,6 +18121,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type EmployeeActivityCreateWithoutUserInput = {
+    id?: string
+    title: string
+    description?: string | null
+    category: string
+    date?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmployeeActivityUncheckedCreateWithoutUserInput = {
+    id?: string
+    title: string
+    description?: string | null
+    category: string
+    date?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmployeeActivityCreateOrConnectWithoutUserInput = {
+    where: EmployeeActivityWhereUniqueInput
+    create: XOR<EmployeeActivityCreateWithoutUserInput, EmployeeActivityUncheckedCreateWithoutUserInput>
+  }
+
+  export type EmployeeActivityCreateManyUserInputEnvelope = {
+    data: EmployeeActivityCreateManyUserInput | EmployeeActivityCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SessionUpsertWithWhereUniqueWithoutUserInput = {
     where: SessionWhereUniqueInput
     update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
@@ -16826,6 +18211,36 @@ export namespace Prisma {
     session_state?: StringNullableFilter<"Account"> | string | null
   }
 
+  export type EmployeeActivityUpsertWithWhereUniqueWithoutUserInput = {
+    where: EmployeeActivityWhereUniqueInput
+    update: XOR<EmployeeActivityUpdateWithoutUserInput, EmployeeActivityUncheckedUpdateWithoutUserInput>
+    create: XOR<EmployeeActivityCreateWithoutUserInput, EmployeeActivityUncheckedCreateWithoutUserInput>
+  }
+
+  export type EmployeeActivityUpdateWithWhereUniqueWithoutUserInput = {
+    where: EmployeeActivityWhereUniqueInput
+    data: XOR<EmployeeActivityUpdateWithoutUserInput, EmployeeActivityUncheckedUpdateWithoutUserInput>
+  }
+
+  export type EmployeeActivityUpdateManyWithWhereWithoutUserInput = {
+    where: EmployeeActivityScalarWhereInput
+    data: XOR<EmployeeActivityUpdateManyMutationInput, EmployeeActivityUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type EmployeeActivityScalarWhereInput = {
+    AND?: EmployeeActivityScalarWhereInput | EmployeeActivityScalarWhereInput[]
+    OR?: EmployeeActivityScalarWhereInput[]
+    NOT?: EmployeeActivityScalarWhereInput | EmployeeActivityScalarWhereInput[]
+    id?: StringFilter<"EmployeeActivity"> | string
+    title?: StringFilter<"EmployeeActivity"> | string
+    description?: StringNullableFilter<"EmployeeActivity"> | string | null
+    category?: StringFilter<"EmployeeActivity"> | string
+    date?: DateTimeFilter<"EmployeeActivity"> | Date | string
+    userId?: StringFilter<"EmployeeActivity"> | string
+    createdAt?: DateTimeFilter<"EmployeeActivity"> | Date | string
+    updatedAt?: DateTimeFilter<"EmployeeActivity"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     email: string
@@ -16841,6 +18256,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -16858,6 +18274,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -16891,6 +18308,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -16908,6 +18326,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -16925,6 +18344,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -16942,6 +18362,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -16975,6 +18396,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -16992,6 +18414,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ActionItemCreateWithoutCategoryInput = {
@@ -17997,6 +19420,94 @@ export namespace Prisma {
     tasks?: ActionItemUncheckedUpdateManyWithoutSubjectNestedInput
   }
 
+  export type UserCreateWithoutActivitiesInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    name?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    canAccessCasaRural?: boolean
+    canAccessFinanzas?: boolean
+    canAccessFpInformatica?: boolean
+    canAccessHogar?: boolean
+    canAccessMasterUnie?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutActivitiesInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    name?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    canAccessCasaRural?: boolean
+    canAccessFinanzas?: boolean
+    canAccessFpInformatica?: boolean
+    canAccessHogar?: boolean
+    canAccessMasterUnie?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutActivitiesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutActivitiesInput, UserUncheckedCreateWithoutActivitiesInput>
+  }
+
+  export type UserUpsertWithoutActivitiesInput = {
+    update: XOR<UserUpdateWithoutActivitiesInput, UserUncheckedUpdateWithoutActivitiesInput>
+    create: XOR<UserCreateWithoutActivitiesInput, UserUncheckedCreateWithoutActivitiesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutActivitiesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutActivitiesInput, UserUncheckedUpdateWithoutActivitiesInput>
+  }
+
+  export type UserUpdateWithoutActivitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    canAccessCasaRural?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFinanzas?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFpInformatica?: BoolFieldUpdateOperationsInput | boolean
+    canAccessHogar?: BoolFieldUpdateOperationsInput | boolean
+    canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutActivitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    canAccessCasaRural?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFinanzas?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFpInformatica?: BoolFieldUpdateOperationsInput | boolean
+    canAccessHogar?: BoolFieldUpdateOperationsInput | boolean
+    canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type SessionCreateManyUserInput = {
     id?: string
     sessionToken: string
@@ -18015,6 +19526,16 @@ export namespace Prisma {
     scope?: string | null
     id_token?: string | null
     session_state?: string | null
+  }
+
+  export type EmployeeActivityCreateManyUserInput = {
+    id?: string
+    title: string
+    description?: string | null
+    category: string
+    date?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type SessionUpdateWithoutUserInput = {
@@ -18075,6 +19596,36 @@ export namespace Prisma {
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     id_token?: NullableStringFieldUpdateOperationsInput | string | null
     session_state?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type EmployeeActivityUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmployeeActivityUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmployeeActivityUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ActionItemCreateManyCategoryInput = {
@@ -18490,6 +20041,10 @@ export namespace Prisma {
      * @deprecated Use AssessmentDefaultArgs instead
      */
     export type AssessmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AssessmentDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use EmployeeActivityDefaultArgs instead
+     */
+    export type EmployeeActivityArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = EmployeeActivityDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

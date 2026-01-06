@@ -1,7 +1,7 @@
 import { ROLE_PERMISSIONS, MODULES, ModuleName } from './config'
 
 // Use simple types that work on both client and server
-type Role = 'ADMIN' | 'OWNER' | 'TEACHER' | 'FAMILY' | 'CASA_RURAL' | 'GUEST'
+type Role = 'ADMIN' | 'OWNER' | 'TEACHER' | 'FAMILY' | 'CASA_RURAL' | 'EMPLEADO' | 'GUEST'
 
 type UserForPermissions = {
     role: Role | string

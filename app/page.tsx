@@ -107,7 +107,7 @@ export default async function Home() {
   // 3. Portfolio Master Logic - Only show if user has access to Finanzas
   if (canAccessModule(user || null, MODULES.FINANZAS)) {
     try {
-      const statusRes = await fetch("http://localhost:8000/api/portfolio/status", { cache: 'no-store' });
+      const statusRes = await fetch("http://127.0.0.1:8000/api/portfolio/status", { cache: 'no-store' });
 
       if (statusRes.ok) {
         const status = await statusRes.json();
@@ -124,9 +124,11 @@ export default async function Home() {
             trend: status.change_percent
           });
         }
+      } else {
+        console.warn(`[PortfolioMaster] Fetch returned status ${statusRes.status}: ${statusRes.statusText}`);
       }
     } catch (error) {
-      console.error('Error fetching Portfolio Master data:', error);
+      console.error('[PortfolioMaster] Error fetching Portfolio Master data:', error);
     }
   }
 

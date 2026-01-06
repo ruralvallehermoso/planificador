@@ -18,6 +18,7 @@ export const ROLE_PERMISSIONS: Record<Role, ModuleName[]> = {
     TEACHER: [MODULES.FP_INFORMATICA, MODULES.MASTER_UNIE],
     FAMILY: [MODULES.HOGAR],
     CASA_RURAL: [MODULES.CASA_RURAL],
+    EMPLEADO: [MODULES.CASA_RURAL], // Limited to SES Hospedajes + Actividades only
     GUEST: [],
 }
 

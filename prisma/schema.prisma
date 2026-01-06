@@ -22,6 +22,7 @@ enum Role {
   TEACHER
   FAMILY
   CASA_RURAL
+  EMPLEADO
   GUEST
 }
 
@@ -42,6 +43,7 @@ model User {
   
   sessions      Session[]
   accounts      Account[]
+  activities    EmployeeActivity[]
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -213,6 +215,22 @@ model Assessment {
   // Relations
   subjectId   String
   subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Casa Rural: Employee Activity Log
+model EmployeeActivity {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  category    String   // limpieza, mantenimiento, compras, incidencia, otro
+  date        DateTime @default(now())
+  
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

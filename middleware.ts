@@ -1,6 +1,9 @@
-import { auth } from './auth'
+import NextAuth from 'next-auth'
+import { authConfig } from './auth.config'
 import { NextResponse } from 'next/server'
 import { getModuleFromPath, canAccessModule } from './lib/auth/permissions'
+
+const { auth } = NextAuth(authConfig)
 
 // Routes that don't require authentication
 const publicRoutes = ['/login', '/api/auth']

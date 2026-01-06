@@ -3,18 +3,16 @@ import Credentials from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import bcrypt from 'bcryptjs'
 import { prisma } from './lib/prisma'
+import { authConfig } from './auth.config'
 import type { Adapter } from 'next-auth/adapters'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+    ...authConfig,
     adapter: PrismaAdapter(prisma as unknown as Parameters<typeof PrismaAdapter>[0]) as Adapter,
     session: {
         strategy: 'jwt',
     },
-    trustHost: true, // Required for Vercel deployment
-    pages: {
-        signIn: '/login',
-        error: '/login',
-    },
+    trustHost: true,
     providers: [
         Credentials({
             name: 'credentials',
@@ -59,30 +57,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         }),
     ],
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id
-                token.role = (user as any).role
-                token.canAccessCasaRural = (user as any).canAccessCasaRural
-                token.canAccessFinanzas = (user as any).canAccessFinanzas
-                token.canAccessFpInformatica = (user as any).canAccessFpInformatica
-                token.canAccessHogar = (user as any).canAccessHogar
-                token.canAccessMasterUnie = (user as any).canAccessMasterUnie
-            }
-            return token
-        },
-        async session({ session, token }) {
-            if (session.user) {
-                session.user.id = token.id as string
-                session.user.role = token.role as string
-                session.user.canAccessCasaRural = token.canAccessCasaRural as boolean
-                session.user.canAccessFinanzas = token.canAccessFinanzas as boolean
-                session.user.canAccessFpInformatica = token.canAccessFpInformatica as boolean
-                session.user.canAccessHogar = token.canAccessHogar as boolean
-                session.user.canAccessMasterUnie = token.canAccessMasterUnie as boolean
-            }
-            return session
-        },
-    },
 })

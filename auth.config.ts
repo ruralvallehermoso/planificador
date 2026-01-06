@@ -6,6 +6,23 @@ export const authConfig = {
         error: '/login',
     },
     callbacks: {
+        authorized({ auth, request: { nextUrl } }) {
+            const isLoggedIn = !!auth?.user
+            const isOnLogin = nextUrl.pathname.startsWith('/login')
+            const isOnApiAuth = nextUrl.pathname.startsWith('/api/auth')
+
+            // Allow access to login and auth API routes
+            if (isOnLogin || isOnApiAuth) {
+                return true
+            }
+
+            // Redirect to login if not logged in
+            if (!isLoggedIn) {
+                return false // Will redirect to signIn page
+            }
+
+            return true
+        },
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id
@@ -33,3 +50,4 @@ export const authConfig = {
     },
     providers: [], // Configured in auth.ts
 } satisfies NextAuthConfig
+

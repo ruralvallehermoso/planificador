@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, BarChart3, ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield } from 'lucide-react'
+import { Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, BarChart3, ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield, X } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useState, useEffect, useMemo } from 'react'
 import { canAccessModule } from '@/lib/auth/permissions'
@@ -16,6 +16,11 @@ interface NavItem {
     module?: ModuleName  // Optional module for permission check
     adminOnly?: boolean  // Only visible to ADMIN role
     children?: { name: string; href: string; icon: React.ElementType }[]
+}
+
+interface SidebarProps {
+    isMobileOpen?: boolean
+    onMobileClose?: () => void
 }
 
 const allNavigation: NavItem[] = [
@@ -48,7 +53,7 @@ const allNavigation: NavItem[] = [
     { name: 'Admin Usuarios', href: '/admin/users', icon: Shield, adminOnly: true },
 ]
 
-export function Sidebar() {
+export function Sidebar({ isMobileOpen = false, onMobileClose }: SidebarProps) {
     const pathname = usePathname()
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -138,7 +143,10 @@ export function Sidebar() {
     return (
         <div className={clsx(
             "flex h-full flex-col border-r bg-white/50 backdrop-blur-xl transition-all duration-300",
-            isCollapsed ? "w-16" : "w-64"
+            isCollapsed ? "w-16" : "w-64",
+            // Mobile: fixed overlay, hidden by default, shown when isMobileOpen
+            "fixed md:relative inset-y-0 left-0 z-50",
+            isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}>
             {/* Header */}
             <div className="flex h-14 items-center justify-between px-3 border-b">
@@ -147,9 +155,20 @@ export function Sidebar() {
                         Planificador
                     </span>
                 )}
+
+                {/* Mobile close button */}
+                <button
+                    onClick={onMobileClose}
+                    className="p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors md:hidden"
+                    aria-label="Cerrar menú"
+                >
+                    <X className="h-5 w-5" />
+                </button>
+
+                {/* Desktop collapse button */}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                    className="hidden md:block p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
                     title={isCollapsed ? "Expandir menú" : "Contraer menú"}
                 >
                     {isCollapsed ? <Menu className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}

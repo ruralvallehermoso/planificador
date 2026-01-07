@@ -1,31 +1,47 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',
     },
   },
-  // Microfrontend rewrites for direct navigation
+  // Microfrontend rewrites - solo se activan si hay URLs configuradas
   async rewrites() {
-    return [
-      // Portfolio Master
-      {
+    const rewrites = [];
+
+    // Portfolio Master - solo si hay URL o estamos en desarrollo
+    const portfolioUrl = process.env.NEXT_PUBLIC_PORTFOLIO_URL || (isDev ? 'http://localhost:5173' : '');
+    if (portfolioUrl) {
+      rewrites.push({
         source: '/apps/portfolio/:path*',
-        destination: `${process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'http://localhost:5173'}/:path*`,
-      },
-      // Dashboard Financiero (Streamlit)
-      {
+        destination: `${portfolioUrl}/:path*`,
+      });
+    }
+
+    // Dashboard Financiero (Streamlit)
+    const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || (isDev ? 'http://localhost:8501' : '');
+    if (dashboardUrl) {
+      rewrites.push({
         source: '/apps/dashboard/:path*',
-        destination: `${process.env.NEXT_PUBLIC_DASHBOARD_URL || 'http://localhost:8501'}/:path*`,
-      },
-      // Casa Rural
-      {
+        destination: `${dashboardUrl}/:path*`,
+      });
+    }
+
+    // Casa Rural
+    const casaRuralUrl = process.env.NEXT_PUBLIC_CASARURAL_URL || (isDev ? 'http://localhost:3002' : '');
+    if (casaRuralUrl) {
+      rewrites.push({
         source: '/apps/casa-rural/:path*',
-        destination: `${process.env.NEXT_PUBLIC_CASARURAL_URL || 'http://localhost:3002'}/:path*`,
-      },
-    ];
+        destination: `${casaRuralUrl}/:path*`,
+      });
+    }
+
+    return rewrites;
   },
 };
 
 export default nextConfig;
+

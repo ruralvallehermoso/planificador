@@ -3,11 +3,11 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 md:p-8 space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Hola, Familia! 👋</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Hola, Familia! 👋</h1>
           <p className="text-gray-500 mt-1">Aquí tenéis el resumen de hoy</p>
         </div>
         <div className="text-right">

@@ -24,9 +24,15 @@ export function PortfolioMasterCard() {
     useEffect(() => {
         async function fetchData() {
             try {
+                const apiUrl = process.env.NEXT_PUBLIC_PORTFOLIO_API_URL;
+                if (!apiUrl) {
+                    // No API configurada, mostrar tarjeta vacía
+                    setLoading(false);
+                    return;
+                }
                 const [perfRes, histRes] = await Promise.all([
-                    fetch("http://localhost:8000/api/portfolio/performance?period=24h"),
-                    fetch("http://localhost:8000/api/portfolio/history?period=24h")
+                    fetch(`${apiUrl}/api/portfolio/performance?period=24h`),
+                    fetch(`${apiUrl}/api/portfolio/history?period=24h`)
                 ]);
 
                 if (perfRes.ok && histRes.ok) {

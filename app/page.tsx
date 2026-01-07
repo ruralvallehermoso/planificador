@@ -22,6 +22,18 @@ export default async function Home() {
   const session = await auth();
   const user = session?.user;
 
+  // DEBUG LOGS - Remove after fixing
+  console.log('[Dashboard DEBUG] Session:', JSON.stringify(session, null, 2));
+  console.log('[Dashboard DEBUG] User:', JSON.stringify(user, null, 2));
+  console.log('[Dashboard DEBUG] User role:', user?.role);
+  console.log('[Dashboard DEBUG] User permissions:', {
+    canAccessCasaRural: user?.canAccessCasaRural,
+    canAccessFinanzas: user?.canAccessFinanzas,
+    canAccessFpInformatica: user?.canAccessFpInformatica,
+    canAccessHogar: user?.canAccessHogar,
+    canAccessMasterUnie: user?.canAccessMasterUnie,
+  });
+
   const allCategories = await prisma.category.findMany({
     include: {
       _count: {
@@ -30,14 +42,24 @@ export default async function Home() {
     },
   });
 
+  console.log('[Dashboard DEBUG] All categories found:', allCategories.length);
+  console.log('[Dashboard DEBUG] Category slugs:', allCategories.map(c => c.slug));
+
   // Filter categories based on user permissions
   const categories = allCategories.filter(category => {
     const module = SLUG_TO_MODULE[category.slug];
     // If no module mapping, show the category (e.g., dashboard)
-    if (!module) return true;
+    if (!module) {
+      console.log(`[Dashboard DEBUG] Category ${category.slug}: No module mapping, showing`);
+      return true;
+    }
     // Check if user can access this module
-    return canAccessModule(user || null, module);
+    const hasAccess = canAccessModule(user || null, module);
+    console.log(`[Dashboard DEBUG] Category ${category.slug} -> Module ${module}: hasAccess=${hasAccess}`);
+    return hasAccess;
   });
+
+  console.log('[Dashboard DEBUG] Filtered categories count:', categories.length);
 
   const recentItems = await prisma.actionItem.findMany({
     take: 5,
@@ -107,25 +129,32 @@ export default async function Home() {
   // 3. Portfolio Master Logic - Only show if user has access to Finanzas
   if (canAccessModule(user || null, MODULES.FINANZAS)) {
     try {
-      const statusRes = await fetch("http://127.0.0.1:8000/api/portfolio/status", { cache: 'no-store' });
-
-      if (statusRes.ok) {
-        const status = await statusRes.json();
-
-        if (status.current_value > 0) {
-          alerts.push({
-            id: 'portfolio-master-alert',
-            type: status.change_percent >= 0 ? 'success' : 'warning',
-            title: 'Portfolio Master',
-            message: `Tu patrimonio es de €${status.current_value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}.`,
-            link: '/finanzas/portfolio',
-            linkText: 'Ver Cartera',
-            chartData: status.history || [],
-            trend: status.change_percent
-          });
-        }
+      // Solo intentar fetch si hay URL de API configurada (desarrollo local)
+      const portfolioApiUrl = process.env.PORTFOLIO_API_URL;
+      if (!portfolioApiUrl) {
+        // En producción sin backend de portfolio, no mostrar alertas
+        console.log('[PortfolioMaster] No PORTFOLIO_API_URL configured, skipping...');
       } else {
-        console.warn(`[PortfolioMaster] Fetch returned status ${statusRes.status}: ${statusRes.statusText}`);
+        const statusRes = await fetch(`${portfolioApiUrl}/api/portfolio/status`, { cache: 'no-store' });
+
+        if (statusRes.ok) {
+          const status = await statusRes.json();
+
+          if (status.current_value > 0) {
+            alerts.push({
+              id: 'portfolio-master-alert',
+              type: status.change_percent >= 0 ? 'success' : 'warning',
+              title: 'Portfolio Master',
+              message: `Tu patrimonio es de €${status.current_value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}.`,
+              link: '/finanzas/portfolio',
+              linkText: 'Ver Cartera',
+              chartData: status.history || [],
+              trend: status.change_percent
+            });
+          }
+        } else {
+          console.warn(`[PortfolioMaster] Fetch returned status ${statusRes.status}: ${statusRes.statusText}`);
+        }
       }
     } catch (error) {
       console.error('[PortfolioMaster] Error fetching Portfolio Master data:', error);

@@ -45,9 +45,9 @@ export default async function Home() {
   console.log('[Dashboard DEBUG] All categories found:', allCategories.length);
   console.log('[Dashboard DEBUG] Category slugs:', allCategories.map(c => c.slug));
 
-  // TEMPORARY: Skip permission filtering to diagnose the issue
-  // Set to true to bypass permissions for debugging
-  const DEBUG_SKIP_PERMISSIONS = false;
+  // TEMPORARY: Skip permission filtering until user role is verified in production DB
+  // After verifying user has ADMIN or OWNER role, set this to false
+  const DEBUG_SKIP_PERMISSIONS = true;
 
   let categories;
   if (DEBUG_SKIP_PERMISSIONS) {

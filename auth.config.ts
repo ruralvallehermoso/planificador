@@ -11,16 +11,29 @@ export const authConfig = {
             const isOnLogin = nextUrl.pathname.startsWith('/login')
             const isOnApiAuth = nextUrl.pathname.startsWith('/api/auth')
 
+            console.log('[AUTH MIDDLEWARE] authorized callback:', {
+                path: nextUrl.pathname,
+                isLoggedIn,
+                isOnLogin,
+                isOnApiAuth,
+                hasAuth: !!auth,
+                hasUser: !!auth?.user,
+                userEmail: auth?.user?.email,
+            });
+
             // Allow access to login and auth API routes
             if (isOnLogin || isOnApiAuth) {
+                console.log('[AUTH MIDDLEWARE] Allowing access to auth route');
                 return true
             }
 
             // Redirect to login if not logged in
             if (!isLoggedIn) {
+                console.log('[AUTH MIDDLEWARE] Not logged in, redirecting to login');
                 return false // Will redirect to signIn page
             }
 
+            console.log('[AUTH MIDDLEWARE] User is logged in, allowing access');
             return true
         },
         async jwt({ token, user }) {

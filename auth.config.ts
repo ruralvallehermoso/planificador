@@ -24,27 +24,36 @@ export const authConfig = {
             return true
         },
         async jwt({ token, user }) {
+            console.log('[AUTH DEBUG] JWT callback - user:', JSON.stringify(user));
+            console.log('[AUTH DEBUG] JWT callback - token before:', JSON.stringify(token));
+
             if (user) {
                 token.id = user.id
                 token.role = (user as any).role
-                token.canAccessCasaRural = (user as any).canAccessCasaRural
-                token.canAccessFinanzas = (user as any).canAccessFinanzas
-                token.canAccessFpInformatica = (user as any).canAccessFpInformatica
-                token.canAccessHogar = (user as any).canAccessHogar
-                token.canAccessMasterUnie = (user as any).canAccessMasterUnie
+                token.canAccessCasaRural = (user as any).canAccessCasaRural ?? false
+                token.canAccessFinanzas = (user as any).canAccessFinanzas ?? false
+                token.canAccessFpInformatica = (user as any).canAccessFpInformatica ?? false
+                token.canAccessHogar = (user as any).canAccessHogar ?? false
+                token.canAccessMasterUnie = (user as any).canAccessMasterUnie ?? false
             }
+
+            console.log('[AUTH DEBUG] JWT callback - token after:', JSON.stringify(token));
             return token
         },
         async session({ session, token }) {
+            console.log('[AUTH DEBUG] Session callback - token:', JSON.stringify(token));
+
             if (session.user) {
                 session.user.id = token.id as string
                 session.user.role = token.role as string
-                session.user.canAccessCasaRural = token.canAccessCasaRural as boolean
-                session.user.canAccessFinanzas = token.canAccessFinanzas as boolean
-                session.user.canAccessFpInformatica = token.canAccessFpInformatica as boolean
-                session.user.canAccessHogar = token.canAccessHogar as boolean
-                session.user.canAccessMasterUnie = token.canAccessMasterUnie as boolean
+                session.user.canAccessCasaRural = (token.canAccessCasaRural as boolean) ?? false
+                session.user.canAccessFinanzas = (token.canAccessFinanzas as boolean) ?? false
+                session.user.canAccessFpInformatica = (token.canAccessFpInformatica as boolean) ?? false
+                session.user.canAccessHogar = (token.canAccessHogar as boolean) ?? false
+                session.user.canAccessMasterUnie = (token.canAccessMasterUnie as boolean) ?? false
             }
+
+            console.log('[AUTH DEBUG] Session callback - session.user:', JSON.stringify(session.user));
             return session
         },
     },

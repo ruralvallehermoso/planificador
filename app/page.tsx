@@ -47,7 +47,7 @@ export default async function Home() {
 
   // TEMPORARY: Skip permission filtering to diagnose the issue
   // The issue is that user permissions are not being passed correctly from the JWT
-  const DEBUG_SKIP_PERMISSIONS = true;
+  const DEBUG_SKIP_PERMISSIONS = false; // Changed from true to test the fix
 
   let categories;
   if (DEBUG_SKIP_PERMISSIONS) {

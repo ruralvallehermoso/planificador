@@ -10,32 +10,51 @@ export default auth((req) => {
     const path = nextUrl.pathname
     const user = req.auth?.user as any
 
-    // Public routes handled by authConfig.callbacks.authorized
-    // Static files excluded by matcher
+    console.log('[MIDDLEWARE] Request:', {
+        path,
+        hasAuth: !!req.auth,
+        hasUser: !!user,
+        userEmail: user?.email
+    });
+
+    // Skip auth check for login and API routes
+    const isPublicRoute = path.startsWith('/login') || path.startsWith('/api/auth')
+    if (isPublicRoute) {
+        console.log('[MIDDLEWARE] Public route, allowing access');
+        return NextResponse.next()
+    }
+
+    // FORCE redirect to login if no user
+    if (!user) {
+        console.log('[MIDDLEWARE] No user found, redirecting to /login');
+        const loginUrl = new URL('/login', nextUrl.origin)
+        loginUrl.searchParams.set('callbackUrl', nextUrl.href)
+        return NextResponse.redirect(loginUrl)
+    }
 
     // If we reach here and have a user, check module permissions
-    if (user) {
-        // Check module-specific permissions
-        const module = getModuleFromPath(path)
-        if (module && !canAccessModule(user, module)) {
-            return NextResponse.redirect(new URL('/unauthorized', nextUrl.origin))
-        }
+    // Check module-specific permissions
+    const module = getModuleFromPath(path)
+    if (module && !canAccessModule(user, module)) {
+        console.log('[MIDDLEWARE] User lacks permission for module:', module);
+        return NextResponse.redirect(new URL('/unauthorized', nextUrl.origin))
+    }
 
-        // EMPLEADO role restrictions
-        if (user.role === 'EMPLEADO' && path.startsWith('/casa-rural')) {
-            const allowedPaths = ['/casa-rural', '/casa-rural/ses-hospedajes', '/casa-rural/actividades']
-            const isAllowed = allowedPaths.some(p => path === p || path.startsWith(p + '/'))
-            if (!isAllowed) {
-                return NextResponse.redirect(new URL('/unauthorized', nextUrl.origin))
-            }
-        }
-
-        // Admin routes
-        if (path.startsWith('/admin') && user.role !== 'ADMIN') {
+    // EMPLEADO role restrictions
+    if (user.role === 'EMPLEADO' && path.startsWith('/casa-rural')) {
+        const allowedPaths = ['/casa-rural', '/casa-rural/ses-hospedajes', '/casa-rural/actividades']
+        const isAllowed = allowedPaths.some(p => path === p || path.startsWith(p + '/'))
+        if (!isAllowed) {
             return NextResponse.redirect(new URL('/unauthorized', nextUrl.origin))
         }
     }
 
+    // Admin routes
+    if (path.startsWith('/admin') && user.role !== 'ADMIN') {
+        return NextResponse.redirect(new URL('/unauthorized', nextUrl.origin))
+    }
+
+    console.log('[MIDDLEWARE] User authenticated, allowing access');
     return NextResponse.next()
 })
 

@@ -47,7 +47,7 @@ export default async function Home() {
 
   // TEMPORARY: Skip permission filtering to diagnose the issue
   // The issue is that user permissions are not being passed correctly from the JWT
-  const DEBUG_SKIP_PERMISSIONS = false; // Changed from true to test the fix
+  const DEBUG_SKIP_PERMISSIONS = true; // Enabled while we diagnose the permission issue
 
   let categories;
   if (DEBUG_SKIP_PERMISSIONS) {
@@ -174,8 +174,30 @@ export default async function Home() {
     }
   }
 
+  // Debug info for production troubleshooting
+  const debugInfo = {
+    hasSession: !!session,
+    userEmail: user?.email || 'No email',
+    userRole: user?.role || 'No role',
+    canAccessCasaRural: user?.canAccessCasaRural ?? 'undefined',
+    canAccessFinanzas: user?.canAccessFinanzas ?? 'undefined',
+    canAccessFpInformatica: user?.canAccessFpInformatica ?? 'undefined',
+    canAccessHogar: user?.canAccessHogar ?? 'undefined',
+    canAccessMasterUnie: user?.canAccessMasterUnie ?? 'undefined',
+    allCategoriesCount: allCategories.length,
+    filteredCategoriesCount: categories.length,
+  };
+
   return (
     <div className="space-y-8">
+      {/* DEBUG PANEL - Remove after fixing */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
+        <h3 className="font-bold text-yellow-800 mb-2">🔧 Debug Info (remover después de arreglar)</h3>
+        <pre className="text-yellow-700 text-xs overflow-x-auto">
+          {JSON.stringify(debugInfo, null, 2)}
+        </pre>
+      </div>
+
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard general</h1>
       </div>

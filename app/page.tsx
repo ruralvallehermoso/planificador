@@ -22,18 +22,6 @@ export default async function Home() {
   const session = await auth();
   const user = session?.user;
 
-  // DEBUG LOGS - Remove after fixing
-  console.log('[Dashboard DEBUG] Session:', JSON.stringify(session, null, 2));
-  console.log('[Dashboard DEBUG] User:', JSON.stringify(user, null, 2));
-  console.log('[Dashboard DEBUG] User role:', user?.role);
-  console.log('[Dashboard DEBUG] User permissions:', {
-    canAccessCasaRural: user?.canAccessCasaRural,
-    canAccessFinanzas: user?.canAccessFinanzas,
-    canAccessFpInformatica: user?.canAccessFpInformatica,
-    canAccessHogar: user?.canAccessHogar,
-    canAccessMasterUnie: user?.canAccessMasterUnie,
-  });
-
   const allCategories = await prisma.category.findMany({
     include: {
       _count: {
@@ -42,37 +30,21 @@ export default async function Home() {
     },
   });
 
-  console.log('[Dashboard DEBUG] All categories found:', allCategories.length);
-  console.log('[Dashboard DEBUG] Category slugs:', allCategories.map(c => c.slug));
-
   // TEMPORARY: Skip permission filtering until user role is verified in production DB
-  // After verifying user has ADMIN or OWNER role, set this to false
-  const DEBUG_SKIP_PERMISSIONS = true;
+  // After verifying user has ADMIN or OWNER role in the database, set this to false
+  const BYPASS_PERMISSIONS = true;
 
   let categories;
-  if (DEBUG_SKIP_PERMISSIONS) {
-    console.log('[Dashboard DEBUG] SKIPPING permission filter - showing all categories');
+  if (BYPASS_PERMISSIONS) {
     categories = allCategories;
   } else {
     // Filter categories based on user permissions
     categories = allCategories.filter(category => {
       const module = SLUG_TO_MODULE[category.slug];
-      // If no module mapping, show the category (e.g., dashboard)
-      if (!module) {
-        console.log(`[Dashboard DEBUG] Category ${category.slug}: No module mapping, showing`);
-        return true;
-      }
-      // Check if user can access this module
-      const hasAccess = canAccessModule(user || null, module);
-      console.log(`[Dashboard DEBUG] Category ${category.slug} -> Module ${module}: hasAccess=${hasAccess}`);
-      return hasAccess;
+      if (!module) return true;
+      return canAccessModule(user || null, module);
     });
   }
-
-  console.log('[Dashboard DEBUG] Final categories count:', categories.length);
-
-  // DEBUG: Log what the user object looks like for troubleshooting
-  console.log('[Dashboard DEBUG] FULL USER OBJECT KEYS:', user ? Object.keys(user) : 'null');
 
   const recentItems = await prisma.actionItem.findMany({
     take: 5,
@@ -174,30 +146,8 @@ export default async function Home() {
     }
   }
 
-  // Debug info for production troubleshooting
-  const debugInfo = {
-    hasSession: !!session,
-    userEmail: user?.email || 'No email',
-    userRole: user?.role || 'No role',
-    canAccessCasaRural: user?.canAccessCasaRural ?? 'undefined',
-    canAccessFinanzas: user?.canAccessFinanzas ?? 'undefined',
-    canAccessFpInformatica: user?.canAccessFpInformatica ?? 'undefined',
-    canAccessHogar: user?.canAccessHogar ?? 'undefined',
-    canAccessMasterUnie: user?.canAccessMasterUnie ?? 'undefined',
-    allCategoriesCount: allCategories.length,
-    filteredCategoriesCount: categories.length,
-  };
-
   return (
     <div className="space-y-8">
-      {/* DEBUG PANEL - Remove after fixing */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
-        <h3 className="font-bold text-yellow-800 mb-2">🔧 Debug Info (remover después de arreglar)</h3>
-        <pre className="text-yellow-700 text-xs overflow-x-auto">
-          {JSON.stringify(debugInfo, null, 2)}
-        </pre>
-      </div>
-
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard general</h1>
       </div>

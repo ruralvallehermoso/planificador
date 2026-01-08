@@ -46,8 +46,8 @@ export default async function Home() {
   console.log('[Dashboard DEBUG] Category slugs:', allCategories.map(c => c.slug));
 
   // TEMPORARY: Skip permission filtering to diagnose the issue
-  // The issue is that user permissions are not being passed correctly from the JWT
-  const DEBUG_SKIP_PERMISSIONS = true; // Enabled while we diagnose the permission issue
+  // Set to true to bypass permissions for debugging
+  const DEBUG_SKIP_PERMISSIONS = false;
 
   let categories;
   if (DEBUG_SKIP_PERMISSIONS) {

@@ -16,10 +16,31 @@ type UserForPermissions = {
  * Check if a user can access a specific module
  */
 export function canAccessModule(user: UserForPermissions | null, module: ModuleName): boolean {
-    if (!user) return false
+    // DEBUG: Log permission check
+    console.log('[PERMISSIONS] canAccessModule called:', {
+        hasUser: !!user,
+        role: user?.role,
+        module,
+        canAccessCasaRural: user?.canAccessCasaRural,
+        canAccessFinanzas: user?.canAccessFinanzas,
+    });
+
+    if (!user) {
+        console.log('[PERMISSIONS] No user, denying access');
+        return false
+    }
 
     // Admin has access to everything
-    if (user.role === 'ADMIN') return true
+    if (user.role === 'ADMIN') {
+        console.log('[PERMISSIONS] User is ADMIN, granting full access');
+        return true
+    }
+
+    // OWNER role also has access to everything (main user of the app)
+    if (user.role === 'OWNER') {
+        console.log('[PERMISSIONS] User is OWNER, granting full access');
+        return true
+    }
 
     // Check per-module overrides first
     switch (module) {
@@ -42,7 +63,11 @@ export function canAccessModule(user: UserForPermissions | null, module: ModuleN
 
     // Fall back to role-based permissions
     const rolePermissions = ROLE_PERMISSIONS[user.role as Role]
-    return rolePermissions ? rolePermissions.includes(module) : false
+    const hasPermission = rolePermissions ? rolePermissions.includes(module) : false
+
+    console.log('[PERMISSIONS] Final check:', { role: user.role, rolePermissions, hasPermission });
+
+    return hasPermission
 }
 
 /**

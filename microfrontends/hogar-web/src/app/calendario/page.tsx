@@ -141,6 +141,31 @@ export default function CalendarioPage() {
         }
     }, [sources]);
 
+    // Helper to load local events from localStorage
+    const loadLocalEvents = (): CalendarEvent[] => {
+        try {
+            const saved = localStorage.getItem('hogar_calendar_events');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                return parsed.map((evt: any) => ({
+                    ...evt,
+                    start: new Date(evt.start),
+                    end: new Date(evt.end),
+                    isLocal: true
+                }));
+            }
+        } catch (e) {
+            console.error('Error loading local events', e);
+        }
+        return [];
+    };
+
+    // Helper to save local events to localStorage
+    const saveLocalEvents = (evts: CalendarEvent[]) => {
+        const localOnly = evts.filter(e => e.isLocal);
+        localStorage.setItem('hogar_calendar_events', JSON.stringify(localOnly));
+    };
+
     const fetchAllEvents = async () => {
         setIsLoading(true);
         setError(null);
@@ -152,31 +177,32 @@ export default function CalendarioPage() {
                     let sourceEvents: any[] = [];
 
                     if (source.type === 'local') {
-                        // Fetch from internal API
-                        const res = await fetch('/api/events');
-                        if (!res.ok) throw new Error('Failed to fetch local events');
-                        const data = await res.json();
-                        sourceEvents = data.map((evt: any) => ({
+                        // Load from localStorage instead of API
+                        const localEvents = loadLocalEvents();
+                        sourceEvents = localEvents.map((evt: any) => ({
                             ...evt,
-                            start: new Date(evt.start),
-                            end: new Date(evt.end),
                             sourceId: 'local',
                             color: source.color,
                             isLocal: true
                         }));
                     } else if (source.url) {
-                        // Fetch from iCal proxy
-                        const response = await fetch(`/api/calendar?url=${encodeURIComponent(source.url)}`);
-                        if (!response.ok) throw new Error(`Error en ${source.name}`);
-                        const data = await response.json();
-                        sourceEvents = data.map((evt: any) => ({
-                            ...evt,
-                            start: new Date(evt.start),
-                            end: new Date(evt.end),
-                            sourceId: source.id,
-                            color: source.color,
-                            isLocal: false
-                        }));
+                        // Fetch from iCal proxy (external calendars still work)
+                        try {
+                            const response = await fetch(`/api/calendar?url=${encodeURIComponent(source.url)}`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                sourceEvents = data.map((evt: any) => ({
+                                    ...evt,
+                                    start: new Date(evt.start),
+                                    end: new Date(evt.end),
+                                    sourceId: source.id,
+                                    color: source.color,
+                                    isLocal: false
+                                }));
+                            }
+                        } catch (e) {
+                            console.warn(`Could not fetch external calendar: ${source.name}`);
+                        }
                     }
 
                     allEvents = [...allEvents, ...sourceEvents];
@@ -232,23 +258,32 @@ export default function CalendarioPage() {
         if (!eventForm.title) return;
 
         try {
-            const method = selectedEvent ? 'PUT' : 'POST';
-            const body = {
-                ...eventForm,
-                id: selectedEvent?.id,
-                color: sources.find(s => s.type === 'local')?.color || PASTEL_COLORS[0].value
-            };
+            const localColor = sources.find(s => s.type === 'local')?.color || PASTEL_COLORS[0].value;
 
-            const res = await fetch('/api/events', {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-
-            if (!res.ok) throw new Error('Failed to save event');
+            if (selectedEvent) {
+                // Update existing event
+                const updatedEvents = events.map(e =>
+                    e.id === selectedEvent.id
+                        ? { ...e, ...eventForm, color: localColor }
+                        : e
+                );
+                setEvents(updatedEvents);
+                saveLocalEvents(updatedEvents);
+            } else {
+                // Create new event
+                const newEvent: CalendarEvent = {
+                    id: uuidv4(),
+                    ...eventForm,
+                    sourceId: 'local',
+                    color: localColor,
+                    isLocal: true
+                };
+                const updatedEvents = [...events, newEvent];
+                setEvents(updatedEvents);
+                saveLocalEvents(updatedEvents);
+            }
 
             setIsEventModalOpen(false);
-            fetchAllEvents(); // Refresh
         } catch (e) {
             setError('Error al guardar el evento');
             console.error(e);
@@ -260,11 +295,10 @@ export default function CalendarioPage() {
         if (!confirm('¿Seguro que quieres borrar este evento?')) return;
 
         try {
-            const res = await fetch(`/api/events?id=${selectedEvent.id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Failed to delete');
-
+            const updatedEvents = events.filter(e => e.id !== selectedEvent.id);
+            setEvents(updatedEvents);
+            saveLocalEvents(updatedEvents);
             setIsEventModalOpen(false);
-            fetchAllEvents();
         } catch (e) {
             setError('Error al borrar el evento');
         }

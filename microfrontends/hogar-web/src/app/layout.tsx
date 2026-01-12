@@ -3,7 +3,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Menu } from "lucide-react";
 
@@ -23,6 +23,35 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isEmbedded, setIsEmbedded] = useState(false);
+
+  // Check if embedded in iframe (from Planificador)
+  useEffect(() => {
+    // Check if inside an iframe
+    try {
+      if (window.self !== window.top) {
+        setIsEmbedded(true);
+      }
+    } catch (e) {
+      // Cross-origin iframe access denied = we're embedded
+      setIsEmbedded(true);
+    }
+  }, []);
+
+  // If embedded, render without sidebar
+  if (isEmbedded) {
+    return (
+      <html lang="es">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
+        >
+          <main className="min-h-screen bg-gray-50">
+            {children}
+          </main>
+        </body>
+      </html>
+    );
+  }
 
   return (
     <html lang="es">

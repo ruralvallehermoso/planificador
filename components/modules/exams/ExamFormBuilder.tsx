@@ -83,6 +83,43 @@ export function ExamFormBuilder() {
         window.print()
     }
 
+    const handleExportDoc = () => {
+        const element = document.getElementById('exam-document')
+        if (!element) return
+
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>${header.subject || 'Examen'}</title>
+                    <style>
+                        body { font-family: sans-serif; }
+                        h1 { font-size: 24px; font-weight: bold; }
+                        h2 { font-size: 18px; font-weight: bold; margin-top: 20px; }
+                        .text-center { text-align: center; }
+                        .font-bold { font-weight: bold; }
+                        .mb-4 { margin-bottom: 16px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        td { border: 1px solid #ccc; padding: 8px; }
+                    </style>
+                </head>
+                <body>
+                    ${element.innerHTML}
+                </body>
+            </html>
+        `
+
+        const blob = new Blob([htmlContent], { type: 'application/msword' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${header.subject || 'Examen'}.doc`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
             {/* Top Bar */}
@@ -95,7 +132,7 @@ export function ExamFormBuilder() {
                         <h1 className="text-xl font-bold text-gray-900">Generador de Exámenes</h1>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Select onValueChange={handleLoadTemplate}>
+                        <Select onValueChange={handleLoadTemplate} key={templates.length}>
                             <SelectTrigger className="w-[200px]">
                                 <SelectValue placeholder="Cargar plantilla..." />
                             </SelectTrigger>
@@ -135,6 +172,11 @@ export function ExamFormBuilder() {
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
+
+                        <Button onClick={handleExportDoc} variant="secondary" className="bg-green-600 hover:bg-green-700 text-white">
+                            <Download className="h-4 w-4 mr-2" />
+                            Exportar (Word)
+                        </Button>
 
                         <Button onClick={handlePrint} className="bg-blue-600 hover:bg-blue-700 text-white">
                             <Printer className="h-4 w-4 mr-2" />

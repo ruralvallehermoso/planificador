@@ -12,7 +12,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
 
     return (
         <div id="exam-document" className={cn(
-            "bg-white p-8 md:p-12 shadow-lg max-w-[210mm] mx-auto min-h-[297mm] print:shadow-none print:w-full print:max-w-none print:mx-0 print:p-0",
+            "bg-white p-8 md:p-12 shadow-lg max-w-[210mm] mx-auto min-h-[297mm] print:shadow-none print:w-full print:max-w-none print:mx-0 print:p-[15mm]",
             font,
             fontSize,
             lineHeight
@@ -22,7 +22,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                 <div className="flex flex-col items-center justify-center gap-4 mb-4 text-center w-full">
                     {header.logoUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={header.logoUrl} alt="Logo" className="max-h-20 w-auto max-w-full object-contain block" />
+                        <img src={header.logoUrl} alt="Logo" className="max-h-[3cm] w-auto max-w-full object-contain block" />
                     )}
 
                     <div className="flex flex-row flex-nowrap items-baseline justify-center gap-x-2 w-full">

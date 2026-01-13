@@ -99,3 +99,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+@page {
+  size: auto;
+  margin: 0mm;
+}
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide browser default headers/footers (URL, page number etc) involves margin 0 in @page 
+       and ensuring content has its own padding */
+}

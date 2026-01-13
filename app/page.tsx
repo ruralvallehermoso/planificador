@@ -77,21 +77,32 @@ export default async function Home() {
   // 2. Financial Simulator Logic - Only show if user has access to Finanzas
   if (canAccessModule(user || null, MODULES.FINANZAS)) {
     try {
-      const fs = await import('fs');
-      const path = await import('path');
-      const statusFilePath = path.join(process.cwd(), 'public', 'financial_status.json');
+      // Fetch live data from Finanzas backend
+      const finanzasBackendUrl = process.env.FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
 
-      if (fs.existsSync(statusFilePath)) {
-        const fileContent = fs.readFileSync(statusFilePath, 'utf-8');
-        const financialData = JSON.parse(fileContent);
-        const balance = financialData.balance;
+      const simRes = await fetch(`${finanzasBackendUrl}/api/simulator/compare`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mortgage: { principal: 127000, annual_rate: 2.5, years: 15 },
+          tax_rate: 19,
+          start_date: "2025-11-24"
+        }),
+        cache: 'no-store',
+        // Timeout after 5 seconds to avoid blocking page load
+        signal: AbortSignal.timeout(5000)
+      });
+
+      if (simRes.ok) {
+        const simData = await simRes.json();
+        const balance = simData.balance || 0;
 
         if (balance >= 0) {
           alerts.push({
             id: 'financial-health',
             type: 'success',
             title: 'Plan Financiero Saludable',
-            message: `El saldo proyectado es positivo (€${balance.toLocaleString()}). Tu plan de ahorro cubre la hipoteca.`,
+            message: `El saldo proyectado es positivo (€${balance.toLocaleString(undefined, { maximumFractionDigits: 0 })}). Tu plan de ahorro cubre la hipoteca.`,
             link: '/finanzas/simulador',
             linkText: 'Ver Detalles',
           });
@@ -100,46 +111,46 @@ export default async function Home() {
             id: 'financial-risk',
             type: 'error',
             title: 'Riesgo Financiero Detectado',
-            message: `El saldo final proyectado es negativo (€${balance.toLocaleString()}). Tu hipoteca podría no estar cubierta.`,
+            message: `El saldo final proyectado es negativo (€${balance.toLocaleString(undefined, { maximumFractionDigits: 0 })}). Tu hipoteca podría no estar cubierta.`,
             link: '/finanzas/simulador',
             linkText: 'Revisar Simulador',
           });
         }
+      } else {
+        console.warn('[FinancialSimulator] Fetch failed:', simRes.status);
       }
     } catch (error) {
-      console.error('Error reading financial status:', error);
+      console.error('[FinancialSimulator] Error fetching data:', error);
     }
   }
 
   // 3. Portfolio Master Logic - Only show if user has access to Finanzas
   if (canAccessModule(user || null, MODULES.FINANZAS)) {
     try {
-      // Solo intentar fetch si hay URL de API configurada (desarrollo local)
-      const portfolioApiUrl = process.env.PORTFOLIO_API_URL;
-      if (!portfolioApiUrl) {
-        // En producción sin backend de portfolio, no mostrar alertas
-        console.log('[PortfolioMaster] No PORTFOLIO_API_URL configured, skipping...');
-      } else {
-        const statusRes = await fetch(`${portfolioApiUrl}/api/portfolio/status`, { cache: 'no-store' });
+      // Fetch live portfolio data from Finanzas backend
+      const finanzasBackendUrl = process.env.FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
 
-        if (statusRes.ok) {
-          const status = await statusRes.json();
+      const statusRes = await fetch(`${finanzasBackendUrl}/api/portfolio/performance?period=24h`, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(5000)
+      });
 
-          if (status.current_value > 0) {
-            alerts.push({
-              id: 'portfolio-master-alert',
-              type: status.change_percent >= 0 ? 'success' : 'warning',
-              title: 'Portfolio Master',
-              message: `Tu patrimonio es de €${status.current_value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}.`,
-              link: '/finanzas/portfolio',
-              linkText: 'Ver Cartera',
-              chartData: status.history || [],
-              trend: status.change_percent
-            });
-          }
-        } else {
-          console.warn(`[PortfolioMaster] Fetch returned status ${statusRes.status}: ${statusRes.statusText}`);
+      if (statusRes.ok) {
+        const status = await statusRes.json();
+
+        if (status.current_value > 0) {
+          alerts.push({
+            id: 'portfolio-master-alert',
+            type: status.change_percent >= 0 ? 'success' : 'warning',
+            title: 'Portfolio Master',
+            message: `Tu patrimonio es de €${status.current_value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} (${status.change_percent >= 0 ? '+' : ''}${status.change_percent.toFixed(2)}% hoy).`,
+            link: '/finanzas/portfolio',
+            linkText: 'Ver Cartera',
+            trend: status.change_percent
+          });
         }
+      } else {
+        console.warn(`[PortfolioMaster] Fetch returned status ${statusRes.status}: ${statusRes.statusText}`);
       }
     } catch (error) {
       console.error('[PortfolioMaster] Error fetching Portfolio Master data:', error);

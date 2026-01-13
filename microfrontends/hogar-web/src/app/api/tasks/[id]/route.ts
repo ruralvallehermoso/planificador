@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PLANIFICADOR_URL = process.env.NEXT_PUBLIC_PLANIFICADOR_URL || 'https://planificador-seven.vercel.app';
+const isDev = process.env.NODE_ENV === 'development';
+const PLANIFICADOR_URL = (process.env.NEXT_PUBLIC_PLANIFICADOR_URL || (isDev ? 'http://localhost:3000' : 'https://planificador-seven.vercel.app')).replace(/\/$/, "");
 
 export async function PATCH(
     request: NextRequest,
@@ -10,6 +11,7 @@ export async function PATCH(
         const { id } = await params;
         const body = await request.json();
         const url = `${PLANIFICADOR_URL}/api/tasks/${id}`;
+        console.log(`Proxying PATCH to: ${url}`);
 
         const res = await fetch(url, {
             method: 'PATCH',
@@ -19,11 +21,21 @@ export async function PATCH(
             body: JSON.stringify(body)
         });
 
-        const data = await res.json();
+        const contentType = res.headers.get('content-type');
+        let data;
+
+        if (contentType && contentType.includes('application/json')) {
+            data = await res.json();
+        } else {
+            const text = await res.text();
+            console.error('Upstream non-JSON response:', text.slice(0, 500));
+            return NextResponse.json({ error: 'Upstream returned non-JSON', details: text.slice(0, 200) }, { status: res.status === 200 ? 502 : res.status });
+        }
+
         return NextResponse.json(data, { status: res.status });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Proxy PATCH error:', error);
-        return NextResponse.json({ error: 'Proxy failed' }, { status: 500 });
+        return NextResponse.json({ error: 'Proxy failed', details: error.message }, { status: 500 });
     }
 }
 
@@ -34,6 +46,7 @@ export async function DELETE(
     try {
         const { id } = await params;
         const url = `${PLANIFICADOR_URL}/api/tasks/${id}`;
+        console.log(`Proxying DELETE to: ${url}`);
 
         const res = await fetch(url, {
             method: 'DELETE',
@@ -42,15 +55,24 @@ export async function DELETE(
             },
         });
 
-        // DELETE often returns 200/204 with no body or small body
         if (res.status === 204) {
             return new NextResponse(null, { status: 204 });
         }
 
-        const data = await res.json();
+        const contentType = res.headers.get('content-type');
+        let data;
+
+        if (contentType && contentType.includes('application/json')) {
+            data = await res.json();
+        } else {
+            const text = await res.text();
+            console.error('Upstream non-JSON response:', text.slice(0, 500));
+            return NextResponse.json({ error: 'Upstream returned non-JSON', details: text.slice(0, 200) }, { status: res.status === 200 ? 502 : res.status });
+        }
+
         return NextResponse.json(data, { status: res.status });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Proxy DELETE error:', error);
-        return NextResponse.json({ error: 'Proxy failed' }, { status: 500 });
+        return NextResponse.json({ error: 'Proxy failed', details: error.message }, { status: 500 });
     }
 }

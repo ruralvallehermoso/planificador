@@ -1,26 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PLANIFICADOR_URL = process.env.NEXT_PUBLIC_PLANIFICADOR_URL || 'https://planificador-seven.vercel.app';
+const isDev = process.env.NODE_ENV === 'development';
+const PLANIFICADOR_URL = (process.env.NEXT_PUBLIC_PLANIFICADOR_URL || (isDev ? 'http://localhost:3000' : 'https://planificador-seven.vercel.app')).replace(/\/$/, "");
 
 export async function GET(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams;
         const queryString = searchParams.toString();
         const url = `${PLANIFICADOR_URL}/api/tasks${queryString ? `?${queryString}` : ''}`;
+        console.log(`Proxying GET to: ${url}`);
 
         const res = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',
-                // Add auth token here if needed in future
             },
             cache: 'no-store'
         });
 
-        const data = await res.json();
+        const contentType = res.headers.get('content-type');
+        let data;
+
+        if (contentType && contentType.includes('application/json')) {
+            data = await res.json();
+        } else {
+            const text = await res.text();
+            console.error('Upstream non-JSON response:', text.slice(0, 500));
+            return NextResponse.json({ error: 'Upstream returned non-JSON', details: text.slice(0, 200) }, { status: res.status === 200 ? 502 : res.status });
+        }
+
         return NextResponse.json(data, { status: res.status });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Proxy GET error:', error);
-        return NextResponse.json({ error: 'Proxy failed' }, { status: 500 });
+        return NextResponse.json({ error: 'Proxy failed', details: error.message }, { status: 500 });
     }
 }
 
@@ -28,6 +39,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const url = `${PLANIFICADOR_URL}/api/tasks`;
+        console.log(`Proxying POST to: ${url}`);
 
         const res = await fetch(url, {
             method: 'POST',
@@ -37,10 +49,20 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify(body)
         });
 
-        const data = await res.json();
+        const contentType = res.headers.get('content-type');
+        let data;
+
+        if (contentType && contentType.includes('application/json')) {
+            data = await res.json();
+        } else {
+            const text = await res.text();
+            console.error('Upstream non-JSON response:', text.slice(0, 500));
+            return NextResponse.json({ error: 'Upstream returned non-JSON', details: text.slice(0, 200) }, { status: res.status === 200 ? 502 : res.status });
+        }
+
         return NextResponse.json(data, { status: res.status });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Proxy POST error:', error);
-        return NextResponse.json({ error: 'Proxy failed' }, { status: 500 });
+        return NextResponse.json({ error: 'Proxy failed', details: error.message }, { status: 500 });
     }
 }

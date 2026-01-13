@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Circle, Clock, Home, Wallet, GraduationCap, Coffee, BookOpen, ArrowUpRight, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowRight, CheckCircle2, Circle, Clock, Home as HomeIcon, Wallet, GraduationCap, Coffee, BookOpen, ArrowUpRight, TrendingUp, TrendingDown } from "lucide-react";
 import { clsx } from "clsx";
 import { auth } from "@/auth";
 import { canAccessModule } from "@/lib/auth/permissions";
@@ -8,7 +8,7 @@ import { MODULES, type ModuleName } from "@/lib/auth/config";
 
 // Map category slugs to module names and icons
 const MODULES_CONFIG: Record<string, { module: ModuleName; icon: any; color: string; tasksPath: string }> = {
-  'casa-rural': { module: MODULES.CASA_RURAL, icon: Home, color: '#10b981', tasksPath: '/casa-rural/tareas' },
+  'casa-rural': { module: MODULES.CASA_RURAL, icon: HomeIcon, color: '#10b981', tasksPath: '/casa-rural/tareas' },
   'finanzas': { module: MODULES.FINANZAS, icon: Wallet, color: '#6366f1', tasksPath: '/finanzas' },
   'fp-informatica': { module: MODULES.FP_INFORMATICA, icon: GraduationCap, color: '#f59e0b', tasksPath: '/fp-informatica' },
   'hogar': { module: MODULES.HOGAR, icon: Coffee, color: '#ec4899', tasksPath: '/hogar/tareas' },

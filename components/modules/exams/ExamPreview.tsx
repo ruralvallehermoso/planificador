@@ -113,7 +113,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                         </div>
 
                         {section.type === 'TEST' && (
-                            <div className="pl-4 font-sans text-base leading-relaxed">
+                            <div className="pl-4">
                                 {formatTestQuestions(section.questions || '', formatting.questionsBold ?? true)}
                             </div>
                         )}

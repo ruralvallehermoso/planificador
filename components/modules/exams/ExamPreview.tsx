@@ -19,14 +19,15 @@ export function ExamPreview({ header, sections, formatting }: Props) {
         )}>
             {/* Header */}
             <div className="border-b-2 border-gray-800 pb-4 mb-8">
-                <div className="flex items-center justify-between gap-4 mb-4">
-                    {header.logoUrl && (
+                <div className="flex items-center justify-between gap-6 mb-6">
+                    {header.logoUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={header.logoUrl} alt="Logo" className="h-16 object-contain" />
-                    )}
-                    <div className="text-right flex-1">
-                        <h1 className={cn("text-xl uppercase", isBoldTitle && "font-bold")}>{header.subject}</h1>
-                        <p className="text-sm text-gray-600">{header.course} - {header.cycle}</p>
+                        <img src={header.logoUrl} alt="Logo" className="h-20 max-w-[60%] object-contain object-left" />
+                    ) : <div></div>}
+
+                    <div className="text-right flex-1 min-w-[200px]">
+                        <h1 className={cn("text-xl uppercase leading-tight", isBoldTitle && "font-bold")}>{header.subject}</h1>
+                        <p className="text-sm text-gray-600 mt-1">{header.course} - {header.cycle}</p>
                     </div>
                 </div>
 

@@ -21,22 +21,34 @@ function LoginForm() {
         setIsLoading(true)
 
         try {
+            console.log('Attempting sign in...')
             const result = await signIn('credentials', {
                 email,
                 password,
                 redirect: false,
             })
+            console.log('Sign in result:', result)
 
             if (result?.error) {
+                console.error('Sign in error:', result.error)
                 setError('Email o contraseña incorrectos')
                 setIsLoading(false)
                 return
             }
 
-            router.push(callbackUrl)
-            router.refresh()
+            if (!result) {
+                console.error('Sign in returned null/undefined')
+                setError('Error desconocido: el servidor no respondió')
+                setIsLoading(false)
+                return
+            }
+
+            // Force a hard reload to ensure cookies are sent and middleware sees the session
+            console.log('Redirecting to:', callbackUrl)
+            window.location.href = callbackUrl
         } catch (err) {
-            setError('Error al iniciar sesión')
+            console.error('Sign in exception:', err)
+            setError(err instanceof Error ? err.message : 'Error al iniciar sesión')
             setIsLoading(false)
         }
     }

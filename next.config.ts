@@ -21,12 +21,15 @@ const nextConfig: NextConfig = {
       });
     }
 
-    // Dashboard Financiero (Streamlit)
-    const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || (isDev ? 'http://localhost:8501' : '');
-    if (dashboardUrl) {
+    // Dashboard Financiero (Now migrated to Portfolio app)
+    if (portfolioUrl) {
+      rewrites.push({
+        source: '/apps/dashboard',
+        destination: `${portfolioUrl}/?view=simulator`,
+      });
       rewrites.push({
         source: '/apps/dashboard/:path*',
-        destination: `${dashboardUrl}/:path*`,
+        destination: `${portfolioUrl}/:path*`,
       });
     }
 

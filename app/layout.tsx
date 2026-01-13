@@ -11,15 +11,21 @@ export const metadata: Metadata = {
   description: "Personal Management Dashboard",
 };
 
-export default function RootLayout({
+import { auth } from '@/auth'
+
+// ...
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <html lang="en" className="h-full bg-gray-50" suppressHydrationWarning={true}>
       <body className={`${inter.className} h-full`} suppressHydrationWarning={true}>
-        <AuthProvider>
+        <AuthProvider session={session}>
           <AppShell>
             {children}
           </AppShell>

@@ -18,8 +18,8 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Misiones Card */}
-        <Link href="/misiones" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+        {/* Tareas Card */}
+        <Link href="/tareas" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
           <div className="flex items-start justify-between mb-4">
             <div className="p-3 bg-indigo-50 rounded-xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
               <CheckCircle2 className="w-6 h-6" />
@@ -28,7 +28,7 @@ export default function Home() {
               2 Pendientes
             </span>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 mb-1">Misiones</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-1">Tareas</h3>
           <p className="text-sm text-gray-500">Recoger juguetes, Poner mesa...</p>
         </Link>
 
@@ -54,8 +54,8 @@ export default function Home() {
           <p className="text-sm text-gray-500">Cumpleaños Abuela (Sáb)</p>
         </Link>
 
-        {/* Cosas Card */}
-        <Link href="/cosas" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+        {/* Lista Compra Card */}
+        <Link href="/lista-compra" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
           <div className="flex items-start justify-between mb-4">
             <div className="p-3 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
               <Package className="w-6 h-6" />

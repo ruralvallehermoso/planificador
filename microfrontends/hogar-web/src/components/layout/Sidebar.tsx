@@ -12,10 +12,10 @@ interface SidebarProps {
 
 const NAVIGATION = [
     { name: 'Inicio', href: '/', icon: Home },
-    { name: 'Misiones', href: '/misiones', icon: Target },
+    { name: 'Tareas', href: '/tareas', icon: Target },
     { name: 'Comidas', href: '/comidas', icon: Utensils },
     { name: 'Calendario', href: '/calendario', icon: Calendar },
-    { name: 'Cosas', href: '/cosas', icon: Package },
+    { name: 'Lista Compra', href: '/lista-compra', icon: Package },
 ];
 
 export function Sidebar({ isMobileOpen = false, onMobileClose }: SidebarProps) {

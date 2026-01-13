@@ -29,7 +29,7 @@ export default function SimuladorPage() {
         <MicrofrontendFrame
             src={dashboard.url}
             title={dashboard.name}
-            fallbackMessage="Simulador Financiero no está disponible. Asegúrate de que el servidor está corriendo en el puerto 8501."
+            fallbackMessage="No se pudo cargar el Simulador Financiero. Asegúrate de que el microfrontend de Finanzas esté operativo."
         />
     );
 }

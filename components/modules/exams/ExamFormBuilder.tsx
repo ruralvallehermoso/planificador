@@ -84,29 +84,119 @@ export function ExamFormBuilder() {
     }
 
     const handleExportDoc = () => {
-        const element = document.getElementById('exam-document')
-        if (!element) return
+        const fontMap: Record<string, string> = {
+            'font-sans': 'Arial, sans-serif',
+            'font-serif': '"Times New Roman", serif',
+            'font-mono': '"Courier New", monospace',
+            "font-[Arial]": 'Arial, sans-serif',
+            "font-[Verdana]": 'Verdana, sans-serif',
+            "font-[Helvetica]": 'Helvetica, sans-serif',
+            "font-['Times_New_Roman']": '"Times New Roman", serif',
+            "font-[Georgia]": 'Georgia, serif',
+            "font-['Courier_New']": '"Courier New", monospace',
+            "font-['Trebuchet_MS']": '"Trebuchet MS", sans-serif',
+            "font-[Impact]": 'Impact, sans-serif',
+        }
+        const fontFamily = fontMap[formatting.font] || 'Arial, sans-serif'
+
+        // Helper to formatting questions for export
+        const formatQuestionsExport = (text: string, isTest: boolean) => {
+            if (!text) return ''
+
+            if (isTest) {
+                return text.split('\n').map(line => {
+                    const isQuestion = /^\d+[\.\)]/.test(line.trim())
+                    const style = isQuestion && (formatting.questionsBold ?? true) ? 'font-weight: bold; margin-top: 10px;' : 'margin-left: 20px;'
+                    return `<div style="${style} margin-bottom: 5px;">${line}</div>`
+                }).join('')
+            } else {
+                // Develop questions
+                return text.split('\n').filter(l => l.trim().length > 0).map(line => {
+                    // Bold score pattern logic
+                    const scoreRegex = /(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/i
+                    const parts = line.split(scoreRegex)
+                    const content = parts.map(part => {
+                        if (scoreRegex.test(part)) return `<b>${part}</b>`
+                        return part
+                    }).join('')
+
+                    const isBold = formatting.questionsBold ?? true
+                    return `<div style="margin-bottom: 15px; ${isBold ? 'font-weight: bold;' : ''}">${content}</div>`
+                }).join('')
+            }
+        }
 
         const htmlContent = `
             <!DOCTYPE html>
             <html>
-                <head>
-                    <meta charset="utf-8">
-                    <title>${header.subject || 'Examen'}</title>
-                    <style>
-                        body { font-family: sans-serif; }
-                        h1 { font-size: 24px; font-weight: bold; }
-                        h2 { font-size: 18px; font-weight: bold; margin-top: 20px; }
-                        .text-center { text-align: center; }
-                        .font-bold { font-weight: bold; }
-                        .mb-4 { margin-bottom: 16px; }
-                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-                        td { border: 1px solid #ccc; padding: 8px; }
-                    </style>
-                </head>
-                <body>
-                    ${element.innerHTML}
-                </body>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body { font-family: ${fontFamily}; color: #000; line-height: 1.5; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                    td { padding: 5px; vertical-align: top; }
+                    .header-table td { text-align: center; }
+                    .info-table td { border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; }
+                    h1 { font-size: 24px; text-transform: uppercase; margin: 0; }
+                    h2 { font-size: 18px; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 30px; }
+                    .ra-item { display: inline-block; margin-right: 20px; }
+                    .logo { max-height: 80px; width: auto; }
+                </style>
+            </head>
+            <body>
+                <!-- Header -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    ${header.logoUrl ? `<img src="${header.logoUrl}" class="logo" style="max-height: 80px;" /><br/>` : ''}
+                    <div style="margin-top: 10px;">
+                        <h1>${header.subject}</h1>
+                        <div style="font-size: 16px; color: #666; margin-top: 5px;">${header.course} - ${header.cycle}</div>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <table class="info-table">
+                    <tr>
+                        <td><strong>Evaluación:</strong> ${header.evaluation}</td>
+                        <td><strong>Fecha:</strong> ${header.date ? new Date(header.date).toLocaleDateString("es-ES") : ''}</td>
+                    </tr>
+                    <tr>
+                         <td><strong>Duración:</strong> ${header.duration}</td>
+                         <td><strong>RA Evaluados:</strong> ${header.raEvaluated.join(", ")}</td>
+                    </tr>
+                    ${(header.part1Percentage || header.part2Percentage) ? `
+                    <tr>
+                        <td>${header.part1Percentage ? `<strong>Parte 1 (Test):</strong> ${header.part1Percentage}` : ''}</td>
+                        <td>${header.part2Percentage ? `<strong>Parte 2 (Desarrollo):</strong> ${header.part2Percentage}` : ''}</td>
+                    </tr>` : ''}
+                </table>
+
+                <!-- Name Field -->
+                <div style="margin-bottom: 20px;">
+                    <strong>Nombre y Apellidos:</strong> _________________________________________________________________
+                </div>
+
+                <!-- RA Ratings -->
+                <div style="margin-bottom: 20px;">
+                    ${header.raEvaluated.map(ra =>
+            `<span style="margin-right: 30px;"><strong>${ra}</strong> Calificación: ________</span>`
+        ).join('')}
+                    ${header.raEvaluated.length === 0 ? '<span><strong>Calificación:</strong> ________</span>' : ''}
+                </div>
+
+                <!-- Description -->
+                ${header.description ? `<div style="font-style: italic; color: #666; border-left: 3px solid #ccc; padding-left: 10px; margin-bottom: 30px; white-space: pre-wrap;">${header.description}</div>` : ''}
+
+                <!-- Sections -->
+                ${sections.map((section, idx) => `
+                    <div>
+                        <h2>${idx + 1}. ${section.title} ${section.ra && section.ra.length > 0 ? `<span style="font-size: 12px; background: #eee; padding: 2px 6px; border-radius: 4px; font-weight: normal;">${section.ra.join(", ")}</span>` : ''}</h2>
+                        
+                        ${section.type === 'STANDARD' ? `<div style="white-space: pre-wrap;">${section.content || ''}</div>` : ''}
+                        
+                        ${section.type !== 'STANDARD' ? `<div>${formatQuestionsExport(section.questions || '', section.type === 'TEST')}</div>` : ''}
+                    </div>
+                `).join('')}
+            </body>
             </html>
         `
 

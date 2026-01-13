@@ -99,14 +99,14 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                         </div>
 
                         {section.type === 'TEST' && (
-                            <div className="pl-4 font-mono text-sm leading-relaxed">
+                            <div className="pl-4 font-sans text-base leading-relaxed">
                                 {formatTestQuestions(section.questions || '', formatting.questionsBold ?? true)}
                             </div>
                         )}
 
                         {section.type === 'DEVELOP' && (
-                            <div className={cn("whitespace-pre-wrap pl-4", formatting.questionsBold && "font-bold")}>
-                                {section.questions}
+                            <div className="pl-4">
+                                {formatDevelopQuestions(section.questions || '', formatting.questionsBold ?? true)}
                             </div>
                         )}
 
@@ -130,8 +130,31 @@ function formatTestQuestions(text: string, boldQuestions: boolean) {
         // If it starts with a letter like "a)", "a.", "- ", it's an answer -> Normal
         const isQuestion = /^\d+[\.\)]/.test(line.trim())
         if (isQuestion) {
-            return <div key={i} className="font-bold mt-2">{line}</div>
+            return <div key={i} className="font-bold mt-4">{line}</div>
         }
         return <div key={i} className="font-normal ml-4">{line}</div>
+    })
+}
+
+function formatDevelopQuestions(text: string, boldQuestions: boolean) {
+    return text.split('\n').filter(line => line.trim().length > 0).map((line, i) => {
+        // Regex to match score patterns like (2 pts), (1.5 puntos), (2pt), etc.
+        const scoreRegex = /(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/i
+        const parts = line.split(scoreRegex)
+
+        // If formatting.questionsBold is true, the whole text is bold. 
+        // If false, we only bold the score part as requested.
+        const containerClass = cn("mb-6", boldQuestions && "font-bold")
+
+        return (
+            <div key={i} className={containerClass}>
+                {parts.map((part, index) => {
+                    if (scoreRegex.test(part)) {
+                        return <span key={index} className="font-bold">{part}</span>
+                    }
+                    return <span key={index}>{part}</span>
+                })}
+            </div>
+        )
     })
 }

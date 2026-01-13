@@ -19,10 +19,10 @@ export function ExamPreview({ header, sections, formatting }: Props) {
         )}>
             {/* Header */}
             <div className="border-b-2 border-gray-800 pb-4 mb-8">
-                <div className="flex flex-col items-center justify-center gap-1 mb-4 text-center w-full">
+                <div className="flex flex-col items-center justify-center gap-0 mb-4 text-center w-full">
                     {header.logoUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={header.logoUrl} alt="Logo" className="max-h-20 w-auto max-w-full object-contain mb-1" />
+                        <img src={header.logoUrl} alt="Logo" className="max-h-20 w-auto max-w-full object-contain" />
                     )}
 
                     <div className="flex flex-wrap items-baseline justify-center gap-2 w-full px-1">

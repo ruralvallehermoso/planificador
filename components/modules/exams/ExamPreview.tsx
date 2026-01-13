@@ -25,7 +25,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                         <img src={header.logoUrl} alt="Logo" className="max-h-20 w-auto max-w-full object-contain" />
                     )}
 
-                    <div className="flex flex-wrap items-baseline justify-center gap-2 w-full px-1">
+                    <div className="flex flex-wrap items-baseline justify-center gap-x-2 -mt-1 w-full px-1">
                         <h1 className={cn("text-xl uppercase leading-none", isBoldTitle && "font-bold")}>
                             {header.subject}
                         </h1>

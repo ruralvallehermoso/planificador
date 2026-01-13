@@ -22,7 +22,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                 <div className="flex flex-col items-center justify-center gap-0 mb-4 text-center w-full">
                     {header.logoUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={header.logoUrl} alt="Logo" className="max-h-20 w-auto max-w-full object-contain" />
+                        <img src={header.logoUrl} alt="Logo" className="max-h-20 w-auto max-w-full object-contain block" />
                     )}
 
                     <div className="flex flex-row flex-nowrap items-baseline justify-center gap-x-2 w-full -mt-2">

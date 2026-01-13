@@ -30,6 +30,7 @@ export type ExamFormatting = {
     isBoldTitle: boolean
     lineHeight: string
     paragraphSpacing: string
+    questionsBold?: boolean
 }
 
 export type ExamTemplateData = {

@@ -26,7 +26,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                     )}
                     <div className="text-right flex-1">
                         <h1 className={cn("text-xl uppercase", isBoldTitle && "font-bold")}>{header.subject}</h1>
-                        <p className="text-sm text-gray-600">{header.cycle} - {header.course}</p>
+                        <p className="text-sm text-gray-600">{header.course} - {header.cycle}</p>
                     </div>
                 </div>
 
@@ -49,17 +49,30 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                     </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-8">
-                    <div className="border-b border-gray-300 pb-1">
-                        <span className="text-sm font-semibold text-gray-500">Apellidos y Nombre:</span>
-                    </div>
-                    <div className="border-b border-gray-300 pb-1">
-                        <span className="text-sm font-semibold text-gray-500">Calificación:</span>
+                <div className="mt-6 flex flex-col gap-2">
+                    <div className="flex items-end gap-2">
+                        <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">Nombre y Apellidos:</span>
+                        <div className="border-b border-gray-400 w-full mb-1"></div>
                     </div>
                 </div>
 
+                <div className="mt-4 flex gap-4 overflow-x-auto">
+                    {header.raEvaluated.length > 0 ? (
+                        header.raEvaluated.map((ra) => (
+                            <div key={ra} className="border border-gray-400 p-2 min-w-[100px] text-center">
+                                <span className="text-xs font-semibold block text-gray-500">{ra}</span>
+                                <span className="text-sm">Calificación</span>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="border border-gray-400 p-2 min-w-[120px] text-center">
+                            <span className="text-sm font-semibold text-gray-500">Calificación</span>
+                        </div>
+                    )}
+                </div>
+
                 {header.description && (
-                    <div className="mt-4 text-sm italic text-gray-600 border-l-4 border-gray-300 pl-3">
+                    <div className="mt-6 text-sm italic text-gray-600 border-l-4 border-gray-300 pl-3 whitespace-pre-wrap">
                         {header.description}
                     </div>
                 )}
@@ -81,13 +94,13 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                         </div>
 
                         {section.type === 'TEST' && (
-                            <div className="whitespace-pre-wrap pl-4 font-mono text-sm leading-relaxed">
-                                {section.questions}
+                            <div className="pl-4 font-mono text-sm leading-relaxed">
+                                {formatTestQuestions(section.questions || '', formatting.questionsBold ?? true)}
                             </div>
                         )}
 
                         {section.type === 'DEVELOP' && (
-                            <div className="whitespace-pre-wrap pl-4">
+                            <div className={cn("whitespace-pre-wrap pl-4", formatting.questionsBold && "font-bold")}>
                                 {section.questions}
                             </div>
                         )}
@@ -102,4 +115,18 @@ export function ExamPreview({ header, sections, formatting }: Props) {
             </div>
         </div>
     )
+}
+
+function formatTestQuestions(text: string, boldQuestions: boolean) {
+    if (!boldQuestions) return <div className="whitespace-pre-wrap">{text}</div>
+
+    return text.split('\n').map((line, i) => {
+        // Simple heuristic: If line starts with a number (e.g., "1.", "10)"), it's a question -> Bold
+        // If it starts with a letter like "a)", "a.", "- ", it's an answer -> Normal
+        const isQuestion = /^\d+[\.\)]/.test(line.trim())
+        if (isQuestion) {
+            return <div key={i} className="font-bold mt-2">{line}</div>
+        }
+        return <div key={i} className="font-normal ml-4">{line}</div>
+    })
 }

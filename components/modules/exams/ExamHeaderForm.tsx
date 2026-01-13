@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
 import { ExamHeaderData } from "@/lib/actions/exams"
 import { ChangeEvent } from "react"
 
@@ -28,12 +29,44 @@ export function ExamHeaderForm({ data, onChange }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label htmlFor="logoUrl">URL del Logo (Imagen)</Label>
+                    <Label htmlFor="logoUrl">Logo (URL o Archivo)</Label>
+                    <div className="flex gap-2">
+                        <Input
+                            id="logoUrl"
+                            value={data.logoUrl || ''}
+                            onChange={(e) => handleChange('logoUrl', e.target.value)}
+                            placeholder="URL del logo..."
+                        />
+                        <div className="relative">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    if (file) {
+                                        const reader = new FileReader()
+                                        reader.onloadend = () => {
+                                            handleChange('logoUrl', reader.result as string)
+                                        }
+                                        reader.readAsDataURL(file)
+                                    }
+                                }}
+                            />
+                            <Button variant="outline" type="button" size="icon">
+                                <span className="font-bold">↑</span>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="course">Curso</Label>
                     <Input
-                        id="logoUrl"
-                        value={data.logoUrl || ''}
-                        onChange={(e) => handleChange('logoUrl', e.target.value)}
-                        placeholder="https://..."
+                        id="course"
+                        value={data.course}
+                        onChange={(e) => handleChange('course', e.target.value)}
+                        placeholder="Ej: 1º"
                     />
                 </div>
 
@@ -44,16 +77,6 @@ export function ExamHeaderForm({ data, onChange }: Props) {
                         value={data.cycle}
                         onChange={(e) => handleChange('cycle', e.target.value)}
                         placeholder="Ej: DAM / DAW"
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="course">Curso</Label>
-                    <Input
-                        id="course"
-                        value={data.course}
-                        onChange={(e) => handleChange('course', e.target.value)}
-                        placeholder="Ej: 1º"
                     />
                 </div>
 

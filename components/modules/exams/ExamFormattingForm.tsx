@@ -58,6 +58,15 @@ export function ExamFormattingForm({ data, onChange }: Props) {
                     />
                 </div>
 
+                <div className="flex items-center justify-between p-3 border rounded-md">
+                    <Label htmlFor="bold-questions" className="cursor-pointer">Preguntas en Negrita (Defecto)</Label>
+                    <Switch
+                        id="bold-questions"
+                        checked={data.questionsBold ?? true}
+                        onCheckedChange={(checked) => handleChange('questionsBold', checked)}
+                    />
+                </div>
+
                 <div className="space-y-2">
                     <Label>Interlineado</Label>
                     <Select value={data.lineHeight} onValueChange={(v) => handleChange('lineHeight', v)}>

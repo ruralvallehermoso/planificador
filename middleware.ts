@@ -17,7 +17,34 @@ export default auth((req) => {
         userEmail: user?.email
     });
 
-    // Skip auth check for login and API routes
+    // Allow CORS for API routes
+    if (path.startsWith('/api/')) {
+        const origin = req.headers.get('origin')
+
+        // Handle CORS Preflight
+        if (req.method === 'OPTIONS') {
+            return new NextResponse(null, {
+                status: 200,
+                headers: {
+                    'Access-Control-Allow-Origin': origin || '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+                    'Access-Control-Max-Age': '86400',
+                },
+            })
+        }
+
+        // Skip auth for api/tasks
+        if (path.startsWith('/api/tasks')) {
+            const response = NextResponse.next()
+            response.headers.set('Access-Control-Allow-Origin', origin || '*')
+            response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
+            response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+            return response
+        }
+    }
+
+    // Skip auth check for login and API routes (auth)
     const isPublicRoute = path.startsWith('/login') || path.startsWith('/api/auth')
     if (isPublicRoute) {
         console.log('[MIDDLEWARE] Public route, allowing access');

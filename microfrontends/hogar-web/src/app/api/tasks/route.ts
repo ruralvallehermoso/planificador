@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const isDev = process.env.NODE_ENV === 'development';
-let envUrl = process.env.NEXT_PUBLIC_PLANIFICADOR_URL;
-if (envUrl === 'https://planificador-seven.vercel.app') envUrl = ''; // Ignore stale URL
-const PLANIFICADOR_URL = (envUrl || (isDev ? 'http://localhost:3000' : 'https://planificador-chi.vercel.app')).replace(/\/$/, "");
+// Hardcoding production URL to rule out stale env vars
+const PLANIFICADOR_URL = (isDev ? 'http://localhost:3000' : 'https://planificador-chi.vercel.app').replace(/\/$/, "");
 
 export async function GET(request: NextRequest) {
     try {
@@ -27,7 +26,12 @@ export async function GET(request: NextRequest) {
         } else {
             const text = await res.text();
             console.error('Upstream non-JSON response:', text.slice(0, 500));
-            return NextResponse.json({ error: 'Upstream returned non-JSON', details: text.slice(0, 200) }, { status: res.status === 200 ? 502 : res.status });
+            // Include attempted URL for debugging
+            return NextResponse.json({
+                error: 'Upstream returned non-JSON',
+                details: text.slice(0, 200),
+                attemptedUrl: url
+            }, { status: res.status === 200 ? 502 : res.status });
         }
 
         return NextResponse.json(data, { status: res.status });

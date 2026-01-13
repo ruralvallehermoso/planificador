@@ -25,8 +25,8 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                         <img src={header.logoUrl} alt="Logo" className="max-h-20 w-auto max-w-full object-contain" />
                     )}
 
-                    <div className="flex flex-wrap items-baseline justify-center gap-x-1 -mt-2 w-full px-1">
-                        <h1 className={cn("text-lg uppercase leading-none", isBoldTitle && "font-bold")}>
+                    <div className="flex flex-row flex-nowrap items-baseline justify-center gap-x-2 w-full -mt-2">
+                        <h1 className={cn("text-lg uppercase leading-none whitespace-nowrap", isBoldTitle && "font-bold")}>
                             {header.subject}
                         </h1>
                         <span className="text-base text-gray-600 whitespace-nowrap">

@@ -16,17 +16,9 @@ interface Task {
     createdAt: string;
 }
 
-// API base URL - use parent origin when embedded in iframe, or relative path
+// API base URL - using local proxy to avoid CORS
 const getApiUrl = () => {
-    if (typeof window !== 'undefined') {
-        // Check if we're in an iframe
-        if (window.parent !== window) {
-            // Use the parent's origin (Planificador)
-            return 'https://planificador-seven.vercel.app';
-        }
-    }
-    // For local development or direct access
-    return process.env.NEXT_PUBLIC_PLANIFICADOR_URL || 'https://planificador-seven.vercel.app';
+    return ''; // Relative path, uses the same domain (hogar-web)
 };
 
 export default function TareasPage() {
@@ -177,8 +169,8 @@ export default function TareasPage() {
                         key={f}
                         onClick={() => setFilter(f)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filter === f
-                                ? 'bg-pink-100 text-pink-700'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-pink-100 text-pink-700'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         {f === 'all' ? 'Todas' : f === 'active' ? 'Pendientes' : 'Completadas'}
@@ -202,8 +194,8 @@ export default function TareasPage() {
                         <div
                             key={task.id}
                             className={`group flex items-center gap-4 p-4 bg-white rounded-xl border transition-all hover:shadow-md ${task.status === 'DONE'
-                                    ? 'border-green-100 bg-green-50/50'
-                                    : 'border-gray-100'
+                                ? 'border-green-100 bg-green-50/50'
+                                : 'border-gray-100'
                                 }`}
                         >
                             <button
@@ -218,17 +210,17 @@ export default function TareasPage() {
                             </button>
 
                             <span className={`flex-1 ${task.status === 'DONE'
-                                    ? 'text-gray-400 line-through'
-                                    : 'text-gray-900'
+                                ? 'text-gray-400 line-through'
+                                : 'text-gray-900'
                                 }`}>
                                 {task.title}
                             </span>
 
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${task.priority === 'HIGH'
-                                    ? 'bg-red-100 text-red-700'
-                                    : task.priority === 'LOW'
-                                        ? 'bg-gray-100 text-gray-600'
-                                        : 'bg-yellow-100 text-yellow-700'
+                                ? 'bg-red-100 text-red-700'
+                                : task.priority === 'LOW'
+                                    ? 'bg-gray-100 text-gray-600'
+                                    : 'bg-yellow-100 text-yellow-700'
                                 }`}>
                                 {task.priority === 'HIGH' ? 'Alta' : task.priority === 'LOW' ? 'Baja' : 'Media'}
                             </span>

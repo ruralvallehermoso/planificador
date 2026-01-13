@@ -251,6 +251,8 @@ model ExamTemplate {
   subject       String?
   raEvaluated   String?  // Stored as JSON string or comma separated
   description   String?  // Header description/instructions
+  part1Percentage String?
+  part2Percentage String?
   
   // Dynamic Content
   sections      String   // JSON string: Array of { type, title, content, ... }

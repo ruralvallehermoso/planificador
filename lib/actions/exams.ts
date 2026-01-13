@@ -58,6 +58,8 @@ export async function saveExamTemplate(data: ExamTemplateData) {
                 subject: header.subject,
                 raEvaluated: JSON.stringify(header.raEvaluated),
                 description: header.description,
+                part1Percentage: header.part1Percentage,
+                part2Percentage: header.part2Percentage,
                 sections: JSON.stringify(sections),
                 formatting: JSON.stringify(formatting)
             }

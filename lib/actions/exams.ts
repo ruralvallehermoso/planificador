@@ -13,6 +13,8 @@ export type ExamHeaderData = {
     subject: string
     raEvaluated: string[]
     description: string
+    part1Percentage?: string
+    part2Percentage?: string
 }
 
 export type ExamSection = {

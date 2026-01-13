@@ -52,6 +52,18 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                         <span className="font-semibold">RA Evaluados:</span>
                         <span>{header.raEvaluated.join(", ")}</span>
                     </div>
+                    {header.part1Percentage && (
+                        <div className="flex gap-2 text-gray-600">
+                            <span className="font-semibold">Parte 1 (Test):</span>
+                            <span>{header.part1Percentage}</span>
+                        </div>
+                    )}
+                    {header.part2Percentage && (
+                        <div className="flex gap-2 text-gray-600">
+                            <span className="font-semibold">Parte 2 (Desarrollo):</span>
+                            <span>{header.part2Percentage}</span>
+                        </div>
+                    )}
                 </div>
 
                 <div className="mt-6 flex flex-col gap-2">
@@ -61,17 +73,19 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                     </div>
                 </div>
 
-                <div className="mt-4 flex gap-4 overflow-x-auto">
+                <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-700">
                     {header.raEvaluated.length > 0 ? (
                         header.raEvaluated.map((ra) => (
-                            <div key={ra} className="border border-gray-400 p-2 min-w-[100px] text-center">
-                                <span className="text-xs font-semibold block text-gray-500">{ra}</span>
-                                <span className="text-sm">Calificación</span>
+                            <div key={ra} className="flex gap-2 items-end">
+                                <span className="font-bold text-gray-900">{ra}</span>
+                                <span>Calificación:</span>
+                                <div className="border-b border-gray-400 w-16 mb-1"></div>
                             </div>
                         ))
                     ) : (
-                        <div className="border border-gray-400 p-2 min-w-[120px] text-center">
-                            <span className="text-sm font-semibold text-gray-500">Calificación</span>
+                        <div className="flex gap-2 items-end">
+                            <span className="font-semibold text-gray-900">Calificación:</span>
+                            <div className="border-b border-gray-400 w-16 mb-1"></div>
                         </div>
                     )}
                 </div>
@@ -142,9 +156,8 @@ function formatDevelopQuestions(text: string, boldQuestions: boolean) {
         const scoreRegex = /(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/i
         const parts = line.split(scoreRegex)
 
-        // If formatting.questionsBold is true, the whole text is bold. 
-        // If false, we only bold the score part as requested.
-        const containerClass = cn("mb-6", boldQuestions && "font-bold")
+        // Only bold the score part, not the container
+        const containerClass = "mb-6"
 
         return (
             <div key={i} className={containerClass}>

@@ -140,6 +140,27 @@ export function ExamHeaderForm({ data, onChange }: Props) {
                         rows={3}
                     />
                 </div>
+
+                <div className="grid grid-cols-2 gap-4 md:col-span-2">
+                    <div className="space-y-2">
+                        <Label htmlFor="part1Percentage">% Parte 1 (Test)</Label>
+                        <Input
+                            id="part1Percentage"
+                            value={data.part1Percentage || ''}
+                            onChange={(e) => handleChange('part1Percentage', e.target.value)}
+                            placeholder="Ej: 40%"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="part2Percentage">% Parte 2 (Desarrollo)</Label>
+                        <Input
+                            id="part2Percentage"
+                            value={data.part2Percentage || ''}
+                            onChange={(e) => handleChange('part2Percentage', e.target.value)}
+                            placeholder="Ej: 60%"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     )

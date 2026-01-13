@@ -99,7 +99,7 @@ export function ExamFormBuilder() {
                             <SelectTrigger className="w-[200px]">
                                 <SelectValue placeholder="Cargar plantilla..." />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-white">
                                 {templates.map(t => (
                                     <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                                 ))}

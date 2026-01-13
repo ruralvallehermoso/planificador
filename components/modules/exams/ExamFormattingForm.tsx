@@ -27,10 +27,18 @@ export function ExamFormattingForm({ data, onChange }: Props) {
                         <SelectTrigger>
                             <SelectValue placeholder="Selecciona fuente" />
                         </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="font-sans">Sans Serif (Inter)</SelectItem>
+                        <SelectContent className="bg-white">
+                            <SelectItem value="font-sans">Sans Serif (Default)</SelectItem>
                             <SelectItem value="font-serif">Serif (Merriweather)</SelectItem>
                             <SelectItem value="font-mono">Mono (JetBrains)</SelectItem>
+                            <SelectItem value="font-[Arial]">Arial</SelectItem>
+                            <SelectItem value="font-[Verdana]">Verdana</SelectItem>
+                            <SelectItem value="font-[Helvetica]">Helvetica</SelectItem>
+                            <SelectItem value="font-['Times_New_Roman']">Times New Roman</SelectItem>
+                            <SelectItem value="font-[Georgia]">Georgia</SelectItem>
+                            <SelectItem value="font-['Courier_New']">Courier New</SelectItem>
+                            <SelectItem value="font-['Trebuchet_MS']">Trebuchet MS</SelectItem>
+                            <SelectItem value="font-[Impact]">Impact</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -41,10 +49,13 @@ export function ExamFormattingForm({ data, onChange }: Props) {
                         <SelectTrigger>
                             <SelectValue placeholder="Tamaño" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
+                            <SelectItem value="text-xs">Muy pequeña (12px)</SelectItem>
                             <SelectItem value="text-sm">Pequeña (14px)</SelectItem>
                             <SelectItem value="text-base">Normal (16px)</SelectItem>
                             <SelectItem value="text-lg">Grande (18px)</SelectItem>
+                            <SelectItem value="text-xl">Muy grande (20px)</SelectItem>
+                            <SelectItem value="text-2xl">Extra grande (24px)</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -73,7 +84,10 @@ export function ExamFormattingForm({ data, onChange }: Props) {
                         <SelectTrigger>
                             <SelectValue placeholder="Interlineado" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
+                            <SelectItem value="leading-none">Muy compacto</SelectItem>
+                            <SelectItem value="leading-tight">Compacto</SelectItem>
+                            <SelectItem value="leading-snug">Ajustado</SelectItem>
                             <SelectItem value="leading-normal">Normal</SelectItem>
                             <SelectItem value="leading-relaxed">Relajado</SelectItem>
                             <SelectItem value="leading-loose">Amplio</SelectItem>
@@ -87,10 +101,13 @@ export function ExamFormattingForm({ data, onChange }: Props) {
                         <SelectTrigger>
                             <SelectValue placeholder="Espaciado" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
+                            <SelectItem value="space-y-1">Muy compacto</SelectItem>
                             <SelectItem value="space-y-2">Compacto</SelectItem>
+                            <SelectItem value="space-y-3">Reducido</SelectItem>
                             <SelectItem value="space-y-4">Medio</SelectItem>
                             <SelectItem value="space-y-6">Mucha separación</SelectItem>
+                            <SelectItem value="space-y-8">Muy separado</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

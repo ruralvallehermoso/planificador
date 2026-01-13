@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const isDev = process.env.NODE_ENV === 'development';
-const PLANIFICADOR_URL = (process.env.NEXT_PUBLIC_PLANIFICADOR_URL || (isDev ? 'http://localhost:3000' : 'https://planificador-seven.vercel.app')).replace(/\/$/, "");
+const isDev = process.env.NODE_ENV === 'development';
+const PLANIFICADOR_URL = (process.env.NEXT_PUBLIC_PLANIFICADOR_URL || (isDev ? 'http://localhost:3000' : 'https://planificador-chi.vercel.app')).replace(/\/$/, "");
 
 export async function PATCH(
     request: NextRequest,

@@ -73,6 +73,11 @@ export type Assessment = $Result.DefaultSelection<Prisma.$AssessmentPayload>
  * 
  */
 export type EmployeeActivity = $Result.DefaultSelection<Prisma.$EmployeeActivityPayload>
+/**
+ * Model ExamTemplate
+ * 
+ */
+export type ExamTemplate = $Result.DefaultSelection<Prisma.$ExamTemplatePayload>
 
 /**
  * Enums
@@ -338,6 +343,16 @@ export class PrismaClient<
     * ```
     */
   get employeeActivity(): Prisma.EmployeeActivityDelegate<ExtArgs>;
+
+  /**
+   * `prisma.examTemplate`: Exposes CRUD operations for the **ExamTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExamTemplates
+    * const examTemplates = await prisma.examTemplate.findMany()
+    * ```
+    */
+  get examTemplate(): Prisma.ExamTemplateDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -790,7 +805,8 @@ export namespace Prisma {
     ProjectImage: 'ProjectImage',
     Subject: 'Subject',
     Assessment: 'Assessment',
-    EmployeeActivity: 'EmployeeActivity'
+    EmployeeActivity: 'EmployeeActivity',
+    ExamTemplate: 'ExamTemplate'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -806,7 +822,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "session" | "account" | "category" | "taskSection" | "actionItem" | "classSession" | "project" | "projectImage" | "subject" | "assessment" | "employeeActivity"
+      modelProps: "user" | "session" | "account" | "category" | "taskSection" | "actionItem" | "classSession" | "project" | "projectImage" | "subject" | "assessment" | "employeeActivity" | "examTemplate"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1647,6 +1663,76 @@ export namespace Prisma {
           count: {
             args: Prisma.EmployeeActivityCountArgs<ExtArgs>
             result: $Utils.Optional<EmployeeActivityCountAggregateOutputType> | number
+          }
+        }
+      }
+      ExamTemplate: {
+        payload: Prisma.$ExamTemplatePayload<ExtArgs>
+        fields: Prisma.ExamTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExamTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExamTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.ExamTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExamTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.ExamTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.ExamTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.ExamTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExamTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.ExamTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload>
+          }
+          update: {
+            args: Prisma.ExamTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.ExamTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExamTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ExamTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExamTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.ExamTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExamTemplate>
+          }
+          groupBy: {
+            args: Prisma.ExamTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExamTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExamTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<ExamTemplateCountAggregateOutputType> | number
           }
         }
       }
@@ -14127,6 +14213,1004 @@ export namespace Prisma {
 
 
   /**
+   * Model ExamTemplate
+   */
+
+  export type AggregateExamTemplate = {
+    _count: ExamTemplateCountAggregateOutputType | null
+    _min: ExamTemplateMinAggregateOutputType | null
+    _max: ExamTemplateMaxAggregateOutputType | null
+  }
+
+  export type ExamTemplateMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    logoUrl: string | null
+    cycle: string | null
+    course: string | null
+    evaluation: string | null
+    duration: string | null
+    date: string | null
+    subject: string | null
+    raEvaluated: string | null
+    description: string | null
+    sections: string | null
+    formatting: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExamTemplateMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    logoUrl: string | null
+    cycle: string | null
+    course: string | null
+    evaluation: string | null
+    duration: string | null
+    date: string | null
+    subject: string | null
+    raEvaluated: string | null
+    description: string | null
+    sections: string | null
+    formatting: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExamTemplateCountAggregateOutputType = {
+    id: number
+    name: number
+    logoUrl: number
+    cycle: number
+    course: number
+    evaluation: number
+    duration: number
+    date: number
+    subject: number
+    raEvaluated: number
+    description: number
+    sections: number
+    formatting: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExamTemplateMinAggregateInputType = {
+    id?: true
+    name?: true
+    logoUrl?: true
+    cycle?: true
+    course?: true
+    evaluation?: true
+    duration?: true
+    date?: true
+    subject?: true
+    raEvaluated?: true
+    description?: true
+    sections?: true
+    formatting?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExamTemplateMaxAggregateInputType = {
+    id?: true
+    name?: true
+    logoUrl?: true
+    cycle?: true
+    course?: true
+    evaluation?: true
+    duration?: true
+    date?: true
+    subject?: true
+    raEvaluated?: true
+    description?: true
+    sections?: true
+    formatting?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExamTemplateCountAggregateInputType = {
+    id?: true
+    name?: true
+    logoUrl?: true
+    cycle?: true
+    course?: true
+    evaluation?: true
+    duration?: true
+    date?: true
+    subject?: true
+    raEvaluated?: true
+    description?: true
+    sections?: true
+    formatting?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExamTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExamTemplate to aggregate.
+     */
+    where?: ExamTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExamTemplates to fetch.
+     */
+    orderBy?: ExamTemplateOrderByWithRelationInput | ExamTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExamTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExamTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExamTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExamTemplates
+    **/
+    _count?: true | ExamTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExamTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExamTemplateMaxAggregateInputType
+  }
+
+  export type GetExamTemplateAggregateType<T extends ExamTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregateExamTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExamTemplate[P]>
+      : GetScalarType<T[P], AggregateExamTemplate[P]>
+  }
+
+
+
+
+  export type ExamTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExamTemplateWhereInput
+    orderBy?: ExamTemplateOrderByWithAggregationInput | ExamTemplateOrderByWithAggregationInput[]
+    by: ExamTemplateScalarFieldEnum[] | ExamTemplateScalarFieldEnum
+    having?: ExamTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExamTemplateCountAggregateInputType | true
+    _min?: ExamTemplateMinAggregateInputType
+    _max?: ExamTemplateMaxAggregateInputType
+  }
+
+  export type ExamTemplateGroupByOutputType = {
+    id: string
+    name: string
+    logoUrl: string | null
+    cycle: string | null
+    course: string | null
+    evaluation: string | null
+    duration: string | null
+    date: string | null
+    subject: string | null
+    raEvaluated: string | null
+    description: string | null
+    sections: string
+    formatting: string
+    createdAt: Date
+    updatedAt: Date
+    _count: ExamTemplateCountAggregateOutputType | null
+    _min: ExamTemplateMinAggregateOutputType | null
+    _max: ExamTemplateMaxAggregateOutputType | null
+  }
+
+  type GetExamTemplateGroupByPayload<T extends ExamTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExamTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExamTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExamTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], ExamTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExamTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    logoUrl?: boolean
+    cycle?: boolean
+    course?: boolean
+    evaluation?: boolean
+    duration?: boolean
+    date?: boolean
+    subject?: boolean
+    raEvaluated?: boolean
+    description?: boolean
+    sections?: boolean
+    formatting?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["examTemplate"]>
+
+  export type ExamTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    logoUrl?: boolean
+    cycle?: boolean
+    course?: boolean
+    evaluation?: boolean
+    duration?: boolean
+    date?: boolean
+    subject?: boolean
+    raEvaluated?: boolean
+    description?: boolean
+    sections?: boolean
+    formatting?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["examTemplate"]>
+
+  export type ExamTemplateSelectScalar = {
+    id?: boolean
+    name?: boolean
+    logoUrl?: boolean
+    cycle?: boolean
+    course?: boolean
+    evaluation?: boolean
+    duration?: boolean
+    date?: boolean
+    subject?: boolean
+    raEvaluated?: boolean
+    description?: boolean
+    sections?: boolean
+    formatting?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $ExamTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExamTemplate"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      logoUrl: string | null
+      cycle: string | null
+      course: string | null
+      evaluation: string | null
+      duration: string | null
+      date: string | null
+      subject: string | null
+      raEvaluated: string | null
+      description: string | null
+      sections: string
+      formatting: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["examTemplate"]>
+    composites: {}
+  }
+
+  type ExamTemplateGetPayload<S extends boolean | null | undefined | ExamTemplateDefaultArgs> = $Result.GetResult<Prisma.$ExamTemplatePayload, S>
+
+  type ExamTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ExamTemplateFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ExamTemplateCountAggregateInputType | true
+    }
+
+  export interface ExamTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExamTemplate'], meta: { name: 'ExamTemplate' } }
+    /**
+     * Find zero or one ExamTemplate that matches the filter.
+     * @param {ExamTemplateFindUniqueArgs} args - Arguments to find a ExamTemplate
+     * @example
+     * // Get one ExamTemplate
+     * const examTemplate = await prisma.examTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExamTemplateFindUniqueArgs>(args: SelectSubset<T, ExamTemplateFindUniqueArgs<ExtArgs>>): Prisma__ExamTemplateClient<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ExamTemplate that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ExamTemplateFindUniqueOrThrowArgs} args - Arguments to find a ExamTemplate
+     * @example
+     * // Get one ExamTemplate
+     * const examTemplate = await prisma.examTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExamTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, ExamTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExamTemplateClient<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ExamTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExamTemplateFindFirstArgs} args - Arguments to find a ExamTemplate
+     * @example
+     * // Get one ExamTemplate
+     * const examTemplate = await prisma.examTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExamTemplateFindFirstArgs>(args?: SelectSubset<T, ExamTemplateFindFirstArgs<ExtArgs>>): Prisma__ExamTemplateClient<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ExamTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExamTemplateFindFirstOrThrowArgs} args - Arguments to find a ExamTemplate
+     * @example
+     * // Get one ExamTemplate
+     * const examTemplate = await prisma.examTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExamTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, ExamTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExamTemplateClient<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ExamTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExamTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExamTemplates
+     * const examTemplates = await prisma.examTemplate.findMany()
+     * 
+     * // Get first 10 ExamTemplates
+     * const examTemplates = await prisma.examTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const examTemplateWithIdOnly = await prisma.examTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExamTemplateFindManyArgs>(args?: SelectSubset<T, ExamTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ExamTemplate.
+     * @param {ExamTemplateCreateArgs} args - Arguments to create a ExamTemplate.
+     * @example
+     * // Create one ExamTemplate
+     * const ExamTemplate = await prisma.examTemplate.create({
+     *   data: {
+     *     // ... data to create a ExamTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExamTemplateCreateArgs>(args: SelectSubset<T, ExamTemplateCreateArgs<ExtArgs>>): Prisma__ExamTemplateClient<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ExamTemplates.
+     * @param {ExamTemplateCreateManyArgs} args - Arguments to create many ExamTemplates.
+     * @example
+     * // Create many ExamTemplates
+     * const examTemplate = await prisma.examTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExamTemplateCreateManyArgs>(args?: SelectSubset<T, ExamTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExamTemplates and returns the data saved in the database.
+     * @param {ExamTemplateCreateManyAndReturnArgs} args - Arguments to create many ExamTemplates.
+     * @example
+     * // Create many ExamTemplates
+     * const examTemplate = await prisma.examTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExamTemplates and only return the `id`
+     * const examTemplateWithIdOnly = await prisma.examTemplate.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExamTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, ExamTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ExamTemplate.
+     * @param {ExamTemplateDeleteArgs} args - Arguments to delete one ExamTemplate.
+     * @example
+     * // Delete one ExamTemplate
+     * const ExamTemplate = await prisma.examTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one ExamTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExamTemplateDeleteArgs>(args: SelectSubset<T, ExamTemplateDeleteArgs<ExtArgs>>): Prisma__ExamTemplateClient<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ExamTemplate.
+     * @param {ExamTemplateUpdateArgs} args - Arguments to update one ExamTemplate.
+     * @example
+     * // Update one ExamTemplate
+     * const examTemplate = await prisma.examTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExamTemplateUpdateArgs>(args: SelectSubset<T, ExamTemplateUpdateArgs<ExtArgs>>): Prisma__ExamTemplateClient<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ExamTemplates.
+     * @param {ExamTemplateDeleteManyArgs} args - Arguments to filter ExamTemplates to delete.
+     * @example
+     * // Delete a few ExamTemplates
+     * const { count } = await prisma.examTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExamTemplateDeleteManyArgs>(args?: SelectSubset<T, ExamTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExamTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExamTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExamTemplates
+     * const examTemplate = await prisma.examTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExamTemplateUpdateManyArgs>(args: SelectSubset<T, ExamTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ExamTemplate.
+     * @param {ExamTemplateUpsertArgs} args - Arguments to update or create a ExamTemplate.
+     * @example
+     * // Update or create a ExamTemplate
+     * const examTemplate = await prisma.examTemplate.upsert({
+     *   create: {
+     *     // ... data to create a ExamTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExamTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExamTemplateUpsertArgs>(args: SelectSubset<T, ExamTemplateUpsertArgs<ExtArgs>>): Prisma__ExamTemplateClient<$Result.GetResult<Prisma.$ExamTemplatePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ExamTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExamTemplateCountArgs} args - Arguments to filter ExamTemplates to count.
+     * @example
+     * // Count the number of ExamTemplates
+     * const count = await prisma.examTemplate.count({
+     *   where: {
+     *     // ... the filter for the ExamTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExamTemplateCountArgs>(
+      args?: Subset<T, ExamTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExamTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExamTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExamTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExamTemplateAggregateArgs>(args: Subset<T, ExamTemplateAggregateArgs>): Prisma.PrismaPromise<GetExamTemplateAggregateType<T>>
+
+    /**
+     * Group by ExamTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExamTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExamTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExamTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: ExamTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExamTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExamTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExamTemplate model
+   */
+  readonly fields: ExamTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExamTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExamTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExamTemplate model
+   */ 
+  interface ExamTemplateFieldRefs {
+    readonly id: FieldRef<"ExamTemplate", 'String'>
+    readonly name: FieldRef<"ExamTemplate", 'String'>
+    readonly logoUrl: FieldRef<"ExamTemplate", 'String'>
+    readonly cycle: FieldRef<"ExamTemplate", 'String'>
+    readonly course: FieldRef<"ExamTemplate", 'String'>
+    readonly evaluation: FieldRef<"ExamTemplate", 'String'>
+    readonly duration: FieldRef<"ExamTemplate", 'String'>
+    readonly date: FieldRef<"ExamTemplate", 'String'>
+    readonly subject: FieldRef<"ExamTemplate", 'String'>
+    readonly raEvaluated: FieldRef<"ExamTemplate", 'String'>
+    readonly description: FieldRef<"ExamTemplate", 'String'>
+    readonly sections: FieldRef<"ExamTemplate", 'String'>
+    readonly formatting: FieldRef<"ExamTemplate", 'String'>
+    readonly createdAt: FieldRef<"ExamTemplate", 'DateTime'>
+    readonly updatedAt: FieldRef<"ExamTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExamTemplate findUnique
+   */
+  export type ExamTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which ExamTemplate to fetch.
+     */
+    where: ExamTemplateWhereUniqueInput
+  }
+
+  /**
+   * ExamTemplate findUniqueOrThrow
+   */
+  export type ExamTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which ExamTemplate to fetch.
+     */
+    where: ExamTemplateWhereUniqueInput
+  }
+
+  /**
+   * ExamTemplate findFirst
+   */
+  export type ExamTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which ExamTemplate to fetch.
+     */
+    where?: ExamTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExamTemplates to fetch.
+     */
+    orderBy?: ExamTemplateOrderByWithRelationInput | ExamTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExamTemplates.
+     */
+    cursor?: ExamTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExamTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExamTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExamTemplates.
+     */
+    distinct?: ExamTemplateScalarFieldEnum | ExamTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * ExamTemplate findFirstOrThrow
+   */
+  export type ExamTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which ExamTemplate to fetch.
+     */
+    where?: ExamTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExamTemplates to fetch.
+     */
+    orderBy?: ExamTemplateOrderByWithRelationInput | ExamTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExamTemplates.
+     */
+    cursor?: ExamTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExamTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExamTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExamTemplates.
+     */
+    distinct?: ExamTemplateScalarFieldEnum | ExamTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * ExamTemplate findMany
+   */
+  export type ExamTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which ExamTemplates to fetch.
+     */
+    where?: ExamTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExamTemplates to fetch.
+     */
+    orderBy?: ExamTemplateOrderByWithRelationInput | ExamTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExamTemplates.
+     */
+    cursor?: ExamTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExamTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExamTemplates.
+     */
+    skip?: number
+    distinct?: ExamTemplateScalarFieldEnum | ExamTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * ExamTemplate create
+   */
+  export type ExamTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+    /**
+     * The data needed to create a ExamTemplate.
+     */
+    data: XOR<ExamTemplateCreateInput, ExamTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * ExamTemplate createMany
+   */
+  export type ExamTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExamTemplates.
+     */
+    data: ExamTemplateCreateManyInput | ExamTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExamTemplate createManyAndReturn
+   */
+  export type ExamTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ExamTemplates.
+     */
+    data: ExamTemplateCreateManyInput | ExamTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExamTemplate update
+   */
+  export type ExamTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+    /**
+     * The data needed to update a ExamTemplate.
+     */
+    data: XOR<ExamTemplateUpdateInput, ExamTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which ExamTemplate to update.
+     */
+    where: ExamTemplateWhereUniqueInput
+  }
+
+  /**
+   * ExamTemplate updateMany
+   */
+  export type ExamTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExamTemplates.
+     */
+    data: XOR<ExamTemplateUpdateManyMutationInput, ExamTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which ExamTemplates to update
+     */
+    where?: ExamTemplateWhereInput
+  }
+
+  /**
+   * ExamTemplate upsert
+   */
+  export type ExamTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+    /**
+     * The filter to search for the ExamTemplate to update in case it exists.
+     */
+    where: ExamTemplateWhereUniqueInput
+    /**
+     * In case the ExamTemplate found by the `where` argument doesn't exist, create a new ExamTemplate with this data.
+     */
+    create: XOR<ExamTemplateCreateInput, ExamTemplateUncheckedCreateInput>
+    /**
+     * In case the ExamTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExamTemplateUpdateInput, ExamTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * ExamTemplate delete
+   */
+  export type ExamTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+    /**
+     * Filter which ExamTemplate to delete.
+     */
+    where: ExamTemplateWhereUniqueInput
+  }
+
+  /**
+   * ExamTemplate deleteMany
+   */
+  export type ExamTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExamTemplates to delete
+     */
+    where?: ExamTemplateWhereInput
+  }
+
+  /**
+   * ExamTemplate without action
+   */
+  export type ExamTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExamTemplate
+     */
+    select?: ExamTemplateSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -14310,6 +15394,27 @@ export namespace Prisma {
   };
 
   export type EmployeeActivityScalarFieldEnum = (typeof EmployeeActivityScalarFieldEnum)[keyof typeof EmployeeActivityScalarFieldEnum]
+
+
+  export const ExamTemplateScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    logoUrl: 'logoUrl',
+    cycle: 'cycle',
+    course: 'course',
+    evaluation: 'evaluation',
+    duration: 'duration',
+    date: 'date',
+    subject: 'subject',
+    raEvaluated: 'raEvaluated',
+    description: 'description',
+    sections: 'sections',
+    formatting: 'formatting',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExamTemplateScalarFieldEnum = (typeof ExamTemplateScalarFieldEnum)[keyof typeof ExamTemplateScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -15320,6 +16425,108 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"EmployeeActivity"> | Date | string
   }
 
+  export type ExamTemplateWhereInput = {
+    AND?: ExamTemplateWhereInput | ExamTemplateWhereInput[]
+    OR?: ExamTemplateWhereInput[]
+    NOT?: ExamTemplateWhereInput | ExamTemplateWhereInput[]
+    id?: StringFilter<"ExamTemplate"> | string
+    name?: StringFilter<"ExamTemplate"> | string
+    logoUrl?: StringNullableFilter<"ExamTemplate"> | string | null
+    cycle?: StringNullableFilter<"ExamTemplate"> | string | null
+    course?: StringNullableFilter<"ExamTemplate"> | string | null
+    evaluation?: StringNullableFilter<"ExamTemplate"> | string | null
+    duration?: StringNullableFilter<"ExamTemplate"> | string | null
+    date?: StringNullableFilter<"ExamTemplate"> | string | null
+    subject?: StringNullableFilter<"ExamTemplate"> | string | null
+    raEvaluated?: StringNullableFilter<"ExamTemplate"> | string | null
+    description?: StringNullableFilter<"ExamTemplate"> | string | null
+    sections?: StringFilter<"ExamTemplate"> | string
+    formatting?: StringFilter<"ExamTemplate"> | string
+    createdAt?: DateTimeFilter<"ExamTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"ExamTemplate"> | Date | string
+  }
+
+  export type ExamTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    logoUrl?: SortOrderInput | SortOrder
+    cycle?: SortOrderInput | SortOrder
+    course?: SortOrderInput | SortOrder
+    evaluation?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    date?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    raEvaluated?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    sections?: SortOrder
+    formatting?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExamTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ExamTemplateWhereInput | ExamTemplateWhereInput[]
+    OR?: ExamTemplateWhereInput[]
+    NOT?: ExamTemplateWhereInput | ExamTemplateWhereInput[]
+    name?: StringFilter<"ExamTemplate"> | string
+    logoUrl?: StringNullableFilter<"ExamTemplate"> | string | null
+    cycle?: StringNullableFilter<"ExamTemplate"> | string | null
+    course?: StringNullableFilter<"ExamTemplate"> | string | null
+    evaluation?: StringNullableFilter<"ExamTemplate"> | string | null
+    duration?: StringNullableFilter<"ExamTemplate"> | string | null
+    date?: StringNullableFilter<"ExamTemplate"> | string | null
+    subject?: StringNullableFilter<"ExamTemplate"> | string | null
+    raEvaluated?: StringNullableFilter<"ExamTemplate"> | string | null
+    description?: StringNullableFilter<"ExamTemplate"> | string | null
+    sections?: StringFilter<"ExamTemplate"> | string
+    formatting?: StringFilter<"ExamTemplate"> | string
+    createdAt?: DateTimeFilter<"ExamTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"ExamTemplate"> | Date | string
+  }, "id">
+
+  export type ExamTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    logoUrl?: SortOrderInput | SortOrder
+    cycle?: SortOrderInput | SortOrder
+    course?: SortOrderInput | SortOrder
+    evaluation?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    date?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    raEvaluated?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    sections?: SortOrder
+    formatting?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExamTemplateCountOrderByAggregateInput
+    _max?: ExamTemplateMaxOrderByAggregateInput
+    _min?: ExamTemplateMinOrderByAggregateInput
+  }
+
+  export type ExamTemplateScalarWhereWithAggregatesInput = {
+    AND?: ExamTemplateScalarWhereWithAggregatesInput | ExamTemplateScalarWhereWithAggregatesInput[]
+    OR?: ExamTemplateScalarWhereWithAggregatesInput[]
+    NOT?: ExamTemplateScalarWhereWithAggregatesInput | ExamTemplateScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExamTemplate"> | string
+    name?: StringWithAggregatesFilter<"ExamTemplate"> | string
+    logoUrl?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    cycle?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    course?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    evaluation?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    duration?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    date?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    subject?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    raEvaluated?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    description?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    sections?: StringWithAggregatesFilter<"ExamTemplate"> | string
+    formatting?: StringWithAggregatesFilter<"ExamTemplate"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"ExamTemplate"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ExamTemplate"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -16305,6 +17512,132 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ExamTemplateCreateInput = {
+    id?: string
+    name: string
+    logoUrl?: string | null
+    cycle?: string | null
+    course?: string | null
+    evaluation?: string | null
+    duration?: string | null
+    date?: string | null
+    subject?: string | null
+    raEvaluated?: string | null
+    description?: string | null
+    sections: string
+    formatting: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExamTemplateUncheckedCreateInput = {
+    id?: string
+    name: string
+    logoUrl?: string | null
+    cycle?: string | null
+    course?: string | null
+    evaluation?: string | null
+    duration?: string | null
+    date?: string | null
+    subject?: string | null
+    raEvaluated?: string | null
+    description?: string | null
+    sections: string
+    formatting: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExamTemplateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    cycle?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    evaluation?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    raEvaluated?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sections?: StringFieldUpdateOperationsInput | string
+    formatting?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExamTemplateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    cycle?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    evaluation?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    raEvaluated?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sections?: StringFieldUpdateOperationsInput | string
+    formatting?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExamTemplateCreateManyInput = {
+    id?: string
+    name: string
+    logoUrl?: string | null
+    cycle?: string | null
+    course?: string | null
+    evaluation?: string | null
+    duration?: string | null
+    date?: string | null
+    subject?: string | null
+    raEvaluated?: string | null
+    description?: string | null
+    sections: string
+    formatting: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExamTemplateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    cycle?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    evaluation?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    raEvaluated?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sections?: StringFieldUpdateOperationsInput | string
+    formatting?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExamTemplateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    cycle?: NullableStringFieldUpdateOperationsInput | string | null
+    course?: NullableStringFieldUpdateOperationsInput | string | null
+    evaluation?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    raEvaluated?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sections?: StringFieldUpdateOperationsInput | string
+    formatting?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -17131,6 +18464,60 @@ export namespace Prisma {
     category?: SortOrder
     date?: SortOrder
     userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExamTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    logoUrl?: SortOrder
+    cycle?: SortOrder
+    course?: SortOrder
+    evaluation?: SortOrder
+    duration?: SortOrder
+    date?: SortOrder
+    subject?: SortOrder
+    raEvaluated?: SortOrder
+    description?: SortOrder
+    sections?: SortOrder
+    formatting?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExamTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    logoUrl?: SortOrder
+    cycle?: SortOrder
+    course?: SortOrder
+    evaluation?: SortOrder
+    duration?: SortOrder
+    date?: SortOrder
+    subject?: SortOrder
+    raEvaluated?: SortOrder
+    description?: SortOrder
+    sections?: SortOrder
+    formatting?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExamTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    logoUrl?: SortOrder
+    cycle?: SortOrder
+    course?: SortOrder
+    evaluation?: SortOrder
+    duration?: SortOrder
+    date?: SortOrder
+    subject?: SortOrder
+    raEvaluated?: SortOrder
+    description?: SortOrder
+    sections?: SortOrder
+    formatting?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -20045,6 +21432,10 @@ export namespace Prisma {
      * @deprecated Use EmployeeActivityDefaultArgs instead
      */
     export type EmployeeActivityArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = EmployeeActivityDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ExamTemplateDefaultArgs instead
+     */
+    export type ExamTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ExamTemplateDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

@@ -235,3 +235,29 @@ model EmployeeActivity {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// Exam Generator Templates
+model ExamTemplate {
+  id            String   @id @default(cuid())
+  name          String
+  
+  // Header Data
+  logoUrl       String?
+  cycle         String?
+  course        String?
+  evaluation    String?
+  duration      String?
+  date          String?
+  subject       String?
+  raEvaluated   String?  // Stored as JSON string or comma separated
+  description   String?  // Header description/instructions
+  
+  // Dynamic Content
+  sections      String   // JSON string: Array of { type, title, content, ... }
+  
+  // Formatting
+  formatting    String   // JSON string: { font, size, spacing, ... }
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

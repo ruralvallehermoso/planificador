@@ -36,12 +36,15 @@ export default function TareasPage() {
     const fetchTasks = async () => {
         try {
             const res = await fetch(`${getApiUrl()}/api/tasks?category=hogar`);
-            if (res.ok) {
-                const data = await res.json();
-                setTasks(data);
+            if (!res.ok) {
+                const err = await res.text();
+                console.error('Fetch tasks failed:', res.status, res.statusText, err);
+                return;
             }
+            const data = await res.json();
+            setTasks(data);
         } catch (error) {
-            console.error('Error fetching tasks:', error);
+            console.error('Error fetching tasks details:', error);
         } finally {
             setLoading(false);
         }
@@ -64,13 +67,17 @@ export default function TareasPage() {
                 })
             });
 
-            if (res.ok) {
-                const task = await res.json();
-                setTasks([task, ...tasks]);
-                setNewTodo('');
+            if (!res.ok) {
+                const err = await res.text();
+                console.error('Create task failed:', res.status, res.statusText, err);
+                return;
             }
+
+            const task = await res.json();
+            setTasks([task, ...tasks]);
+            setNewTodo('');
         } catch (error) {
-            console.error('Error creating task:', error);
+            console.error('Error creating task details:', error);
         } finally {
             setSaving(false);
         }
@@ -83,13 +90,20 @@ export default function TareasPage() {
         setTasks(tasks.map(t => t.id === task.id ? { ...t, status: newStatus } : t));
 
         try {
-            await fetch(`${getApiUrl()}/api/tasks/${task.id}`, {
+            const res = await fetch(`${getApiUrl()}/api/tasks/${task.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
             });
+
+            if (!res.ok) {
+                const err = await res.text();
+                console.error('Update task failed:', res.status, res.statusText, err);
+                // Revert
+                setTasks(tasks.map(t => t.id === task.id ? { ...t, status: task.status } : t));
+            }
         } catch (error) {
-            console.error('Error updating task:', error);
+            console.error('Error updating task details:', error);
             // Revert on error
             setTasks(tasks.map(t => t.id === task.id ? { ...t, status: task.status } : t));
         }
@@ -101,11 +115,17 @@ export default function TareasPage() {
         setTasks(tasks.filter(t => t.id !== id));
 
         try {
-            await fetch(`${getApiUrl()}/api/tasks/${id}`, {
+            const res = await fetch(`${getApiUrl()}/api/tasks/${id}`, {
                 method: 'DELETE'
             });
+
+            if (!res.ok) {
+                const err = await res.text();
+                console.error('Delete task failed:', res.status, res.statusText, err);
+                setTasks(previousTasks);
+            }
         } catch (error) {
-            console.error('Error deleting task:', error);
+            console.error('Error deleting task details:', error);
             setTasks(previousTasks);
         }
     };

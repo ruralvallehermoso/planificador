@@ -258,6 +258,24 @@ exports.Prisma.EmployeeActivityScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ExamTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  logoUrl: 'logoUrl',
+  cycle: 'cycle',
+  course: 'course',
+  evaluation: 'evaluation',
+  duration: 'duration',
+  date: 'date',
+  subject: 'subject',
+  raEvaluated: 'raEvaluated',
+  description: 'description',
+  sections: 'sections',
+  formatting: 'formatting',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -294,7 +312,8 @@ exports.Prisma.ModelName = {
   ProjectImage: 'ProjectImage',
   Subject: 'Subject',
   Assessment: 'Assessment',
-  EmployeeActivity: 'EmployeeActivity'
+  EmployeeActivity: 'EmployeeActivity',
+  ExamTemplate: 'ExamTemplate'
 };
 
 /**

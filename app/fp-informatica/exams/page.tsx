@@ -23,7 +23,10 @@ export default function ExamsPage() {
                     Próximamente podrás registrar fechas de exámenes, calificaciones y objetivos de estudio.
                 </p>
                 <div className="mt-6">
-                    <Link href="/fp-informatica" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-amber-700 bg-amber-100 hover:bg-amber-200">
+                    <Link href="/fp-informatica/exams/create" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 shadow-sm">
+                        Crear Nuevo Examen
+                    </Link>
+                    <Link href="/fp-informatica" className="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-amber-700 bg-amber-100 hover:bg-amber-200">
                         Volver al Dashboard
                     </Link>
                 </div>

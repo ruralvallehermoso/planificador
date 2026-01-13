@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { Sidebar } from './Sidebar'
 import { Suspense, useState } from 'react'
 import { Menu } from 'lucide-react'
+import Image from 'next/image'
 
 // Routes that should NOT show the sidebar
 const PUBLIC_ROUTES = ['/login', '/unauthorized']
@@ -52,9 +53,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     >
                         <Menu className="h-6 w-6" />
                     </button>
-                    <span className="ml-3 text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                        Planificador
-                    </span>
+                    <div className="flex items-center gap-2 ml-3">
+                        <div className="relative w-6 h-6">
+                            <Image
+                                src="/logo.png"
+                                alt="Logo"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            Planificador
+                        </span>
+                    </div>
                 </header>
 
                 <main className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth">

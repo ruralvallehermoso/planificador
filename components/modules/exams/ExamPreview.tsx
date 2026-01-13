@@ -19,13 +19,13 @@ export function ExamPreview({ header, sections, formatting }: Props) {
         )}>
             {/* Header */}
             <div className="border-b-2 border-gray-800 pb-4 mb-8">
-                <div className="flex flex-col items-center justify-center gap-0 mb-4 text-center w-full">
+                <div className="flex flex-col items-center justify-center gap-4 mb-4 text-center w-full">
                     {header.logoUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={header.logoUrl} alt="Logo" className="max-h-20 w-auto max-w-full object-contain block" />
                     )}
 
-                    <div className="flex flex-row flex-nowrap items-baseline justify-center gap-x-2 w-full -mt-2">
+                    <div className="flex flex-row flex-nowrap items-baseline justify-center gap-x-2 w-full">
                         <h1 className={cn("text-lg uppercase leading-none whitespace-nowrap", isBoldTitle && "font-bold")}>
                             {header.subject}
                         </h1>

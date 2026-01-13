@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
+import Image from 'next/image'
 import { Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, TrendingDown, BarChart3, ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield, X, LogOut, Wallet, Wrench, Users, PiggyBank, Settings, Target, Utensils, Calendar, Package } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useState, useEffect, useMemo, useRef } from 'react'
@@ -186,15 +187,29 @@ export function Sidebar({ isMobileOpen = false, onMobileClose }: SidebarProps) {
             {/* Header */}
             <div className="flex h-16 items-center justify-between px-4 border-b border-gray-100">
                 {!isCollapsed && (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-2">
+                        <div className="relative w-8 h-8">
+                            <Image
+                                src="/logo.png"
+                                alt="Logo"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
                         <span className="text-xl font-bold text-gray-900 tracking-tight">
                             Planificador
                         </span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1"></span>
                     </div>
                 )}
                 {isCollapsed && (
-                    <span className="text-xl font-bold text-blue-600">P</span>
+                    <div className="relative w-8 h-8">
+                        <Image
+                            src="/logo.png"
+                            alt="Logo"
+                            fill
+                            className="object-contain"
+                        />
+                    </div>
                 )}
 
                 {/* Mobile close button */}

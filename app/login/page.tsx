@@ -3,6 +3,7 @@
 import { useState, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Lock, Mail, AlertCircle, Loader2 } from 'lucide-react'
 
 function LoginForm() {
@@ -142,8 +143,14 @@ export default function LoginPage() {
             <div className="w-full max-w-md px-6">
                 {/* Logo/Title */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 mb-4 shadow-lg shadow-blue-500/25">
-                        <Lock className="w-8 h-8 text-white" />
+                    <div className="relative w-20 h-20 mx-auto mb-6">
+                        <Image
+                            src="/logo.png"
+                            alt="Brand Logo"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
                     </div>
                     <h1 className="text-3xl font-bold text-white">Planificador</h1>
                     <p className="text-slate-400 mt-2">Inicia sesión para continuar</p>

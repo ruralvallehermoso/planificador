@@ -72,8 +72,13 @@ export function ExamFormBuilder() {
             sections,
             formatting
         }
-        await saveExamTemplate(data)
-        await loadTemplates()
+        const result = await saveExamTemplate(data)
+        if (result.success) {
+            // Force reload or optimistically add
+            await loadTemplates()
+            // Optional: Select the new template
+            // if (result.id) handleLoadTemplate(result.id)
+        }
         setIsSaving(false)
         setSaveDialogOpen(false)
         setNewTemplateName("")

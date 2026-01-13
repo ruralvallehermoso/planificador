@@ -78,6 +78,21 @@ export type EmployeeActivity = $Result.DefaultSelection<Prisma.$EmployeeActivity
  * 
  */
 export type ExamTemplate = $Result.DefaultSelection<Prisma.$ExamTemplatePayload>
+/**
+ * Model Asset
+ * 
+ */
+export type Asset = $Result.DefaultSelection<Prisma.$AssetPayload>
+/**
+ * Model HistoricalPrice
+ * 
+ */
+export type HistoricalPrice = $Result.DefaultSelection<Prisma.$HistoricalPricePayload>
+/**
+ * Model PortfolioSnapshot
+ * 
+ */
+export type PortfolioSnapshot = $Result.DefaultSelection<Prisma.$PortfolioSnapshotPayload>
 
 /**
  * Enums
@@ -353,6 +368,36 @@ export class PrismaClient<
     * ```
     */
   get examTemplate(): Prisma.ExamTemplateDelegate<ExtArgs>;
+
+  /**
+   * `prisma.asset`: Exposes CRUD operations for the **Asset** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Assets
+    * const assets = await prisma.asset.findMany()
+    * ```
+    */
+  get asset(): Prisma.AssetDelegate<ExtArgs>;
+
+  /**
+   * `prisma.historicalPrice`: Exposes CRUD operations for the **HistoricalPrice** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more HistoricalPrices
+    * const historicalPrices = await prisma.historicalPrice.findMany()
+    * ```
+    */
+  get historicalPrice(): Prisma.HistoricalPriceDelegate<ExtArgs>;
+
+  /**
+   * `prisma.portfolioSnapshot`: Exposes CRUD operations for the **PortfolioSnapshot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PortfolioSnapshots
+    * const portfolioSnapshots = await prisma.portfolioSnapshot.findMany()
+    * ```
+    */
+  get portfolioSnapshot(): Prisma.PortfolioSnapshotDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -806,7 +851,10 @@ export namespace Prisma {
     Subject: 'Subject',
     Assessment: 'Assessment',
     EmployeeActivity: 'EmployeeActivity',
-    ExamTemplate: 'ExamTemplate'
+    ExamTemplate: 'ExamTemplate',
+    Asset: 'Asset',
+    HistoricalPrice: 'HistoricalPrice',
+    PortfolioSnapshot: 'PortfolioSnapshot'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -822,7 +870,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "session" | "account" | "category" | "taskSection" | "actionItem" | "classSession" | "project" | "projectImage" | "subject" | "assessment" | "employeeActivity" | "examTemplate"
+      modelProps: "user" | "session" | "account" | "category" | "taskSection" | "actionItem" | "classSession" | "project" | "projectImage" | "subject" | "assessment" | "employeeActivity" | "examTemplate" | "asset" | "historicalPrice" | "portfolioSnapshot"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1736,6 +1784,216 @@ export namespace Prisma {
           }
         }
       }
+      Asset: {
+        payload: Prisma.$AssetPayload<ExtArgs>
+        fields: Prisma.AssetFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AssetFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AssetFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          findFirst: {
+            args: Prisma.AssetFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AssetFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          findMany: {
+            args: Prisma.AssetFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>[]
+          }
+          create: {
+            args: Prisma.AssetCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          createMany: {
+            args: Prisma.AssetCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AssetCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>[]
+          }
+          delete: {
+            args: Prisma.AssetDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          update: {
+            args: Prisma.AssetUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          deleteMany: {
+            args: Prisma.AssetDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AssetUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AssetUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+          }
+          aggregate: {
+            args: Prisma.AssetAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAsset>
+          }
+          groupBy: {
+            args: Prisma.AssetGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AssetGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AssetCountArgs<ExtArgs>
+            result: $Utils.Optional<AssetCountAggregateOutputType> | number
+          }
+        }
+      }
+      HistoricalPrice: {
+        payload: Prisma.$HistoricalPricePayload<ExtArgs>
+        fields: Prisma.HistoricalPriceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.HistoricalPriceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.HistoricalPriceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload>
+          }
+          findFirst: {
+            args: Prisma.HistoricalPriceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.HistoricalPriceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload>
+          }
+          findMany: {
+            args: Prisma.HistoricalPriceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload>[]
+          }
+          create: {
+            args: Prisma.HistoricalPriceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload>
+          }
+          createMany: {
+            args: Prisma.HistoricalPriceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.HistoricalPriceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload>[]
+          }
+          delete: {
+            args: Prisma.HistoricalPriceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload>
+          }
+          update: {
+            args: Prisma.HistoricalPriceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload>
+          }
+          deleteMany: {
+            args: Prisma.HistoricalPriceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.HistoricalPriceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.HistoricalPriceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HistoricalPricePayload>
+          }
+          aggregate: {
+            args: Prisma.HistoricalPriceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateHistoricalPrice>
+          }
+          groupBy: {
+            args: Prisma.HistoricalPriceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<HistoricalPriceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.HistoricalPriceCountArgs<ExtArgs>
+            result: $Utils.Optional<HistoricalPriceCountAggregateOutputType> | number
+          }
+        }
+      }
+      PortfolioSnapshot: {
+        payload: Prisma.$PortfolioSnapshotPayload<ExtArgs>
+        fields: Prisma.PortfolioSnapshotFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PortfolioSnapshotFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PortfolioSnapshotFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload>
+          }
+          findFirst: {
+            args: Prisma.PortfolioSnapshotFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PortfolioSnapshotFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload>
+          }
+          findMany: {
+            args: Prisma.PortfolioSnapshotFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload>[]
+          }
+          create: {
+            args: Prisma.PortfolioSnapshotCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload>
+          }
+          createMany: {
+            args: Prisma.PortfolioSnapshotCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PortfolioSnapshotCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload>[]
+          }
+          delete: {
+            args: Prisma.PortfolioSnapshotDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload>
+          }
+          update: {
+            args: Prisma.PortfolioSnapshotUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload>
+          }
+          deleteMany: {
+            args: Prisma.PortfolioSnapshotDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PortfolioSnapshotUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PortfolioSnapshotUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioSnapshotPayload>
+          }
+          aggregate: {
+            args: Prisma.PortfolioSnapshotAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePortfolioSnapshot>
+          }
+          groupBy: {
+            args: Prisma.PortfolioSnapshotGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PortfolioSnapshotGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PortfolioSnapshotCountArgs<ExtArgs>
+            result: $Utils.Optional<PortfolioSnapshotCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1900,12 +2158,16 @@ export namespace Prisma {
     sessions: number
     accounts: number
     activities: number
+    assets: number
+    portfolioSnapshots: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     activities?: boolean | UserCountOutputTypeCountActivitiesArgs
+    assets?: boolean | UserCountOutputTypeCountAssetsArgs
+    portfolioSnapshots?: boolean | UserCountOutputTypeCountPortfolioSnapshotsArgs
   }
 
   // Custom InputTypes
@@ -1938,6 +2200,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EmployeeActivityWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssetWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPortfolioSnapshotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PortfolioSnapshotWhereInput
   }
 
 
@@ -2098,6 +2374,37 @@ export namespace Prisma {
    */
   export type SubjectCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ActionItemWhereInput
+  }
+
+
+  /**
+   * Count Type AssetCountOutputType
+   */
+
+  export type AssetCountOutputType = {
+    history: number
+  }
+
+  export type AssetCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    history?: boolean | AssetCountOutputTypeCountHistoryArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AssetCountOutputType without action
+   */
+  export type AssetCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetCountOutputType
+     */
+    select?: AssetCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AssetCountOutputType without action
+   */
+  export type AssetCountOutputTypeCountHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HistoricalPriceWhereInput
   }
 
 
@@ -2336,6 +2643,8 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
+    assets?: boolean | User$assetsArgs<ExtArgs>
+    portfolioSnapshots?: boolean | User$portfolioSnapshotsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2375,6 +2684,8 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
+    assets?: boolean | User$assetsArgs<ExtArgs>
+    portfolioSnapshots?: boolean | User$portfolioSnapshotsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2385,6 +2696,8 @@ export namespace Prisma {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       activities: Prisma.$EmployeeActivityPayload<ExtArgs>[]
+      assets: Prisma.$AssetPayload<ExtArgs>[]
+      portfolioSnapshots: Prisma.$PortfolioSnapshotPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2767,6 +3080,8 @@ export namespace Prisma {
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany"> | Null>
     activities<T extends User$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "findMany"> | Null>
+    assets<T extends User$assetsArgs<ExtArgs> = {}>(args?: Subset<T, User$assetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany"> | Null>
+    portfolioSnapshots<T extends User$portfolioSnapshotsArgs<ExtArgs> = {}>(args?: Subset<T, User$portfolioSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3180,6 +3495,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EmployeeActivityScalarFieldEnum | EmployeeActivityScalarFieldEnum[]
+  }
+
+  /**
+   * User.assets
+   */
+  export type User$assetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    where?: AssetWhereInput
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    cursor?: AssetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+  }
+
+  /**
+   * User.portfolioSnapshots
+   */
+  export type User$portfolioSnapshotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    where?: PortfolioSnapshotWhereInput
+    orderBy?: PortfolioSnapshotOrderByWithRelationInput | PortfolioSnapshotOrderByWithRelationInput[]
+    cursor?: PortfolioSnapshotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PortfolioSnapshotScalarFieldEnum | PortfolioSnapshotScalarFieldEnum[]
   }
 
   /**
@@ -14234,6 +14589,8 @@ export namespace Prisma {
     subject: string | null
     raEvaluated: string | null
     description: string | null
+    part1Percentage: string | null
+    part2Percentage: string | null
     sections: string | null
     formatting: string | null
     createdAt: Date | null
@@ -14252,6 +14609,8 @@ export namespace Prisma {
     subject: string | null
     raEvaluated: string | null
     description: string | null
+    part1Percentage: string | null
+    part2Percentage: string | null
     sections: string | null
     formatting: string | null
     createdAt: Date | null
@@ -14270,6 +14629,8 @@ export namespace Prisma {
     subject: number
     raEvaluated: number
     description: number
+    part1Percentage: number
+    part2Percentage: number
     sections: number
     formatting: number
     createdAt: number
@@ -14290,6 +14651,8 @@ export namespace Prisma {
     subject?: true
     raEvaluated?: true
     description?: true
+    part1Percentage?: true
+    part2Percentage?: true
     sections?: true
     formatting?: true
     createdAt?: true
@@ -14308,6 +14671,8 @@ export namespace Prisma {
     subject?: true
     raEvaluated?: true
     description?: true
+    part1Percentage?: true
+    part2Percentage?: true
     sections?: true
     formatting?: true
     createdAt?: true
@@ -14326,6 +14691,8 @@ export namespace Prisma {
     subject?: true
     raEvaluated?: true
     description?: true
+    part1Percentage?: true
+    part2Percentage?: true
     sections?: true
     formatting?: true
     createdAt?: true
@@ -14417,6 +14784,8 @@ export namespace Prisma {
     subject: string | null
     raEvaluated: string | null
     description: string | null
+    part1Percentage: string | null
+    part2Percentage: string | null
     sections: string
     formatting: string
     createdAt: Date
@@ -14452,6 +14821,8 @@ export namespace Prisma {
     subject?: boolean
     raEvaluated?: boolean
     description?: boolean
+    part1Percentage?: boolean
+    part2Percentage?: boolean
     sections?: boolean
     formatting?: boolean
     createdAt?: boolean
@@ -14470,6 +14841,8 @@ export namespace Prisma {
     subject?: boolean
     raEvaluated?: boolean
     description?: boolean
+    part1Percentage?: boolean
+    part2Percentage?: boolean
     sections?: boolean
     formatting?: boolean
     createdAt?: boolean
@@ -14488,6 +14861,8 @@ export namespace Prisma {
     subject?: boolean
     raEvaluated?: boolean
     description?: boolean
+    part1Percentage?: boolean
+    part2Percentage?: boolean
     sections?: boolean
     formatting?: boolean
     createdAt?: boolean
@@ -14510,6 +14885,8 @@ export namespace Prisma {
       subject: string | null
       raEvaluated: string | null
       description: string | null
+      part1Percentage: string | null
+      part2Percentage: string | null
       sections: string
       formatting: string
       createdAt: Date
@@ -14918,6 +15295,8 @@ export namespace Prisma {
     readonly subject: FieldRef<"ExamTemplate", 'String'>
     readonly raEvaluated: FieldRef<"ExamTemplate", 'String'>
     readonly description: FieldRef<"ExamTemplate", 'String'>
+    readonly part1Percentage: FieldRef<"ExamTemplate", 'String'>
+    readonly part2Percentage: FieldRef<"ExamTemplate", 'String'>
     readonly sections: FieldRef<"ExamTemplate", 'String'>
     readonly formatting: FieldRef<"ExamTemplate", 'String'>
     readonly createdAt: FieldRef<"ExamTemplate", 'DateTime'>
@@ -15211,6 +15590,3105 @@ export namespace Prisma {
 
 
   /**
+   * Model Asset
+   */
+
+  export type AggregateAsset = {
+    _count: AssetCountAggregateOutputType | null
+    _avg: AssetAvgAggregateOutputType | null
+    _sum: AssetSumAggregateOutputType | null
+    _min: AssetMinAggregateOutputType | null
+    _max: AssetMaxAggregateOutputType | null
+  }
+
+  export type AssetAvgAggregateOutputType = {
+    quantity: number | null
+    price_eur: number | null
+  }
+
+  export type AssetSumAggregateOutputType = {
+    quantity: number | null
+    price_eur: number | null
+  }
+
+  export type AssetMinAggregateOutputType = {
+    id: string | null
+    ticker: string | null
+    name: string | null
+    category: string | null
+    platform: string | null
+    quantity: number | null
+    price_eur: number | null
+    currency: string | null
+    yahoo_symbol: string | null
+    coingecko_id: string | null
+    coincap_id: string | null
+    indexa_api: boolean | null
+    manual: boolean | null
+    image_url: string | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AssetMaxAggregateOutputType = {
+    id: string | null
+    ticker: string | null
+    name: string | null
+    category: string | null
+    platform: string | null
+    quantity: number | null
+    price_eur: number | null
+    currency: string | null
+    yahoo_symbol: string | null
+    coingecko_id: string | null
+    coincap_id: string | null
+    indexa_api: boolean | null
+    manual: boolean | null
+    image_url: string | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AssetCountAggregateOutputType = {
+    id: number
+    ticker: number
+    name: number
+    category: number
+    platform: number
+    quantity: number
+    price_eur: number
+    currency: number
+    yahoo_symbol: number
+    coingecko_id: number
+    coincap_id: number
+    indexa_api: number
+    manual: number
+    image_url: number
+    userId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AssetAvgAggregateInputType = {
+    quantity?: true
+    price_eur?: true
+  }
+
+  export type AssetSumAggregateInputType = {
+    quantity?: true
+    price_eur?: true
+  }
+
+  export type AssetMinAggregateInputType = {
+    id?: true
+    ticker?: true
+    name?: true
+    category?: true
+    platform?: true
+    quantity?: true
+    price_eur?: true
+    currency?: true
+    yahoo_symbol?: true
+    coingecko_id?: true
+    coincap_id?: true
+    indexa_api?: true
+    manual?: true
+    image_url?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AssetMaxAggregateInputType = {
+    id?: true
+    ticker?: true
+    name?: true
+    category?: true
+    platform?: true
+    quantity?: true
+    price_eur?: true
+    currency?: true
+    yahoo_symbol?: true
+    coingecko_id?: true
+    coincap_id?: true
+    indexa_api?: true
+    manual?: true
+    image_url?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AssetCountAggregateInputType = {
+    id?: true
+    ticker?: true
+    name?: true
+    category?: true
+    platform?: true
+    quantity?: true
+    price_eur?: true
+    currency?: true
+    yahoo_symbol?: true
+    coingecko_id?: true
+    coincap_id?: true
+    indexa_api?: true
+    manual?: true
+    image_url?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AssetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Asset to aggregate.
+     */
+    where?: AssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assets to fetch.
+     */
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Assets
+    **/
+    _count?: true | AssetCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AssetAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AssetSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AssetMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AssetMaxAggregateInputType
+  }
+
+  export type GetAssetAggregateType<T extends AssetAggregateArgs> = {
+        [P in keyof T & keyof AggregateAsset]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAsset[P]>
+      : GetScalarType<T[P], AggregateAsset[P]>
+  }
+
+
+
+
+  export type AssetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssetWhereInput
+    orderBy?: AssetOrderByWithAggregationInput | AssetOrderByWithAggregationInput[]
+    by: AssetScalarFieldEnum[] | AssetScalarFieldEnum
+    having?: AssetScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AssetCountAggregateInputType | true
+    _avg?: AssetAvgAggregateInputType
+    _sum?: AssetSumAggregateInputType
+    _min?: AssetMinAggregateInputType
+    _max?: AssetMaxAggregateInputType
+  }
+
+  export type AssetGroupByOutputType = {
+    id: string
+    ticker: string | null
+    name: string
+    category: string
+    platform: string | null
+    quantity: number
+    price_eur: number
+    currency: string | null
+    yahoo_symbol: string | null
+    coingecko_id: string | null
+    coincap_id: string | null
+    indexa_api: boolean
+    manual: boolean
+    image_url: string | null
+    userId: string
+    createdAt: Date
+    updatedAt: Date
+    _count: AssetCountAggregateOutputType | null
+    _avg: AssetAvgAggregateOutputType | null
+    _sum: AssetSumAggregateOutputType | null
+    _min: AssetMinAggregateOutputType | null
+    _max: AssetMaxAggregateOutputType | null
+  }
+
+  type GetAssetGroupByPayload<T extends AssetGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AssetGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AssetGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AssetGroupByOutputType[P]>
+            : GetScalarType<T[P], AssetGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AssetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ticker?: boolean
+    name?: boolean
+    category?: boolean
+    platform?: boolean
+    quantity?: boolean
+    price_eur?: boolean
+    currency?: boolean
+    yahoo_symbol?: boolean
+    coingecko_id?: boolean
+    coincap_id?: boolean
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    history?: boolean | Asset$historyArgs<ExtArgs>
+    _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["asset"]>
+
+  export type AssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ticker?: boolean
+    name?: boolean
+    category?: boolean
+    platform?: boolean
+    quantity?: boolean
+    price_eur?: boolean
+    currency?: boolean
+    yahoo_symbol?: boolean
+    coingecko_id?: boolean
+    coincap_id?: boolean
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["asset"]>
+
+  export type AssetSelectScalar = {
+    id?: boolean
+    ticker?: boolean
+    name?: boolean
+    category?: boolean
+    platform?: boolean
+    quantity?: boolean
+    price_eur?: boolean
+    currency?: boolean
+    yahoo_symbol?: boolean
+    coingecko_id?: boolean
+    coincap_id?: boolean
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    history?: boolean | Asset$historyArgs<ExtArgs>
+    _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Asset"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      history: Prisma.$HistoricalPricePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      ticker: string | null
+      name: string
+      category: string
+      platform: string | null
+      quantity: number
+      price_eur: number
+      currency: string | null
+      yahoo_symbol: string | null
+      coingecko_id: string | null
+      coincap_id: string | null
+      indexa_api: boolean
+      manual: boolean
+      image_url: string | null
+      userId: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["asset"]>
+    composites: {}
+  }
+
+  type AssetGetPayload<S extends boolean | null | undefined | AssetDefaultArgs> = $Result.GetResult<Prisma.$AssetPayload, S>
+
+  type AssetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AssetFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AssetCountAggregateInputType | true
+    }
+
+  export interface AssetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Asset'], meta: { name: 'Asset' } }
+    /**
+     * Find zero or one Asset that matches the filter.
+     * @param {AssetFindUniqueArgs} args - Arguments to find a Asset
+     * @example
+     * // Get one Asset
+     * const asset = await prisma.asset.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AssetFindUniqueArgs>(args: SelectSubset<T, AssetFindUniqueArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Asset that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AssetFindUniqueOrThrowArgs} args - Arguments to find a Asset
+     * @example
+     * // Get one Asset
+     * const asset = await prisma.asset.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AssetFindUniqueOrThrowArgs>(args: SelectSubset<T, AssetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Asset that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetFindFirstArgs} args - Arguments to find a Asset
+     * @example
+     * // Get one Asset
+     * const asset = await prisma.asset.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AssetFindFirstArgs>(args?: SelectSubset<T, AssetFindFirstArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Asset that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetFindFirstOrThrowArgs} args - Arguments to find a Asset
+     * @example
+     * // Get one Asset
+     * const asset = await prisma.asset.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AssetFindFirstOrThrowArgs>(args?: SelectSubset<T, AssetFindFirstOrThrowArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Assets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Assets
+     * const assets = await prisma.asset.findMany()
+     * 
+     * // Get first 10 Assets
+     * const assets = await prisma.asset.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const assetWithIdOnly = await prisma.asset.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AssetFindManyArgs>(args?: SelectSubset<T, AssetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Asset.
+     * @param {AssetCreateArgs} args - Arguments to create a Asset.
+     * @example
+     * // Create one Asset
+     * const Asset = await prisma.asset.create({
+     *   data: {
+     *     // ... data to create a Asset
+     *   }
+     * })
+     * 
+     */
+    create<T extends AssetCreateArgs>(args: SelectSubset<T, AssetCreateArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Assets.
+     * @param {AssetCreateManyArgs} args - Arguments to create many Assets.
+     * @example
+     * // Create many Assets
+     * const asset = await prisma.asset.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AssetCreateManyArgs>(args?: SelectSubset<T, AssetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Assets and returns the data saved in the database.
+     * @param {AssetCreateManyAndReturnArgs} args - Arguments to create many Assets.
+     * @example
+     * // Create many Assets
+     * const asset = await prisma.asset.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Assets and only return the `id`
+     * const assetWithIdOnly = await prisma.asset.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AssetCreateManyAndReturnArgs>(args?: SelectSubset<T, AssetCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Asset.
+     * @param {AssetDeleteArgs} args - Arguments to delete one Asset.
+     * @example
+     * // Delete one Asset
+     * const Asset = await prisma.asset.delete({
+     *   where: {
+     *     // ... filter to delete one Asset
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AssetDeleteArgs>(args: SelectSubset<T, AssetDeleteArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Asset.
+     * @param {AssetUpdateArgs} args - Arguments to update one Asset.
+     * @example
+     * // Update one Asset
+     * const asset = await prisma.asset.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AssetUpdateArgs>(args: SelectSubset<T, AssetUpdateArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Assets.
+     * @param {AssetDeleteManyArgs} args - Arguments to filter Assets to delete.
+     * @example
+     * // Delete a few Assets
+     * const { count } = await prisma.asset.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AssetDeleteManyArgs>(args?: SelectSubset<T, AssetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Assets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Assets
+     * const asset = await prisma.asset.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AssetUpdateManyArgs>(args: SelectSubset<T, AssetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Asset.
+     * @param {AssetUpsertArgs} args - Arguments to update or create a Asset.
+     * @example
+     * // Update or create a Asset
+     * const asset = await prisma.asset.upsert({
+     *   create: {
+     *     // ... data to create a Asset
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Asset we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AssetUpsertArgs>(args: SelectSubset<T, AssetUpsertArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Assets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetCountArgs} args - Arguments to filter Assets to count.
+     * @example
+     * // Count the number of Assets
+     * const count = await prisma.asset.count({
+     *   where: {
+     *     // ... the filter for the Assets we want to count
+     *   }
+     * })
+    **/
+    count<T extends AssetCountArgs>(
+      args?: Subset<T, AssetCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AssetCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Asset.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AssetAggregateArgs>(args: Subset<T, AssetAggregateArgs>): Prisma.PrismaPromise<GetAssetAggregateType<T>>
+
+    /**
+     * Group by Asset.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssetGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AssetGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AssetGroupByArgs['orderBy'] }
+        : { orderBy?: AssetGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AssetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAssetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Asset model
+   */
+  readonly fields: AssetFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Asset.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    history<T extends Asset$historyArgs<ExtArgs> = {}>(args?: Subset<T, Asset$historyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Asset model
+   */ 
+  interface AssetFieldRefs {
+    readonly id: FieldRef<"Asset", 'String'>
+    readonly ticker: FieldRef<"Asset", 'String'>
+    readonly name: FieldRef<"Asset", 'String'>
+    readonly category: FieldRef<"Asset", 'String'>
+    readonly platform: FieldRef<"Asset", 'String'>
+    readonly quantity: FieldRef<"Asset", 'Float'>
+    readonly price_eur: FieldRef<"Asset", 'Float'>
+    readonly currency: FieldRef<"Asset", 'String'>
+    readonly yahoo_symbol: FieldRef<"Asset", 'String'>
+    readonly coingecko_id: FieldRef<"Asset", 'String'>
+    readonly coincap_id: FieldRef<"Asset", 'String'>
+    readonly indexa_api: FieldRef<"Asset", 'Boolean'>
+    readonly manual: FieldRef<"Asset", 'Boolean'>
+    readonly image_url: FieldRef<"Asset", 'String'>
+    readonly userId: FieldRef<"Asset", 'String'>
+    readonly createdAt: FieldRef<"Asset", 'DateTime'>
+    readonly updatedAt: FieldRef<"Asset", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Asset findUnique
+   */
+  export type AssetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Asset to fetch.
+     */
+    where: AssetWhereUniqueInput
+  }
+
+  /**
+   * Asset findUniqueOrThrow
+   */
+  export type AssetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Asset to fetch.
+     */
+    where: AssetWhereUniqueInput
+  }
+
+  /**
+   * Asset findFirst
+   */
+  export type AssetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Asset to fetch.
+     */
+    where?: AssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assets to fetch.
+     */
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Assets.
+     */
+    cursor?: AssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Assets.
+     */
+    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+  }
+
+  /**
+   * Asset findFirstOrThrow
+   */
+  export type AssetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Asset to fetch.
+     */
+    where?: AssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assets to fetch.
+     */
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Assets.
+     */
+    cursor?: AssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Assets.
+     */
+    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+  }
+
+  /**
+   * Asset findMany
+   */
+  export type AssetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter, which Assets to fetch.
+     */
+    where?: AssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assets to fetch.
+     */
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Assets.
+     */
+    cursor?: AssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assets.
+     */
+    skip?: number
+    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+  }
+
+  /**
+   * Asset create
+   */
+  export type AssetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Asset.
+     */
+    data: XOR<AssetCreateInput, AssetUncheckedCreateInput>
+  }
+
+  /**
+   * Asset createMany
+   */
+  export type AssetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Assets.
+     */
+    data: AssetCreateManyInput | AssetCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Asset createManyAndReturn
+   */
+  export type AssetCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Assets.
+     */
+    data: AssetCreateManyInput | AssetCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Asset update
+   */
+  export type AssetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Asset.
+     */
+    data: XOR<AssetUpdateInput, AssetUncheckedUpdateInput>
+    /**
+     * Choose, which Asset to update.
+     */
+    where: AssetWhereUniqueInput
+  }
+
+  /**
+   * Asset updateMany
+   */
+  export type AssetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Assets.
+     */
+    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyInput>
+    /**
+     * Filter which Assets to update
+     */
+    where?: AssetWhereInput
+  }
+
+  /**
+   * Asset upsert
+   */
+  export type AssetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Asset to update in case it exists.
+     */
+    where: AssetWhereUniqueInput
+    /**
+     * In case the Asset found by the `where` argument doesn't exist, create a new Asset with this data.
+     */
+    create: XOR<AssetCreateInput, AssetUncheckedCreateInput>
+    /**
+     * In case the Asset was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AssetUpdateInput, AssetUncheckedUpdateInput>
+  }
+
+  /**
+   * Asset delete
+   */
+  export type AssetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    /**
+     * Filter which Asset to delete.
+     */
+    where: AssetWhereUniqueInput
+  }
+
+  /**
+   * Asset deleteMany
+   */
+  export type AssetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Assets to delete
+     */
+    where?: AssetWhereInput
+  }
+
+  /**
+   * Asset.history
+   */
+  export type Asset$historyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    where?: HistoricalPriceWhereInput
+    orderBy?: HistoricalPriceOrderByWithRelationInput | HistoricalPriceOrderByWithRelationInput[]
+    cursor?: HistoricalPriceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: HistoricalPriceScalarFieldEnum | HistoricalPriceScalarFieldEnum[]
+  }
+
+  /**
+   * Asset without action
+   */
+  export type AssetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model HistoricalPrice
+   */
+
+  export type AggregateHistoricalPrice = {
+    _count: HistoricalPriceCountAggregateOutputType | null
+    _avg: HistoricalPriceAvgAggregateOutputType | null
+    _sum: HistoricalPriceSumAggregateOutputType | null
+    _min: HistoricalPriceMinAggregateOutputType | null
+    _max: HistoricalPriceMaxAggregateOutputType | null
+  }
+
+  export type HistoricalPriceAvgAggregateOutputType = {
+    price_eur: number | null
+  }
+
+  export type HistoricalPriceSumAggregateOutputType = {
+    price_eur: number | null
+  }
+
+  export type HistoricalPriceMinAggregateOutputType = {
+    id: string | null
+    price_eur: number | null
+    date: Date | null
+    assetId: string | null
+    createdAt: Date | null
+  }
+
+  export type HistoricalPriceMaxAggregateOutputType = {
+    id: string | null
+    price_eur: number | null
+    date: Date | null
+    assetId: string | null
+    createdAt: Date | null
+  }
+
+  export type HistoricalPriceCountAggregateOutputType = {
+    id: number
+    price_eur: number
+    date: number
+    assetId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type HistoricalPriceAvgAggregateInputType = {
+    price_eur?: true
+  }
+
+  export type HistoricalPriceSumAggregateInputType = {
+    price_eur?: true
+  }
+
+  export type HistoricalPriceMinAggregateInputType = {
+    id?: true
+    price_eur?: true
+    date?: true
+    assetId?: true
+    createdAt?: true
+  }
+
+  export type HistoricalPriceMaxAggregateInputType = {
+    id?: true
+    price_eur?: true
+    date?: true
+    assetId?: true
+    createdAt?: true
+  }
+
+  export type HistoricalPriceCountAggregateInputType = {
+    id?: true
+    price_eur?: true
+    date?: true
+    assetId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type HistoricalPriceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HistoricalPrice to aggregate.
+     */
+    where?: HistoricalPriceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HistoricalPrices to fetch.
+     */
+    orderBy?: HistoricalPriceOrderByWithRelationInput | HistoricalPriceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: HistoricalPriceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HistoricalPrices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HistoricalPrices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned HistoricalPrices
+    **/
+    _count?: true | HistoricalPriceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: HistoricalPriceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: HistoricalPriceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: HistoricalPriceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: HistoricalPriceMaxAggregateInputType
+  }
+
+  export type GetHistoricalPriceAggregateType<T extends HistoricalPriceAggregateArgs> = {
+        [P in keyof T & keyof AggregateHistoricalPrice]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateHistoricalPrice[P]>
+      : GetScalarType<T[P], AggregateHistoricalPrice[P]>
+  }
+
+
+
+
+  export type HistoricalPriceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HistoricalPriceWhereInput
+    orderBy?: HistoricalPriceOrderByWithAggregationInput | HistoricalPriceOrderByWithAggregationInput[]
+    by: HistoricalPriceScalarFieldEnum[] | HistoricalPriceScalarFieldEnum
+    having?: HistoricalPriceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: HistoricalPriceCountAggregateInputType | true
+    _avg?: HistoricalPriceAvgAggregateInputType
+    _sum?: HistoricalPriceSumAggregateInputType
+    _min?: HistoricalPriceMinAggregateInputType
+    _max?: HistoricalPriceMaxAggregateInputType
+  }
+
+  export type HistoricalPriceGroupByOutputType = {
+    id: string
+    price_eur: number
+    date: Date
+    assetId: string
+    createdAt: Date
+    _count: HistoricalPriceCountAggregateOutputType | null
+    _avg: HistoricalPriceAvgAggregateOutputType | null
+    _sum: HistoricalPriceSumAggregateOutputType | null
+    _min: HistoricalPriceMinAggregateOutputType | null
+    _max: HistoricalPriceMaxAggregateOutputType | null
+  }
+
+  type GetHistoricalPriceGroupByPayload<T extends HistoricalPriceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<HistoricalPriceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof HistoricalPriceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], HistoricalPriceGroupByOutputType[P]>
+            : GetScalarType<T[P], HistoricalPriceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type HistoricalPriceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    price_eur?: boolean
+    date?: boolean
+    assetId?: boolean
+    createdAt?: boolean
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["historicalPrice"]>
+
+  export type HistoricalPriceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    price_eur?: boolean
+    date?: boolean
+    assetId?: boolean
+    createdAt?: boolean
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["historicalPrice"]>
+
+  export type HistoricalPriceSelectScalar = {
+    id?: boolean
+    price_eur?: boolean
+    date?: boolean
+    assetId?: boolean
+    createdAt?: boolean
+  }
+
+  export type HistoricalPriceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
+  }
+  export type HistoricalPriceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
+  }
+
+  export type $HistoricalPricePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "HistoricalPrice"
+    objects: {
+      asset: Prisma.$AssetPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      price_eur: number
+      date: Date
+      assetId: string
+      createdAt: Date
+    }, ExtArgs["result"]["historicalPrice"]>
+    composites: {}
+  }
+
+  type HistoricalPriceGetPayload<S extends boolean | null | undefined | HistoricalPriceDefaultArgs> = $Result.GetResult<Prisma.$HistoricalPricePayload, S>
+
+  type HistoricalPriceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<HistoricalPriceFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: HistoricalPriceCountAggregateInputType | true
+    }
+
+  export interface HistoricalPriceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['HistoricalPrice'], meta: { name: 'HistoricalPrice' } }
+    /**
+     * Find zero or one HistoricalPrice that matches the filter.
+     * @param {HistoricalPriceFindUniqueArgs} args - Arguments to find a HistoricalPrice
+     * @example
+     * // Get one HistoricalPrice
+     * const historicalPrice = await prisma.historicalPrice.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends HistoricalPriceFindUniqueArgs>(args: SelectSubset<T, HistoricalPriceFindUniqueArgs<ExtArgs>>): Prisma__HistoricalPriceClient<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one HistoricalPrice that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {HistoricalPriceFindUniqueOrThrowArgs} args - Arguments to find a HistoricalPrice
+     * @example
+     * // Get one HistoricalPrice
+     * const historicalPrice = await prisma.historicalPrice.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends HistoricalPriceFindUniqueOrThrowArgs>(args: SelectSubset<T, HistoricalPriceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__HistoricalPriceClient<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first HistoricalPrice that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalPriceFindFirstArgs} args - Arguments to find a HistoricalPrice
+     * @example
+     * // Get one HistoricalPrice
+     * const historicalPrice = await prisma.historicalPrice.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends HistoricalPriceFindFirstArgs>(args?: SelectSubset<T, HistoricalPriceFindFirstArgs<ExtArgs>>): Prisma__HistoricalPriceClient<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first HistoricalPrice that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalPriceFindFirstOrThrowArgs} args - Arguments to find a HistoricalPrice
+     * @example
+     * // Get one HistoricalPrice
+     * const historicalPrice = await prisma.historicalPrice.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends HistoricalPriceFindFirstOrThrowArgs>(args?: SelectSubset<T, HistoricalPriceFindFirstOrThrowArgs<ExtArgs>>): Prisma__HistoricalPriceClient<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more HistoricalPrices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalPriceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all HistoricalPrices
+     * const historicalPrices = await prisma.historicalPrice.findMany()
+     * 
+     * // Get first 10 HistoricalPrices
+     * const historicalPrices = await prisma.historicalPrice.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const historicalPriceWithIdOnly = await prisma.historicalPrice.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends HistoricalPriceFindManyArgs>(args?: SelectSubset<T, HistoricalPriceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a HistoricalPrice.
+     * @param {HistoricalPriceCreateArgs} args - Arguments to create a HistoricalPrice.
+     * @example
+     * // Create one HistoricalPrice
+     * const HistoricalPrice = await prisma.historicalPrice.create({
+     *   data: {
+     *     // ... data to create a HistoricalPrice
+     *   }
+     * })
+     * 
+     */
+    create<T extends HistoricalPriceCreateArgs>(args: SelectSubset<T, HistoricalPriceCreateArgs<ExtArgs>>): Prisma__HistoricalPriceClient<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many HistoricalPrices.
+     * @param {HistoricalPriceCreateManyArgs} args - Arguments to create many HistoricalPrices.
+     * @example
+     * // Create many HistoricalPrices
+     * const historicalPrice = await prisma.historicalPrice.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends HistoricalPriceCreateManyArgs>(args?: SelectSubset<T, HistoricalPriceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many HistoricalPrices and returns the data saved in the database.
+     * @param {HistoricalPriceCreateManyAndReturnArgs} args - Arguments to create many HistoricalPrices.
+     * @example
+     * // Create many HistoricalPrices
+     * const historicalPrice = await prisma.historicalPrice.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many HistoricalPrices and only return the `id`
+     * const historicalPriceWithIdOnly = await prisma.historicalPrice.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends HistoricalPriceCreateManyAndReturnArgs>(args?: SelectSubset<T, HistoricalPriceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a HistoricalPrice.
+     * @param {HistoricalPriceDeleteArgs} args - Arguments to delete one HistoricalPrice.
+     * @example
+     * // Delete one HistoricalPrice
+     * const HistoricalPrice = await prisma.historicalPrice.delete({
+     *   where: {
+     *     // ... filter to delete one HistoricalPrice
+     *   }
+     * })
+     * 
+     */
+    delete<T extends HistoricalPriceDeleteArgs>(args: SelectSubset<T, HistoricalPriceDeleteArgs<ExtArgs>>): Prisma__HistoricalPriceClient<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one HistoricalPrice.
+     * @param {HistoricalPriceUpdateArgs} args - Arguments to update one HistoricalPrice.
+     * @example
+     * // Update one HistoricalPrice
+     * const historicalPrice = await prisma.historicalPrice.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends HistoricalPriceUpdateArgs>(args: SelectSubset<T, HistoricalPriceUpdateArgs<ExtArgs>>): Prisma__HistoricalPriceClient<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more HistoricalPrices.
+     * @param {HistoricalPriceDeleteManyArgs} args - Arguments to filter HistoricalPrices to delete.
+     * @example
+     * // Delete a few HistoricalPrices
+     * const { count } = await prisma.historicalPrice.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends HistoricalPriceDeleteManyArgs>(args?: SelectSubset<T, HistoricalPriceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more HistoricalPrices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalPriceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many HistoricalPrices
+     * const historicalPrice = await prisma.historicalPrice.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends HistoricalPriceUpdateManyArgs>(args: SelectSubset<T, HistoricalPriceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one HistoricalPrice.
+     * @param {HistoricalPriceUpsertArgs} args - Arguments to update or create a HistoricalPrice.
+     * @example
+     * // Update or create a HistoricalPrice
+     * const historicalPrice = await prisma.historicalPrice.upsert({
+     *   create: {
+     *     // ... data to create a HistoricalPrice
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the HistoricalPrice we want to update
+     *   }
+     * })
+     */
+    upsert<T extends HistoricalPriceUpsertArgs>(args: SelectSubset<T, HistoricalPriceUpsertArgs<ExtArgs>>): Prisma__HistoricalPriceClient<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of HistoricalPrices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalPriceCountArgs} args - Arguments to filter HistoricalPrices to count.
+     * @example
+     * // Count the number of HistoricalPrices
+     * const count = await prisma.historicalPrice.count({
+     *   where: {
+     *     // ... the filter for the HistoricalPrices we want to count
+     *   }
+     * })
+    **/
+    count<T extends HistoricalPriceCountArgs>(
+      args?: Subset<T, HistoricalPriceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], HistoricalPriceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a HistoricalPrice.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalPriceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends HistoricalPriceAggregateArgs>(args: Subset<T, HistoricalPriceAggregateArgs>): Prisma.PrismaPromise<GetHistoricalPriceAggregateType<T>>
+
+    /**
+     * Group by HistoricalPrice.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HistoricalPriceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends HistoricalPriceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: HistoricalPriceGroupByArgs['orderBy'] }
+        : { orderBy?: HistoricalPriceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, HistoricalPriceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetHistoricalPriceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the HistoricalPrice model
+   */
+  readonly fields: HistoricalPriceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for HistoricalPrice.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__HistoricalPriceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the HistoricalPrice model
+   */ 
+  interface HistoricalPriceFieldRefs {
+    readonly id: FieldRef<"HistoricalPrice", 'String'>
+    readonly price_eur: FieldRef<"HistoricalPrice", 'Float'>
+    readonly date: FieldRef<"HistoricalPrice", 'DateTime'>
+    readonly assetId: FieldRef<"HistoricalPrice", 'String'>
+    readonly createdAt: FieldRef<"HistoricalPrice", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * HistoricalPrice findUnique
+   */
+  export type HistoricalPriceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalPrice to fetch.
+     */
+    where: HistoricalPriceWhereUniqueInput
+  }
+
+  /**
+   * HistoricalPrice findUniqueOrThrow
+   */
+  export type HistoricalPriceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalPrice to fetch.
+     */
+    where: HistoricalPriceWhereUniqueInput
+  }
+
+  /**
+   * HistoricalPrice findFirst
+   */
+  export type HistoricalPriceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalPrice to fetch.
+     */
+    where?: HistoricalPriceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HistoricalPrices to fetch.
+     */
+    orderBy?: HistoricalPriceOrderByWithRelationInput | HistoricalPriceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HistoricalPrices.
+     */
+    cursor?: HistoricalPriceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HistoricalPrices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HistoricalPrices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HistoricalPrices.
+     */
+    distinct?: HistoricalPriceScalarFieldEnum | HistoricalPriceScalarFieldEnum[]
+  }
+
+  /**
+   * HistoricalPrice findFirstOrThrow
+   */
+  export type HistoricalPriceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalPrice to fetch.
+     */
+    where?: HistoricalPriceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HistoricalPrices to fetch.
+     */
+    orderBy?: HistoricalPriceOrderByWithRelationInput | HistoricalPriceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HistoricalPrices.
+     */
+    cursor?: HistoricalPriceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HistoricalPrices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HistoricalPrices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HistoricalPrices.
+     */
+    distinct?: HistoricalPriceScalarFieldEnum | HistoricalPriceScalarFieldEnum[]
+  }
+
+  /**
+   * HistoricalPrice findMany
+   */
+  export type HistoricalPriceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    /**
+     * Filter, which HistoricalPrices to fetch.
+     */
+    where?: HistoricalPriceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HistoricalPrices to fetch.
+     */
+    orderBy?: HistoricalPriceOrderByWithRelationInput | HistoricalPriceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing HistoricalPrices.
+     */
+    cursor?: HistoricalPriceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HistoricalPrices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HistoricalPrices.
+     */
+    skip?: number
+    distinct?: HistoricalPriceScalarFieldEnum | HistoricalPriceScalarFieldEnum[]
+  }
+
+  /**
+   * HistoricalPrice create
+   */
+  export type HistoricalPriceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a HistoricalPrice.
+     */
+    data: XOR<HistoricalPriceCreateInput, HistoricalPriceUncheckedCreateInput>
+  }
+
+  /**
+   * HistoricalPrice createMany
+   */
+  export type HistoricalPriceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many HistoricalPrices.
+     */
+    data: HistoricalPriceCreateManyInput | HistoricalPriceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * HistoricalPrice createManyAndReturn
+   */
+  export type HistoricalPriceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many HistoricalPrices.
+     */
+    data: HistoricalPriceCreateManyInput | HistoricalPriceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * HistoricalPrice update
+   */
+  export type HistoricalPriceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a HistoricalPrice.
+     */
+    data: XOR<HistoricalPriceUpdateInput, HistoricalPriceUncheckedUpdateInput>
+    /**
+     * Choose, which HistoricalPrice to update.
+     */
+    where: HistoricalPriceWhereUniqueInput
+  }
+
+  /**
+   * HistoricalPrice updateMany
+   */
+  export type HistoricalPriceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update HistoricalPrices.
+     */
+    data: XOR<HistoricalPriceUpdateManyMutationInput, HistoricalPriceUncheckedUpdateManyInput>
+    /**
+     * Filter which HistoricalPrices to update
+     */
+    where?: HistoricalPriceWhereInput
+  }
+
+  /**
+   * HistoricalPrice upsert
+   */
+  export type HistoricalPriceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the HistoricalPrice to update in case it exists.
+     */
+    where: HistoricalPriceWhereUniqueInput
+    /**
+     * In case the HistoricalPrice found by the `where` argument doesn't exist, create a new HistoricalPrice with this data.
+     */
+    create: XOR<HistoricalPriceCreateInput, HistoricalPriceUncheckedCreateInput>
+    /**
+     * In case the HistoricalPrice was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<HistoricalPriceUpdateInput, HistoricalPriceUncheckedUpdateInput>
+  }
+
+  /**
+   * HistoricalPrice delete
+   */
+  export type HistoricalPriceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+    /**
+     * Filter which HistoricalPrice to delete.
+     */
+    where: HistoricalPriceWhereUniqueInput
+  }
+
+  /**
+   * HistoricalPrice deleteMany
+   */
+  export type HistoricalPriceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HistoricalPrices to delete
+     */
+    where?: HistoricalPriceWhereInput
+  }
+
+  /**
+   * HistoricalPrice without action
+   */
+  export type HistoricalPriceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HistoricalPrice
+     */
+    select?: HistoricalPriceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HistoricalPriceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PortfolioSnapshot
+   */
+
+  export type AggregatePortfolioSnapshot = {
+    _count: PortfolioSnapshotCountAggregateOutputType | null
+    _avg: PortfolioSnapshotAvgAggregateOutputType | null
+    _sum: PortfolioSnapshotSumAggregateOutputType | null
+    _min: PortfolioSnapshotMinAggregateOutputType | null
+    _max: PortfolioSnapshotMaxAggregateOutputType | null
+  }
+
+  export type PortfolioSnapshotAvgAggregateOutputType = {
+    total_value_eur: number | null
+  }
+
+  export type PortfolioSnapshotSumAggregateOutputType = {
+    total_value_eur: number | null
+  }
+
+  export type PortfolioSnapshotMinAggregateOutputType = {
+    id: string | null
+    total_value_eur: number | null
+    date: Date | null
+    category: string | null
+    asset_id: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type PortfolioSnapshotMaxAggregateOutputType = {
+    id: string | null
+    total_value_eur: number | null
+    date: Date | null
+    category: string | null
+    asset_id: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type PortfolioSnapshotCountAggregateOutputType = {
+    id: number
+    total_value_eur: number
+    date: number
+    category: number
+    asset_id: number
+    userId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PortfolioSnapshotAvgAggregateInputType = {
+    total_value_eur?: true
+  }
+
+  export type PortfolioSnapshotSumAggregateInputType = {
+    total_value_eur?: true
+  }
+
+  export type PortfolioSnapshotMinAggregateInputType = {
+    id?: true
+    total_value_eur?: true
+    date?: true
+    category?: true
+    asset_id?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type PortfolioSnapshotMaxAggregateInputType = {
+    id?: true
+    total_value_eur?: true
+    date?: true
+    category?: true
+    asset_id?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type PortfolioSnapshotCountAggregateInputType = {
+    id?: true
+    total_value_eur?: true
+    date?: true
+    category?: true
+    asset_id?: true
+    userId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PortfolioSnapshotAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PortfolioSnapshot to aggregate.
+     */
+    where?: PortfolioSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PortfolioSnapshots to fetch.
+     */
+    orderBy?: PortfolioSnapshotOrderByWithRelationInput | PortfolioSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PortfolioSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PortfolioSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PortfolioSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PortfolioSnapshots
+    **/
+    _count?: true | PortfolioSnapshotCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PortfolioSnapshotAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PortfolioSnapshotSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PortfolioSnapshotMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PortfolioSnapshotMaxAggregateInputType
+  }
+
+  export type GetPortfolioSnapshotAggregateType<T extends PortfolioSnapshotAggregateArgs> = {
+        [P in keyof T & keyof AggregatePortfolioSnapshot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePortfolioSnapshot[P]>
+      : GetScalarType<T[P], AggregatePortfolioSnapshot[P]>
+  }
+
+
+
+
+  export type PortfolioSnapshotGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PortfolioSnapshotWhereInput
+    orderBy?: PortfolioSnapshotOrderByWithAggregationInput | PortfolioSnapshotOrderByWithAggregationInput[]
+    by: PortfolioSnapshotScalarFieldEnum[] | PortfolioSnapshotScalarFieldEnum
+    having?: PortfolioSnapshotScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PortfolioSnapshotCountAggregateInputType | true
+    _avg?: PortfolioSnapshotAvgAggregateInputType
+    _sum?: PortfolioSnapshotSumAggregateInputType
+    _min?: PortfolioSnapshotMinAggregateInputType
+    _max?: PortfolioSnapshotMaxAggregateInputType
+  }
+
+  export type PortfolioSnapshotGroupByOutputType = {
+    id: string
+    total_value_eur: number
+    date: Date
+    category: string | null
+    asset_id: string | null
+    userId: string
+    createdAt: Date
+    _count: PortfolioSnapshotCountAggregateOutputType | null
+    _avg: PortfolioSnapshotAvgAggregateOutputType | null
+    _sum: PortfolioSnapshotSumAggregateOutputType | null
+    _min: PortfolioSnapshotMinAggregateOutputType | null
+    _max: PortfolioSnapshotMaxAggregateOutputType | null
+  }
+
+  type GetPortfolioSnapshotGroupByPayload<T extends PortfolioSnapshotGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PortfolioSnapshotGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PortfolioSnapshotGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PortfolioSnapshotGroupByOutputType[P]>
+            : GetScalarType<T[P], PortfolioSnapshotGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PortfolioSnapshotSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    total_value_eur?: boolean
+    date?: boolean
+    category?: boolean
+    asset_id?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["portfolioSnapshot"]>
+
+  export type PortfolioSnapshotSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    total_value_eur?: boolean
+    date?: boolean
+    category?: boolean
+    asset_id?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["portfolioSnapshot"]>
+
+  export type PortfolioSnapshotSelectScalar = {
+    id?: boolean
+    total_value_eur?: boolean
+    date?: boolean
+    category?: boolean
+    asset_id?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }
+
+  export type PortfolioSnapshotInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PortfolioSnapshotIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PortfolioSnapshotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PortfolioSnapshot"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      total_value_eur: number
+      date: Date
+      category: string | null
+      asset_id: string | null
+      userId: string
+      createdAt: Date
+    }, ExtArgs["result"]["portfolioSnapshot"]>
+    composites: {}
+  }
+
+  type PortfolioSnapshotGetPayload<S extends boolean | null | undefined | PortfolioSnapshotDefaultArgs> = $Result.GetResult<Prisma.$PortfolioSnapshotPayload, S>
+
+  type PortfolioSnapshotCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PortfolioSnapshotFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PortfolioSnapshotCountAggregateInputType | true
+    }
+
+  export interface PortfolioSnapshotDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PortfolioSnapshot'], meta: { name: 'PortfolioSnapshot' } }
+    /**
+     * Find zero or one PortfolioSnapshot that matches the filter.
+     * @param {PortfolioSnapshotFindUniqueArgs} args - Arguments to find a PortfolioSnapshot
+     * @example
+     * // Get one PortfolioSnapshot
+     * const portfolioSnapshot = await prisma.portfolioSnapshot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PortfolioSnapshotFindUniqueArgs>(args: SelectSubset<T, PortfolioSnapshotFindUniqueArgs<ExtArgs>>): Prisma__PortfolioSnapshotClient<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PortfolioSnapshot that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PortfolioSnapshotFindUniqueOrThrowArgs} args - Arguments to find a PortfolioSnapshot
+     * @example
+     * // Get one PortfolioSnapshot
+     * const portfolioSnapshot = await prisma.portfolioSnapshot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PortfolioSnapshotFindUniqueOrThrowArgs>(args: SelectSubset<T, PortfolioSnapshotFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PortfolioSnapshotClient<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PortfolioSnapshot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PortfolioSnapshotFindFirstArgs} args - Arguments to find a PortfolioSnapshot
+     * @example
+     * // Get one PortfolioSnapshot
+     * const portfolioSnapshot = await prisma.portfolioSnapshot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PortfolioSnapshotFindFirstArgs>(args?: SelectSubset<T, PortfolioSnapshotFindFirstArgs<ExtArgs>>): Prisma__PortfolioSnapshotClient<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PortfolioSnapshot that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PortfolioSnapshotFindFirstOrThrowArgs} args - Arguments to find a PortfolioSnapshot
+     * @example
+     * // Get one PortfolioSnapshot
+     * const portfolioSnapshot = await prisma.portfolioSnapshot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PortfolioSnapshotFindFirstOrThrowArgs>(args?: SelectSubset<T, PortfolioSnapshotFindFirstOrThrowArgs<ExtArgs>>): Prisma__PortfolioSnapshotClient<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PortfolioSnapshots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PortfolioSnapshotFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PortfolioSnapshots
+     * const portfolioSnapshots = await prisma.portfolioSnapshot.findMany()
+     * 
+     * // Get first 10 PortfolioSnapshots
+     * const portfolioSnapshots = await prisma.portfolioSnapshot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const portfolioSnapshotWithIdOnly = await prisma.portfolioSnapshot.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PortfolioSnapshotFindManyArgs>(args?: SelectSubset<T, PortfolioSnapshotFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PortfolioSnapshot.
+     * @param {PortfolioSnapshotCreateArgs} args - Arguments to create a PortfolioSnapshot.
+     * @example
+     * // Create one PortfolioSnapshot
+     * const PortfolioSnapshot = await prisma.portfolioSnapshot.create({
+     *   data: {
+     *     // ... data to create a PortfolioSnapshot
+     *   }
+     * })
+     * 
+     */
+    create<T extends PortfolioSnapshotCreateArgs>(args: SelectSubset<T, PortfolioSnapshotCreateArgs<ExtArgs>>): Prisma__PortfolioSnapshotClient<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PortfolioSnapshots.
+     * @param {PortfolioSnapshotCreateManyArgs} args - Arguments to create many PortfolioSnapshots.
+     * @example
+     * // Create many PortfolioSnapshots
+     * const portfolioSnapshot = await prisma.portfolioSnapshot.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PortfolioSnapshotCreateManyArgs>(args?: SelectSubset<T, PortfolioSnapshotCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PortfolioSnapshots and returns the data saved in the database.
+     * @param {PortfolioSnapshotCreateManyAndReturnArgs} args - Arguments to create many PortfolioSnapshots.
+     * @example
+     * // Create many PortfolioSnapshots
+     * const portfolioSnapshot = await prisma.portfolioSnapshot.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PortfolioSnapshots and only return the `id`
+     * const portfolioSnapshotWithIdOnly = await prisma.portfolioSnapshot.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PortfolioSnapshotCreateManyAndReturnArgs>(args?: SelectSubset<T, PortfolioSnapshotCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PortfolioSnapshot.
+     * @param {PortfolioSnapshotDeleteArgs} args - Arguments to delete one PortfolioSnapshot.
+     * @example
+     * // Delete one PortfolioSnapshot
+     * const PortfolioSnapshot = await prisma.portfolioSnapshot.delete({
+     *   where: {
+     *     // ... filter to delete one PortfolioSnapshot
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PortfolioSnapshotDeleteArgs>(args: SelectSubset<T, PortfolioSnapshotDeleteArgs<ExtArgs>>): Prisma__PortfolioSnapshotClient<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PortfolioSnapshot.
+     * @param {PortfolioSnapshotUpdateArgs} args - Arguments to update one PortfolioSnapshot.
+     * @example
+     * // Update one PortfolioSnapshot
+     * const portfolioSnapshot = await prisma.portfolioSnapshot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PortfolioSnapshotUpdateArgs>(args: SelectSubset<T, PortfolioSnapshotUpdateArgs<ExtArgs>>): Prisma__PortfolioSnapshotClient<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PortfolioSnapshots.
+     * @param {PortfolioSnapshotDeleteManyArgs} args - Arguments to filter PortfolioSnapshots to delete.
+     * @example
+     * // Delete a few PortfolioSnapshots
+     * const { count } = await prisma.portfolioSnapshot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PortfolioSnapshotDeleteManyArgs>(args?: SelectSubset<T, PortfolioSnapshotDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PortfolioSnapshots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PortfolioSnapshotUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PortfolioSnapshots
+     * const portfolioSnapshot = await prisma.portfolioSnapshot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PortfolioSnapshotUpdateManyArgs>(args: SelectSubset<T, PortfolioSnapshotUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PortfolioSnapshot.
+     * @param {PortfolioSnapshotUpsertArgs} args - Arguments to update or create a PortfolioSnapshot.
+     * @example
+     * // Update or create a PortfolioSnapshot
+     * const portfolioSnapshot = await prisma.portfolioSnapshot.upsert({
+     *   create: {
+     *     // ... data to create a PortfolioSnapshot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PortfolioSnapshot we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PortfolioSnapshotUpsertArgs>(args: SelectSubset<T, PortfolioSnapshotUpsertArgs<ExtArgs>>): Prisma__PortfolioSnapshotClient<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PortfolioSnapshots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PortfolioSnapshotCountArgs} args - Arguments to filter PortfolioSnapshots to count.
+     * @example
+     * // Count the number of PortfolioSnapshots
+     * const count = await prisma.portfolioSnapshot.count({
+     *   where: {
+     *     // ... the filter for the PortfolioSnapshots we want to count
+     *   }
+     * })
+    **/
+    count<T extends PortfolioSnapshotCountArgs>(
+      args?: Subset<T, PortfolioSnapshotCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PortfolioSnapshotCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PortfolioSnapshot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PortfolioSnapshotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PortfolioSnapshotAggregateArgs>(args: Subset<T, PortfolioSnapshotAggregateArgs>): Prisma.PrismaPromise<GetPortfolioSnapshotAggregateType<T>>
+
+    /**
+     * Group by PortfolioSnapshot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PortfolioSnapshotGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PortfolioSnapshotGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PortfolioSnapshotGroupByArgs['orderBy'] }
+        : { orderBy?: PortfolioSnapshotGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PortfolioSnapshotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPortfolioSnapshotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PortfolioSnapshot model
+   */
+  readonly fields: PortfolioSnapshotFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PortfolioSnapshot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PortfolioSnapshotClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PortfolioSnapshot model
+   */ 
+  interface PortfolioSnapshotFieldRefs {
+    readonly id: FieldRef<"PortfolioSnapshot", 'String'>
+    readonly total_value_eur: FieldRef<"PortfolioSnapshot", 'Float'>
+    readonly date: FieldRef<"PortfolioSnapshot", 'DateTime'>
+    readonly category: FieldRef<"PortfolioSnapshot", 'String'>
+    readonly asset_id: FieldRef<"PortfolioSnapshot", 'String'>
+    readonly userId: FieldRef<"PortfolioSnapshot", 'String'>
+    readonly createdAt: FieldRef<"PortfolioSnapshot", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PortfolioSnapshot findUnique
+   */
+  export type PortfolioSnapshotFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PortfolioSnapshot to fetch.
+     */
+    where: PortfolioSnapshotWhereUniqueInput
+  }
+
+  /**
+   * PortfolioSnapshot findUniqueOrThrow
+   */
+  export type PortfolioSnapshotFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PortfolioSnapshot to fetch.
+     */
+    where: PortfolioSnapshotWhereUniqueInput
+  }
+
+  /**
+   * PortfolioSnapshot findFirst
+   */
+  export type PortfolioSnapshotFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PortfolioSnapshot to fetch.
+     */
+    where?: PortfolioSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PortfolioSnapshots to fetch.
+     */
+    orderBy?: PortfolioSnapshotOrderByWithRelationInput | PortfolioSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PortfolioSnapshots.
+     */
+    cursor?: PortfolioSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PortfolioSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PortfolioSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PortfolioSnapshots.
+     */
+    distinct?: PortfolioSnapshotScalarFieldEnum | PortfolioSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * PortfolioSnapshot findFirstOrThrow
+   */
+  export type PortfolioSnapshotFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PortfolioSnapshot to fetch.
+     */
+    where?: PortfolioSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PortfolioSnapshots to fetch.
+     */
+    orderBy?: PortfolioSnapshotOrderByWithRelationInput | PortfolioSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PortfolioSnapshots.
+     */
+    cursor?: PortfolioSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PortfolioSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PortfolioSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PortfolioSnapshots.
+     */
+    distinct?: PortfolioSnapshotScalarFieldEnum | PortfolioSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * PortfolioSnapshot findMany
+   */
+  export type PortfolioSnapshotFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which PortfolioSnapshots to fetch.
+     */
+    where?: PortfolioSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PortfolioSnapshots to fetch.
+     */
+    orderBy?: PortfolioSnapshotOrderByWithRelationInput | PortfolioSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PortfolioSnapshots.
+     */
+    cursor?: PortfolioSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PortfolioSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PortfolioSnapshots.
+     */
+    skip?: number
+    distinct?: PortfolioSnapshotScalarFieldEnum | PortfolioSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * PortfolioSnapshot create
+   */
+  export type PortfolioSnapshotCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PortfolioSnapshot.
+     */
+    data: XOR<PortfolioSnapshotCreateInput, PortfolioSnapshotUncheckedCreateInput>
+  }
+
+  /**
+   * PortfolioSnapshot createMany
+   */
+  export type PortfolioSnapshotCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PortfolioSnapshots.
+     */
+    data: PortfolioSnapshotCreateManyInput | PortfolioSnapshotCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PortfolioSnapshot createManyAndReturn
+   */
+  export type PortfolioSnapshotCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PortfolioSnapshots.
+     */
+    data: PortfolioSnapshotCreateManyInput | PortfolioSnapshotCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PortfolioSnapshot update
+   */
+  export type PortfolioSnapshotUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PortfolioSnapshot.
+     */
+    data: XOR<PortfolioSnapshotUpdateInput, PortfolioSnapshotUncheckedUpdateInput>
+    /**
+     * Choose, which PortfolioSnapshot to update.
+     */
+    where: PortfolioSnapshotWhereUniqueInput
+  }
+
+  /**
+   * PortfolioSnapshot updateMany
+   */
+  export type PortfolioSnapshotUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PortfolioSnapshots.
+     */
+    data: XOR<PortfolioSnapshotUpdateManyMutationInput, PortfolioSnapshotUncheckedUpdateManyInput>
+    /**
+     * Filter which PortfolioSnapshots to update
+     */
+    where?: PortfolioSnapshotWhereInput
+  }
+
+  /**
+   * PortfolioSnapshot upsert
+   */
+  export type PortfolioSnapshotUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PortfolioSnapshot to update in case it exists.
+     */
+    where: PortfolioSnapshotWhereUniqueInput
+    /**
+     * In case the PortfolioSnapshot found by the `where` argument doesn't exist, create a new PortfolioSnapshot with this data.
+     */
+    create: XOR<PortfolioSnapshotCreateInput, PortfolioSnapshotUncheckedCreateInput>
+    /**
+     * In case the PortfolioSnapshot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PortfolioSnapshotUpdateInput, PortfolioSnapshotUncheckedUpdateInput>
+  }
+
+  /**
+   * PortfolioSnapshot delete
+   */
+  export type PortfolioSnapshotDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter which PortfolioSnapshot to delete.
+     */
+    where: PortfolioSnapshotWhereUniqueInput
+  }
+
+  /**
+   * PortfolioSnapshot deleteMany
+   */
+  export type PortfolioSnapshotDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PortfolioSnapshots to delete
+     */
+    where?: PortfolioSnapshotWhereInput
+  }
+
+  /**
+   * PortfolioSnapshot without action
+   */
+  export type PortfolioSnapshotDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortfolioSnapshot
+     */
+    select?: PortfolioSnapshotSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioSnapshotInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -15408,6 +18886,8 @@ export namespace Prisma {
     subject: 'subject',
     raEvaluated: 'raEvaluated',
     description: 'description',
+    part1Percentage: 'part1Percentage',
+    part2Percentage: 'part2Percentage',
     sections: 'sections',
     formatting: 'formatting',
     createdAt: 'createdAt',
@@ -15415,6 +18895,53 @@ export namespace Prisma {
   };
 
   export type ExamTemplateScalarFieldEnum = (typeof ExamTemplateScalarFieldEnum)[keyof typeof ExamTemplateScalarFieldEnum]
+
+
+  export const AssetScalarFieldEnum: {
+    id: 'id',
+    ticker: 'ticker',
+    name: 'name',
+    category: 'category',
+    platform: 'platform',
+    quantity: 'quantity',
+    price_eur: 'price_eur',
+    currency: 'currency',
+    yahoo_symbol: 'yahoo_symbol',
+    coingecko_id: 'coingecko_id',
+    coincap_id: 'coincap_id',
+    indexa_api: 'indexa_api',
+    manual: 'manual',
+    image_url: 'image_url',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AssetScalarFieldEnum = (typeof AssetScalarFieldEnum)[keyof typeof AssetScalarFieldEnum]
+
+
+  export const HistoricalPriceScalarFieldEnum: {
+    id: 'id',
+    price_eur: 'price_eur',
+    date: 'date',
+    assetId: 'assetId',
+    createdAt: 'createdAt'
+  };
+
+  export type HistoricalPriceScalarFieldEnum = (typeof HistoricalPriceScalarFieldEnum)[keyof typeof HistoricalPriceScalarFieldEnum]
+
+
+  export const PortfolioSnapshotScalarFieldEnum: {
+    id: 'id',
+    total_value_eur: 'total_value_eur',
+    date: 'date',
+    category: 'category',
+    asset_id: 'asset_id',
+    userId: 'userId',
+    createdAt: 'createdAt'
+  };
+
+  export type PortfolioSnapshotScalarFieldEnum = (typeof PortfolioSnapshotScalarFieldEnum)[keyof typeof PortfolioSnapshotScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -15546,6 +19073,8 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     activities?: EmployeeActivityListRelationFilter
+    assets?: AssetListRelationFilter
+    portfolioSnapshots?: PortfolioSnapshotListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -15565,6 +19094,8 @@ export namespace Prisma {
     sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     activities?: EmployeeActivityOrderByRelationAggregateInput
+    assets?: AssetOrderByRelationAggregateInput
+    portfolioSnapshots?: PortfolioSnapshotOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -15587,6 +19118,8 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     activities?: EmployeeActivityListRelationFilter
+    assets?: AssetListRelationFilter
+    portfolioSnapshots?: PortfolioSnapshotListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -16440,6 +19973,8 @@ export namespace Prisma {
     subject?: StringNullableFilter<"ExamTemplate"> | string | null
     raEvaluated?: StringNullableFilter<"ExamTemplate"> | string | null
     description?: StringNullableFilter<"ExamTemplate"> | string | null
+    part1Percentage?: StringNullableFilter<"ExamTemplate"> | string | null
+    part2Percentage?: StringNullableFilter<"ExamTemplate"> | string | null
     sections?: StringFilter<"ExamTemplate"> | string
     formatting?: StringFilter<"ExamTemplate"> | string
     createdAt?: DateTimeFilter<"ExamTemplate"> | Date | string
@@ -16458,6 +19993,8 @@ export namespace Prisma {
     subject?: SortOrderInput | SortOrder
     raEvaluated?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
+    part1Percentage?: SortOrderInput | SortOrder
+    part2Percentage?: SortOrderInput | SortOrder
     sections?: SortOrder
     formatting?: SortOrder
     createdAt?: SortOrder
@@ -16479,6 +20016,8 @@ export namespace Prisma {
     subject?: StringNullableFilter<"ExamTemplate"> | string | null
     raEvaluated?: StringNullableFilter<"ExamTemplate"> | string | null
     description?: StringNullableFilter<"ExamTemplate"> | string | null
+    part1Percentage?: StringNullableFilter<"ExamTemplate"> | string | null
+    part2Percentage?: StringNullableFilter<"ExamTemplate"> | string | null
     sections?: StringFilter<"ExamTemplate"> | string
     formatting?: StringFilter<"ExamTemplate"> | string
     createdAt?: DateTimeFilter<"ExamTemplate"> | Date | string
@@ -16497,6 +20036,8 @@ export namespace Prisma {
     subject?: SortOrderInput | SortOrder
     raEvaluated?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
+    part1Percentage?: SortOrderInput | SortOrder
+    part2Percentage?: SortOrderInput | SortOrder
     sections?: SortOrder
     formatting?: SortOrder
     createdAt?: SortOrder
@@ -16521,10 +20062,256 @@ export namespace Prisma {
     subject?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
     raEvaluated?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
     description?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    part1Percentage?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
+    part2Percentage?: StringNullableWithAggregatesFilter<"ExamTemplate"> | string | null
     sections?: StringWithAggregatesFilter<"ExamTemplate"> | string
     formatting?: StringWithAggregatesFilter<"ExamTemplate"> | string
     createdAt?: DateTimeWithAggregatesFilter<"ExamTemplate"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ExamTemplate"> | Date | string
+  }
+
+  export type AssetWhereInput = {
+    AND?: AssetWhereInput | AssetWhereInput[]
+    OR?: AssetWhereInput[]
+    NOT?: AssetWhereInput | AssetWhereInput[]
+    id?: StringFilter<"Asset"> | string
+    ticker?: StringNullableFilter<"Asset"> | string | null
+    name?: StringFilter<"Asset"> | string
+    category?: StringFilter<"Asset"> | string
+    platform?: StringNullableFilter<"Asset"> | string | null
+    quantity?: FloatFilter<"Asset"> | number
+    price_eur?: FloatFilter<"Asset"> | number
+    currency?: StringNullableFilter<"Asset"> | string | null
+    yahoo_symbol?: StringNullableFilter<"Asset"> | string | null
+    coingecko_id?: StringNullableFilter<"Asset"> | string | null
+    coincap_id?: StringNullableFilter<"Asset"> | string | null
+    indexa_api?: BoolFilter<"Asset"> | boolean
+    manual?: BoolFilter<"Asset"> | boolean
+    image_url?: StringNullableFilter<"Asset"> | string | null
+    userId?: StringFilter<"Asset"> | string
+    createdAt?: DateTimeFilter<"Asset"> | Date | string
+    updatedAt?: DateTimeFilter<"Asset"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    history?: HistoricalPriceListRelationFilter
+  }
+
+  export type AssetOrderByWithRelationInput = {
+    id?: SortOrder
+    ticker?: SortOrderInput | SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    platform?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    price_eur?: SortOrder
+    currency?: SortOrderInput | SortOrder
+    yahoo_symbol?: SortOrderInput | SortOrder
+    coingecko_id?: SortOrderInput | SortOrder
+    coincap_id?: SortOrderInput | SortOrder
+    indexa_api?: SortOrder
+    manual?: SortOrder
+    image_url?: SortOrderInput | SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    history?: HistoricalPriceOrderByRelationAggregateInput
+  }
+
+  export type AssetWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AssetWhereInput | AssetWhereInput[]
+    OR?: AssetWhereInput[]
+    NOT?: AssetWhereInput | AssetWhereInput[]
+    ticker?: StringNullableFilter<"Asset"> | string | null
+    name?: StringFilter<"Asset"> | string
+    category?: StringFilter<"Asset"> | string
+    platform?: StringNullableFilter<"Asset"> | string | null
+    quantity?: FloatFilter<"Asset"> | number
+    price_eur?: FloatFilter<"Asset"> | number
+    currency?: StringNullableFilter<"Asset"> | string | null
+    yahoo_symbol?: StringNullableFilter<"Asset"> | string | null
+    coingecko_id?: StringNullableFilter<"Asset"> | string | null
+    coincap_id?: StringNullableFilter<"Asset"> | string | null
+    indexa_api?: BoolFilter<"Asset"> | boolean
+    manual?: BoolFilter<"Asset"> | boolean
+    image_url?: StringNullableFilter<"Asset"> | string | null
+    userId?: StringFilter<"Asset"> | string
+    createdAt?: DateTimeFilter<"Asset"> | Date | string
+    updatedAt?: DateTimeFilter<"Asset"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    history?: HistoricalPriceListRelationFilter
+  }, "id">
+
+  export type AssetOrderByWithAggregationInput = {
+    id?: SortOrder
+    ticker?: SortOrderInput | SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    platform?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    price_eur?: SortOrder
+    currency?: SortOrderInput | SortOrder
+    yahoo_symbol?: SortOrderInput | SortOrder
+    coingecko_id?: SortOrderInput | SortOrder
+    coincap_id?: SortOrderInput | SortOrder
+    indexa_api?: SortOrder
+    manual?: SortOrder
+    image_url?: SortOrderInput | SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AssetCountOrderByAggregateInput
+    _avg?: AssetAvgOrderByAggregateInput
+    _max?: AssetMaxOrderByAggregateInput
+    _min?: AssetMinOrderByAggregateInput
+    _sum?: AssetSumOrderByAggregateInput
+  }
+
+  export type AssetScalarWhereWithAggregatesInput = {
+    AND?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
+    OR?: AssetScalarWhereWithAggregatesInput[]
+    NOT?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Asset"> | string
+    ticker?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    name?: StringWithAggregatesFilter<"Asset"> | string
+    category?: StringWithAggregatesFilter<"Asset"> | string
+    platform?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    quantity?: FloatWithAggregatesFilter<"Asset"> | number
+    price_eur?: FloatWithAggregatesFilter<"Asset"> | number
+    currency?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    yahoo_symbol?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    coingecko_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    coincap_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    indexa_api?: BoolWithAggregatesFilter<"Asset"> | boolean
+    manual?: BoolWithAggregatesFilter<"Asset"> | boolean
+    image_url?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    userId?: StringWithAggregatesFilter<"Asset"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
+  }
+
+  export type HistoricalPriceWhereInput = {
+    AND?: HistoricalPriceWhereInput | HistoricalPriceWhereInput[]
+    OR?: HistoricalPriceWhereInput[]
+    NOT?: HistoricalPriceWhereInput | HistoricalPriceWhereInput[]
+    id?: StringFilter<"HistoricalPrice"> | string
+    price_eur?: FloatFilter<"HistoricalPrice"> | number
+    date?: DateTimeFilter<"HistoricalPrice"> | Date | string
+    assetId?: StringFilter<"HistoricalPrice"> | string
+    createdAt?: DateTimeFilter<"HistoricalPrice"> | Date | string
+    asset?: XOR<AssetRelationFilter, AssetWhereInput>
+  }
+
+  export type HistoricalPriceOrderByWithRelationInput = {
+    id?: SortOrder
+    price_eur?: SortOrder
+    date?: SortOrder
+    assetId?: SortOrder
+    createdAt?: SortOrder
+    asset?: AssetOrderByWithRelationInput
+  }
+
+  export type HistoricalPriceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: HistoricalPriceWhereInput | HistoricalPriceWhereInput[]
+    OR?: HistoricalPriceWhereInput[]
+    NOT?: HistoricalPriceWhereInput | HistoricalPriceWhereInput[]
+    price_eur?: FloatFilter<"HistoricalPrice"> | number
+    date?: DateTimeFilter<"HistoricalPrice"> | Date | string
+    assetId?: StringFilter<"HistoricalPrice"> | string
+    createdAt?: DateTimeFilter<"HistoricalPrice"> | Date | string
+    asset?: XOR<AssetRelationFilter, AssetWhereInput>
+  }, "id">
+
+  export type HistoricalPriceOrderByWithAggregationInput = {
+    id?: SortOrder
+    price_eur?: SortOrder
+    date?: SortOrder
+    assetId?: SortOrder
+    createdAt?: SortOrder
+    _count?: HistoricalPriceCountOrderByAggregateInput
+    _avg?: HistoricalPriceAvgOrderByAggregateInput
+    _max?: HistoricalPriceMaxOrderByAggregateInput
+    _min?: HistoricalPriceMinOrderByAggregateInput
+    _sum?: HistoricalPriceSumOrderByAggregateInput
+  }
+
+  export type HistoricalPriceScalarWhereWithAggregatesInput = {
+    AND?: HistoricalPriceScalarWhereWithAggregatesInput | HistoricalPriceScalarWhereWithAggregatesInput[]
+    OR?: HistoricalPriceScalarWhereWithAggregatesInput[]
+    NOT?: HistoricalPriceScalarWhereWithAggregatesInput | HistoricalPriceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"HistoricalPrice"> | string
+    price_eur?: FloatWithAggregatesFilter<"HistoricalPrice"> | number
+    date?: DateTimeWithAggregatesFilter<"HistoricalPrice"> | Date | string
+    assetId?: StringWithAggregatesFilter<"HistoricalPrice"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"HistoricalPrice"> | Date | string
+  }
+
+  export type PortfolioSnapshotWhereInput = {
+    AND?: PortfolioSnapshotWhereInput | PortfolioSnapshotWhereInput[]
+    OR?: PortfolioSnapshotWhereInput[]
+    NOT?: PortfolioSnapshotWhereInput | PortfolioSnapshotWhereInput[]
+    id?: StringFilter<"PortfolioSnapshot"> | string
+    total_value_eur?: FloatFilter<"PortfolioSnapshot"> | number
+    date?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
+    category?: StringNullableFilter<"PortfolioSnapshot"> | string | null
+    asset_id?: StringNullableFilter<"PortfolioSnapshot"> | string | null
+    userId?: StringFilter<"PortfolioSnapshot"> | string
+    createdAt?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type PortfolioSnapshotOrderByWithRelationInput = {
+    id?: SortOrder
+    total_value_eur?: SortOrder
+    date?: SortOrder
+    category?: SortOrderInput | SortOrder
+    asset_id?: SortOrderInput | SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type PortfolioSnapshotWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PortfolioSnapshotWhereInput | PortfolioSnapshotWhereInput[]
+    OR?: PortfolioSnapshotWhereInput[]
+    NOT?: PortfolioSnapshotWhereInput | PortfolioSnapshotWhereInput[]
+    total_value_eur?: FloatFilter<"PortfolioSnapshot"> | number
+    date?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
+    category?: StringNullableFilter<"PortfolioSnapshot"> | string | null
+    asset_id?: StringNullableFilter<"PortfolioSnapshot"> | string | null
+    userId?: StringFilter<"PortfolioSnapshot"> | string
+    createdAt?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type PortfolioSnapshotOrderByWithAggregationInput = {
+    id?: SortOrder
+    total_value_eur?: SortOrder
+    date?: SortOrder
+    category?: SortOrderInput | SortOrder
+    asset_id?: SortOrderInput | SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    _count?: PortfolioSnapshotCountOrderByAggregateInput
+    _avg?: PortfolioSnapshotAvgOrderByAggregateInput
+    _max?: PortfolioSnapshotMaxOrderByAggregateInput
+    _min?: PortfolioSnapshotMinOrderByAggregateInput
+    _sum?: PortfolioSnapshotSumOrderByAggregateInput
+  }
+
+  export type PortfolioSnapshotScalarWhereWithAggregatesInput = {
+    AND?: PortfolioSnapshotScalarWhereWithAggregatesInput | PortfolioSnapshotScalarWhereWithAggregatesInput[]
+    OR?: PortfolioSnapshotScalarWhereWithAggregatesInput[]
+    NOT?: PortfolioSnapshotScalarWhereWithAggregatesInput | PortfolioSnapshotScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PortfolioSnapshot"> | string
+    total_value_eur?: FloatWithAggregatesFilter<"PortfolioSnapshot"> | number
+    date?: DateTimeWithAggregatesFilter<"PortfolioSnapshot"> | Date | string
+    category?: StringNullableWithAggregatesFilter<"PortfolioSnapshot"> | string | null
+    asset_id?: StringNullableWithAggregatesFilter<"PortfolioSnapshot"> | string | null
+    userId?: StringWithAggregatesFilter<"PortfolioSnapshot"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"PortfolioSnapshot"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -16544,6 +20331,8 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -16563,6 +20352,8 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -16582,6 +20373,8 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -16601,6 +20394,8 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -17524,6 +21319,8 @@ export namespace Prisma {
     subject?: string | null
     raEvaluated?: string | null
     description?: string | null
+    part1Percentage?: string | null
+    part2Percentage?: string | null
     sections: string
     formatting: string
     createdAt?: Date | string
@@ -17542,6 +21339,8 @@ export namespace Prisma {
     subject?: string | null
     raEvaluated?: string | null
     description?: string | null
+    part1Percentage?: string | null
+    part2Percentage?: string | null
     sections: string
     formatting: string
     createdAt?: Date | string
@@ -17560,6 +21359,8 @@ export namespace Prisma {
     subject?: NullableStringFieldUpdateOperationsInput | string | null
     raEvaluated?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    part1Percentage?: NullableStringFieldUpdateOperationsInput | string | null
+    part2Percentage?: NullableStringFieldUpdateOperationsInput | string | null
     sections?: StringFieldUpdateOperationsInput | string
     formatting?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17578,6 +21379,8 @@ export namespace Prisma {
     subject?: NullableStringFieldUpdateOperationsInput | string | null
     raEvaluated?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    part1Percentage?: NullableStringFieldUpdateOperationsInput | string | null
+    part2Percentage?: NullableStringFieldUpdateOperationsInput | string | null
     sections?: StringFieldUpdateOperationsInput | string
     formatting?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17596,6 +21399,8 @@ export namespace Prisma {
     subject?: string | null
     raEvaluated?: string | null
     description?: string | null
+    part1Percentage?: string | null
+    part2Percentage?: string | null
     sections: string
     formatting: string
     createdAt?: Date | string
@@ -17614,6 +21419,8 @@ export namespace Prisma {
     subject?: NullableStringFieldUpdateOperationsInput | string | null
     raEvaluated?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    part1Percentage?: NullableStringFieldUpdateOperationsInput | string | null
+    part2Percentage?: NullableStringFieldUpdateOperationsInput | string | null
     sections?: StringFieldUpdateOperationsInput | string
     formatting?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17632,10 +21439,279 @@ export namespace Prisma {
     subject?: NullableStringFieldUpdateOperationsInput | string | null
     raEvaluated?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    part1Percentage?: NullableStringFieldUpdateOperationsInput | string | null
+    part2Percentage?: NullableStringFieldUpdateOperationsInput | string | null
     sections?: StringFieldUpdateOperationsInput | string
     formatting?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetCreateInput = {
+    id?: string
+    ticker?: string | null
+    name: string
+    category?: string
+    platform?: string | null
+    quantity?: number
+    price_eur?: number
+    currency?: string | null
+    yahoo_symbol?: string | null
+    coingecko_id?: string | null
+    coincap_id?: string | null
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutAssetsInput
+    history?: HistoricalPriceCreateNestedManyWithoutAssetInput
+  }
+
+  export type AssetUncheckedCreateInput = {
+    id?: string
+    ticker?: string | null
+    name: string
+    category?: string
+    platform?: string | null
+    quantity?: number
+    price_eur?: number
+    currency?: string | null
+    yahoo_symbol?: string | null
+    coingecko_id?: string | null
+    coincap_id?: string | null
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: string | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    history?: HistoricalPriceUncheckedCreateNestedManyWithoutAssetInput
+  }
+
+  export type AssetUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: FloatFieldUpdateOperationsInput | number
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableStringFieldUpdateOperationsInput | string | null
+    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
+    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
+    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexa_api?: BoolFieldUpdateOperationsInput | boolean
+    manual?: BoolFieldUpdateOperationsInput | boolean
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAssetsNestedInput
+    history?: HistoricalPriceUpdateManyWithoutAssetNestedInput
+  }
+
+  export type AssetUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: FloatFieldUpdateOperationsInput | number
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableStringFieldUpdateOperationsInput | string | null
+    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
+    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
+    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexa_api?: BoolFieldUpdateOperationsInput | boolean
+    manual?: BoolFieldUpdateOperationsInput | boolean
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    history?: HistoricalPriceUncheckedUpdateManyWithoutAssetNestedInput
+  }
+
+  export type AssetCreateManyInput = {
+    id?: string
+    ticker?: string | null
+    name: string
+    category?: string
+    platform?: string | null
+    quantity?: number
+    price_eur?: number
+    currency?: string | null
+    yahoo_symbol?: string | null
+    coingecko_id?: string | null
+    coincap_id?: string | null
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: string | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssetUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: FloatFieldUpdateOperationsInput | number
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableStringFieldUpdateOperationsInput | string | null
+    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
+    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
+    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexa_api?: BoolFieldUpdateOperationsInput | boolean
+    manual?: BoolFieldUpdateOperationsInput | boolean
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: FloatFieldUpdateOperationsInput | number
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableStringFieldUpdateOperationsInput | string | null
+    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
+    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
+    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexa_api?: BoolFieldUpdateOperationsInput | boolean
+    manual?: BoolFieldUpdateOperationsInput | boolean
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalPriceCreateInput = {
+    id?: string
+    price_eur?: number
+    date: Date | string
+    createdAt?: Date | string
+    asset: AssetCreateNestedOneWithoutHistoryInput
+  }
+
+  export type HistoricalPriceUncheckedCreateInput = {
+    id?: string
+    price_eur?: number
+    date: Date | string
+    assetId: string
+    createdAt?: Date | string
+  }
+
+  export type HistoricalPriceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    asset?: AssetUpdateOneRequiredWithoutHistoryNestedInput
+  }
+
+  export type HistoricalPriceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    assetId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalPriceCreateManyInput = {
+    id?: string
+    price_eur?: number
+    date: Date | string
+    assetId: string
+    createdAt?: Date | string
+  }
+
+  export type HistoricalPriceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalPriceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    assetId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PortfolioSnapshotCreateInput = {
+    id?: string
+    total_value_eur?: number
+    date: Date | string
+    category?: string | null
+    asset_id?: string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPortfolioSnapshotsInput
+  }
+
+  export type PortfolioSnapshotUncheckedCreateInput = {
+    id?: string
+    total_value_eur?: number
+    date: Date | string
+    category?: string | null
+    asset_id?: string | null
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type PortfolioSnapshotUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPortfolioSnapshotsNestedInput
+  }
+
+  export type PortfolioSnapshotUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PortfolioSnapshotCreateManyInput = {
+    id?: string
+    total_value_eur?: number
+    date: Date | string
+    category?: string | null
+    asset_id?: string | null
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type PortfolioSnapshotUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PortfolioSnapshotUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -17709,6 +21785,18 @@ export namespace Prisma {
     none?: EmployeeActivityWhereInput
   }
 
+  export type AssetListRelationFilter = {
+    every?: AssetWhereInput
+    some?: AssetWhereInput
+    none?: AssetWhereInput
+  }
+
+  export type PortfolioSnapshotListRelationFilter = {
+    every?: PortfolioSnapshotWhereInput
+    some?: PortfolioSnapshotWhereInput
+    none?: PortfolioSnapshotWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -17723,6 +21811,14 @@ export namespace Prisma {
   }
 
   export type EmployeeActivityOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AssetOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PortfolioSnapshotOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -18480,6 +22576,8 @@ export namespace Prisma {
     subject?: SortOrder
     raEvaluated?: SortOrder
     description?: SortOrder
+    part1Percentage?: SortOrder
+    part2Percentage?: SortOrder
     sections?: SortOrder
     formatting?: SortOrder
     createdAt?: SortOrder
@@ -18498,6 +22596,8 @@ export namespace Prisma {
     subject?: SortOrder
     raEvaluated?: SortOrder
     description?: SortOrder
+    part1Percentage?: SortOrder
+    part2Percentage?: SortOrder
     sections?: SortOrder
     formatting?: SortOrder
     createdAt?: SortOrder
@@ -18516,10 +22616,167 @@ export namespace Prisma {
     subject?: SortOrder
     raEvaluated?: SortOrder
     description?: SortOrder
+    part1Percentage?: SortOrder
+    part2Percentage?: SortOrder
     sections?: SortOrder
     formatting?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type HistoricalPriceListRelationFilter = {
+    every?: HistoricalPriceWhereInput
+    some?: HistoricalPriceWhereInput
+    none?: HistoricalPriceWhereInput
+  }
+
+  export type HistoricalPriceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AssetCountOrderByAggregateInput = {
+    id?: SortOrder
+    ticker?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    platform?: SortOrder
+    quantity?: SortOrder
+    price_eur?: SortOrder
+    currency?: SortOrder
+    yahoo_symbol?: SortOrder
+    coingecko_id?: SortOrder
+    coincap_id?: SortOrder
+    indexa_api?: SortOrder
+    manual?: SortOrder
+    image_url?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AssetAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+    price_eur?: SortOrder
+  }
+
+  export type AssetMaxOrderByAggregateInput = {
+    id?: SortOrder
+    ticker?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    platform?: SortOrder
+    quantity?: SortOrder
+    price_eur?: SortOrder
+    currency?: SortOrder
+    yahoo_symbol?: SortOrder
+    coingecko_id?: SortOrder
+    coincap_id?: SortOrder
+    indexa_api?: SortOrder
+    manual?: SortOrder
+    image_url?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AssetMinOrderByAggregateInput = {
+    id?: SortOrder
+    ticker?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    platform?: SortOrder
+    quantity?: SortOrder
+    price_eur?: SortOrder
+    currency?: SortOrder
+    yahoo_symbol?: SortOrder
+    coingecko_id?: SortOrder
+    coincap_id?: SortOrder
+    indexa_api?: SortOrder
+    manual?: SortOrder
+    image_url?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AssetSumOrderByAggregateInput = {
+    quantity?: SortOrder
+    price_eur?: SortOrder
+  }
+
+  export type AssetRelationFilter = {
+    is?: AssetWhereInput
+    isNot?: AssetWhereInput
+  }
+
+  export type HistoricalPriceCountOrderByAggregateInput = {
+    id?: SortOrder
+    price_eur?: SortOrder
+    date?: SortOrder
+    assetId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type HistoricalPriceAvgOrderByAggregateInput = {
+    price_eur?: SortOrder
+  }
+
+  export type HistoricalPriceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    price_eur?: SortOrder
+    date?: SortOrder
+    assetId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type HistoricalPriceMinOrderByAggregateInput = {
+    id?: SortOrder
+    price_eur?: SortOrder
+    date?: SortOrder
+    assetId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type HistoricalPriceSumOrderByAggregateInput = {
+    price_eur?: SortOrder
+  }
+
+  export type PortfolioSnapshotCountOrderByAggregateInput = {
+    id?: SortOrder
+    total_value_eur?: SortOrder
+    date?: SortOrder
+    category?: SortOrder
+    asset_id?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PortfolioSnapshotAvgOrderByAggregateInput = {
+    total_value_eur?: SortOrder
+  }
+
+  export type PortfolioSnapshotMaxOrderByAggregateInput = {
+    id?: SortOrder
+    total_value_eur?: SortOrder
+    date?: SortOrder
+    category?: SortOrder
+    asset_id?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PortfolioSnapshotMinOrderByAggregateInput = {
+    id?: SortOrder
+    total_value_eur?: SortOrder
+    date?: SortOrder
+    category?: SortOrder
+    asset_id?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PortfolioSnapshotSumOrderByAggregateInput = {
+    total_value_eur?: SortOrder
   }
 
   export type SessionCreateNestedManyWithoutUserInput = {
@@ -18543,6 +22800,20 @@ export namespace Prisma {
     connect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
   }
 
+  export type AssetCreateNestedManyWithoutUserInput = {
+    create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
+    createMany?: AssetCreateManyUserInputEnvelope
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+  }
+
+  export type PortfolioSnapshotCreateNestedManyWithoutUserInput = {
+    create?: XOR<PortfolioSnapshotCreateWithoutUserInput, PortfolioSnapshotUncheckedCreateWithoutUserInput> | PortfolioSnapshotCreateWithoutUserInput[] | PortfolioSnapshotUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PortfolioSnapshotCreateOrConnectWithoutUserInput | PortfolioSnapshotCreateOrConnectWithoutUserInput[]
+    createMany?: PortfolioSnapshotCreateManyUserInputEnvelope
+    connect?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -18562,6 +22833,20 @@ export namespace Prisma {
     connectOrCreate?: EmployeeActivityCreateOrConnectWithoutUserInput | EmployeeActivityCreateOrConnectWithoutUserInput[]
     createMany?: EmployeeActivityCreateManyUserInputEnvelope
     connect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
+  }
+
+  export type AssetUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
+    createMany?: AssetCreateManyUserInputEnvelope
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+  }
+
+  export type PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PortfolioSnapshotCreateWithoutUserInput, PortfolioSnapshotUncheckedCreateWithoutUserInput> | PortfolioSnapshotCreateWithoutUserInput[] | PortfolioSnapshotUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PortfolioSnapshotCreateOrConnectWithoutUserInput | PortfolioSnapshotCreateOrConnectWithoutUserInput[]
+    createMany?: PortfolioSnapshotCreateManyUserInputEnvelope
+    connect?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -18626,6 +22911,34 @@ export namespace Prisma {
     deleteMany?: EmployeeActivityScalarWhereInput | EmployeeActivityScalarWhereInput[]
   }
 
+  export type AssetUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutUserInput | AssetUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AssetCreateManyUserInputEnvelope
+    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutUserInput | AssetUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutUserInput | AssetUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
+  }
+
+  export type PortfolioSnapshotUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PortfolioSnapshotCreateWithoutUserInput, PortfolioSnapshotUncheckedCreateWithoutUserInput> | PortfolioSnapshotCreateWithoutUserInput[] | PortfolioSnapshotUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PortfolioSnapshotCreateOrConnectWithoutUserInput | PortfolioSnapshotCreateOrConnectWithoutUserInput[]
+    upsert?: PortfolioSnapshotUpsertWithWhereUniqueWithoutUserInput | PortfolioSnapshotUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PortfolioSnapshotCreateManyUserInputEnvelope
+    set?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+    disconnect?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+    delete?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+    connect?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+    update?: PortfolioSnapshotUpdateWithWhereUniqueWithoutUserInput | PortfolioSnapshotUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PortfolioSnapshotUpdateManyWithWhereWithoutUserInput | PortfolioSnapshotUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PortfolioSnapshotScalarWhereInput | PortfolioSnapshotScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -18666,6 +22979,34 @@ export namespace Prisma {
     update?: EmployeeActivityUpdateWithWhereUniqueWithoutUserInput | EmployeeActivityUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: EmployeeActivityUpdateManyWithWhereWithoutUserInput | EmployeeActivityUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: EmployeeActivityScalarWhereInput | EmployeeActivityScalarWhereInput[]
+  }
+
+  export type AssetUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutUserInput | AssetUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AssetCreateManyUserInputEnvelope
+    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutUserInput | AssetUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutUserInput | AssetUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
+  }
+
+  export type PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PortfolioSnapshotCreateWithoutUserInput, PortfolioSnapshotUncheckedCreateWithoutUserInput> | PortfolioSnapshotCreateWithoutUserInput[] | PortfolioSnapshotUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PortfolioSnapshotCreateOrConnectWithoutUserInput | PortfolioSnapshotCreateOrConnectWithoutUserInput[]
+    upsert?: PortfolioSnapshotUpsertWithWhereUniqueWithoutUserInput | PortfolioSnapshotUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PortfolioSnapshotCreateManyUserInputEnvelope
+    set?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+    disconnect?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+    delete?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+    connect?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+    update?: PortfolioSnapshotUpdateWithWhereUniqueWithoutUserInput | PortfolioSnapshotUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PortfolioSnapshotUpdateManyWithWhereWithoutUserInput | PortfolioSnapshotUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PortfolioSnapshotScalarWhereInput | PortfolioSnapshotScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -19198,6 +23539,90 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutActivitiesInput, UserUpdateWithoutActivitiesInput>, UserUncheckedUpdateWithoutActivitiesInput>
   }
 
+  export type UserCreateNestedOneWithoutAssetsInput = {
+    create?: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssetsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type HistoricalPriceCreateNestedManyWithoutAssetInput = {
+    create?: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput> | HistoricalPriceCreateWithoutAssetInput[] | HistoricalPriceUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: HistoricalPriceCreateOrConnectWithoutAssetInput | HistoricalPriceCreateOrConnectWithoutAssetInput[]
+    createMany?: HistoricalPriceCreateManyAssetInputEnvelope
+    connect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+  }
+
+  export type HistoricalPriceUncheckedCreateNestedManyWithoutAssetInput = {
+    create?: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput> | HistoricalPriceCreateWithoutAssetInput[] | HistoricalPriceUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: HistoricalPriceCreateOrConnectWithoutAssetInput | HistoricalPriceCreateOrConnectWithoutAssetInput[]
+    createMany?: HistoricalPriceCreateManyAssetInputEnvelope
+    connect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutAssetsNestedInput = {
+    create?: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssetsInput
+    upsert?: UserUpsertWithoutAssetsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssetsInput, UserUpdateWithoutAssetsInput>, UserUncheckedUpdateWithoutAssetsInput>
+  }
+
+  export type HistoricalPriceUpdateManyWithoutAssetNestedInput = {
+    create?: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput> | HistoricalPriceCreateWithoutAssetInput[] | HistoricalPriceUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: HistoricalPriceCreateOrConnectWithoutAssetInput | HistoricalPriceCreateOrConnectWithoutAssetInput[]
+    upsert?: HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput | HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput[]
+    createMany?: HistoricalPriceCreateManyAssetInputEnvelope
+    set?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+    disconnect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+    delete?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+    connect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+    update?: HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput | HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput[]
+    updateMany?: HistoricalPriceUpdateManyWithWhereWithoutAssetInput | HistoricalPriceUpdateManyWithWhereWithoutAssetInput[]
+    deleteMany?: HistoricalPriceScalarWhereInput | HistoricalPriceScalarWhereInput[]
+  }
+
+  export type HistoricalPriceUncheckedUpdateManyWithoutAssetNestedInput = {
+    create?: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput> | HistoricalPriceCreateWithoutAssetInput[] | HistoricalPriceUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: HistoricalPriceCreateOrConnectWithoutAssetInput | HistoricalPriceCreateOrConnectWithoutAssetInput[]
+    upsert?: HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput | HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput[]
+    createMany?: HistoricalPriceCreateManyAssetInputEnvelope
+    set?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+    disconnect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+    delete?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+    connect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+    update?: HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput | HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput[]
+    updateMany?: HistoricalPriceUpdateManyWithWhereWithoutAssetInput | HistoricalPriceUpdateManyWithWhereWithoutAssetInput[]
+    deleteMany?: HistoricalPriceScalarWhereInput | HistoricalPriceScalarWhereInput[]
+  }
+
+  export type AssetCreateNestedOneWithoutHistoryInput = {
+    create?: XOR<AssetCreateWithoutHistoryInput, AssetUncheckedCreateWithoutHistoryInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutHistoryInput
+    connect?: AssetWhereUniqueInput
+  }
+
+  export type AssetUpdateOneRequiredWithoutHistoryNestedInput = {
+    create?: XOR<AssetCreateWithoutHistoryInput, AssetUncheckedCreateWithoutHistoryInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutHistoryInput
+    upsert?: AssetUpsertWithoutHistoryInput
+    connect?: AssetWhereUniqueInput
+    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutHistoryInput, AssetUpdateWithoutHistoryInput>, AssetUncheckedUpdateWithoutHistoryInput>
+  }
+
+  export type UserCreateNestedOneWithoutPortfolioSnapshotsInput = {
+    create?: XOR<UserCreateWithoutPortfolioSnapshotsInput, UserUncheckedCreateWithoutPortfolioSnapshotsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPortfolioSnapshotsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutPortfolioSnapshotsNestedInput = {
+    create?: XOR<UserCreateWithoutPortfolioSnapshotsInput, UserUncheckedCreateWithoutPortfolioSnapshotsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPortfolioSnapshotsInput
+    upsert?: UserUpsertWithoutPortfolioSnapshotsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPortfolioSnapshotsInput, UserUpdateWithoutPortfolioSnapshotsInput>, UserUncheckedUpdateWithoutPortfolioSnapshotsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -19538,6 +23963,84 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AssetCreateWithoutUserInput = {
+    id?: string
+    ticker?: string | null
+    name: string
+    category?: string
+    platform?: string | null
+    quantity?: number
+    price_eur?: number
+    currency?: string | null
+    yahoo_symbol?: string | null
+    coingecko_id?: string | null
+    coincap_id?: string | null
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    history?: HistoricalPriceCreateNestedManyWithoutAssetInput
+  }
+
+  export type AssetUncheckedCreateWithoutUserInput = {
+    id?: string
+    ticker?: string | null
+    name: string
+    category?: string
+    platform?: string | null
+    quantity?: number
+    price_eur?: number
+    currency?: string | null
+    yahoo_symbol?: string | null
+    coingecko_id?: string | null
+    coincap_id?: string | null
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    history?: HistoricalPriceUncheckedCreateNestedManyWithoutAssetInput
+  }
+
+  export type AssetCreateOrConnectWithoutUserInput = {
+    where: AssetWhereUniqueInput
+    create: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput>
+  }
+
+  export type AssetCreateManyUserInputEnvelope = {
+    data: AssetCreateManyUserInput | AssetCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PortfolioSnapshotCreateWithoutUserInput = {
+    id?: string
+    total_value_eur?: number
+    date: Date | string
+    category?: string | null
+    asset_id?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PortfolioSnapshotUncheckedCreateWithoutUserInput = {
+    id?: string
+    total_value_eur?: number
+    date: Date | string
+    category?: string | null
+    asset_id?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PortfolioSnapshotCreateOrConnectWithoutUserInput = {
+    where: PortfolioSnapshotWhereUniqueInput
+    create: XOR<PortfolioSnapshotCreateWithoutUserInput, PortfolioSnapshotUncheckedCreateWithoutUserInput>
+  }
+
+  export type PortfolioSnapshotCreateManyUserInputEnvelope = {
+    data: PortfolioSnapshotCreateManyUserInput | PortfolioSnapshotCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SessionUpsertWithWhereUniqueWithoutUserInput = {
     where: SessionWhereUniqueInput
     update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
@@ -19628,6 +24131,74 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"EmployeeActivity"> | Date | string
   }
 
+  export type AssetUpsertWithWhereUniqueWithoutUserInput = {
+    where: AssetWhereUniqueInput
+    update: XOR<AssetUpdateWithoutUserInput, AssetUncheckedUpdateWithoutUserInput>
+    create: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput>
+  }
+
+  export type AssetUpdateWithWhereUniqueWithoutUserInput = {
+    where: AssetWhereUniqueInput
+    data: XOR<AssetUpdateWithoutUserInput, AssetUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AssetUpdateManyWithWhereWithoutUserInput = {
+    where: AssetScalarWhereInput
+    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type AssetScalarWhereInput = {
+    AND?: AssetScalarWhereInput | AssetScalarWhereInput[]
+    OR?: AssetScalarWhereInput[]
+    NOT?: AssetScalarWhereInput | AssetScalarWhereInput[]
+    id?: StringFilter<"Asset"> | string
+    ticker?: StringNullableFilter<"Asset"> | string | null
+    name?: StringFilter<"Asset"> | string
+    category?: StringFilter<"Asset"> | string
+    platform?: StringNullableFilter<"Asset"> | string | null
+    quantity?: FloatFilter<"Asset"> | number
+    price_eur?: FloatFilter<"Asset"> | number
+    currency?: StringNullableFilter<"Asset"> | string | null
+    yahoo_symbol?: StringNullableFilter<"Asset"> | string | null
+    coingecko_id?: StringNullableFilter<"Asset"> | string | null
+    coincap_id?: StringNullableFilter<"Asset"> | string | null
+    indexa_api?: BoolFilter<"Asset"> | boolean
+    manual?: BoolFilter<"Asset"> | boolean
+    image_url?: StringNullableFilter<"Asset"> | string | null
+    userId?: StringFilter<"Asset"> | string
+    createdAt?: DateTimeFilter<"Asset"> | Date | string
+    updatedAt?: DateTimeFilter<"Asset"> | Date | string
+  }
+
+  export type PortfolioSnapshotUpsertWithWhereUniqueWithoutUserInput = {
+    where: PortfolioSnapshotWhereUniqueInput
+    update: XOR<PortfolioSnapshotUpdateWithoutUserInput, PortfolioSnapshotUncheckedUpdateWithoutUserInput>
+    create: XOR<PortfolioSnapshotCreateWithoutUserInput, PortfolioSnapshotUncheckedCreateWithoutUserInput>
+  }
+
+  export type PortfolioSnapshotUpdateWithWhereUniqueWithoutUserInput = {
+    where: PortfolioSnapshotWhereUniqueInput
+    data: XOR<PortfolioSnapshotUpdateWithoutUserInput, PortfolioSnapshotUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PortfolioSnapshotUpdateManyWithWhereWithoutUserInput = {
+    where: PortfolioSnapshotScalarWhereInput
+    data: XOR<PortfolioSnapshotUpdateManyMutationInput, PortfolioSnapshotUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PortfolioSnapshotScalarWhereInput = {
+    AND?: PortfolioSnapshotScalarWhereInput | PortfolioSnapshotScalarWhereInput[]
+    OR?: PortfolioSnapshotScalarWhereInput[]
+    NOT?: PortfolioSnapshotScalarWhereInput | PortfolioSnapshotScalarWhereInput[]
+    id?: StringFilter<"PortfolioSnapshot"> | string
+    total_value_eur?: FloatFilter<"PortfolioSnapshot"> | number
+    date?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
+    category?: StringNullableFilter<"PortfolioSnapshot"> | string | null
+    asset_id?: StringNullableFilter<"PortfolioSnapshot"> | string | null
+    userId?: StringFilter<"PortfolioSnapshot"> | string
+    createdAt?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     email: string
@@ -19644,6 +24215,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -19662,6 +24235,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -19696,6 +24271,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -19714,6 +24291,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -19732,6 +24311,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -19750,6 +24331,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -19784,6 +24367,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -19802,6 +24387,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ActionItemCreateWithoutCategoryInput = {
@@ -20823,6 +25410,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActivitiesInput = {
@@ -20841,6 +25430,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActivitiesInput = {
@@ -20875,6 +25466,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivitiesInput = {
@@ -20893,6 +25486,347 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutAssetsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    name?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    canAccessCasaRural?: boolean
+    canAccessFinanzas?: boolean
+    canAccessFpInformatica?: boolean
+    canAccessHogar?: boolean
+    canAccessMasterUnie?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAssetsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    name?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    canAccessCasaRural?: boolean
+    canAccessFinanzas?: boolean
+    canAccessFpInformatica?: boolean
+    canAccessHogar?: boolean
+    canAccessMasterUnie?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAssetsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
+  }
+
+  export type HistoricalPriceCreateWithoutAssetInput = {
+    id?: string
+    price_eur?: number
+    date: Date | string
+    createdAt?: Date | string
+  }
+
+  export type HistoricalPriceUncheckedCreateWithoutAssetInput = {
+    id?: string
+    price_eur?: number
+    date: Date | string
+    createdAt?: Date | string
+  }
+
+  export type HistoricalPriceCreateOrConnectWithoutAssetInput = {
+    where: HistoricalPriceWhereUniqueInput
+    create: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput>
+  }
+
+  export type HistoricalPriceCreateManyAssetInputEnvelope = {
+    data: HistoricalPriceCreateManyAssetInput | HistoricalPriceCreateManyAssetInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutAssetsInput = {
+    update: XOR<UserUpdateWithoutAssetsInput, UserUncheckedUpdateWithoutAssetsInput>
+    create: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAssetsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAssetsInput, UserUncheckedUpdateWithoutAssetsInput>
+  }
+
+  export type UserUpdateWithoutAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    canAccessCasaRural?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFinanzas?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFpInformatica?: BoolFieldUpdateOperationsInput | boolean
+    canAccessHogar?: BoolFieldUpdateOperationsInput | boolean
+    canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    canAccessCasaRural?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFinanzas?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFpInformatica?: BoolFieldUpdateOperationsInput | boolean
+    canAccessHogar?: BoolFieldUpdateOperationsInput | boolean
+    canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput = {
+    where: HistoricalPriceWhereUniqueInput
+    update: XOR<HistoricalPriceUpdateWithoutAssetInput, HistoricalPriceUncheckedUpdateWithoutAssetInput>
+    create: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput>
+  }
+
+  export type HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput = {
+    where: HistoricalPriceWhereUniqueInput
+    data: XOR<HistoricalPriceUpdateWithoutAssetInput, HistoricalPriceUncheckedUpdateWithoutAssetInput>
+  }
+
+  export type HistoricalPriceUpdateManyWithWhereWithoutAssetInput = {
+    where: HistoricalPriceScalarWhereInput
+    data: XOR<HistoricalPriceUpdateManyMutationInput, HistoricalPriceUncheckedUpdateManyWithoutAssetInput>
+  }
+
+  export type HistoricalPriceScalarWhereInput = {
+    AND?: HistoricalPriceScalarWhereInput | HistoricalPriceScalarWhereInput[]
+    OR?: HistoricalPriceScalarWhereInput[]
+    NOT?: HistoricalPriceScalarWhereInput | HistoricalPriceScalarWhereInput[]
+    id?: StringFilter<"HistoricalPrice"> | string
+    price_eur?: FloatFilter<"HistoricalPrice"> | number
+    date?: DateTimeFilter<"HistoricalPrice"> | Date | string
+    assetId?: StringFilter<"HistoricalPrice"> | string
+    createdAt?: DateTimeFilter<"HistoricalPrice"> | Date | string
+  }
+
+  export type AssetCreateWithoutHistoryInput = {
+    id?: string
+    ticker?: string | null
+    name: string
+    category?: string
+    platform?: string | null
+    quantity?: number
+    price_eur?: number
+    currency?: string | null
+    yahoo_symbol?: string | null
+    coingecko_id?: string | null
+    coincap_id?: string | null
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutAssetsInput
+  }
+
+  export type AssetUncheckedCreateWithoutHistoryInput = {
+    id?: string
+    ticker?: string | null
+    name: string
+    category?: string
+    platform?: string | null
+    quantity?: number
+    price_eur?: number
+    currency?: string | null
+    yahoo_symbol?: string | null
+    coingecko_id?: string | null
+    coincap_id?: string | null
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: string | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssetCreateOrConnectWithoutHistoryInput = {
+    where: AssetWhereUniqueInput
+    create: XOR<AssetCreateWithoutHistoryInput, AssetUncheckedCreateWithoutHistoryInput>
+  }
+
+  export type AssetUpsertWithoutHistoryInput = {
+    update: XOR<AssetUpdateWithoutHistoryInput, AssetUncheckedUpdateWithoutHistoryInput>
+    create: XOR<AssetCreateWithoutHistoryInput, AssetUncheckedCreateWithoutHistoryInput>
+    where?: AssetWhereInput
+  }
+
+  export type AssetUpdateToOneWithWhereWithoutHistoryInput = {
+    where?: AssetWhereInput
+    data: XOR<AssetUpdateWithoutHistoryInput, AssetUncheckedUpdateWithoutHistoryInput>
+  }
+
+  export type AssetUpdateWithoutHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: FloatFieldUpdateOperationsInput | number
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableStringFieldUpdateOperationsInput | string | null
+    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
+    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
+    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexa_api?: BoolFieldUpdateOperationsInput | boolean
+    manual?: BoolFieldUpdateOperationsInput | boolean
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAssetsNestedInput
+  }
+
+  export type AssetUncheckedUpdateWithoutHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: FloatFieldUpdateOperationsInput | number
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableStringFieldUpdateOperationsInput | string | null
+    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
+    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
+    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexa_api?: BoolFieldUpdateOperationsInput | boolean
+    manual?: BoolFieldUpdateOperationsInput | boolean
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserCreateWithoutPortfolioSnapshotsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    name?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    canAccessCasaRural?: boolean
+    canAccessFinanzas?: boolean
+    canAccessFpInformatica?: boolean
+    canAccessHogar?: boolean
+    canAccessMasterUnie?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPortfolioSnapshotsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    name?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    canAccessCasaRural?: boolean
+    canAccessFinanzas?: boolean
+    canAccessFpInformatica?: boolean
+    canAccessHogar?: boolean
+    canAccessMasterUnie?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPortfolioSnapshotsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPortfolioSnapshotsInput, UserUncheckedCreateWithoutPortfolioSnapshotsInput>
+  }
+
+  export type UserUpsertWithoutPortfolioSnapshotsInput = {
+    update: XOR<UserUpdateWithoutPortfolioSnapshotsInput, UserUncheckedUpdateWithoutPortfolioSnapshotsInput>
+    create: XOR<UserCreateWithoutPortfolioSnapshotsInput, UserUncheckedCreateWithoutPortfolioSnapshotsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPortfolioSnapshotsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPortfolioSnapshotsInput, UserUncheckedUpdateWithoutPortfolioSnapshotsInput>
+  }
+
+  export type UserUpdateWithoutPortfolioSnapshotsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    canAccessCasaRural?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFinanzas?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFpInformatica?: BoolFieldUpdateOperationsInput | boolean
+    canAccessHogar?: BoolFieldUpdateOperationsInput | boolean
+    canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPortfolioSnapshotsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    canAccessCasaRural?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFinanzas?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFpInformatica?: BoolFieldUpdateOperationsInput | boolean
+    canAccessHogar?: BoolFieldUpdateOperationsInput | boolean
+    canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SessionCreateManyUserInput = {
@@ -20923,6 +25857,34 @@ export namespace Prisma {
     date?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type AssetCreateManyUserInput = {
+    id?: string
+    ticker?: string | null
+    name: string
+    category?: string
+    platform?: string | null
+    quantity?: number
+    price_eur?: number
+    currency?: string | null
+    yahoo_symbol?: string | null
+    coingecko_id?: string | null
+    coincap_id?: string | null
+    indexa_api?: boolean
+    manual?: boolean
+    image_url?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PortfolioSnapshotCreateManyUserInput = {
+    id?: string
+    total_value_eur?: number
+    date: Date | string
+    category?: string | null
+    asset_id?: string | null
+    createdAt?: Date | string
   }
 
   export type SessionUpdateWithoutUserInput = {
@@ -21013,6 +25975,92 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssetUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: FloatFieldUpdateOperationsInput | number
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableStringFieldUpdateOperationsInput | string | null
+    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
+    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
+    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexa_api?: BoolFieldUpdateOperationsInput | boolean
+    manual?: BoolFieldUpdateOperationsInput | boolean
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    history?: HistoricalPriceUpdateManyWithoutAssetNestedInput
+  }
+
+  export type AssetUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: FloatFieldUpdateOperationsInput | number
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableStringFieldUpdateOperationsInput | string | null
+    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
+    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
+    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexa_api?: BoolFieldUpdateOperationsInput | boolean
+    manual?: BoolFieldUpdateOperationsInput | boolean
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    history?: HistoricalPriceUncheckedUpdateManyWithoutAssetNestedInput
+  }
+
+  export type AssetUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    platform?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: FloatFieldUpdateOperationsInput | number
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableStringFieldUpdateOperationsInput | string | null
+    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
+    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
+    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexa_api?: BoolFieldUpdateOperationsInput | boolean
+    manual?: BoolFieldUpdateOperationsInput | boolean
+    image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PortfolioSnapshotUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PortfolioSnapshotUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PortfolioSnapshotUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ActionItemCreateManyCategoryInput = {
@@ -21359,6 +26407,34 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type HistoricalPriceCreateManyAssetInput = {
+    id?: string
+    price_eur?: number
+    date: Date | string
+    createdAt?: Date | string
+  }
+
+  export type HistoricalPriceUpdateWithoutAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalPriceUncheckedUpdateWithoutAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HistoricalPriceUncheckedUpdateManyWithoutAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -21384,6 +26460,10 @@ export namespace Prisma {
      * @deprecated Use SubjectCountOutputTypeDefaultArgs instead
      */
     export type SubjectCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SubjectCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AssetCountOutputTypeDefaultArgs instead
+     */
+    export type AssetCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AssetCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use UserDefaultArgs instead
      */
@@ -21436,6 +26516,18 @@ export namespace Prisma {
      * @deprecated Use ExamTemplateDefaultArgs instead
      */
     export type ExamTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ExamTemplateDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AssetDefaultArgs instead
+     */
+    export type AssetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AssetDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use HistoricalPriceDefaultArgs instead
+     */
+    export type HistoricalPriceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = HistoricalPriceDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PortfolioSnapshotDefaultArgs instead
+     */
+    export type PortfolioSnapshotArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PortfolioSnapshotDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

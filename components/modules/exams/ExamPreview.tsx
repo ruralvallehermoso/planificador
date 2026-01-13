@@ -100,8 +100,8 @@ export function ExamPreview({ header, sections, formatting }: Props) {
             {/* Sections */}
             <div className={cn("space-y-8", paragraphSpacing)}>
                 {sections.map((section, idx) => (
-                    <div key={section.id}>
-                        <div className="flex items-baseline justify-between mb-4">
+                    <div key={section.id} className="break-inside-avoid-page">
+                        <div className="flex items-baseline justify-between mb-4 break-after-avoid">
                             <h2 className={cn("text-lg border-b border-gray-200 pb-1 w-full", isBoldTitle && "font-bold")}>
                                 {idx + 1}. {section.title}
                             </h2>
@@ -144,7 +144,7 @@ function formatTestQuestions(text: string, boldQuestions: boolean) {
         // If it starts with a letter like "a)", "a.", "- ", it's an answer -> Normal
         const isQuestion = /^\d+[\.\)]/.test(line.trim())
         if (isQuestion) {
-            return <div key={i} className="font-bold mt-4">{line}</div>
+            return <div key={i} className="font-bold mt-4 break-after-avoid">{line}</div>
         }
         return <div key={i} className="font-normal ml-4">{line}</div>
     })
@@ -160,7 +160,7 @@ function formatDevelopQuestions(text: string, boldQuestions: boolean) {
         const containerClass = "mb-6"
 
         return (
-            <div key={i} className={containerClass}>
+            <div key={i} className={cn(containerClass, "break-inside-avoid")}>
                 {parts.map((part, index) => {
                     if (scoreRegex.test(part)) {
                         return <span key={index} className="font-bold">{part}</span>

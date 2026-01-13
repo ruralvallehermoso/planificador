@@ -44,6 +44,8 @@ model User {
   sessions      Session[]
   accounts      Account[]
   activities    EmployeeActivity[]
+  assets        Asset[]
+  portfolioSnapshots PortfolioSnapshot[]
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -262,4 +264,76 @@ model ExamTemplate {
   
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+// =====================
+// FINANCIAL MODELS
+// =====================
+
+// =====================
+// FINANCIAL MODELS
+// =====================
+
+model Asset {
+  id           String   @id @default(cuid())
+  ticker       String?
+  name         String
+  category     String   @default("GENERAL") // Added default to fix migration
+  platform     String?
+  
+  quantity     Float    @default(0.0)
+  price_eur    Float    @default(0.0)
+  currency     String?
+
+  // Flags
+  yahoo_symbol String?
+  coingecko_id String?
+  coincap_id   String?
+  indexa_api   Boolean  @default(false)
+  manual       Boolean  @default(false)
+  
+  // UI
+  image_url    String?
+
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  history      HistoricalPrice[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("assets")
+}
+
+model HistoricalPrice {
+  id        String   @id @default(cuid())
+  price_eur Float    @default(0.0) // Added default to fix migration
+  date      DateTime
+  
+  assetId   String
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@index([assetId])
+  @@index([date])
+  @@map("historical_prices")
+}
+
+model PortfolioSnapshot {
+  id              String   @id @default(cuid())
+  total_value_eur Float    @default(0.0) // Added default to fix migration
+  date            DateTime
+  category        String?
+  asset_id        String?
+  
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime @default(now())
+
+  @@index([date])
+  @@index([userId])
+  @@map("portfolio_snapshots")
 }

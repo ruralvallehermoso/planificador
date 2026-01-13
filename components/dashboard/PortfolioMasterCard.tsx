@@ -64,11 +64,11 @@ export function PortfolioMasterCard() {
 
     if (!performance) return null;
 
-    const isPositive = performance.change_percent >= 0;
+    const isPositive = (performance.change_percent || 0) >= 0;
 
     // Simple Sparkline generation
-    const minVal = Math.min(...history.map(h => h.value));
-    const maxVal = Math.max(...history.map(h => h.value));
+    const minVal = history.length ? Math.min(...history.map(h => h.value)) : 0;
+    const maxVal = history.length ? Math.max(...history.map(h => h.value)) : 0;
     const range = maxVal - minVal || 1;
     const points = history.map((h, i) => {
         const x = (i / (history.length - 1)) * 100;
@@ -94,14 +94,14 @@ export function PortfolioMasterCard() {
                     "text-xs font-bold px-2 py-1 rounded-full",
                     isPositive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
                 )}>
-                    {isPositive ? "+" : ""}{performance.change_percent.toFixed(2)}%
+                    {isPositive ? "+" : ""}{(performance.change_percent || 0).toFixed(2)}%
                 </div>
             </div>
 
             <div className="mt-4">
                 <h3 className="text-sm font-medium text-gray-500">Portfolio Master</h3>
                 <p className="mt-1 text-2xl font-bold text-gray-900 tracking-tight">
-                    €{performance.current_value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                    €{(performance.current_value || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                 </p>
             </div>
 

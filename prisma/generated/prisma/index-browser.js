@@ -270,10 +270,50 @@ exports.Prisma.ExamTemplateScalarFieldEnum = {
   subject: 'subject',
   raEvaluated: 'raEvaluated',
   description: 'description',
+  part1Percentage: 'part1Percentage',
+  part2Percentage: 'part2Percentage',
   sections: 'sections',
   formatting: 'formatting',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AssetScalarFieldEnum = {
+  id: 'id',
+  ticker: 'ticker',
+  name: 'name',
+  category: 'category',
+  platform: 'platform',
+  quantity: 'quantity',
+  price_eur: 'price_eur',
+  currency: 'currency',
+  yahoo_symbol: 'yahoo_symbol',
+  coingecko_id: 'coingecko_id',
+  coincap_id: 'coincap_id',
+  indexa_api: 'indexa_api',
+  manual: 'manual',
+  image_url: 'image_url',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.HistoricalPriceScalarFieldEnum = {
+  id: 'id',
+  price_eur: 'price_eur',
+  date: 'date',
+  assetId: 'assetId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PortfolioSnapshotScalarFieldEnum = {
+  id: 'id',
+  total_value_eur: 'total_value_eur',
+  date: 'date',
+  category: 'category',
+  asset_id: 'asset_id',
+  userId: 'userId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -313,7 +353,10 @@ exports.Prisma.ModelName = {
   Subject: 'Subject',
   Assessment: 'Assessment',
   EmployeeActivity: 'EmployeeActivity',
-  ExamTemplate: 'ExamTemplate'
+  ExamTemplate: 'ExamTemplate',
+  Asset: 'Asset',
+  HistoricalPrice: 'HistoricalPrice',
+  PortfolioSnapshot: 'PortfolioSnapshot'
 };
 
 /**

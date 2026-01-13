@@ -80,6 +80,60 @@ async function main() {
     }
     console.log('✅ Categories seeded')
 
+    // Seed Financial Data (for Portfolio & Simulator)
+    const finanzasCategory = await prisma.category.findUnique({ where: { slug: 'finanzas' } })
+    if (finanzasCategory) {
+        console.log('🌱 Seeding financial data...')
+
+        // 1. Create Bitcoin Asset
+        const btc = await prisma.asset.upsert({
+            where: { id: 'btc-demo-asset' }, // Use ID for upsert since ticker might be nullable/not unique index
+            update: {},
+            create: {
+                id: 'btc-demo-asset',
+                ticker: 'BTC',
+                name: 'Bitcoin',
+                category: 'CRYPTO', // Was type
+                price_eur: 42000,   // Was currentPrice
+                quantity: 0.5,
+                userId: admin.id,
+
+                // Flags
+                manual: true,
+                indexa_api: false
+            }
+        })
+
+        // 2. Create Historical Prices (Last 30 days)
+        const today = new Date()
+        for (let i = 30; i >= 0; i--) {
+            const date = new Date(today)
+            date.setDate(date.getDate() - i)
+
+            // Random price movement
+            const price = 40000 + Math.random() * 5000
+
+            await prisma.historicalPrice.create({
+                data: {
+                    assetId: btc.id,
+                    price_eur: price, // Was price
+                    date: date
+                }
+            })
+        }
+
+        // 3. Create Portfolio Snapshot (for today)
+        await prisma.portfolioSnapshot.create({
+            data: {
+                total_value_eur: 21000, // Roughly 0.5 * 42000 // Was totalValue
+                userId: admin.id,
+                date: new Date(),
+                category: 'CRYPTO'
+            }
+        })
+        console.log('✅ Financial data seeded (BTC Asset + History)')
+    }
+
     console.log('\n🎉 Seeding complete!')
     console.log('\n📋 Demo accounts:')
     console.log('   admin@planificador.local / admin123 (ADMIN - all access)')

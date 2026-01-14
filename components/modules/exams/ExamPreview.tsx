@@ -12,11 +12,42 @@ export function ExamPreview({ header, sections, formatting }: Props) {
 
     return (
         <div id="exam-document" className={cn(
-            "bg-white p-8 md:p-12 shadow-lg max-w-[210mm] mx-auto min-h-[297mm] print:shadow-none print:w-full print:max-w-none print:mx-0 print:p-[25mm]",
+            "bg-white p-8 md:p-12 shadow-lg max-w-[210mm] mx-auto min-h-[297mm] print:shadow-none print:w-full print:max-w-none print:mx-0 print:p-0",
             font,
             fontSize,
             lineHeight
         )}>
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        margin: 25mm 15mm;
+                    }
+                    body {
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                }
+                
+                /* Global Table Styles for Exam Preview */
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin-bottom: 1rem;
+                }
+                th, td {
+                    border: 1px solid #000;
+                    padding: 8px;
+                    text-align: left;
+                }
+                th {
+                    background-color: #2563eb;
+                    color: white;
+                    font-weight: bold;
+                }
+                p {
+                    margin-bottom: 0.75em;
+                }
+            `}</style>
             {/* Header */}
             <div className="border-b-2 border-gray-800 pb-4 mb-8">
                 <div className="flex flex-col items-center justify-center gap-4 mb-4 text-center w-full">
@@ -120,26 +151,6 @@ export function ExamPreview({ header, sections, formatting }: Props) {
 
                         {section.type === 'DEVELOP' && (
                             <div className="pl-4 prose prose-sm max-w-none">
-                                <style jsx global>{`
-                                    table {
-                                        border-collapse: collapse;
-                                        width: 100%;
-                                        margin-bottom: 1rem;
-                                    }
-                                    th, td {
-                                        border: 1px solid #000;
-                                        padding: 8px;
-                                        text-align: left;
-                                    }
-                                    th {
-                                        background-color: #2563eb;
-                                        color: white;
-                                        font-weight: bold;
-                                    }
-                                    p {
-                                        margin-bottom: 0.75em; /* Ensure gap between paragraphs */
-                                    }
-                                `}</style>
                                 {/* Heuristic: If it looks like HTML, render as HTML. Otherwise use legacy formatter. */}
                                 {(section.questions || '').trim().startsWith('<') ? (
                                     <div dangerouslySetInnerHTML={{ __html: processHtmlContent(section.questions || '') }} />

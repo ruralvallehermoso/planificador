@@ -66,6 +66,13 @@ export function ExamSectionsBuilder({ sections, onChange }: Props) {
         onChange(sections.filter(s => s.id !== id))
     }
 
+    const handleTestQuestionChange = (id: string, value: string) => {
+        // Auto-format: Find patterns like "space + a)" and ensure they start on new line
+        // Regex looks for: (not a newline) followed by spaces, followed by a/b/c/d/e)
+        const formatted = value.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
+        updateSection(id, 'questions', formatted)
+    }
+
     return (
         <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm border">
             <h2 className="text-xl font-semibold border-b pb-2">2. Secciones del Examen</h2>
@@ -152,7 +159,12 @@ function SortableSectionItem({
                         <Label>Preguntas de Test (Una por línea)</Label>
                         <Textarea
                             value={section.questions}
-                            onChange={(e) => onUpdate(section.id, 'questions', e.target.value)}
+                            onChange={(e) => {
+                                // Apply strict formatting - split options to new lines
+                                const val = e.target.value
+                                const formatted = val.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
+                                onUpdate(section.id, 'questions', formatted)
+                            }}
                             placeholder="1. Pregunta...\n   a) Opción...\n   b) Opción..."
                             rows={5}
                         />

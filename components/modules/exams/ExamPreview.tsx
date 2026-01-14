@@ -12,7 +12,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
 
     return (
         <div id="exam-document" className={cn(
-            "bg-white p-8 md:p-12 shadow-lg max-w-[210mm] mx-auto min-h-[297mm] print:shadow-none print:w-full print:max-w-none print:mx-0 print:p-[15mm]",
+            "bg-white p-8 md:p-12 shadow-lg max-w-[210mm] mx-auto min-h-[297mm] print:shadow-none print:w-full print:max-w-none print:mx-0 print:p-[25mm]",
             font,
             fontSize,
             lineHeight

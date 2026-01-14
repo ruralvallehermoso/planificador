@@ -250,7 +250,7 @@ export function ExamFormBuilder() {
         <div className="min-h-screen bg-gray-50 pb-20">
             {/* Top Bar - removed sticky to prevent overlap */}
             <header className="bg-white border-b z-10 print:hidden relative shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                <div className="w-full max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/fp-informatica/exams" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                             <ArrowLeft className="h-5 w-5 text-gray-600" />
@@ -349,7 +349,7 @@ export function ExamFormBuilder() {
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-4 py-8">
+            <main className="w-full max-w-[1800px] mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 print:block print:w-full">
                     {/* Editor Column (Left) - Hidden on print */}
                     <div className="space-y-6 print:hidden">

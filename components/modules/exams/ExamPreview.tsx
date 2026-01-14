@@ -100,7 +100,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
             {/* Sections */}
             <div className={cn("space-y-8", paragraphSpacing)}>
                 {sections.map((section, idx) => (
-                    <div key={section.id} className="break-inside-avoid-page">
+                    <div key={section.id} className="">
                         <div className="flex items-baseline justify-between mb-4 break-after-avoid">
                             <h2 className={cn("text-lg border-b border-gray-200 pb-1 w-full", isBoldTitle && "font-bold")}>
                                 {idx + 1}. {section.title}

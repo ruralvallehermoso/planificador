@@ -360,7 +360,7 @@ export function ExamFormBuilder() {
 
                     {/* Preview Column (Right) - Full width on print */}
                     <div className="print:w-full print:absolute print:top-0 print:left-0">
-                        <div className="sticky top-24 print:static">
+                        <div className="print:static">
                             <div className="mb-4 flex items-center justify-between print:hidden">
                                 <h2 className="font-semibold text-gray-900">Vista Previa</h2>
                                 <span className="text-sm text-gray-500">Se actualiza en tiempo real</span>

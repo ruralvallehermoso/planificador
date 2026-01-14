@@ -4,7 +4,7 @@ export default function FinanzasLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="h-full -m-6">
+        <div className="h-full">
             {children}
         </div>
     );

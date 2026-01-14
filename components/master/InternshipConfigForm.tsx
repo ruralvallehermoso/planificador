@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Settings, Loader2 } from 'lucide-react';
 import { updateInternshipDetails } from '@/app/master-unie/practicum/actions';
 import { useRouter } from 'next/navigation';
@@ -34,7 +35,9 @@ interface InternshipConfigFormProps {
         realStartDate: Date | null;
         realEndDate: Date | null;
         totalHours: number;
+
         schedule: string | null;
+        workingDays: string | null;
     } | null;
 }
 
@@ -55,8 +58,26 @@ export function InternshipConfigForm({ initialData }: InternshipConfigFormProps)
         realStartDate: initialData?.realStartDate ? new Date(initialData.realStartDate).toISOString().split('T')[0] : '',
         realEndDate: initialData?.realEndDate ? new Date(initialData.realEndDate).toISOString().split('T')[0] : '',
         totalHours: initialData?.totalHours || 120,
+
         schedule: initialData?.schedule || '',
+        workingDays: initialData?.workingDays || '1,2,3,4,5'
     });
+
+    const handleDayToggle = (day: string) => {
+        const currentDays = formData.workingDays.split(',').filter(Boolean);
+        const newDays = currentDays.includes(day)
+            ? currentDays.filter(d => d !== day)
+            : [...currentDays, day];
+        setFormData(prev => ({ ...prev, workingDays: newDays.join(',') }));
+    };
+
+    const daysOfWeek = [
+        { id: '1', label: 'L' },
+        { id: '2', label: 'M' },
+        { id: '3', label: 'X' },
+        { id: '4', label: 'J' },
+        { id: '5', label: 'V' },
+    ];
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -74,6 +95,7 @@ export function InternshipConfigForm({ initialData }: InternshipConfigFormProps)
                 realStartDate: formData.realStartDate ? new Date(formData.realStartDate) : undefined,
                 realEndDate: formData.realEndDate ? new Date(formData.realEndDate) : undefined,
                 totalHours: Number(formData.totalHours),
+                workingDays: formData.workingDays
             });
             setOpen(false);
             router.refresh();
@@ -170,6 +192,27 @@ export function InternshipConfigForm({ initialData }: InternshipConfigFormProps)
                                 <Label htmlFor="schedule">Horario (Texto)</Label>
                                 <Input id="schedule" name="schedule" value={formData.schedule} onChange={handleChange} placeholder="L-V 9:00 - 14:00" />
                             </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Días de Asistencia</Label>
+                            <div className="flex gap-4">
+                                {daysOfWeek.map((day) => (
+                                    <div key={day.id} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={`day-${day.id}`}
+                                            checked={formData.workingDays.split(',').includes(day.id)}
+                                            onCheckedChange={() => handleDayToggle(day.id)}
+                                        />
+                                        <label
+                                            htmlFor={`day-${day.id}`}
+                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                        >
+                                            {day.label}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-xs text-slate-500">Selecciona los días que acudirás al centro.</p>
                         </div>
                     </div>
 

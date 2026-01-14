@@ -1,11 +1,15 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { BookOpen, GraduationCap, CheckCircle, Clock, ChevronRight } from 'lucide-react';
+import { getMasterTasks } from './actions';
+import { MasterTaskList } from '@/components/master/MasterTaskList';
 
 export default async function MasterDashboardPage() {
     const subjects = await prisma.subject.findMany({
         orderBy: { name: 'asc' }
     });
+
+    const tasks = await getMasterTasks();
 
     // Stats calculation
     const totalSubjects = subjects.length;
@@ -98,6 +102,7 @@ export default async function MasterDashboardPage() {
 
                 {/* Upcoming Deadlines / Sidebar */}
                 <div className="space-y-6">
+                    <MasterTaskList tasks={tasks} />
                     <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
                         <div className="px-6 py-4 border-b bg-slate-50">
                             <h3 className="font-semibold text-slate-900">Próximas Entregas</h3>

@@ -43,8 +43,28 @@ export default async function Home() {
     return canAccessModule(user || null, config.module);
   });
 
+  // Fetch pending Master Tasks count separately
+  const pendingMasterTasksCount = user ? await prisma.masterTask.count({
+    where: {
+      userId: user.id,
+      completed: false
+    }
+  }) : 0;
+
+  // Merge Master Tasks count into categories
+  const categoriesWithMaster = categories.map(cat => {
+    if (cat.slug === 'master-unie') {
+      return {
+        ...cat,
+        _count: { items: pendingMasterTasksCount },
+        items: [] // We don't have Items for MasterTask, so clearing generic preview
+      }
+    }
+    return cat;
+  });
+
   // Calculate total pending
-  const totalPending = categories.reduce((sum, c) => sum + c._count.items, 0);
+  const totalPending = categoriesWithMaster.reduce((sum, c) => sum + c._count.items, 0);
 
   // Fetch financial data
   let portfolioData: { current_value: number; change_percent: number } | null = null;
@@ -101,7 +121,7 @@ export default async function Home() {
 
       {/* Pending Tasks Overview - Main Section */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {categories.map((category) => {
+        {categoriesWithMaster.map((category) => {
           const config = MODULES_CONFIG[category.slug];
           const Icon = config?.icon || Circle;
           const color = config?.color || '#6366f1';

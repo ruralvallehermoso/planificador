@@ -2,6 +2,7 @@ import { getInternship } from './actions';
 import { InternshipLogForm } from '@/components/master/InternshipLogForm';
 import { InternshipConfigForm } from '@/components/master/InternshipConfigForm';
 import { LogEntryActions } from '@/components/master/LogEntryActions';
+import { InternshipPlanningCard } from '@/components/master/InternshipPlanningCard';
 import { Building2, MapPin, CalendarDays, Download, Settings } from 'lucide-react';
 import Link from 'next/link';
 
@@ -99,6 +100,9 @@ export default async function PracticumPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Planning Card */}
+            <InternshipPlanningCard internship={internship} />
 
             {/* Daily Log */}
             <div className="bg-white rounded-xl border shadow-sm overflow-hidden">

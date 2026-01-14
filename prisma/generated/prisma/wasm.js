@@ -224,6 +224,14 @@ exports.Prisma.ProjectImageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ProjectLinkScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  title: 'title',
+  projectId: 'projectId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SubjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -322,6 +330,7 @@ exports.Prisma.InternshipScalarFieldEnum = {
   realEndDate: 'realEndDate',
   totalHours: 'totalHours',
   schedule: 'schedule',
+  workingDays: 'workingDays',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -346,6 +355,15 @@ exports.Prisma.InternshipLogScalarFieldEnum = {
   activity: 'activity',
   observations: 'observations',
   internshipId: 'internshipId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MasterTaskScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  completed: 'completed',
+  userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -384,6 +402,7 @@ exports.Prisma.ModelName = {
   ClassSession: 'ClassSession',
   Project: 'Project',
   ProjectImage: 'ProjectImage',
+  ProjectLink: 'ProjectLink',
   Subject: 'Subject',
   Assessment: 'Assessment',
   EmployeeActivity: 'EmployeeActivity',
@@ -393,7 +412,8 @@ exports.Prisma.ModelName = {
   PortfolioSnapshot: 'PortfolioSnapshot',
   Internship: 'Internship',
   InternshipCenter: 'InternshipCenter',
-  InternshipLog: 'InternshipLog'
+  InternshipLog: 'InternshipLog',
+  MasterTask: 'MasterTask'
 };
 
 /**

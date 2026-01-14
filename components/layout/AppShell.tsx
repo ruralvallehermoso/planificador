@@ -71,7 +71,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     </div>
                 </header>
 
-                <main className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth print:overflow-visible print:h-auto print:p-0">
+                <main className={`flex-1 overflow-y-auto scroll-smooth print:overflow-visible print:h-auto print:p-0 ${pathname.startsWith('/finanzas') ? 'p-0' : 'p-4 md:p-6'
+                    }`}>
                     {children}
                 </main>
             </div>

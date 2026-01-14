@@ -29,6 +29,7 @@ model User {
   assets                 Asset[]
   portfolioSnapshots     PortfolioSnapshot[]
   internship             Internship?
+  masterTasks            MasterTask[]
 }
 
 model Session {
@@ -124,11 +125,21 @@ model Project {
   updatedAt   DateTime       @updatedAt
   category    Category       @relation(fields: [categoryId], references: [id])
   images      ProjectImage[]
+  links       ProjectLink[]
 }
 
 model ProjectImage {
   id        String   @id @default(cuid())
   url       String
+  projectId String
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ProjectLink {
+  id        String   @id @default(cuid())
+  url       String
+  title     String?
   projectId String
   createdAt DateTime @default(now())
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -280,6 +291,7 @@ model Internship {
   // Details
   totalHours    Int      @default(120) // Target
   schedule      String?  // Text description of schedule
+  workingDays   String   @default("1,2,3,4,5") // Comma separated days (0=Sun, 1=Mon...). Default Mon-Fri
 
   logs          InternshipLog[]
 
@@ -318,4 +330,19 @@ model InternshipLog {
   updatedAt     DateTime @updatedAt
   
   @@index([internshipId])
+}
+
+
+model MasterTask {
+  id            String   @id @default(cuid())
+  title         String
+  completed     Boolean  @default(false)
+  
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([userId])
 }

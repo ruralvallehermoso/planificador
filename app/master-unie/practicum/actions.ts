@@ -5,6 +5,12 @@ import { auth } from '@/auth'; // Assuming auth helper exists
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
+// --- TASKS ACTIONS ---
+
+
+
+// --- INTERNSHIP ACTIONS ---
+
 // --- Fetching ---
 
 export async function getInternship() {
@@ -43,6 +49,7 @@ export async function updateInternshipDetails(data: {
     realEndDate?: Date;
     totalHours?: number;
     schedule?: string;
+    workingDays?: string;
 }) {
     const session = await auth();
     if (!session?.user?.id) throw new Error("Unauthorized");
@@ -59,6 +66,7 @@ export async function updateInternshipDetails(data: {
             realEndDate: data.realEndDate,
             totalHours: data.totalHours || 120,
             schedule: data.schedule,
+            workingDays: data.workingDays || "1,2,3,4,5",
             center: {
                 create: {
                     name: data.centerName,
@@ -79,6 +87,7 @@ export async function updateInternshipDetails(data: {
             realEndDate: data.realEndDate,
             totalHours: data.totalHours,
             schedule: data.schedule,
+            workingDays: data.workingDays,
             center: {
                 upsert: {
                     create: {

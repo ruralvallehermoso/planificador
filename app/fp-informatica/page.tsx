@@ -1,5 +1,7 @@
-import { Calendar, BookOpen, FolderOpen, GraduationCap } from "lucide-react"
+import { Calendar, BookOpen, GraduationCap } from "lucide-react"
 import Link from "next/link"
+import { prisma } from "@/lib/prisma"
+import { SidebarTaskManager } from "@/components/modules/teacher/SidebarTaskManager"
 
 const DASHBOARD_CARDS = [
     {
@@ -23,16 +25,6 @@ const DASHBOARD_CARDS = [
         hoverBorder: "hover:border-blue-300",
     },
     {
-        title: "Proyectos",
-        description: "Supervisa el progreso de los proyectos y documentaciones.",
-        icon: FolderOpen,
-        href: "/fp-informatica/projects",
-        color: "text-indigo-600",
-        bgColor: "bg-indigo-100",
-        borderColor: "border-indigo-200",
-        hoverBorder: "hover:border-indigo-300",
-    },
-    {
         title: "Exámenes",
         description: "Planifica fechas de evaluaciones y registra calificaciones.",
         icon: GraduationCap,
@@ -44,7 +36,22 @@ const DASHBOARD_CARDS = [
     }
 ]
 
-export default function FPInformaticaDashboard() {
+export default async function FPInformaticaDashboard() {
+    const categorySlug = 'fp-informatica'
+
+    const category = await prisma.category.findUnique({
+        where: { slug: categorySlug },
+        include: {
+            items: {
+                take: 100,
+                orderBy: { createdAt: 'desc' }
+            },
+            sections: {
+                orderBy: { order: 'asc' }
+            }
+        }
+    })
+
     return (
         <div className="space-y-8">
             <div>
@@ -52,7 +59,7 @@ export default function FPInformaticaDashboard() {
                 <p className="mt-2 text-gray-600">Panel de control y gestión académica</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {DASHBOARD_CARDS.map((card) => {
                     const Icon = card.icon
                     return (
@@ -75,19 +82,42 @@ export default function FPInformaticaDashboard() {
                 })}
             </div>
 
-            {/* Optional: Summary Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Actividad Reciente</h2>
-                    <div className="flex flex-col items-center justify-center h-48 text-gray-400 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                        No hay actividad reciente
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
+                {/* Tareas Pendientes */}
+                <div className="lg:col-span-1">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-full">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-semibold text-gray-900">Tareas Pendientes</h2>
+                        </div>
+                        {category ? (
+                            <SidebarTaskManager
+                                tasks={category.items || []}
+                                sections={category.sections || []}
+                                categoryId={category.id}
+                                categorySlug={categorySlug}
+                            />
+                        ) : (
+                            <div className="text-sm text-red-500">
+                                Categoría no encontrada. Por favor ejecuta el seed.
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Próximos Eventos</h2>
-                    <div className="flex flex-col items-center justify-center h-48 text-gray-400 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                        No hay eventos próximos
+                {/* Actividad Reciente & Eventos */}
+                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Actividad Reciente</h2>
+                        <div className="flex flex-col items-center justify-center h-48 text-gray-400 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                            No hay actividad reciente
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Próximos Eventos</h2>
+                        <div className="flex flex-col items-center justify-center h-48 text-gray-400 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                            No hay eventos próximos
+                        </div>
                     </div>
                 </div>
             </div>

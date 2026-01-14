@@ -119,14 +119,40 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                         )}
 
                         {section.type === 'DEVELOP' && (
-                            <div className="pl-4">
-                                {formatDevelopQuestions(section.questions || '', formatting.questionsBold ?? true)}
+                            <div className="pl-4 prose prose-sm max-w-none">
+                                <style jsx global>{`
+                                    table {
+                                        border-collapse: collapse;
+                                        width: 100%;
+                                        margin-bottom: 1rem;
+                                    }
+                                    th, td {
+                                        border: 1px solid #000;
+                                        padding: 8px;
+                                        text-align: left;
+                                    }
+                                    th {
+                                        background-color: #2563eb;
+                                        color: white;
+                                        font-weight: bold;
+                                    }
+                                `}</style>
+                                {/* Heuristic: If it looks like HTML, render as HTML. Otherwise use legacy formatter. */}
+                                {(section.questions || '').trim().startsWith('<') ? (
+                                    <div dangerouslySetInnerHTML={{ __html: section.questions || '' }} />
+                                ) : (
+                                    formatDevelopQuestions(section.questions || '', formatting.questionsBold ?? true)
+                                )}
                             </div>
                         )}
 
                         {section.type === 'STANDARD' && (
-                            <div className="whitespace-pre-wrap">
-                                {section.content}
+                            <div className="whitespace-pre-wrap prose prose-sm max-w-none">
+                                {(section.content || '').trim().startsWith('<') ? (
+                                    <div dangerouslySetInnerHTML={{ __html: section.content || '' }} />
+                                ) : (
+                                    section.content
+                                )}
                             </div>
                         )}
                     </div>

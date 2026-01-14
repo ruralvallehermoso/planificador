@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import dynamic from "next/dynamic"
+
+const RichTextEditor = dynamic(
+    () => import("@/components/ui/rich-text-editor").then((mod) => mod.RichTextEditor),
+    { ssr: false, loading: () => <div className="h-[150px] w-full border rounded-md bg-gray-50 animate-pulse" /> }
+)
+
 import { ExamSection } from "@/lib/actions/exams"
 import { Plus, Trash2, GripVertical } from "lucide-react"
 import {
@@ -173,23 +180,21 @@ function SortableSectionItem({
                 )}
                 {section.type === 'DEVELOP' && (
                     <div className="space-y-2">
-                        <Label>Preguntas a Desarrollar</Label>
-                        <Textarea
-                            value={section.questions}
-                            onChange={(e) => onUpdate(section.id, 'questions', e.target.value)}
-                            placeholder="Escribe las preguntas a desarrollar..."
-                            rows={5}
+                        <Label>Preguntas a Desarrollar (Admite tablas)</Label>
+                        <RichTextEditor
+                            value={section.questions ?? ''}
+                            onChange={(val) => onUpdate(section.id, 'questions', val)}
+                            placeholder="Escribe las preguntas a desarrollar o pega una tabla..."
                         />
                     </div>
                 )}
                 {section.type === 'STANDARD' && (
                     <div className="space-y-2">
-                        <Label>Contenido</Label>
-                        <Textarea
-                            value={section.content}
-                            onChange={(e) => onUpdate(section.id, 'content', e.target.value)}
-                            placeholder="Texto libre..."
-                            rows={3}
+                        <Label>Contenido (Admite tablas)</Label>
+                        <RichTextEditor
+                            value={section.content ?? ''}
+                            onChange={(val) => onUpdate(section.id, 'content', val)}
+                            placeholder="Texto libre o tablas..."
                         />
                     </div>
                 )}

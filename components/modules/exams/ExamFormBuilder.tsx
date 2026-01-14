@@ -155,10 +155,16 @@ export function ExamFormBuilder() {
                 <meta charset="utf-8">
                 <style>
                     body { font-family: ${fontFamily}; color: #000; line-height: 1.5; }
+                    /* Generic Table Styles */
                     table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-                    td { padding: 5px; vertical-align: top; }
-                    .header-table td { text-align: center; }
-                    .info-table td { border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; }
+                    td, th { padding: 5px; vertical-align: top; border: 1px solid #ccc; }
+                    th { background-color: #2563eb; color: white; font-weight: bold; text-align: left; }
+                    
+                    /* Specific overrides for layout tables if needed */
+                    .header-table td, .info-table td { border: none; } /* Reset for layout tables if they use generic tag */
+                    .info-table td { border: 1px solid #ccc; background-color: #f9f9f9; }
+                    .header-table td { text-align: center; border: none; background: none; }
+
                     h1 { font-size: 24px; text-transform: uppercase; margin: 0; }
                     h2 { font-size: 18px; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 30px; }
                     .ra-item { display: inline-block; margin-right: 20px; }
@@ -213,9 +219,13 @@ export function ExamFormBuilder() {
                     <div>
                         <h2>${idx + 1}. ${section.title} ${section.ra && section.ra.length > 0 ? `<span style="font-size: 12px; background: #eee; padding: 2px 6px; border-radius: 4px; font-weight: normal;">${section.ra.join(", ")}</span>` : ''}</h2>
                         
-                        ${section.type === 'STANDARD' ? `<div style="white-space: pre-wrap;">${section.content || ''}</div>` : ''}
+                        ${section.type === 'STANDARD' ?
+                ((section.content || '').trim().startsWith('<') ? `<div>${section.content}</div>` : `<div style="white-space: pre-wrap;">${section.content || ''}</div>`)
+                : ''}
                         
-                        ${section.type !== 'STANDARD' ? `<div>${formatQuestionsExport(section.questions || '', section.type === 'TEST')}</div>` : ''}
+                        ${section.type !== 'STANDARD' ?
+                ((section.questions || '').trim().startsWith('<') ? `<div>${section.questions}</div>` : `<div>${formatQuestionsExport(section.questions || '', section.type === 'TEST')}</div>`)
+                : ''}
                     </div>
                 `).join('')}
             </body>

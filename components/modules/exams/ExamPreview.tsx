@@ -98,7 +98,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
             </div>
 
             {/* Sections */}
-            <div className={cn("space-y-8", paragraphSpacing)}>
+            <div className={cn("space-y-4", paragraphSpacing)}>
                 {sections.map((section, idx) => (
                     <div key={section.id} className="">
                         <div className="flex items-baseline justify-between mb-4 break-after-avoid">
@@ -136,10 +136,13 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                                         color: white;
                                         font-weight: bold;
                                     }
+                                    p {
+                                        margin-bottom: 0.75em; /* Ensure gap between paragraphs */
+                                    }
                                 `}</style>
                                 {/* Heuristic: If it looks like HTML, render as HTML. Otherwise use legacy formatter. */}
                                 {(section.questions || '').trim().startsWith('<') ? (
-                                    <div dangerouslySetInnerHTML={{ __html: section.questions || '' }} />
+                                    <div dangerouslySetInnerHTML={{ __html: processHtmlContent(section.questions || '') }} />
                                 ) : (
                                     formatDevelopQuestions(section.questions || '', formatting.questionsBold ?? true)
                                 )}
@@ -149,7 +152,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                         {section.type === 'STANDARD' && (
                             <div className="whitespace-pre-wrap prose prose-sm max-w-none">
                                 {(section.content || '').trim().startsWith('<') ? (
-                                    <div dangerouslySetInnerHTML={{ __html: section.content || '' }} />
+                                    <div dangerouslySetInnerHTML={{ __html: processHtmlContent(section.content || '') }} />
                                 ) : (
                                     section.content
                                 )}
@@ -160,6 +163,12 @@ export function ExamPreview({ header, sections, formatting }: Props) {
             </div>
         </div>
     )
+}
+
+function processHtmlContent(html: string) {
+    // Regex to match score patterns like (2 pts), (1.5 puntos), (2pt), etc.
+    const scoreRegex = /(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/gi
+    return html.replace(scoreRegex, '<strong>$1</strong>')
 }
 
 function formatTestQuestions(text: string, boldQuestions: boolean) {

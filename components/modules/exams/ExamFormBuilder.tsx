@@ -220,11 +220,15 @@ export function ExamFormBuilder() {
                         <h2>${idx + 1}. ${section.title} ${section.ra && section.ra.length > 0 ? `<span style="font-size: 12px; background: #eee; padding: 2px 6px; border-radius: 4px; font-weight: normal;">${section.ra.join(", ")}</span>` : ''}</h2>
                         
                         ${section.type === 'STANDARD' ?
-                ((section.content || '').trim().startsWith('<') ? `<div>${section.content}</div>` : `<div style="white-space: pre-wrap;">${section.content || ''}</div>`)
+                ((section.content || '').trim().startsWith('<') ?
+                    `<div>${(section.content || '').replace(/(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/gi, '<strong>$1</strong>')}</div>`
+                    : `<div style="white-space: pre-wrap;">${section.content || ''}</div>`)
                 : ''}
                         
                         ${section.type !== 'STANDARD' ?
-                ((section.questions || '').trim().startsWith('<') ? `<div>${section.questions}</div>` : `<div>${formatQuestionsExport(section.questions || '', section.type === 'TEST')}</div>`)
+                ((section.questions || '').trim().startsWith('<') ?
+                    `<div>${(section.questions || '').replace(/(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/gi, '<strong>$1</strong>')}</div>`
+                    : `<div>${formatQuestionsExport(section.questions || '', section.type === 'TEST')}</div>`)
                 : ''}
                     </div>
                 `).join('')}

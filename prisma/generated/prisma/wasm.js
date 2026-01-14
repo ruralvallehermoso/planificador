@@ -280,8 +280,8 @@ exports.Prisma.ExamTemplateScalarFieldEnum = {
 
 exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
-  ticker: 'ticker',
   name: 'name',
+  ticker: 'ticker',
   category: 'category',
   platform: 'platform',
   quantity: 'quantity',
@@ -293,27 +293,61 @@ exports.Prisma.AssetScalarFieldEnum = {
   indexa_api: 'indexa_api',
   manual: 'manual',
   image_url: 'image_url',
-  userId: 'userId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  userId: 'userId'
 };
 
 exports.Prisma.HistoricalPriceScalarFieldEnum = {
   id: 'id',
-  price_eur: 'price_eur',
-  date: 'date',
   assetId: 'assetId',
-  createdAt: 'createdAt'
+  date: 'date',
+  price_eur: 'price_eur'
 };
 
 exports.Prisma.PortfolioSnapshotScalarFieldEnum = {
   id: 'id',
-  total_value_eur: 'total_value_eur',
   date: 'date',
   category: 'category',
   asset_id: 'asset_id',
+  total_value_eur: 'total_value_eur',
+  userId: 'userId'
+};
+
+exports.Prisma.InternshipScalarFieldEnum = {
+  id: 'id',
   userId: 'userId',
-  createdAt: 'createdAt'
+  status: 'status',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  realStartDate: 'realStartDate',
+  realEndDate: 'realEndDate',
+  totalHours: 'totalHours',
+  schedule: 'schedule',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InternshipCenterScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  address: 'address',
+  province: 'province',
+  city: 'city',
+  tutorName: 'tutorName',
+  tutorEmail: 'tutorEmail',
+  tutorPhone: 'tutorPhone',
+  universityTutor: 'universityTutor',
+  internshipId: 'internshipId'
+};
+
+exports.Prisma.InternshipLogScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  hours: 'hours',
+  activity: 'activity',
+  observations: 'observations',
+  internshipId: 'internshipId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -335,9 +369,9 @@ exports.Role = exports.$Enums.Role = {
   OWNER: 'OWNER',
   TEACHER: 'TEACHER',
   FAMILY: 'FAMILY',
+  GUEST: 'GUEST',
   CASA_RURAL: 'CASA_RURAL',
-  EMPLEADO: 'EMPLEADO',
-  GUEST: 'GUEST'
+  EMPLEADO: 'EMPLEADO'
 };
 
 exports.Prisma.ModelName = {
@@ -356,7 +390,10 @@ exports.Prisma.ModelName = {
   ExamTemplate: 'ExamTemplate',
   Asset: 'Asset',
   HistoricalPrice: 'HistoricalPrice',
-  PortfolioSnapshot: 'PortfolioSnapshot'
+  PortfolioSnapshot: 'PortfolioSnapshot',
+  Internship: 'Internship',
+  InternshipCenter: 'InternshipCenter',
+  InternshipLog: 'InternshipLog'
 };
 
 /**

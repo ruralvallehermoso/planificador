@@ -93,6 +93,21 @@ export type HistoricalPrice = $Result.DefaultSelection<Prisma.$HistoricalPricePa
  * 
  */
 export type PortfolioSnapshot = $Result.DefaultSelection<Prisma.$PortfolioSnapshotPayload>
+/**
+ * Model Internship
+ * 
+ */
+export type Internship = $Result.DefaultSelection<Prisma.$InternshipPayload>
+/**
+ * Model InternshipCenter
+ * 
+ */
+export type InternshipCenter = $Result.DefaultSelection<Prisma.$InternshipCenterPayload>
+/**
+ * Model InternshipLog
+ * 
+ */
+export type InternshipLog = $Result.DefaultSelection<Prisma.$InternshipLogPayload>
 
 /**
  * Enums
@@ -103,9 +118,9 @@ export namespace $Enums {
   OWNER: 'OWNER',
   TEACHER: 'TEACHER',
   FAMILY: 'FAMILY',
+  GUEST: 'GUEST',
   CASA_RURAL: 'CASA_RURAL',
-  EMPLEADO: 'EMPLEADO',
-  GUEST: 'GUEST'
+  EMPLEADO: 'EMPLEADO'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -398,6 +413,36 @@ export class PrismaClient<
     * ```
     */
   get portfolioSnapshot(): Prisma.PortfolioSnapshotDelegate<ExtArgs>;
+
+  /**
+   * `prisma.internship`: Exposes CRUD operations for the **Internship** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Internships
+    * const internships = await prisma.internship.findMany()
+    * ```
+    */
+  get internship(): Prisma.InternshipDelegate<ExtArgs>;
+
+  /**
+   * `prisma.internshipCenter`: Exposes CRUD operations for the **InternshipCenter** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more InternshipCenters
+    * const internshipCenters = await prisma.internshipCenter.findMany()
+    * ```
+    */
+  get internshipCenter(): Prisma.InternshipCenterDelegate<ExtArgs>;
+
+  /**
+   * `prisma.internshipLog`: Exposes CRUD operations for the **InternshipLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more InternshipLogs
+    * const internshipLogs = await prisma.internshipLog.findMany()
+    * ```
+    */
+  get internshipLog(): Prisma.InternshipLogDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -854,7 +899,10 @@ export namespace Prisma {
     ExamTemplate: 'ExamTemplate',
     Asset: 'Asset',
     HistoricalPrice: 'HistoricalPrice',
-    PortfolioSnapshot: 'PortfolioSnapshot'
+    PortfolioSnapshot: 'PortfolioSnapshot',
+    Internship: 'Internship',
+    InternshipCenter: 'InternshipCenter',
+    InternshipLog: 'InternshipLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -870,7 +918,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "session" | "account" | "category" | "taskSection" | "actionItem" | "classSession" | "project" | "projectImage" | "subject" | "assessment" | "employeeActivity" | "examTemplate" | "asset" | "historicalPrice" | "portfolioSnapshot"
+      modelProps: "user" | "session" | "account" | "category" | "taskSection" | "actionItem" | "classSession" | "project" | "projectImage" | "subject" | "assessment" | "employeeActivity" | "examTemplate" | "asset" | "historicalPrice" | "portfolioSnapshot" | "internship" | "internshipCenter" | "internshipLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1994,6 +2042,216 @@ export namespace Prisma {
           }
         }
       }
+      Internship: {
+        payload: Prisma.$InternshipPayload<ExtArgs>
+        fields: Prisma.InternshipFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InternshipFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InternshipFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload>
+          }
+          findFirst: {
+            args: Prisma.InternshipFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InternshipFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload>
+          }
+          findMany: {
+            args: Prisma.InternshipFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload>[]
+          }
+          create: {
+            args: Prisma.InternshipCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload>
+          }
+          createMany: {
+            args: Prisma.InternshipCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InternshipCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload>[]
+          }
+          delete: {
+            args: Prisma.InternshipDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload>
+          }
+          update: {
+            args: Prisma.InternshipUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload>
+          }
+          deleteMany: {
+            args: Prisma.InternshipDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InternshipUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InternshipUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipPayload>
+          }
+          aggregate: {
+            args: Prisma.InternshipAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInternship>
+          }
+          groupBy: {
+            args: Prisma.InternshipGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InternshipGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InternshipCountArgs<ExtArgs>
+            result: $Utils.Optional<InternshipCountAggregateOutputType> | number
+          }
+        }
+      }
+      InternshipCenter: {
+        payload: Prisma.$InternshipCenterPayload<ExtArgs>
+        fields: Prisma.InternshipCenterFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InternshipCenterFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InternshipCenterFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload>
+          }
+          findFirst: {
+            args: Prisma.InternshipCenterFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InternshipCenterFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload>
+          }
+          findMany: {
+            args: Prisma.InternshipCenterFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload>[]
+          }
+          create: {
+            args: Prisma.InternshipCenterCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload>
+          }
+          createMany: {
+            args: Prisma.InternshipCenterCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InternshipCenterCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload>[]
+          }
+          delete: {
+            args: Prisma.InternshipCenterDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload>
+          }
+          update: {
+            args: Prisma.InternshipCenterUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload>
+          }
+          deleteMany: {
+            args: Prisma.InternshipCenterDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InternshipCenterUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InternshipCenterUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipCenterPayload>
+          }
+          aggregate: {
+            args: Prisma.InternshipCenterAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInternshipCenter>
+          }
+          groupBy: {
+            args: Prisma.InternshipCenterGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InternshipCenterGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InternshipCenterCountArgs<ExtArgs>
+            result: $Utils.Optional<InternshipCenterCountAggregateOutputType> | number
+          }
+        }
+      }
+      InternshipLog: {
+        payload: Prisma.$InternshipLogPayload<ExtArgs>
+        fields: Prisma.InternshipLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InternshipLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InternshipLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload>
+          }
+          findFirst: {
+            args: Prisma.InternshipLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InternshipLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload>
+          }
+          findMany: {
+            args: Prisma.InternshipLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload>[]
+          }
+          create: {
+            args: Prisma.InternshipLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload>
+          }
+          createMany: {
+            args: Prisma.InternshipLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InternshipLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload>[]
+          }
+          delete: {
+            args: Prisma.InternshipLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload>
+          }
+          update: {
+            args: Prisma.InternshipLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.InternshipLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InternshipLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InternshipLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InternshipLogPayload>
+          }
+          aggregate: {
+            args: Prisma.InternshipLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInternshipLog>
+          }
+          groupBy: {
+            args: Prisma.InternshipLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InternshipLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InternshipLogCountArgs<ExtArgs>
+            result: $Utils.Optional<InternshipLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2155,17 +2413,17 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    sessions: number
     accounts: number
     activities: number
+    sessions: number
     assets: number
     portfolioSnapshots: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     activities?: boolean | UserCountOutputTypeCountActivitiesArgs
+    sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     assets?: boolean | UserCountOutputTypeCountAssetsArgs
     portfolioSnapshots?: boolean | UserCountOutputTypeCountPortfolioSnapshotsArgs
   }
@@ -2184,13 +2442,6 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: SessionWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
   export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AccountWhereInput
   }
@@ -2200,6 +2451,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EmployeeActivityWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SessionWhereInput
   }
 
   /**
@@ -2223,16 +2481,16 @@ export namespace Prisma {
 
   export type CategoryCountOutputType = {
     items: number
-    sections: number
     sessions: number
     projects: number
+    sections: number
   }
 
   export type CategoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | CategoryCountOutputTypeCountItemsArgs
-    sections?: boolean | CategoryCountOutputTypeCountSectionsArgs
     sessions?: boolean | CategoryCountOutputTypeCountSessionsArgs
     projects?: boolean | CategoryCountOutputTypeCountProjectsArgs
+    sections?: boolean | CategoryCountOutputTypeCountSectionsArgs
   }
 
   // Custom InputTypes
@@ -2256,13 +2514,6 @@ export namespace Prisma {
   /**
    * CategoryCountOutputType without action
    */
-  export type CategoryCountOutputTypeCountSectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TaskSectionWhereInput
-  }
-
-  /**
-   * CategoryCountOutputType without action
-   */
   export type CategoryCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClassSessionWhereInput
   }
@@ -2272,6 +2523,13 @@ export namespace Prisma {
    */
   export type CategoryCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectWhereInput
+  }
+
+  /**
+   * CategoryCountOutputType without action
+   */
+  export type CategoryCountOutputTypeCountSectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskSectionWhereInput
   }
 
 
@@ -2342,13 +2600,13 @@ export namespace Prisma {
    */
 
   export type SubjectCountOutputType = {
-    assessments: number
     tasks: number
+    assessments: number
   }
 
   export type SubjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    assessments?: boolean | SubjectCountOutputTypeCountAssessmentsArgs
     tasks?: boolean | SubjectCountOutputTypeCountTasksArgs
+    assessments?: boolean | SubjectCountOutputTypeCountAssessmentsArgs
   }
 
   // Custom InputTypes
@@ -2365,46 +2623,46 @@ export namespace Prisma {
   /**
    * SubjectCountOutputType without action
    */
-  export type SubjectCountOutputTypeCountAssessmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AssessmentWhereInput
+  export type SubjectCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ActionItemWhereInput
   }
 
   /**
    * SubjectCountOutputType without action
    */
-  export type SubjectCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ActionItemWhereInput
+  export type SubjectCountOutputTypeCountAssessmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssessmentWhereInput
   }
 
 
   /**
-   * Count Type AssetCountOutputType
+   * Count Type InternshipCountOutputType
    */
 
-  export type AssetCountOutputType = {
-    history: number
+  export type InternshipCountOutputType = {
+    logs: number
   }
 
-  export type AssetCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    history?: boolean | AssetCountOutputTypeCountHistoryArgs
+  export type InternshipCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    logs?: boolean | InternshipCountOutputTypeCountLogsArgs
   }
 
   // Custom InputTypes
   /**
-   * AssetCountOutputType without action
+   * InternshipCountOutputType without action
    */
-  export type AssetCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type InternshipCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AssetCountOutputType
+     * Select specific fields to fetch from the InternshipCountOutputType
      */
-    select?: AssetCountOutputTypeSelect<ExtArgs> | null
+    select?: InternshipCountOutputTypeSelect<ExtArgs> | null
   }
 
   /**
-   * AssetCountOutputType without action
+   * InternshipCountOutputType without action
    */
-  export type AssetCountOutputTypeCountHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: HistoricalPriceWhereInput
+  export type InternshipCountOutputTypeCountLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InternshipLogWhereInput
   }
 
 
@@ -2640,11 +2898,12 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
+    sessions?: boolean | User$sessionsArgs<ExtArgs>
     assets?: boolean | User$assetsArgs<ExtArgs>
     portfolioSnapshots?: boolean | User$portfolioSnapshotsArgs<ExtArgs>
+    internship?: boolean | User$internshipArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2681,11 +2940,12 @@ export namespace Prisma {
   }
 
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
+    sessions?: boolean | User$sessionsArgs<ExtArgs>
     assets?: boolean | User$assetsArgs<ExtArgs>
     portfolioSnapshots?: boolean | User$portfolioSnapshotsArgs<ExtArgs>
+    internship?: boolean | User$internshipArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2693,11 +2953,12 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      sessions: Prisma.$SessionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       activities: Prisma.$EmployeeActivityPayload<ExtArgs>[]
+      sessions: Prisma.$SessionPayload<ExtArgs>[]
       assets: Prisma.$AssetPayload<ExtArgs>[]
       portfolioSnapshots: Prisma.$PortfolioSnapshotPayload<ExtArgs>[]
+      internship: Prisma.$InternshipPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3077,11 +3338,12 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany"> | Null>
     activities<T extends User$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeeActivityPayload<ExtArgs>, T, "findMany"> | Null>
+    sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
     assets<T extends User$assetsArgs<ExtArgs> = {}>(args?: Subset<T, User$assetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany"> | Null>
     portfolioSnapshots<T extends User$portfolioSnapshotsArgs<ExtArgs> = {}>(args?: Subset<T, User$portfolioSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioSnapshotPayload<ExtArgs>, T, "findMany"> | Null>
+    internship<T extends User$internshipArgs<ExtArgs> = {}>(args?: Subset<T, User$internshipArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3438,26 +3700,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.sessions
-   */
-  export type User$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Session
-     */
-    select?: SessionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: SessionInclude<ExtArgs> | null
-    where?: SessionWhereInput
-    orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
-    cursor?: SessionWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
-  }
-
-  /**
    * User.accounts
    */
   export type User$accountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3498,6 +3740,26 @@ export namespace Prisma {
   }
 
   /**
+   * User.sessions
+   */
+  export type User$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionInclude<ExtArgs> | null
+    where?: SessionWhereInput
+    orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
+    cursor?: SessionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
+  }
+
+  /**
    * User.assets
    */
   export type User$assetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3535,6 +3797,21 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PortfolioSnapshotScalarFieldEnum | PortfolioSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * User.internship
+   */
+  export type User$internshipArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    where?: InternshipWhereInput
   }
 
   /**
@@ -5713,9 +5990,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     items?: boolean | Category$itemsArgs<ExtArgs>
-    sections?: boolean | Category$sectionsArgs<ExtArgs>
     sessions?: boolean | Category$sessionsArgs<ExtArgs>
     projects?: boolean | Category$projectsArgs<ExtArgs>
+    sections?: boolean | Category$sectionsArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["category"]>
 
@@ -5743,9 +6020,9 @@ export namespace Prisma {
 
   export type CategoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Category$itemsArgs<ExtArgs>
-    sections?: boolean | Category$sectionsArgs<ExtArgs>
     sessions?: boolean | Category$sessionsArgs<ExtArgs>
     projects?: boolean | Category$projectsArgs<ExtArgs>
+    sections?: boolean | Category$sectionsArgs<ExtArgs>
     _count?: boolean | CategoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CategoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5754,9 +6031,9 @@ export namespace Prisma {
     name: "Category"
     objects: {
       items: Prisma.$ActionItemPayload<ExtArgs>[]
-      sections: Prisma.$TaskSectionPayload<ExtArgs>[]
       sessions: Prisma.$ClassSessionPayload<ExtArgs>[]
       projects: Prisma.$ProjectPayload<ExtArgs>[]
+      sections: Prisma.$TaskSectionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6132,9 +6409,9 @@ export namespace Prisma {
   export interface Prisma__CategoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     items<T extends Category$itemsArgs<ExtArgs> = {}>(args?: Subset<T, Category$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActionItemPayload<ExtArgs>, T, "findMany"> | Null>
-    sections<T extends Category$sectionsArgs<ExtArgs> = {}>(args?: Subset<T, Category$sectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskSectionPayload<ExtArgs>, T, "findMany"> | Null>
     sessions<T extends Category$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, Category$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClassSessionPayload<ExtArgs>, T, "findMany"> | Null>
     projects<T extends Category$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Category$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany"> | Null>
+    sections<T extends Category$sectionsArgs<ExtArgs> = {}>(args?: Subset<T, Category$sectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskSectionPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6506,26 +6783,6 @@ export namespace Prisma {
   }
 
   /**
-   * Category.sections
-   */
-  export type Category$sectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TaskSection
-     */
-    select?: TaskSectionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TaskSectionInclude<ExtArgs> | null
-    where?: TaskSectionWhereInput
-    orderBy?: TaskSectionOrderByWithRelationInput | TaskSectionOrderByWithRelationInput[]
-    cursor?: TaskSectionWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: TaskSectionScalarFieldEnum | TaskSectionScalarFieldEnum[]
-  }
-
-  /**
    * Category.sessions
    */
   export type Category$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6563,6 +6820,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * Category.sections
+   */
+  export type Category$sectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskSection
+     */
+    select?: TaskSectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskSectionInclude<ExtArgs> | null
+    where?: TaskSectionWhereInput
+    orderBy?: TaskSectionOrderByWithRelationInput | TaskSectionOrderByWithRelationInput[]
+    cursor?: TaskSectionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskSectionScalarFieldEnum | TaskSectionScalarFieldEnum[]
   }
 
   /**
@@ -6786,8 +7063,8 @@ export namespace Prisma {
     categoryId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
     items?: boolean | TaskSection$itemsArgs<ExtArgs>
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
     _count?: boolean | TaskSectionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["taskSection"]>
 
@@ -6811,8 +7088,8 @@ export namespace Prisma {
   }
 
   export type TaskSectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    category?: boolean | CategoryDefaultArgs<ExtArgs>
     items?: boolean | TaskSection$itemsArgs<ExtArgs>
+    category?: boolean | CategoryDefaultArgs<ExtArgs>
     _count?: boolean | TaskSectionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TaskSectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6822,8 +7099,8 @@ export namespace Prisma {
   export type $TaskSectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TaskSection"
     objects: {
-      category: Prisma.$CategoryPayload<ExtArgs>
       items: Prisma.$ActionItemPayload<ExtArgs>[]
+      category: Prisma.$CategoryPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7196,8 +7473,8 @@ export namespace Prisma {
    */
   export interface Prisma__TaskSectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     items<T extends TaskSection$itemsArgs<ExtArgs> = {}>(args?: Subset<T, TaskSection$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActionItemPayload<ExtArgs>, T, "findMany"> | Null>
+    category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9805,8 +10082,8 @@ export namespace Prisma {
     categoryId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    images?: boolean | Project$imagesArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
+    images?: boolean | Project$imagesArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -9832,8 +10109,8 @@ export namespace Prisma {
   }
 
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    images?: boolean | Project$imagesArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
+    images?: boolean | Project$imagesArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9843,8 +10120,8 @@ export namespace Prisma {
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
-      images: Prisma.$ProjectImagePayload<ExtArgs>[]
       category: Prisma.$CategoryPayload<ExtArgs>
+      images: Prisma.$ProjectImagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10218,8 +10495,8 @@ export namespace Prisma {
    */
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    images<T extends Project$imagesArgs<ExtArgs> = {}>(args?: Subset<T, Project$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectImagePayload<ExtArgs>, T, "findMany"> | Null>
     category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    images<T extends Project$imagesArgs<ExtArgs> = {}>(args?: Subset<T, Project$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectImagePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11775,8 +12052,8 @@ export namespace Prisma {
     finalGrade?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    assessments?: boolean | Subject$assessmentsArgs<ExtArgs>
     tasks?: boolean | Subject$tasksArgs<ExtArgs>
+    assessments?: boolean | Subject$assessmentsArgs<ExtArgs>
     _count?: boolean | SubjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subject"]>
 
@@ -11807,8 +12084,8 @@ export namespace Prisma {
   }
 
   export type SubjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    assessments?: boolean | Subject$assessmentsArgs<ExtArgs>
     tasks?: boolean | Subject$tasksArgs<ExtArgs>
+    assessments?: boolean | Subject$assessmentsArgs<ExtArgs>
     _count?: boolean | SubjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SubjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -11816,8 +12093,8 @@ export namespace Prisma {
   export type $SubjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Subject"
     objects: {
-      assessments: Prisma.$AssessmentPayload<ExtArgs>[]
       tasks: Prisma.$ActionItemPayload<ExtArgs>[]
+      assessments: Prisma.$AssessmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12194,8 +12471,8 @@ export namespace Prisma {
    */
   export interface Prisma__SubjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    assessments<T extends Subject$assessmentsArgs<ExtArgs> = {}>(args?: Subset<T, Subject$assessmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssessmentPayload<ExtArgs>, T, "findMany"> | Null>
     tasks<T extends Subject$tasksArgs<ExtArgs> = {}>(args?: Subset<T, Subject$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActionItemPayload<ExtArgs>, T, "findMany"> | Null>
+    assessments<T extends Subject$assessmentsArgs<ExtArgs> = {}>(args?: Subset<T, Subject$assessmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssessmentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12549,26 +12826,6 @@ export namespace Prisma {
   }
 
   /**
-   * Subject.assessments
-   */
-  export type Subject$assessmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Assessment
-     */
-    select?: AssessmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AssessmentInclude<ExtArgs> | null
-    where?: AssessmentWhereInput
-    orderBy?: AssessmentOrderByWithRelationInput | AssessmentOrderByWithRelationInput[]
-    cursor?: AssessmentWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: AssessmentScalarFieldEnum | AssessmentScalarFieldEnum[]
-  }
-
-  /**
    * Subject.tasks
    */
   export type Subject$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12586,6 +12843,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ActionItemScalarFieldEnum | ActionItemScalarFieldEnum[]
+  }
+
+  /**
+   * Subject.assessments
+   */
+  export type Subject$assessmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assessment
+     */
+    select?: AssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssessmentInclude<ExtArgs> | null
+    where?: AssessmentWhereInput
+    orderBy?: AssessmentOrderByWithRelationInput | AssessmentOrderByWithRelationInput[]
+    cursor?: AssessmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssessmentScalarFieldEnum | AssessmentScalarFieldEnum[]
   }
 
   /**
@@ -15613,8 +15890,8 @@ export namespace Prisma {
 
   export type AssetMinAggregateOutputType = {
     id: string | null
-    ticker: string | null
     name: string | null
+    ticker: string | null
     category: string | null
     platform: string | null
     quantity: number | null
@@ -15627,14 +15904,12 @@ export namespace Prisma {
     manual: boolean | null
     image_url: string | null
     userId: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
   }
 
   export type AssetMaxAggregateOutputType = {
     id: string | null
-    ticker: string | null
     name: string | null
+    ticker: string | null
     category: string | null
     platform: string | null
     quantity: number | null
@@ -15647,14 +15922,12 @@ export namespace Prisma {
     manual: boolean | null
     image_url: string | null
     userId: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
   }
 
   export type AssetCountAggregateOutputType = {
     id: number
-    ticker: number
     name: number
+    ticker: number
     category: number
     platform: number
     quantity: number
@@ -15667,8 +15940,6 @@ export namespace Prisma {
     manual: number
     image_url: number
     userId: number
-    createdAt: number
-    updatedAt: number
     _all: number
   }
 
@@ -15685,8 +15956,8 @@ export namespace Prisma {
 
   export type AssetMinAggregateInputType = {
     id?: true
-    ticker?: true
     name?: true
+    ticker?: true
     category?: true
     platform?: true
     quantity?: true
@@ -15699,14 +15970,12 @@ export namespace Prisma {
     manual?: true
     image_url?: true
     userId?: true
-    createdAt?: true
-    updatedAt?: true
   }
 
   export type AssetMaxAggregateInputType = {
     id?: true
-    ticker?: true
     name?: true
+    ticker?: true
     category?: true
     platform?: true
     quantity?: true
@@ -15719,14 +15988,12 @@ export namespace Prisma {
     manual?: true
     image_url?: true
     userId?: true
-    createdAt?: true
-    updatedAt?: true
   }
 
   export type AssetCountAggregateInputType = {
     id?: true
-    ticker?: true
     name?: true
+    ticker?: true
     category?: true
     platform?: true
     quantity?: true
@@ -15739,8 +16006,6 @@ export namespace Prisma {
     manual?: true
     image_url?: true
     userId?: true
-    createdAt?: true
-    updatedAt?: true
     _all?: true
   }
 
@@ -15832,8 +16097,8 @@ export namespace Prisma {
 
   export type AssetGroupByOutputType = {
     id: string
-    ticker: string | null
     name: string
+    ticker: string | null
     category: string
     platform: string | null
     quantity: number
@@ -15842,12 +16107,10 @@ export namespace Prisma {
     yahoo_symbol: string | null
     coingecko_id: string | null
     coincap_id: string | null
-    indexa_api: boolean
-    manual: boolean
+    indexa_api: boolean | null
+    manual: boolean | null
     image_url: string | null
-    userId: string
-    createdAt: Date
-    updatedAt: Date
+    userId: string | null
     _count: AssetCountAggregateOutputType | null
     _avg: AssetAvgAggregateOutputType | null
     _sum: AssetSumAggregateOutputType | null
@@ -15871,8 +16134,8 @@ export namespace Prisma {
 
   export type AssetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    ticker?: boolean
     name?: boolean
+    ticker?: boolean
     category?: boolean
     platform?: boolean
     quantity?: boolean
@@ -15885,17 +16148,13 @@ export namespace Prisma {
     manual?: boolean
     image_url?: boolean
     userId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    history?: boolean | Asset$historyArgs<ExtArgs>
-    _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
+    user?: boolean | Asset$userArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
 
   export type AssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    ticker?: boolean
     name?: boolean
+    ticker?: boolean
     category?: boolean
     platform?: boolean
     quantity?: boolean
@@ -15908,15 +16167,13 @@ export namespace Prisma {
     manual?: boolean
     image_url?: boolean
     userId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | Asset$userArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
 
   export type AssetSelectScalar = {
     id?: boolean
-    ticker?: boolean
     name?: boolean
+    ticker?: boolean
     category?: boolean
     platform?: boolean
     quantity?: boolean
@@ -15929,29 +16186,24 @@ export namespace Prisma {
     manual?: boolean
     image_url?: boolean
     userId?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
   }
 
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-    history?: boolean | Asset$historyArgs<ExtArgs>
-    _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
+    user?: boolean | Asset$userArgs<ExtArgs>
   }
   export type AssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | Asset$userArgs<ExtArgs>
   }
 
   export type $AssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Asset"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-      history: Prisma.$HistoricalPricePayload<ExtArgs>[]
+      user: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      ticker: string | null
       name: string
+      ticker: string | null
       category: string
       platform: string | null
       quantity: number
@@ -15960,12 +16212,10 @@ export namespace Prisma {
       yahoo_symbol: string | null
       coingecko_id: string | null
       coincap_id: string | null
-      indexa_api: boolean
-      manual: boolean
+      indexa_api: boolean | null
+      manual: boolean | null
       image_url: string | null
-      userId: string
-      createdAt: Date
-      updatedAt: Date
+      userId: string | null
     }, ExtArgs["result"]["asset"]>
     composites: {}
   }
@@ -16330,8 +16580,7 @@ export namespace Prisma {
    */
   export interface Prisma__AssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    history<T extends Asset$historyArgs<ExtArgs> = {}>(args?: Subset<T, Asset$historyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HistoricalPricePayload<ExtArgs>, T, "findMany"> | Null>
+    user<T extends Asset$userArgs<ExtArgs> = {}>(args?: Subset<T, Asset$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16362,8 +16611,8 @@ export namespace Prisma {
    */ 
   interface AssetFieldRefs {
     readonly id: FieldRef<"Asset", 'String'>
-    readonly ticker: FieldRef<"Asset", 'String'>
     readonly name: FieldRef<"Asset", 'String'>
+    readonly ticker: FieldRef<"Asset", 'String'>
     readonly category: FieldRef<"Asset", 'String'>
     readonly platform: FieldRef<"Asset", 'String'>
     readonly quantity: FieldRef<"Asset", 'Float'>
@@ -16376,8 +16625,6 @@ export namespace Prisma {
     readonly manual: FieldRef<"Asset", 'Boolean'>
     readonly image_url: FieldRef<"Asset", 'String'>
     readonly userId: FieldRef<"Asset", 'String'>
-    readonly createdAt: FieldRef<"Asset", 'DateTime'>
-    readonly updatedAt: FieldRef<"Asset", 'DateTime'>
   }
     
 
@@ -16696,23 +16943,18 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.history
+   * Asset.user
    */
-  export type Asset$historyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Asset$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the HistoricalPrice
+     * Select specific fields to fetch from the User
      */
-    select?: HistoricalPriceSelect<ExtArgs> | null
+    select?: UserSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: HistoricalPriceInclude<ExtArgs> | null
-    where?: HistoricalPriceWhereInput
-    orderBy?: HistoricalPriceOrderByWithRelationInput | HistoricalPriceOrderByWithRelationInput[]
-    cursor?: HistoricalPriceWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: HistoricalPriceScalarFieldEnum | HistoricalPriceScalarFieldEnum[]
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -16743,69 +16985,67 @@ export namespace Prisma {
   }
 
   export type HistoricalPriceAvgAggregateOutputType = {
+    id: number | null
     price_eur: number | null
   }
 
   export type HistoricalPriceSumAggregateOutputType = {
+    id: number | null
     price_eur: number | null
   }
 
   export type HistoricalPriceMinAggregateOutputType = {
-    id: string | null
-    price_eur: number | null
-    date: Date | null
+    id: number | null
     assetId: string | null
-    createdAt: Date | null
+    date: Date | null
+    price_eur: number | null
   }
 
   export type HistoricalPriceMaxAggregateOutputType = {
-    id: string | null
-    price_eur: number | null
-    date: Date | null
+    id: number | null
     assetId: string | null
-    createdAt: Date | null
+    date: Date | null
+    price_eur: number | null
   }
 
   export type HistoricalPriceCountAggregateOutputType = {
     id: number
-    price_eur: number
-    date: number
     assetId: number
-    createdAt: number
+    date: number
+    price_eur: number
     _all: number
   }
 
 
   export type HistoricalPriceAvgAggregateInputType = {
+    id?: true
     price_eur?: true
   }
 
   export type HistoricalPriceSumAggregateInputType = {
+    id?: true
     price_eur?: true
   }
 
   export type HistoricalPriceMinAggregateInputType = {
     id?: true
-    price_eur?: true
-    date?: true
     assetId?: true
-    createdAt?: true
+    date?: true
+    price_eur?: true
   }
 
   export type HistoricalPriceMaxAggregateInputType = {
     id?: true
-    price_eur?: true
-    date?: true
     assetId?: true
-    createdAt?: true
+    date?: true
+    price_eur?: true
   }
 
   export type HistoricalPriceCountAggregateInputType = {
     id?: true
-    price_eur?: true
-    date?: true
     assetId?: true
-    createdAt?: true
+    date?: true
+    price_eur?: true
     _all?: true
   }
 
@@ -16896,11 +17136,10 @@ export namespace Prisma {
   }
 
   export type HistoricalPriceGroupByOutputType = {
-    id: string
-    price_eur: number
-    date: Date
+    id: number
     assetId: string
-    createdAt: Date
+    date: Date
+    price_eur: number
     _count: HistoricalPriceCountAggregateOutputType | null
     _avg: HistoricalPriceAvgAggregateOutputType | null
     _sum: HistoricalPriceSumAggregateOutputType | null
@@ -16924,48 +17163,34 @@ export namespace Prisma {
 
   export type HistoricalPriceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    price_eur?: boolean
-    date?: boolean
     assetId?: boolean
-    createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    date?: boolean
+    price_eur?: boolean
   }, ExtArgs["result"]["historicalPrice"]>
 
   export type HistoricalPriceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    price_eur?: boolean
-    date?: boolean
     assetId?: boolean
-    createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    date?: boolean
+    price_eur?: boolean
   }, ExtArgs["result"]["historicalPrice"]>
 
   export type HistoricalPriceSelectScalar = {
     id?: boolean
-    price_eur?: boolean
-    date?: boolean
     assetId?: boolean
-    createdAt?: boolean
+    date?: boolean
+    price_eur?: boolean
   }
 
-  export type HistoricalPriceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
-  }
-  export type HistoricalPriceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
-  }
 
   export type $HistoricalPricePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "HistoricalPrice"
-    objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
-    }
+    objects: {}
     scalars: $Extensions.GetPayloadResult<{
-      id: string
-      price_eur: number
-      date: Date
+      id: number
       assetId: string
-      createdAt: Date
+      date: Date
+      price_eur: number
     }, ExtArgs["result"]["historicalPrice"]>
     composites: {}
   }
@@ -17330,7 +17555,6 @@ export namespace Prisma {
    */
   export interface Prisma__HistoricalPriceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17360,11 +17584,10 @@ export namespace Prisma {
    * Fields of the HistoricalPrice model
    */ 
   interface HistoricalPriceFieldRefs {
-    readonly id: FieldRef<"HistoricalPrice", 'String'>
-    readonly price_eur: FieldRef<"HistoricalPrice", 'Float'>
-    readonly date: FieldRef<"HistoricalPrice", 'DateTime'>
+    readonly id: FieldRef<"HistoricalPrice", 'Int'>
     readonly assetId: FieldRef<"HistoricalPrice", 'String'>
-    readonly createdAt: FieldRef<"HistoricalPrice", 'DateTime'>
+    readonly date: FieldRef<"HistoricalPrice", 'DateTime'>
+    readonly price_eur: FieldRef<"HistoricalPrice", 'Float'>
   }
     
 
@@ -17377,10 +17600,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the HistoricalPrice
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
     /**
      * Filter, which HistoricalPrice to fetch.
      */
@@ -17396,10 +17615,6 @@ export namespace Prisma {
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
-    /**
      * Filter, which HistoricalPrice to fetch.
      */
     where: HistoricalPriceWhereUniqueInput
@@ -17413,10 +17628,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the HistoricalPrice
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
     /**
      * Filter, which HistoricalPrice to fetch.
      */
@@ -17462,10 +17673,6 @@ export namespace Prisma {
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
-    /**
      * Filter, which HistoricalPrice to fetch.
      */
     where?: HistoricalPriceWhereInput
@@ -17510,10 +17717,6 @@ export namespace Prisma {
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
-    /**
      * Filter, which HistoricalPrices to fetch.
      */
     where?: HistoricalPriceWhereInput
@@ -17553,10 +17756,6 @@ export namespace Prisma {
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
-    /**
      * The data needed to create a HistoricalPrice.
      */
     data: XOR<HistoricalPriceCreateInput, HistoricalPriceUncheckedCreateInput>
@@ -17586,10 +17785,6 @@ export namespace Prisma {
      */
     data: HistoricalPriceCreateManyInput | HistoricalPriceCreateManyInput[]
     skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -17600,10 +17795,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the HistoricalPrice
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
     /**
      * The data needed to update a HistoricalPrice.
      */
@@ -17637,10 +17828,6 @@ export namespace Prisma {
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
-    /**
      * The filter to search for the HistoricalPrice to update in case it exists.
      */
     where: HistoricalPriceWhereUniqueInput
@@ -17662,10 +17849,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the HistoricalPrice
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
     /**
      * Filter which HistoricalPrice to delete.
      */
@@ -17690,10 +17873,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the HistoricalPrice
      */
     select?: HistoricalPriceSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: HistoricalPriceInclude<ExtArgs> | null
   }
 
 
@@ -17710,81 +17889,79 @@ export namespace Prisma {
   }
 
   export type PortfolioSnapshotAvgAggregateOutputType = {
+    id: number | null
     total_value_eur: number | null
   }
 
   export type PortfolioSnapshotSumAggregateOutputType = {
+    id: number | null
     total_value_eur: number | null
   }
 
   export type PortfolioSnapshotMinAggregateOutputType = {
-    id: string | null
-    total_value_eur: number | null
+    id: number | null
     date: Date | null
     category: string | null
     asset_id: string | null
+    total_value_eur: number | null
     userId: string | null
-    createdAt: Date | null
   }
 
   export type PortfolioSnapshotMaxAggregateOutputType = {
-    id: string | null
-    total_value_eur: number | null
+    id: number | null
     date: Date | null
     category: string | null
     asset_id: string | null
+    total_value_eur: number | null
     userId: string | null
-    createdAt: Date | null
   }
 
   export type PortfolioSnapshotCountAggregateOutputType = {
     id: number
-    total_value_eur: number
     date: number
     category: number
     asset_id: number
+    total_value_eur: number
     userId: number
-    createdAt: number
     _all: number
   }
 
 
   export type PortfolioSnapshotAvgAggregateInputType = {
+    id?: true
     total_value_eur?: true
   }
 
   export type PortfolioSnapshotSumAggregateInputType = {
+    id?: true
     total_value_eur?: true
   }
 
   export type PortfolioSnapshotMinAggregateInputType = {
     id?: true
-    total_value_eur?: true
     date?: true
     category?: true
     asset_id?: true
+    total_value_eur?: true
     userId?: true
-    createdAt?: true
   }
 
   export type PortfolioSnapshotMaxAggregateInputType = {
     id?: true
-    total_value_eur?: true
     date?: true
     category?: true
     asset_id?: true
+    total_value_eur?: true
     userId?: true
-    createdAt?: true
   }
 
   export type PortfolioSnapshotCountAggregateInputType = {
     id?: true
-    total_value_eur?: true
     date?: true
     category?: true
     asset_id?: true
+    total_value_eur?: true
     userId?: true
-    createdAt?: true
     _all?: true
   }
 
@@ -17875,13 +18052,12 @@ export namespace Prisma {
   }
 
   export type PortfolioSnapshotGroupByOutputType = {
-    id: string
-    total_value_eur: number
+    id: number
     date: Date
     category: string | null
     asset_id: string | null
-    userId: string
-    createdAt: Date
+    total_value_eur: number
+    userId: string | null
     _count: PortfolioSnapshotCountAggregateOutputType | null
     _avg: PortfolioSnapshotAvgAggregateOutputType | null
     _sum: PortfolioSnapshotSumAggregateOutputType | null
@@ -17905,56 +18081,52 @@ export namespace Prisma {
 
   export type PortfolioSnapshotSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    total_value_eur?: boolean
     date?: boolean
     category?: boolean
     asset_id?: boolean
+    total_value_eur?: boolean
     userId?: boolean
-    createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | PortfolioSnapshot$userArgs<ExtArgs>
   }, ExtArgs["result"]["portfolioSnapshot"]>
 
   export type PortfolioSnapshotSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    total_value_eur?: boolean
     date?: boolean
     category?: boolean
     asset_id?: boolean
+    total_value_eur?: boolean
     userId?: boolean
-    createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | PortfolioSnapshot$userArgs<ExtArgs>
   }, ExtArgs["result"]["portfolioSnapshot"]>
 
   export type PortfolioSnapshotSelectScalar = {
     id?: boolean
-    total_value_eur?: boolean
     date?: boolean
     category?: boolean
     asset_id?: boolean
+    total_value_eur?: boolean
     userId?: boolean
-    createdAt?: boolean
   }
 
   export type PortfolioSnapshotInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | PortfolioSnapshot$userArgs<ExtArgs>
   }
   export type PortfolioSnapshotIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | PortfolioSnapshot$userArgs<ExtArgs>
   }
 
   export type $PortfolioSnapshotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "PortfolioSnapshot"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: string
-      total_value_eur: number
+      id: number
       date: Date
       category: string | null
       asset_id: string | null
-      userId: string
-      createdAt: Date
+      total_value_eur: number
+      userId: string | null
     }, ExtArgs["result"]["portfolioSnapshot"]>
     composites: {}
   }
@@ -18319,7 +18491,7 @@ export namespace Prisma {
    */
   export interface Prisma__PortfolioSnapshotClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends PortfolioSnapshot$userArgs<ExtArgs> = {}>(args?: Subset<T, PortfolioSnapshot$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -18349,13 +18521,12 @@ export namespace Prisma {
    * Fields of the PortfolioSnapshot model
    */ 
   interface PortfolioSnapshotFieldRefs {
-    readonly id: FieldRef<"PortfolioSnapshot", 'String'>
-    readonly total_value_eur: FieldRef<"PortfolioSnapshot", 'Float'>
+    readonly id: FieldRef<"PortfolioSnapshot", 'Int'>
     readonly date: FieldRef<"PortfolioSnapshot", 'DateTime'>
     readonly category: FieldRef<"PortfolioSnapshot", 'String'>
     readonly asset_id: FieldRef<"PortfolioSnapshot", 'String'>
+    readonly total_value_eur: FieldRef<"PortfolioSnapshot", 'Float'>
     readonly userId: FieldRef<"PortfolioSnapshot", 'String'>
-    readonly createdAt: FieldRef<"PortfolioSnapshot", 'DateTime'>
   }
     
 
@@ -18674,6 +18845,21 @@ export namespace Prisma {
   }
 
   /**
+   * PortfolioSnapshot.user
+   */
+  export type PortfolioSnapshot$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * PortfolioSnapshot without action
    */
   export type PortfolioSnapshotDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -18685,6 +18871,3086 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PortfolioSnapshotInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Internship
+   */
+
+  export type AggregateInternship = {
+    _count: InternshipCountAggregateOutputType | null
+    _avg: InternshipAvgAggregateOutputType | null
+    _sum: InternshipSumAggregateOutputType | null
+    _min: InternshipMinAggregateOutputType | null
+    _max: InternshipMaxAggregateOutputType | null
+  }
+
+  export type InternshipAvgAggregateOutputType = {
+    totalHours: number | null
+  }
+
+  export type InternshipSumAggregateOutputType = {
+    totalHours: number | null
+  }
+
+  export type InternshipMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    status: string | null
+    startDate: Date | null
+    endDate: Date | null
+    realStartDate: Date | null
+    realEndDate: Date | null
+    totalHours: number | null
+    schedule: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InternshipMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    status: string | null
+    startDate: Date | null
+    endDate: Date | null
+    realStartDate: Date | null
+    realEndDate: Date | null
+    totalHours: number | null
+    schedule: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InternshipCountAggregateOutputType = {
+    id: number
+    userId: number
+    status: number
+    startDate: number
+    endDate: number
+    realStartDate: number
+    realEndDate: number
+    totalHours: number
+    schedule: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type InternshipAvgAggregateInputType = {
+    totalHours?: true
+  }
+
+  export type InternshipSumAggregateInputType = {
+    totalHours?: true
+  }
+
+  export type InternshipMinAggregateInputType = {
+    id?: true
+    userId?: true
+    status?: true
+    startDate?: true
+    endDate?: true
+    realStartDate?: true
+    realEndDate?: true
+    totalHours?: true
+    schedule?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InternshipMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    status?: true
+    startDate?: true
+    endDate?: true
+    realStartDate?: true
+    realEndDate?: true
+    totalHours?: true
+    schedule?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InternshipCountAggregateInputType = {
+    id?: true
+    userId?: true
+    status?: true
+    startDate?: true
+    endDate?: true
+    realStartDate?: true
+    realEndDate?: true
+    totalHours?: true
+    schedule?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type InternshipAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Internship to aggregate.
+     */
+    where?: InternshipWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Internships to fetch.
+     */
+    orderBy?: InternshipOrderByWithRelationInput | InternshipOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InternshipWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Internships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Internships.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Internships
+    **/
+    _count?: true | InternshipCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InternshipAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InternshipSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InternshipMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InternshipMaxAggregateInputType
+  }
+
+  export type GetInternshipAggregateType<T extends InternshipAggregateArgs> = {
+        [P in keyof T & keyof AggregateInternship]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInternship[P]>
+      : GetScalarType<T[P], AggregateInternship[P]>
+  }
+
+
+
+
+  export type InternshipGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InternshipWhereInput
+    orderBy?: InternshipOrderByWithAggregationInput | InternshipOrderByWithAggregationInput[]
+    by: InternshipScalarFieldEnum[] | InternshipScalarFieldEnum
+    having?: InternshipScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InternshipCountAggregateInputType | true
+    _avg?: InternshipAvgAggregateInputType
+    _sum?: InternshipSumAggregateInputType
+    _min?: InternshipMinAggregateInputType
+    _max?: InternshipMaxAggregateInputType
+  }
+
+  export type InternshipGroupByOutputType = {
+    id: string
+    userId: string
+    status: string
+    startDate: Date | null
+    endDate: Date | null
+    realStartDate: Date | null
+    realEndDate: Date | null
+    totalHours: number
+    schedule: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: InternshipCountAggregateOutputType | null
+    _avg: InternshipAvgAggregateOutputType | null
+    _sum: InternshipSumAggregateOutputType | null
+    _min: InternshipMinAggregateOutputType | null
+    _max: InternshipMaxAggregateOutputType | null
+  }
+
+  type GetInternshipGroupByPayload<T extends InternshipGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InternshipGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InternshipGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InternshipGroupByOutputType[P]>
+            : GetScalarType<T[P], InternshipGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InternshipSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    status?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    realStartDate?: boolean
+    realEndDate?: boolean
+    totalHours?: boolean
+    schedule?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    center?: boolean | Internship$centerArgs<ExtArgs>
+    logs?: boolean | Internship$logsArgs<ExtArgs>
+    _count?: boolean | InternshipCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["internship"]>
+
+  export type InternshipSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    status?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    realStartDate?: boolean
+    realEndDate?: boolean
+    totalHours?: boolean
+    schedule?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["internship"]>
+
+  export type InternshipSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    status?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    realStartDate?: boolean
+    realEndDate?: boolean
+    totalHours?: boolean
+    schedule?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type InternshipInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    center?: boolean | Internship$centerArgs<ExtArgs>
+    logs?: boolean | Internship$logsArgs<ExtArgs>
+    _count?: boolean | InternshipCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type InternshipIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $InternshipPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Internship"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      center: Prisma.$InternshipCenterPayload<ExtArgs> | null
+      logs: Prisma.$InternshipLogPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      status: string
+      startDate: Date | null
+      endDate: Date | null
+      realStartDate: Date | null
+      realEndDate: Date | null
+      totalHours: number
+      schedule: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["internship"]>
+    composites: {}
+  }
+
+  type InternshipGetPayload<S extends boolean | null | undefined | InternshipDefaultArgs> = $Result.GetResult<Prisma.$InternshipPayload, S>
+
+  type InternshipCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<InternshipFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: InternshipCountAggregateInputType | true
+    }
+
+  export interface InternshipDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Internship'], meta: { name: 'Internship' } }
+    /**
+     * Find zero or one Internship that matches the filter.
+     * @param {InternshipFindUniqueArgs} args - Arguments to find a Internship
+     * @example
+     * // Get one Internship
+     * const internship = await prisma.internship.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InternshipFindUniqueArgs>(args: SelectSubset<T, InternshipFindUniqueArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Internship that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {InternshipFindUniqueOrThrowArgs} args - Arguments to find a Internship
+     * @example
+     * // Get one Internship
+     * const internship = await prisma.internship.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InternshipFindUniqueOrThrowArgs>(args: SelectSubset<T, InternshipFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Internship that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipFindFirstArgs} args - Arguments to find a Internship
+     * @example
+     * // Get one Internship
+     * const internship = await prisma.internship.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InternshipFindFirstArgs>(args?: SelectSubset<T, InternshipFindFirstArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Internship that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipFindFirstOrThrowArgs} args - Arguments to find a Internship
+     * @example
+     * // Get one Internship
+     * const internship = await prisma.internship.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InternshipFindFirstOrThrowArgs>(args?: SelectSubset<T, InternshipFindFirstOrThrowArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Internships that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Internships
+     * const internships = await prisma.internship.findMany()
+     * 
+     * // Get first 10 Internships
+     * const internships = await prisma.internship.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const internshipWithIdOnly = await prisma.internship.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InternshipFindManyArgs>(args?: SelectSubset<T, InternshipFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Internship.
+     * @param {InternshipCreateArgs} args - Arguments to create a Internship.
+     * @example
+     * // Create one Internship
+     * const Internship = await prisma.internship.create({
+     *   data: {
+     *     // ... data to create a Internship
+     *   }
+     * })
+     * 
+     */
+    create<T extends InternshipCreateArgs>(args: SelectSubset<T, InternshipCreateArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Internships.
+     * @param {InternshipCreateManyArgs} args - Arguments to create many Internships.
+     * @example
+     * // Create many Internships
+     * const internship = await prisma.internship.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InternshipCreateManyArgs>(args?: SelectSubset<T, InternshipCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Internships and returns the data saved in the database.
+     * @param {InternshipCreateManyAndReturnArgs} args - Arguments to create many Internships.
+     * @example
+     * // Create many Internships
+     * const internship = await prisma.internship.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Internships and only return the `id`
+     * const internshipWithIdOnly = await prisma.internship.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InternshipCreateManyAndReturnArgs>(args?: SelectSubset<T, InternshipCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Internship.
+     * @param {InternshipDeleteArgs} args - Arguments to delete one Internship.
+     * @example
+     * // Delete one Internship
+     * const Internship = await prisma.internship.delete({
+     *   where: {
+     *     // ... filter to delete one Internship
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InternshipDeleteArgs>(args: SelectSubset<T, InternshipDeleteArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Internship.
+     * @param {InternshipUpdateArgs} args - Arguments to update one Internship.
+     * @example
+     * // Update one Internship
+     * const internship = await prisma.internship.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InternshipUpdateArgs>(args: SelectSubset<T, InternshipUpdateArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Internships.
+     * @param {InternshipDeleteManyArgs} args - Arguments to filter Internships to delete.
+     * @example
+     * // Delete a few Internships
+     * const { count } = await prisma.internship.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InternshipDeleteManyArgs>(args?: SelectSubset<T, InternshipDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Internships.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Internships
+     * const internship = await prisma.internship.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InternshipUpdateManyArgs>(args: SelectSubset<T, InternshipUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Internship.
+     * @param {InternshipUpsertArgs} args - Arguments to update or create a Internship.
+     * @example
+     * // Update or create a Internship
+     * const internship = await prisma.internship.upsert({
+     *   create: {
+     *     // ... data to create a Internship
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Internship we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InternshipUpsertArgs>(args: SelectSubset<T, InternshipUpsertArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Internships.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipCountArgs} args - Arguments to filter Internships to count.
+     * @example
+     * // Count the number of Internships
+     * const count = await prisma.internship.count({
+     *   where: {
+     *     // ... the filter for the Internships we want to count
+     *   }
+     * })
+    **/
+    count<T extends InternshipCountArgs>(
+      args?: Subset<T, InternshipCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InternshipCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Internship.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InternshipAggregateArgs>(args: Subset<T, InternshipAggregateArgs>): Prisma.PrismaPromise<GetInternshipAggregateType<T>>
+
+    /**
+     * Group by Internship.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InternshipGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InternshipGroupByArgs['orderBy'] }
+        : { orderBy?: InternshipGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InternshipGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInternshipGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Internship model
+   */
+  readonly fields: InternshipFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Internship.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InternshipClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    center<T extends Internship$centerArgs<ExtArgs> = {}>(args?: Subset<T, Internship$centerArgs<ExtArgs>>): Prisma__InternshipCenterClient<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    logs<T extends Internship$logsArgs<ExtArgs> = {}>(args?: Subset<T, Internship$logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Internship model
+   */ 
+  interface InternshipFieldRefs {
+    readonly id: FieldRef<"Internship", 'String'>
+    readonly userId: FieldRef<"Internship", 'String'>
+    readonly status: FieldRef<"Internship", 'String'>
+    readonly startDate: FieldRef<"Internship", 'DateTime'>
+    readonly endDate: FieldRef<"Internship", 'DateTime'>
+    readonly realStartDate: FieldRef<"Internship", 'DateTime'>
+    readonly realEndDate: FieldRef<"Internship", 'DateTime'>
+    readonly totalHours: FieldRef<"Internship", 'Int'>
+    readonly schedule: FieldRef<"Internship", 'String'>
+    readonly createdAt: FieldRef<"Internship", 'DateTime'>
+    readonly updatedAt: FieldRef<"Internship", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Internship findUnique
+   */
+  export type InternshipFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    /**
+     * Filter, which Internship to fetch.
+     */
+    where: InternshipWhereUniqueInput
+  }
+
+  /**
+   * Internship findUniqueOrThrow
+   */
+  export type InternshipFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    /**
+     * Filter, which Internship to fetch.
+     */
+    where: InternshipWhereUniqueInput
+  }
+
+  /**
+   * Internship findFirst
+   */
+  export type InternshipFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    /**
+     * Filter, which Internship to fetch.
+     */
+    where?: InternshipWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Internships to fetch.
+     */
+    orderBy?: InternshipOrderByWithRelationInput | InternshipOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Internships.
+     */
+    cursor?: InternshipWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Internships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Internships.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Internships.
+     */
+    distinct?: InternshipScalarFieldEnum | InternshipScalarFieldEnum[]
+  }
+
+  /**
+   * Internship findFirstOrThrow
+   */
+  export type InternshipFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    /**
+     * Filter, which Internship to fetch.
+     */
+    where?: InternshipWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Internships to fetch.
+     */
+    orderBy?: InternshipOrderByWithRelationInput | InternshipOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Internships.
+     */
+    cursor?: InternshipWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Internships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Internships.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Internships.
+     */
+    distinct?: InternshipScalarFieldEnum | InternshipScalarFieldEnum[]
+  }
+
+  /**
+   * Internship findMany
+   */
+  export type InternshipFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    /**
+     * Filter, which Internships to fetch.
+     */
+    where?: InternshipWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Internships to fetch.
+     */
+    orderBy?: InternshipOrderByWithRelationInput | InternshipOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Internships.
+     */
+    cursor?: InternshipWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Internships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Internships.
+     */
+    skip?: number
+    distinct?: InternshipScalarFieldEnum | InternshipScalarFieldEnum[]
+  }
+
+  /**
+   * Internship create
+   */
+  export type InternshipCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Internship.
+     */
+    data: XOR<InternshipCreateInput, InternshipUncheckedCreateInput>
+  }
+
+  /**
+   * Internship createMany
+   */
+  export type InternshipCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Internships.
+     */
+    data: InternshipCreateManyInput | InternshipCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Internship createManyAndReturn
+   */
+  export type InternshipCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Internships.
+     */
+    data: InternshipCreateManyInput | InternshipCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Internship update
+   */
+  export type InternshipUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Internship.
+     */
+    data: XOR<InternshipUpdateInput, InternshipUncheckedUpdateInput>
+    /**
+     * Choose, which Internship to update.
+     */
+    where: InternshipWhereUniqueInput
+  }
+
+  /**
+   * Internship updateMany
+   */
+  export type InternshipUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Internships.
+     */
+    data: XOR<InternshipUpdateManyMutationInput, InternshipUncheckedUpdateManyInput>
+    /**
+     * Filter which Internships to update
+     */
+    where?: InternshipWhereInput
+  }
+
+  /**
+   * Internship upsert
+   */
+  export type InternshipUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Internship to update in case it exists.
+     */
+    where: InternshipWhereUniqueInput
+    /**
+     * In case the Internship found by the `where` argument doesn't exist, create a new Internship with this data.
+     */
+    create: XOR<InternshipCreateInput, InternshipUncheckedCreateInput>
+    /**
+     * In case the Internship was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InternshipUpdateInput, InternshipUncheckedUpdateInput>
+  }
+
+  /**
+   * Internship delete
+   */
+  export type InternshipDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+    /**
+     * Filter which Internship to delete.
+     */
+    where: InternshipWhereUniqueInput
+  }
+
+  /**
+   * Internship deleteMany
+   */
+  export type InternshipDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Internships to delete
+     */
+    where?: InternshipWhereInput
+  }
+
+  /**
+   * Internship.center
+   */
+  export type Internship$centerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    where?: InternshipCenterWhereInput
+  }
+
+  /**
+   * Internship.logs
+   */
+  export type Internship$logsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    where?: InternshipLogWhereInput
+    orderBy?: InternshipLogOrderByWithRelationInput | InternshipLogOrderByWithRelationInput[]
+    cursor?: InternshipLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InternshipLogScalarFieldEnum | InternshipLogScalarFieldEnum[]
+  }
+
+  /**
+   * Internship without action
+   */
+  export type InternshipDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Internship
+     */
+    select?: InternshipSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model InternshipCenter
+   */
+
+  export type AggregateInternshipCenter = {
+    _count: InternshipCenterCountAggregateOutputType | null
+    _min: InternshipCenterMinAggregateOutputType | null
+    _max: InternshipCenterMaxAggregateOutputType | null
+  }
+
+  export type InternshipCenterMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    address: string | null
+    province: string | null
+    city: string | null
+    tutorName: string | null
+    tutorEmail: string | null
+    tutorPhone: string | null
+    universityTutor: string | null
+    internshipId: string | null
+  }
+
+  export type InternshipCenterMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    address: string | null
+    province: string | null
+    city: string | null
+    tutorName: string | null
+    tutorEmail: string | null
+    tutorPhone: string | null
+    universityTutor: string | null
+    internshipId: string | null
+  }
+
+  export type InternshipCenterCountAggregateOutputType = {
+    id: number
+    name: number
+    address: number
+    province: number
+    city: number
+    tutorName: number
+    tutorEmail: number
+    tutorPhone: number
+    universityTutor: number
+    internshipId: number
+    _all: number
+  }
+
+
+  export type InternshipCenterMinAggregateInputType = {
+    id?: true
+    name?: true
+    address?: true
+    province?: true
+    city?: true
+    tutorName?: true
+    tutorEmail?: true
+    tutorPhone?: true
+    universityTutor?: true
+    internshipId?: true
+  }
+
+  export type InternshipCenterMaxAggregateInputType = {
+    id?: true
+    name?: true
+    address?: true
+    province?: true
+    city?: true
+    tutorName?: true
+    tutorEmail?: true
+    tutorPhone?: true
+    universityTutor?: true
+    internshipId?: true
+  }
+
+  export type InternshipCenterCountAggregateInputType = {
+    id?: true
+    name?: true
+    address?: true
+    province?: true
+    city?: true
+    tutorName?: true
+    tutorEmail?: true
+    tutorPhone?: true
+    universityTutor?: true
+    internshipId?: true
+    _all?: true
+  }
+
+  export type InternshipCenterAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InternshipCenter to aggregate.
+     */
+    where?: InternshipCenterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InternshipCenters to fetch.
+     */
+    orderBy?: InternshipCenterOrderByWithRelationInput | InternshipCenterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InternshipCenterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InternshipCenters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InternshipCenters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned InternshipCenters
+    **/
+    _count?: true | InternshipCenterCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InternshipCenterMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InternshipCenterMaxAggregateInputType
+  }
+
+  export type GetInternshipCenterAggregateType<T extends InternshipCenterAggregateArgs> = {
+        [P in keyof T & keyof AggregateInternshipCenter]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInternshipCenter[P]>
+      : GetScalarType<T[P], AggregateInternshipCenter[P]>
+  }
+
+
+
+
+  export type InternshipCenterGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InternshipCenterWhereInput
+    orderBy?: InternshipCenterOrderByWithAggregationInput | InternshipCenterOrderByWithAggregationInput[]
+    by: InternshipCenterScalarFieldEnum[] | InternshipCenterScalarFieldEnum
+    having?: InternshipCenterScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InternshipCenterCountAggregateInputType | true
+    _min?: InternshipCenterMinAggregateInputType
+    _max?: InternshipCenterMaxAggregateInputType
+  }
+
+  export type InternshipCenterGroupByOutputType = {
+    id: string
+    name: string
+    address: string | null
+    province: string | null
+    city: string | null
+    tutorName: string | null
+    tutorEmail: string | null
+    tutorPhone: string | null
+    universityTutor: string | null
+    internshipId: string
+    _count: InternshipCenterCountAggregateOutputType | null
+    _min: InternshipCenterMinAggregateOutputType | null
+    _max: InternshipCenterMaxAggregateOutputType | null
+  }
+
+  type GetInternshipCenterGroupByPayload<T extends InternshipCenterGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InternshipCenterGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InternshipCenterGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InternshipCenterGroupByOutputType[P]>
+            : GetScalarType<T[P], InternshipCenterGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InternshipCenterSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    address?: boolean
+    province?: boolean
+    city?: boolean
+    tutorName?: boolean
+    tutorEmail?: boolean
+    tutorPhone?: boolean
+    universityTutor?: boolean
+    internshipId?: boolean
+    internship?: boolean | InternshipDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["internshipCenter"]>
+
+  export type InternshipCenterSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    address?: boolean
+    province?: boolean
+    city?: boolean
+    tutorName?: boolean
+    tutorEmail?: boolean
+    tutorPhone?: boolean
+    universityTutor?: boolean
+    internshipId?: boolean
+    internship?: boolean | InternshipDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["internshipCenter"]>
+
+  export type InternshipCenterSelectScalar = {
+    id?: boolean
+    name?: boolean
+    address?: boolean
+    province?: boolean
+    city?: boolean
+    tutorName?: boolean
+    tutorEmail?: boolean
+    tutorPhone?: boolean
+    universityTutor?: boolean
+    internshipId?: boolean
+  }
+
+  export type InternshipCenterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    internship?: boolean | InternshipDefaultArgs<ExtArgs>
+  }
+  export type InternshipCenterIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    internship?: boolean | InternshipDefaultArgs<ExtArgs>
+  }
+
+  export type $InternshipCenterPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "InternshipCenter"
+    objects: {
+      internship: Prisma.$InternshipPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      address: string | null
+      province: string | null
+      city: string | null
+      tutorName: string | null
+      tutorEmail: string | null
+      tutorPhone: string | null
+      universityTutor: string | null
+      internshipId: string
+    }, ExtArgs["result"]["internshipCenter"]>
+    composites: {}
+  }
+
+  type InternshipCenterGetPayload<S extends boolean | null | undefined | InternshipCenterDefaultArgs> = $Result.GetResult<Prisma.$InternshipCenterPayload, S>
+
+  type InternshipCenterCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<InternshipCenterFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: InternshipCenterCountAggregateInputType | true
+    }
+
+  export interface InternshipCenterDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['InternshipCenter'], meta: { name: 'InternshipCenter' } }
+    /**
+     * Find zero or one InternshipCenter that matches the filter.
+     * @param {InternshipCenterFindUniqueArgs} args - Arguments to find a InternshipCenter
+     * @example
+     * // Get one InternshipCenter
+     * const internshipCenter = await prisma.internshipCenter.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InternshipCenterFindUniqueArgs>(args: SelectSubset<T, InternshipCenterFindUniqueArgs<ExtArgs>>): Prisma__InternshipCenterClient<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one InternshipCenter that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {InternshipCenterFindUniqueOrThrowArgs} args - Arguments to find a InternshipCenter
+     * @example
+     * // Get one InternshipCenter
+     * const internshipCenter = await prisma.internshipCenter.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InternshipCenterFindUniqueOrThrowArgs>(args: SelectSubset<T, InternshipCenterFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InternshipCenterClient<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first InternshipCenter that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipCenterFindFirstArgs} args - Arguments to find a InternshipCenter
+     * @example
+     * // Get one InternshipCenter
+     * const internshipCenter = await prisma.internshipCenter.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InternshipCenterFindFirstArgs>(args?: SelectSubset<T, InternshipCenterFindFirstArgs<ExtArgs>>): Prisma__InternshipCenterClient<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first InternshipCenter that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipCenterFindFirstOrThrowArgs} args - Arguments to find a InternshipCenter
+     * @example
+     * // Get one InternshipCenter
+     * const internshipCenter = await prisma.internshipCenter.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InternshipCenterFindFirstOrThrowArgs>(args?: SelectSubset<T, InternshipCenterFindFirstOrThrowArgs<ExtArgs>>): Prisma__InternshipCenterClient<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more InternshipCenters that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipCenterFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InternshipCenters
+     * const internshipCenters = await prisma.internshipCenter.findMany()
+     * 
+     * // Get first 10 InternshipCenters
+     * const internshipCenters = await prisma.internshipCenter.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const internshipCenterWithIdOnly = await prisma.internshipCenter.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InternshipCenterFindManyArgs>(args?: SelectSubset<T, InternshipCenterFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a InternshipCenter.
+     * @param {InternshipCenterCreateArgs} args - Arguments to create a InternshipCenter.
+     * @example
+     * // Create one InternshipCenter
+     * const InternshipCenter = await prisma.internshipCenter.create({
+     *   data: {
+     *     // ... data to create a InternshipCenter
+     *   }
+     * })
+     * 
+     */
+    create<T extends InternshipCenterCreateArgs>(args: SelectSubset<T, InternshipCenterCreateArgs<ExtArgs>>): Prisma__InternshipCenterClient<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many InternshipCenters.
+     * @param {InternshipCenterCreateManyArgs} args - Arguments to create many InternshipCenters.
+     * @example
+     * // Create many InternshipCenters
+     * const internshipCenter = await prisma.internshipCenter.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InternshipCenterCreateManyArgs>(args?: SelectSubset<T, InternshipCenterCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many InternshipCenters and returns the data saved in the database.
+     * @param {InternshipCenterCreateManyAndReturnArgs} args - Arguments to create many InternshipCenters.
+     * @example
+     * // Create many InternshipCenters
+     * const internshipCenter = await prisma.internshipCenter.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many InternshipCenters and only return the `id`
+     * const internshipCenterWithIdOnly = await prisma.internshipCenter.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InternshipCenterCreateManyAndReturnArgs>(args?: SelectSubset<T, InternshipCenterCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a InternshipCenter.
+     * @param {InternshipCenterDeleteArgs} args - Arguments to delete one InternshipCenter.
+     * @example
+     * // Delete one InternshipCenter
+     * const InternshipCenter = await prisma.internshipCenter.delete({
+     *   where: {
+     *     // ... filter to delete one InternshipCenter
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InternshipCenterDeleteArgs>(args: SelectSubset<T, InternshipCenterDeleteArgs<ExtArgs>>): Prisma__InternshipCenterClient<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one InternshipCenter.
+     * @param {InternshipCenterUpdateArgs} args - Arguments to update one InternshipCenter.
+     * @example
+     * // Update one InternshipCenter
+     * const internshipCenter = await prisma.internshipCenter.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InternshipCenterUpdateArgs>(args: SelectSubset<T, InternshipCenterUpdateArgs<ExtArgs>>): Prisma__InternshipCenterClient<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more InternshipCenters.
+     * @param {InternshipCenterDeleteManyArgs} args - Arguments to filter InternshipCenters to delete.
+     * @example
+     * // Delete a few InternshipCenters
+     * const { count } = await prisma.internshipCenter.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InternshipCenterDeleteManyArgs>(args?: SelectSubset<T, InternshipCenterDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InternshipCenters.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipCenterUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InternshipCenters
+     * const internshipCenter = await prisma.internshipCenter.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InternshipCenterUpdateManyArgs>(args: SelectSubset<T, InternshipCenterUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one InternshipCenter.
+     * @param {InternshipCenterUpsertArgs} args - Arguments to update or create a InternshipCenter.
+     * @example
+     * // Update or create a InternshipCenter
+     * const internshipCenter = await prisma.internshipCenter.upsert({
+     *   create: {
+     *     // ... data to create a InternshipCenter
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InternshipCenter we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InternshipCenterUpsertArgs>(args: SelectSubset<T, InternshipCenterUpsertArgs<ExtArgs>>): Prisma__InternshipCenterClient<$Result.GetResult<Prisma.$InternshipCenterPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of InternshipCenters.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipCenterCountArgs} args - Arguments to filter InternshipCenters to count.
+     * @example
+     * // Count the number of InternshipCenters
+     * const count = await prisma.internshipCenter.count({
+     *   where: {
+     *     // ... the filter for the InternshipCenters we want to count
+     *   }
+     * })
+    **/
+    count<T extends InternshipCenterCountArgs>(
+      args?: Subset<T, InternshipCenterCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InternshipCenterCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a InternshipCenter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipCenterAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InternshipCenterAggregateArgs>(args: Subset<T, InternshipCenterAggregateArgs>): Prisma.PrismaPromise<GetInternshipCenterAggregateType<T>>
+
+    /**
+     * Group by InternshipCenter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipCenterGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InternshipCenterGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InternshipCenterGroupByArgs['orderBy'] }
+        : { orderBy?: InternshipCenterGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InternshipCenterGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInternshipCenterGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the InternshipCenter model
+   */
+  readonly fields: InternshipCenterFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for InternshipCenter.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InternshipCenterClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    internship<T extends InternshipDefaultArgs<ExtArgs> = {}>(args?: Subset<T, InternshipDefaultArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the InternshipCenter model
+   */ 
+  interface InternshipCenterFieldRefs {
+    readonly id: FieldRef<"InternshipCenter", 'String'>
+    readonly name: FieldRef<"InternshipCenter", 'String'>
+    readonly address: FieldRef<"InternshipCenter", 'String'>
+    readonly province: FieldRef<"InternshipCenter", 'String'>
+    readonly city: FieldRef<"InternshipCenter", 'String'>
+    readonly tutorName: FieldRef<"InternshipCenter", 'String'>
+    readonly tutorEmail: FieldRef<"InternshipCenter", 'String'>
+    readonly tutorPhone: FieldRef<"InternshipCenter", 'String'>
+    readonly universityTutor: FieldRef<"InternshipCenter", 'String'>
+    readonly internshipId: FieldRef<"InternshipCenter", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * InternshipCenter findUnique
+   */
+  export type InternshipCenterFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipCenter to fetch.
+     */
+    where: InternshipCenterWhereUniqueInput
+  }
+
+  /**
+   * InternshipCenter findUniqueOrThrow
+   */
+  export type InternshipCenterFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipCenter to fetch.
+     */
+    where: InternshipCenterWhereUniqueInput
+  }
+
+  /**
+   * InternshipCenter findFirst
+   */
+  export type InternshipCenterFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipCenter to fetch.
+     */
+    where?: InternshipCenterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InternshipCenters to fetch.
+     */
+    orderBy?: InternshipCenterOrderByWithRelationInput | InternshipCenterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InternshipCenters.
+     */
+    cursor?: InternshipCenterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InternshipCenters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InternshipCenters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InternshipCenters.
+     */
+    distinct?: InternshipCenterScalarFieldEnum | InternshipCenterScalarFieldEnum[]
+  }
+
+  /**
+   * InternshipCenter findFirstOrThrow
+   */
+  export type InternshipCenterFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipCenter to fetch.
+     */
+    where?: InternshipCenterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InternshipCenters to fetch.
+     */
+    orderBy?: InternshipCenterOrderByWithRelationInput | InternshipCenterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InternshipCenters.
+     */
+    cursor?: InternshipCenterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InternshipCenters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InternshipCenters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InternshipCenters.
+     */
+    distinct?: InternshipCenterScalarFieldEnum | InternshipCenterScalarFieldEnum[]
+  }
+
+  /**
+   * InternshipCenter findMany
+   */
+  export type InternshipCenterFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipCenters to fetch.
+     */
+    where?: InternshipCenterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InternshipCenters to fetch.
+     */
+    orderBy?: InternshipCenterOrderByWithRelationInput | InternshipCenterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing InternshipCenters.
+     */
+    cursor?: InternshipCenterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InternshipCenters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InternshipCenters.
+     */
+    skip?: number
+    distinct?: InternshipCenterScalarFieldEnum | InternshipCenterScalarFieldEnum[]
+  }
+
+  /**
+   * InternshipCenter create
+   */
+  export type InternshipCenterCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    /**
+     * The data needed to create a InternshipCenter.
+     */
+    data: XOR<InternshipCenterCreateInput, InternshipCenterUncheckedCreateInput>
+  }
+
+  /**
+   * InternshipCenter createMany
+   */
+  export type InternshipCenterCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many InternshipCenters.
+     */
+    data: InternshipCenterCreateManyInput | InternshipCenterCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InternshipCenter createManyAndReturn
+   */
+  export type InternshipCenterCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many InternshipCenters.
+     */
+    data: InternshipCenterCreateManyInput | InternshipCenterCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * InternshipCenter update
+   */
+  export type InternshipCenterUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    /**
+     * The data needed to update a InternshipCenter.
+     */
+    data: XOR<InternshipCenterUpdateInput, InternshipCenterUncheckedUpdateInput>
+    /**
+     * Choose, which InternshipCenter to update.
+     */
+    where: InternshipCenterWhereUniqueInput
+  }
+
+  /**
+   * InternshipCenter updateMany
+   */
+  export type InternshipCenterUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update InternshipCenters.
+     */
+    data: XOR<InternshipCenterUpdateManyMutationInput, InternshipCenterUncheckedUpdateManyInput>
+    /**
+     * Filter which InternshipCenters to update
+     */
+    where?: InternshipCenterWhereInput
+  }
+
+  /**
+   * InternshipCenter upsert
+   */
+  export type InternshipCenterUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    /**
+     * The filter to search for the InternshipCenter to update in case it exists.
+     */
+    where: InternshipCenterWhereUniqueInput
+    /**
+     * In case the InternshipCenter found by the `where` argument doesn't exist, create a new InternshipCenter with this data.
+     */
+    create: XOR<InternshipCenterCreateInput, InternshipCenterUncheckedCreateInput>
+    /**
+     * In case the InternshipCenter was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InternshipCenterUpdateInput, InternshipCenterUncheckedUpdateInput>
+  }
+
+  /**
+   * InternshipCenter delete
+   */
+  export type InternshipCenterDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+    /**
+     * Filter which InternshipCenter to delete.
+     */
+    where: InternshipCenterWhereUniqueInput
+  }
+
+  /**
+   * InternshipCenter deleteMany
+   */
+  export type InternshipCenterDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InternshipCenters to delete
+     */
+    where?: InternshipCenterWhereInput
+  }
+
+  /**
+   * InternshipCenter without action
+   */
+  export type InternshipCenterDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipCenter
+     */
+    select?: InternshipCenterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipCenterInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model InternshipLog
+   */
+
+  export type AggregateInternshipLog = {
+    _count: InternshipLogCountAggregateOutputType | null
+    _avg: InternshipLogAvgAggregateOutputType | null
+    _sum: InternshipLogSumAggregateOutputType | null
+    _min: InternshipLogMinAggregateOutputType | null
+    _max: InternshipLogMaxAggregateOutputType | null
+  }
+
+  export type InternshipLogAvgAggregateOutputType = {
+    hours: number | null
+  }
+
+  export type InternshipLogSumAggregateOutputType = {
+    hours: number | null
+  }
+
+  export type InternshipLogMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    hours: number | null
+    activity: string | null
+    observations: string | null
+    internshipId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InternshipLogMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    hours: number | null
+    activity: string | null
+    observations: string | null
+    internshipId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InternshipLogCountAggregateOutputType = {
+    id: number
+    date: number
+    hours: number
+    activity: number
+    observations: number
+    internshipId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type InternshipLogAvgAggregateInputType = {
+    hours?: true
+  }
+
+  export type InternshipLogSumAggregateInputType = {
+    hours?: true
+  }
+
+  export type InternshipLogMinAggregateInputType = {
+    id?: true
+    date?: true
+    hours?: true
+    activity?: true
+    observations?: true
+    internshipId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InternshipLogMaxAggregateInputType = {
+    id?: true
+    date?: true
+    hours?: true
+    activity?: true
+    observations?: true
+    internshipId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InternshipLogCountAggregateInputType = {
+    id?: true
+    date?: true
+    hours?: true
+    activity?: true
+    observations?: true
+    internshipId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type InternshipLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InternshipLog to aggregate.
+     */
+    where?: InternshipLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InternshipLogs to fetch.
+     */
+    orderBy?: InternshipLogOrderByWithRelationInput | InternshipLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InternshipLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InternshipLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InternshipLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned InternshipLogs
+    **/
+    _count?: true | InternshipLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InternshipLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InternshipLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InternshipLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InternshipLogMaxAggregateInputType
+  }
+
+  export type GetInternshipLogAggregateType<T extends InternshipLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateInternshipLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInternshipLog[P]>
+      : GetScalarType<T[P], AggregateInternshipLog[P]>
+  }
+
+
+
+
+  export type InternshipLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InternshipLogWhereInput
+    orderBy?: InternshipLogOrderByWithAggregationInput | InternshipLogOrderByWithAggregationInput[]
+    by: InternshipLogScalarFieldEnum[] | InternshipLogScalarFieldEnum
+    having?: InternshipLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InternshipLogCountAggregateInputType | true
+    _avg?: InternshipLogAvgAggregateInputType
+    _sum?: InternshipLogSumAggregateInputType
+    _min?: InternshipLogMinAggregateInputType
+    _max?: InternshipLogMaxAggregateInputType
+  }
+
+  export type InternshipLogGroupByOutputType = {
+    id: string
+    date: Date
+    hours: number
+    activity: string
+    observations: string | null
+    internshipId: string
+    createdAt: Date
+    updatedAt: Date
+    _count: InternshipLogCountAggregateOutputType | null
+    _avg: InternshipLogAvgAggregateOutputType | null
+    _sum: InternshipLogSumAggregateOutputType | null
+    _min: InternshipLogMinAggregateOutputType | null
+    _max: InternshipLogMaxAggregateOutputType | null
+  }
+
+  type GetInternshipLogGroupByPayload<T extends InternshipLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InternshipLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InternshipLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InternshipLogGroupByOutputType[P]>
+            : GetScalarType<T[P], InternshipLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InternshipLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    hours?: boolean
+    activity?: boolean
+    observations?: boolean
+    internshipId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    internship?: boolean | InternshipDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["internshipLog"]>
+
+  export type InternshipLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    hours?: boolean
+    activity?: boolean
+    observations?: boolean
+    internshipId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    internship?: boolean | InternshipDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["internshipLog"]>
+
+  export type InternshipLogSelectScalar = {
+    id?: boolean
+    date?: boolean
+    hours?: boolean
+    activity?: boolean
+    observations?: boolean
+    internshipId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type InternshipLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    internship?: boolean | InternshipDefaultArgs<ExtArgs>
+  }
+  export type InternshipLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    internship?: boolean | InternshipDefaultArgs<ExtArgs>
+  }
+
+  export type $InternshipLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "InternshipLog"
+    objects: {
+      internship: Prisma.$InternshipPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      hours: number
+      activity: string
+      observations: string | null
+      internshipId: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["internshipLog"]>
+    composites: {}
+  }
+
+  type InternshipLogGetPayload<S extends boolean | null | undefined | InternshipLogDefaultArgs> = $Result.GetResult<Prisma.$InternshipLogPayload, S>
+
+  type InternshipLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<InternshipLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: InternshipLogCountAggregateInputType | true
+    }
+
+  export interface InternshipLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['InternshipLog'], meta: { name: 'InternshipLog' } }
+    /**
+     * Find zero or one InternshipLog that matches the filter.
+     * @param {InternshipLogFindUniqueArgs} args - Arguments to find a InternshipLog
+     * @example
+     * // Get one InternshipLog
+     * const internshipLog = await prisma.internshipLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InternshipLogFindUniqueArgs>(args: SelectSubset<T, InternshipLogFindUniqueArgs<ExtArgs>>): Prisma__InternshipLogClient<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one InternshipLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {InternshipLogFindUniqueOrThrowArgs} args - Arguments to find a InternshipLog
+     * @example
+     * // Get one InternshipLog
+     * const internshipLog = await prisma.internshipLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InternshipLogFindUniqueOrThrowArgs>(args: SelectSubset<T, InternshipLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InternshipLogClient<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first InternshipLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipLogFindFirstArgs} args - Arguments to find a InternshipLog
+     * @example
+     * // Get one InternshipLog
+     * const internshipLog = await prisma.internshipLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InternshipLogFindFirstArgs>(args?: SelectSubset<T, InternshipLogFindFirstArgs<ExtArgs>>): Prisma__InternshipLogClient<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first InternshipLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipLogFindFirstOrThrowArgs} args - Arguments to find a InternshipLog
+     * @example
+     * // Get one InternshipLog
+     * const internshipLog = await prisma.internshipLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InternshipLogFindFirstOrThrowArgs>(args?: SelectSubset<T, InternshipLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__InternshipLogClient<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more InternshipLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InternshipLogs
+     * const internshipLogs = await prisma.internshipLog.findMany()
+     * 
+     * // Get first 10 InternshipLogs
+     * const internshipLogs = await prisma.internshipLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const internshipLogWithIdOnly = await prisma.internshipLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InternshipLogFindManyArgs>(args?: SelectSubset<T, InternshipLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a InternshipLog.
+     * @param {InternshipLogCreateArgs} args - Arguments to create a InternshipLog.
+     * @example
+     * // Create one InternshipLog
+     * const InternshipLog = await prisma.internshipLog.create({
+     *   data: {
+     *     // ... data to create a InternshipLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends InternshipLogCreateArgs>(args: SelectSubset<T, InternshipLogCreateArgs<ExtArgs>>): Prisma__InternshipLogClient<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many InternshipLogs.
+     * @param {InternshipLogCreateManyArgs} args - Arguments to create many InternshipLogs.
+     * @example
+     * // Create many InternshipLogs
+     * const internshipLog = await prisma.internshipLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InternshipLogCreateManyArgs>(args?: SelectSubset<T, InternshipLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many InternshipLogs and returns the data saved in the database.
+     * @param {InternshipLogCreateManyAndReturnArgs} args - Arguments to create many InternshipLogs.
+     * @example
+     * // Create many InternshipLogs
+     * const internshipLog = await prisma.internshipLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many InternshipLogs and only return the `id`
+     * const internshipLogWithIdOnly = await prisma.internshipLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InternshipLogCreateManyAndReturnArgs>(args?: SelectSubset<T, InternshipLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a InternshipLog.
+     * @param {InternshipLogDeleteArgs} args - Arguments to delete one InternshipLog.
+     * @example
+     * // Delete one InternshipLog
+     * const InternshipLog = await prisma.internshipLog.delete({
+     *   where: {
+     *     // ... filter to delete one InternshipLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InternshipLogDeleteArgs>(args: SelectSubset<T, InternshipLogDeleteArgs<ExtArgs>>): Prisma__InternshipLogClient<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one InternshipLog.
+     * @param {InternshipLogUpdateArgs} args - Arguments to update one InternshipLog.
+     * @example
+     * // Update one InternshipLog
+     * const internshipLog = await prisma.internshipLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InternshipLogUpdateArgs>(args: SelectSubset<T, InternshipLogUpdateArgs<ExtArgs>>): Prisma__InternshipLogClient<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more InternshipLogs.
+     * @param {InternshipLogDeleteManyArgs} args - Arguments to filter InternshipLogs to delete.
+     * @example
+     * // Delete a few InternshipLogs
+     * const { count } = await prisma.internshipLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InternshipLogDeleteManyArgs>(args?: SelectSubset<T, InternshipLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InternshipLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InternshipLogs
+     * const internshipLog = await prisma.internshipLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InternshipLogUpdateManyArgs>(args: SelectSubset<T, InternshipLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one InternshipLog.
+     * @param {InternshipLogUpsertArgs} args - Arguments to update or create a InternshipLog.
+     * @example
+     * // Update or create a InternshipLog
+     * const internshipLog = await prisma.internshipLog.upsert({
+     *   create: {
+     *     // ... data to create a InternshipLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InternshipLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InternshipLogUpsertArgs>(args: SelectSubset<T, InternshipLogUpsertArgs<ExtArgs>>): Prisma__InternshipLogClient<$Result.GetResult<Prisma.$InternshipLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of InternshipLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipLogCountArgs} args - Arguments to filter InternshipLogs to count.
+     * @example
+     * // Count the number of InternshipLogs
+     * const count = await prisma.internshipLog.count({
+     *   where: {
+     *     // ... the filter for the InternshipLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends InternshipLogCountArgs>(
+      args?: Subset<T, InternshipLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InternshipLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a InternshipLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InternshipLogAggregateArgs>(args: Subset<T, InternshipLogAggregateArgs>): Prisma.PrismaPromise<GetInternshipLogAggregateType<T>>
+
+    /**
+     * Group by InternshipLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InternshipLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InternshipLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InternshipLogGroupByArgs['orderBy'] }
+        : { orderBy?: InternshipLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InternshipLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInternshipLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the InternshipLog model
+   */
+  readonly fields: InternshipLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for InternshipLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InternshipLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    internship<T extends InternshipDefaultArgs<ExtArgs> = {}>(args?: Subset<T, InternshipDefaultArgs<ExtArgs>>): Prisma__InternshipClient<$Result.GetResult<Prisma.$InternshipPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the InternshipLog model
+   */ 
+  interface InternshipLogFieldRefs {
+    readonly id: FieldRef<"InternshipLog", 'String'>
+    readonly date: FieldRef<"InternshipLog", 'DateTime'>
+    readonly hours: FieldRef<"InternshipLog", 'Float'>
+    readonly activity: FieldRef<"InternshipLog", 'String'>
+    readonly observations: FieldRef<"InternshipLog", 'String'>
+    readonly internshipId: FieldRef<"InternshipLog", 'String'>
+    readonly createdAt: FieldRef<"InternshipLog", 'DateTime'>
+    readonly updatedAt: FieldRef<"InternshipLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * InternshipLog findUnique
+   */
+  export type InternshipLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipLog to fetch.
+     */
+    where: InternshipLogWhereUniqueInput
+  }
+
+  /**
+   * InternshipLog findUniqueOrThrow
+   */
+  export type InternshipLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipLog to fetch.
+     */
+    where: InternshipLogWhereUniqueInput
+  }
+
+  /**
+   * InternshipLog findFirst
+   */
+  export type InternshipLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipLog to fetch.
+     */
+    where?: InternshipLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InternshipLogs to fetch.
+     */
+    orderBy?: InternshipLogOrderByWithRelationInput | InternshipLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InternshipLogs.
+     */
+    cursor?: InternshipLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InternshipLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InternshipLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InternshipLogs.
+     */
+    distinct?: InternshipLogScalarFieldEnum | InternshipLogScalarFieldEnum[]
+  }
+
+  /**
+   * InternshipLog findFirstOrThrow
+   */
+  export type InternshipLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipLog to fetch.
+     */
+    where?: InternshipLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InternshipLogs to fetch.
+     */
+    orderBy?: InternshipLogOrderByWithRelationInput | InternshipLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InternshipLogs.
+     */
+    cursor?: InternshipLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InternshipLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InternshipLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InternshipLogs.
+     */
+    distinct?: InternshipLogScalarFieldEnum | InternshipLogScalarFieldEnum[]
+  }
+
+  /**
+   * InternshipLog findMany
+   */
+  export type InternshipLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    /**
+     * Filter, which InternshipLogs to fetch.
+     */
+    where?: InternshipLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InternshipLogs to fetch.
+     */
+    orderBy?: InternshipLogOrderByWithRelationInput | InternshipLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing InternshipLogs.
+     */
+    cursor?: InternshipLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InternshipLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InternshipLogs.
+     */
+    skip?: number
+    distinct?: InternshipLogScalarFieldEnum | InternshipLogScalarFieldEnum[]
+  }
+
+  /**
+   * InternshipLog create
+   */
+  export type InternshipLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a InternshipLog.
+     */
+    data: XOR<InternshipLogCreateInput, InternshipLogUncheckedCreateInput>
+  }
+
+  /**
+   * InternshipLog createMany
+   */
+  export type InternshipLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many InternshipLogs.
+     */
+    data: InternshipLogCreateManyInput | InternshipLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InternshipLog createManyAndReturn
+   */
+  export type InternshipLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many InternshipLogs.
+     */
+    data: InternshipLogCreateManyInput | InternshipLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * InternshipLog update
+   */
+  export type InternshipLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a InternshipLog.
+     */
+    data: XOR<InternshipLogUpdateInput, InternshipLogUncheckedUpdateInput>
+    /**
+     * Choose, which InternshipLog to update.
+     */
+    where: InternshipLogWhereUniqueInput
+  }
+
+  /**
+   * InternshipLog updateMany
+   */
+  export type InternshipLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update InternshipLogs.
+     */
+    data: XOR<InternshipLogUpdateManyMutationInput, InternshipLogUncheckedUpdateManyInput>
+    /**
+     * Filter which InternshipLogs to update
+     */
+    where?: InternshipLogWhereInput
+  }
+
+  /**
+   * InternshipLog upsert
+   */
+  export type InternshipLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the InternshipLog to update in case it exists.
+     */
+    where: InternshipLogWhereUniqueInput
+    /**
+     * In case the InternshipLog found by the `where` argument doesn't exist, create a new InternshipLog with this data.
+     */
+    create: XOR<InternshipLogCreateInput, InternshipLogUncheckedCreateInput>
+    /**
+     * In case the InternshipLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InternshipLogUpdateInput, InternshipLogUncheckedUpdateInput>
+  }
+
+  /**
+   * InternshipLog delete
+   */
+  export type InternshipLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
+    /**
+     * Filter which InternshipLog to delete.
+     */
+    where: InternshipLogWhereUniqueInput
+  }
+
+  /**
+   * InternshipLog deleteMany
+   */
+  export type InternshipLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InternshipLogs to delete
+     */
+    where?: InternshipLogWhereInput
+  }
+
+  /**
+   * InternshipLog without action
+   */
+  export type InternshipLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InternshipLog
+     */
+    select?: InternshipLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InternshipLogInclude<ExtArgs> | null
   }
 
 
@@ -18899,8 +22165,8 @@ export namespace Prisma {
 
   export const AssetScalarFieldEnum: {
     id: 'id',
-    ticker: 'ticker',
     name: 'name',
+    ticker: 'ticker',
     category: 'category',
     platform: 'platform',
     quantity: 'quantity',
@@ -18912,9 +22178,7 @@ export namespace Prisma {
     indexa_api: 'indexa_api',
     manual: 'manual',
     image_url: 'image_url',
-    userId: 'userId',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    userId: 'userId'
   };
 
   export type AssetScalarFieldEnum = (typeof AssetScalarFieldEnum)[keyof typeof AssetScalarFieldEnum]
@@ -18922,10 +22186,9 @@ export namespace Prisma {
 
   export const HistoricalPriceScalarFieldEnum: {
     id: 'id',
-    price_eur: 'price_eur',
-    date: 'date',
     assetId: 'assetId',
-    createdAt: 'createdAt'
+    date: 'date',
+    price_eur: 'price_eur'
   };
 
   export type HistoricalPriceScalarFieldEnum = (typeof HistoricalPriceScalarFieldEnum)[keyof typeof HistoricalPriceScalarFieldEnum]
@@ -18933,15 +22196,61 @@ export namespace Prisma {
 
   export const PortfolioSnapshotScalarFieldEnum: {
     id: 'id',
-    total_value_eur: 'total_value_eur',
     date: 'date',
     category: 'category',
     asset_id: 'asset_id',
-    userId: 'userId',
-    createdAt: 'createdAt'
+    total_value_eur: 'total_value_eur',
+    userId: 'userId'
   };
 
   export type PortfolioSnapshotScalarFieldEnum = (typeof PortfolioSnapshotScalarFieldEnum)[keyof typeof PortfolioSnapshotScalarFieldEnum]
+
+
+  export const InternshipScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    status: 'status',
+    startDate: 'startDate',
+    endDate: 'endDate',
+    realStartDate: 'realStartDate',
+    realEndDate: 'realEndDate',
+    totalHours: 'totalHours',
+    schedule: 'schedule',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type InternshipScalarFieldEnum = (typeof InternshipScalarFieldEnum)[keyof typeof InternshipScalarFieldEnum]
+
+
+  export const InternshipCenterScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    address: 'address',
+    province: 'province',
+    city: 'city',
+    tutorName: 'tutorName',
+    tutorEmail: 'tutorEmail',
+    tutorPhone: 'tutorPhone',
+    universityTutor: 'universityTutor',
+    internshipId: 'internshipId'
+  };
+
+  export type InternshipCenterScalarFieldEnum = (typeof InternshipCenterScalarFieldEnum)[keyof typeof InternshipCenterScalarFieldEnum]
+
+
+  export const InternshipLogScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    hours: 'hours',
+    activity: 'activity',
+    observations: 'observations',
+    internshipId: 'internshipId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type InternshipLogScalarFieldEnum = (typeof InternshipLogScalarFieldEnum)[keyof typeof InternshipLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -19070,11 +22379,12 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     activities?: EmployeeActivityListRelationFilter
+    sessions?: SessionListRelationFilter
     assets?: AssetListRelationFilter
     portfolioSnapshots?: PortfolioSnapshotListRelationFilter
+    internship?: XOR<InternshipNullableRelationFilter, InternshipWhereInput> | null
   }
 
   export type UserOrderByWithRelationInput = {
@@ -19091,11 +22401,12 @@ export namespace Prisma {
     canAccessMasterUnie?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     activities?: EmployeeActivityOrderByRelationAggregateInput
+    sessions?: SessionOrderByRelationAggregateInput
     assets?: AssetOrderByRelationAggregateInput
     portfolioSnapshots?: PortfolioSnapshotOrderByRelationAggregateInput
+    internship?: InternshipOrderByWithRelationInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -19115,11 +22426,12 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     activities?: EmployeeActivityListRelationFilter
+    sessions?: SessionListRelationFilter
     assets?: AssetListRelationFilter
     portfolioSnapshots?: PortfolioSnapshotListRelationFilter
+    internship?: XOR<InternshipNullableRelationFilter, InternshipWhereInput> | null
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -19316,9 +22628,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Category"> | Date | string
     updatedAt?: DateTimeFilter<"Category"> | Date | string
     items?: ActionItemListRelationFilter
-    sections?: TaskSectionListRelationFilter
     sessions?: ClassSessionListRelationFilter
     projects?: ProjectListRelationFilter
+    sections?: TaskSectionListRelationFilter
   }
 
   export type CategoryOrderByWithRelationInput = {
@@ -19331,9 +22643,9 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     items?: ActionItemOrderByRelationAggregateInput
-    sections?: TaskSectionOrderByRelationAggregateInput
     sessions?: ClassSessionOrderByRelationAggregateInput
     projects?: ProjectOrderByRelationAggregateInput
+    sections?: TaskSectionOrderByRelationAggregateInput
   }
 
   export type CategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -19349,9 +22661,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Category"> | Date | string
     updatedAt?: DateTimeFilter<"Category"> | Date | string
     items?: ActionItemListRelationFilter
-    sections?: TaskSectionListRelationFilter
     sessions?: ClassSessionListRelationFilter
     projects?: ProjectListRelationFilter
+    sections?: TaskSectionListRelationFilter
   }, "id" | "name" | "slug">
 
   export type CategoryOrderByWithAggregationInput = {
@@ -19392,8 +22704,8 @@ export namespace Prisma {
     categoryId?: StringFilter<"TaskSection"> | string
     createdAt?: DateTimeFilter<"TaskSection"> | Date | string
     updatedAt?: DateTimeFilter<"TaskSection"> | Date | string
-    category?: XOR<CategoryRelationFilter, CategoryWhereInput>
     items?: ActionItemListRelationFilter
+    category?: XOR<CategoryRelationFilter, CategoryWhereInput>
   }
 
   export type TaskSectionOrderByWithRelationInput = {
@@ -19403,8 +22715,8 @@ export namespace Prisma {
     categoryId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    category?: CategoryOrderByWithRelationInput
     items?: ActionItemOrderByRelationAggregateInput
+    category?: CategoryOrderByWithRelationInput
   }
 
   export type TaskSectionWhereUniqueInput = Prisma.AtLeast<{
@@ -19417,8 +22729,8 @@ export namespace Prisma {
     categoryId?: StringFilter<"TaskSection"> | string
     createdAt?: DateTimeFilter<"TaskSection"> | Date | string
     updatedAt?: DateTimeFilter<"TaskSection"> | Date | string
-    category?: XOR<CategoryRelationFilter, CategoryWhereInput>
     items?: ActionItemListRelationFilter
+    category?: XOR<CategoryRelationFilter, CategoryWhereInput>
   }, "id">
 
   export type TaskSectionOrderByWithAggregationInput = {
@@ -19629,8 +22941,8 @@ export namespace Prisma {
     categoryId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
-    images?: ProjectImageListRelationFilter
     category?: XOR<CategoryRelationFilter, CategoryWhereInput>
+    images?: ProjectImageListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -19641,8 +22953,8 @@ export namespace Prisma {
     categoryId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    images?: ProjectImageOrderByRelationAggregateInput
     category?: CategoryOrderByWithRelationInput
+    images?: ProjectImageOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -19656,8 +22968,8 @@ export namespace Prisma {
     categoryId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
-    images?: ProjectImageListRelationFilter
     category?: XOR<CategoryRelationFilter, CategoryWhereInput>
+    images?: ProjectImageListRelationFilter
   }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
@@ -19750,8 +23062,8 @@ export namespace Prisma {
     finalGrade?: FloatNullableFilter<"Subject"> | number | null
     createdAt?: DateTimeFilter<"Subject"> | Date | string
     updatedAt?: DateTimeFilter<"Subject"> | Date | string
-    assessments?: AssessmentListRelationFilter
     tasks?: ActionItemListRelationFilter
+    assessments?: AssessmentListRelationFilter
   }
 
   export type SubjectOrderByWithRelationInput = {
@@ -19765,8 +23077,8 @@ export namespace Prisma {
     finalGrade?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    assessments?: AssessmentOrderByRelationAggregateInput
     tasks?: ActionItemOrderByRelationAggregateInput
+    assessments?: AssessmentOrderByRelationAggregateInput
   }
 
   export type SubjectWhereUniqueInput = Prisma.AtLeast<{
@@ -19783,8 +23095,8 @@ export namespace Prisma {
     finalGrade?: FloatNullableFilter<"Subject"> | number | null
     createdAt?: DateTimeFilter<"Subject"> | Date | string
     updatedAt?: DateTimeFilter<"Subject"> | Date | string
-    assessments?: AssessmentListRelationFilter
     tasks?: ActionItemListRelationFilter
+    assessments?: AssessmentListRelationFilter
   }, "id">
 
   export type SubjectOrderByWithAggregationInput = {
@@ -20075,8 +23387,8 @@ export namespace Prisma {
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
     id?: StringFilter<"Asset"> | string
-    ticker?: StringNullableFilter<"Asset"> | string | null
     name?: StringFilter<"Asset"> | string
+    ticker?: StringNullableFilter<"Asset"> | string | null
     category?: StringFilter<"Asset"> | string
     platform?: StringNullableFilter<"Asset"> | string | null
     quantity?: FloatFilter<"Asset"> | number
@@ -20085,20 +23397,17 @@ export namespace Prisma {
     yahoo_symbol?: StringNullableFilter<"Asset"> | string | null
     coingecko_id?: StringNullableFilter<"Asset"> | string | null
     coincap_id?: StringNullableFilter<"Asset"> | string | null
-    indexa_api?: BoolFilter<"Asset"> | boolean
-    manual?: BoolFilter<"Asset"> | boolean
+    indexa_api?: BoolNullableFilter<"Asset"> | boolean | null
+    manual?: BoolNullableFilter<"Asset"> | boolean | null
     image_url?: StringNullableFilter<"Asset"> | string | null
-    userId?: StringFilter<"Asset"> | string
-    createdAt?: DateTimeFilter<"Asset"> | Date | string
-    updatedAt?: DateTimeFilter<"Asset"> | Date | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
-    history?: HistoricalPriceListRelationFilter
+    userId?: StringNullableFilter<"Asset"> | string | null
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }
 
   export type AssetOrderByWithRelationInput = {
     id?: SortOrder
-    ticker?: SortOrderInput | SortOrder
     name?: SortOrder
+    ticker?: SortOrderInput | SortOrder
     category?: SortOrder
     platform?: SortOrderInput | SortOrder
     quantity?: SortOrder
@@ -20107,14 +23416,11 @@ export namespace Prisma {
     yahoo_symbol?: SortOrderInput | SortOrder
     coingecko_id?: SortOrderInput | SortOrder
     coincap_id?: SortOrderInput | SortOrder
-    indexa_api?: SortOrder
-    manual?: SortOrder
+    indexa_api?: SortOrderInput | SortOrder
+    manual?: SortOrderInput | SortOrder
     image_url?: SortOrderInput | SortOrder
-    userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+    userId?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
-    history?: HistoricalPriceOrderByRelationAggregateInput
   }
 
   export type AssetWhereUniqueInput = Prisma.AtLeast<{
@@ -20122,8 +23428,8 @@ export namespace Prisma {
     AND?: AssetWhereInput | AssetWhereInput[]
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
-    ticker?: StringNullableFilter<"Asset"> | string | null
     name?: StringFilter<"Asset"> | string
+    ticker?: StringNullableFilter<"Asset"> | string | null
     category?: StringFilter<"Asset"> | string
     platform?: StringNullableFilter<"Asset"> | string | null
     quantity?: FloatFilter<"Asset"> | number
@@ -20132,20 +23438,17 @@ export namespace Prisma {
     yahoo_symbol?: StringNullableFilter<"Asset"> | string | null
     coingecko_id?: StringNullableFilter<"Asset"> | string | null
     coincap_id?: StringNullableFilter<"Asset"> | string | null
-    indexa_api?: BoolFilter<"Asset"> | boolean
-    manual?: BoolFilter<"Asset"> | boolean
+    indexa_api?: BoolNullableFilter<"Asset"> | boolean | null
+    manual?: BoolNullableFilter<"Asset"> | boolean | null
     image_url?: StringNullableFilter<"Asset"> | string | null
-    userId?: StringFilter<"Asset"> | string
-    createdAt?: DateTimeFilter<"Asset"> | Date | string
-    updatedAt?: DateTimeFilter<"Asset"> | Date | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
-    history?: HistoricalPriceListRelationFilter
+    userId?: StringNullableFilter<"Asset"> | string | null
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type AssetOrderByWithAggregationInput = {
     id?: SortOrder
-    ticker?: SortOrderInput | SortOrder
     name?: SortOrder
+    ticker?: SortOrderInput | SortOrder
     category?: SortOrder
     platform?: SortOrderInput | SortOrder
     quantity?: SortOrder
@@ -20154,12 +23457,10 @@ export namespace Prisma {
     yahoo_symbol?: SortOrderInput | SortOrder
     coingecko_id?: SortOrderInput | SortOrder
     coincap_id?: SortOrderInput | SortOrder
-    indexa_api?: SortOrder
-    manual?: SortOrder
+    indexa_api?: SortOrderInput | SortOrder
+    manual?: SortOrderInput | SortOrder
     image_url?: SortOrderInput | SortOrder
-    userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
+    userId?: SortOrderInput | SortOrder
     _count?: AssetCountOrderByAggregateInput
     _avg?: AssetAvgOrderByAggregateInput
     _max?: AssetMaxOrderByAggregateInput
@@ -20172,8 +23473,8 @@ export namespace Prisma {
     OR?: AssetScalarWhereWithAggregatesInput[]
     NOT?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Asset"> | string
-    ticker?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     name?: StringWithAggregatesFilter<"Asset"> | string
+    ticker?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     category?: StringWithAggregatesFilter<"Asset"> | string
     platform?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     quantity?: FloatWithAggregatesFilter<"Asset"> | number
@@ -20182,53 +23483,44 @@ export namespace Prisma {
     yahoo_symbol?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     coingecko_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     coincap_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    indexa_api?: BoolWithAggregatesFilter<"Asset"> | boolean
-    manual?: BoolWithAggregatesFilter<"Asset"> | boolean
+    indexa_api?: BoolNullableWithAggregatesFilter<"Asset"> | boolean | null
+    manual?: BoolNullableWithAggregatesFilter<"Asset"> | boolean | null
     image_url?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    userId?: StringWithAggregatesFilter<"Asset"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
+    userId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
   }
 
   export type HistoricalPriceWhereInput = {
     AND?: HistoricalPriceWhereInput | HistoricalPriceWhereInput[]
     OR?: HistoricalPriceWhereInput[]
     NOT?: HistoricalPriceWhereInput | HistoricalPriceWhereInput[]
-    id?: StringFilter<"HistoricalPrice"> | string
-    price_eur?: FloatFilter<"HistoricalPrice"> | number
-    date?: DateTimeFilter<"HistoricalPrice"> | Date | string
+    id?: IntFilter<"HistoricalPrice"> | number
     assetId?: StringFilter<"HistoricalPrice"> | string
-    createdAt?: DateTimeFilter<"HistoricalPrice"> | Date | string
-    asset?: XOR<AssetRelationFilter, AssetWhereInput>
+    date?: DateTimeFilter<"HistoricalPrice"> | Date | string
+    price_eur?: FloatFilter<"HistoricalPrice"> | number
   }
 
   export type HistoricalPriceOrderByWithRelationInput = {
     id?: SortOrder
-    price_eur?: SortOrder
-    date?: SortOrder
     assetId?: SortOrder
-    createdAt?: SortOrder
-    asset?: AssetOrderByWithRelationInput
+    date?: SortOrder
+    price_eur?: SortOrder
   }
 
   export type HistoricalPriceWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
+    id?: number
     AND?: HistoricalPriceWhereInput | HistoricalPriceWhereInput[]
     OR?: HistoricalPriceWhereInput[]
     NOT?: HistoricalPriceWhereInput | HistoricalPriceWhereInput[]
-    price_eur?: FloatFilter<"HistoricalPrice"> | number
-    date?: DateTimeFilter<"HistoricalPrice"> | Date | string
     assetId?: StringFilter<"HistoricalPrice"> | string
-    createdAt?: DateTimeFilter<"HistoricalPrice"> | Date | string
-    asset?: XOR<AssetRelationFilter, AssetWhereInput>
+    date?: DateTimeFilter<"HistoricalPrice"> | Date | string
+    price_eur?: FloatFilter<"HistoricalPrice"> | number
   }, "id">
 
   export type HistoricalPriceOrderByWithAggregationInput = {
     id?: SortOrder
-    price_eur?: SortOrder
-    date?: SortOrder
     assetId?: SortOrder
-    createdAt?: SortOrder
+    date?: SortOrder
+    price_eur?: SortOrder
     _count?: HistoricalPriceCountOrderByAggregateInput
     _avg?: HistoricalPriceAvgOrderByAggregateInput
     _max?: HistoricalPriceMaxOrderByAggregateInput
@@ -20240,60 +23532,55 @@ export namespace Prisma {
     AND?: HistoricalPriceScalarWhereWithAggregatesInput | HistoricalPriceScalarWhereWithAggregatesInput[]
     OR?: HistoricalPriceScalarWhereWithAggregatesInput[]
     NOT?: HistoricalPriceScalarWhereWithAggregatesInput | HistoricalPriceScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"HistoricalPrice"> | string
-    price_eur?: FloatWithAggregatesFilter<"HistoricalPrice"> | number
-    date?: DateTimeWithAggregatesFilter<"HistoricalPrice"> | Date | string
+    id?: IntWithAggregatesFilter<"HistoricalPrice"> | number
     assetId?: StringWithAggregatesFilter<"HistoricalPrice"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"HistoricalPrice"> | Date | string
+    date?: DateTimeWithAggregatesFilter<"HistoricalPrice"> | Date | string
+    price_eur?: FloatWithAggregatesFilter<"HistoricalPrice"> | number
   }
 
   export type PortfolioSnapshotWhereInput = {
     AND?: PortfolioSnapshotWhereInput | PortfolioSnapshotWhereInput[]
     OR?: PortfolioSnapshotWhereInput[]
     NOT?: PortfolioSnapshotWhereInput | PortfolioSnapshotWhereInput[]
-    id?: StringFilter<"PortfolioSnapshot"> | string
-    total_value_eur?: FloatFilter<"PortfolioSnapshot"> | number
+    id?: IntFilter<"PortfolioSnapshot"> | number
     date?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
     category?: StringNullableFilter<"PortfolioSnapshot"> | string | null
     asset_id?: StringNullableFilter<"PortfolioSnapshot"> | string | null
-    userId?: StringFilter<"PortfolioSnapshot"> | string
-    createdAt?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    total_value_eur?: FloatFilter<"PortfolioSnapshot"> | number
+    userId?: StringNullableFilter<"PortfolioSnapshot"> | string | null
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }
 
   export type PortfolioSnapshotOrderByWithRelationInput = {
     id?: SortOrder
-    total_value_eur?: SortOrder
     date?: SortOrder
     category?: SortOrderInput | SortOrder
     asset_id?: SortOrderInput | SortOrder
-    userId?: SortOrder
-    createdAt?: SortOrder
+    total_value_eur?: SortOrder
+    userId?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
   }
 
   export type PortfolioSnapshotWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
+    id?: number
     AND?: PortfolioSnapshotWhereInput | PortfolioSnapshotWhereInput[]
     OR?: PortfolioSnapshotWhereInput[]
     NOT?: PortfolioSnapshotWhereInput | PortfolioSnapshotWhereInput[]
-    total_value_eur?: FloatFilter<"PortfolioSnapshot"> | number
     date?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
     category?: StringNullableFilter<"PortfolioSnapshot"> | string | null
     asset_id?: StringNullableFilter<"PortfolioSnapshot"> | string | null
-    userId?: StringFilter<"PortfolioSnapshot"> | string
-    createdAt?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    total_value_eur?: FloatFilter<"PortfolioSnapshot"> | number
+    userId?: StringNullableFilter<"PortfolioSnapshot"> | string | null
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }, "id">
 
   export type PortfolioSnapshotOrderByWithAggregationInput = {
     id?: SortOrder
-    total_value_eur?: SortOrder
     date?: SortOrder
     category?: SortOrderInput | SortOrder
     asset_id?: SortOrderInput | SortOrder
-    userId?: SortOrder
-    createdAt?: SortOrder
+    total_value_eur?: SortOrder
+    userId?: SortOrderInput | SortOrder
     _count?: PortfolioSnapshotCountOrderByAggregateInput
     _avg?: PortfolioSnapshotAvgOrderByAggregateInput
     _max?: PortfolioSnapshotMaxOrderByAggregateInput
@@ -20305,13 +23592,257 @@ export namespace Prisma {
     AND?: PortfolioSnapshotScalarWhereWithAggregatesInput | PortfolioSnapshotScalarWhereWithAggregatesInput[]
     OR?: PortfolioSnapshotScalarWhereWithAggregatesInput[]
     NOT?: PortfolioSnapshotScalarWhereWithAggregatesInput | PortfolioSnapshotScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"PortfolioSnapshot"> | string
-    total_value_eur?: FloatWithAggregatesFilter<"PortfolioSnapshot"> | number
+    id?: IntWithAggregatesFilter<"PortfolioSnapshot"> | number
     date?: DateTimeWithAggregatesFilter<"PortfolioSnapshot"> | Date | string
     category?: StringNullableWithAggregatesFilter<"PortfolioSnapshot"> | string | null
     asset_id?: StringNullableWithAggregatesFilter<"PortfolioSnapshot"> | string | null
-    userId?: StringWithAggregatesFilter<"PortfolioSnapshot"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"PortfolioSnapshot"> | Date | string
+    total_value_eur?: FloatWithAggregatesFilter<"PortfolioSnapshot"> | number
+    userId?: StringNullableWithAggregatesFilter<"PortfolioSnapshot"> | string | null
+  }
+
+  export type InternshipWhereInput = {
+    AND?: InternshipWhereInput | InternshipWhereInput[]
+    OR?: InternshipWhereInput[]
+    NOT?: InternshipWhereInput | InternshipWhereInput[]
+    id?: StringFilter<"Internship"> | string
+    userId?: StringFilter<"Internship"> | string
+    status?: StringFilter<"Internship"> | string
+    startDate?: DateTimeNullableFilter<"Internship"> | Date | string | null
+    endDate?: DateTimeNullableFilter<"Internship"> | Date | string | null
+    realStartDate?: DateTimeNullableFilter<"Internship"> | Date | string | null
+    realEndDate?: DateTimeNullableFilter<"Internship"> | Date | string | null
+    totalHours?: IntFilter<"Internship"> | number
+    schedule?: StringNullableFilter<"Internship"> | string | null
+    createdAt?: DateTimeFilter<"Internship"> | Date | string
+    updatedAt?: DateTimeFilter<"Internship"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    center?: XOR<InternshipCenterNullableRelationFilter, InternshipCenterWhereInput> | null
+    logs?: InternshipLogListRelationFilter
+  }
+
+  export type InternshipOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    status?: SortOrder
+    startDate?: SortOrderInput | SortOrder
+    endDate?: SortOrderInput | SortOrder
+    realStartDate?: SortOrderInput | SortOrder
+    realEndDate?: SortOrderInput | SortOrder
+    totalHours?: SortOrder
+    schedule?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    center?: InternshipCenterOrderByWithRelationInput
+    logs?: InternshipLogOrderByRelationAggregateInput
+  }
+
+  export type InternshipWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    AND?: InternshipWhereInput | InternshipWhereInput[]
+    OR?: InternshipWhereInput[]
+    NOT?: InternshipWhereInput | InternshipWhereInput[]
+    status?: StringFilter<"Internship"> | string
+    startDate?: DateTimeNullableFilter<"Internship"> | Date | string | null
+    endDate?: DateTimeNullableFilter<"Internship"> | Date | string | null
+    realStartDate?: DateTimeNullableFilter<"Internship"> | Date | string | null
+    realEndDate?: DateTimeNullableFilter<"Internship"> | Date | string | null
+    totalHours?: IntFilter<"Internship"> | number
+    schedule?: StringNullableFilter<"Internship"> | string | null
+    createdAt?: DateTimeFilter<"Internship"> | Date | string
+    updatedAt?: DateTimeFilter<"Internship"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    center?: XOR<InternshipCenterNullableRelationFilter, InternshipCenterWhereInput> | null
+    logs?: InternshipLogListRelationFilter
+  }, "id" | "userId">
+
+  export type InternshipOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    status?: SortOrder
+    startDate?: SortOrderInput | SortOrder
+    endDate?: SortOrderInput | SortOrder
+    realStartDate?: SortOrderInput | SortOrder
+    realEndDate?: SortOrderInput | SortOrder
+    totalHours?: SortOrder
+    schedule?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: InternshipCountOrderByAggregateInput
+    _avg?: InternshipAvgOrderByAggregateInput
+    _max?: InternshipMaxOrderByAggregateInput
+    _min?: InternshipMinOrderByAggregateInput
+    _sum?: InternshipSumOrderByAggregateInput
+  }
+
+  export type InternshipScalarWhereWithAggregatesInput = {
+    AND?: InternshipScalarWhereWithAggregatesInput | InternshipScalarWhereWithAggregatesInput[]
+    OR?: InternshipScalarWhereWithAggregatesInput[]
+    NOT?: InternshipScalarWhereWithAggregatesInput | InternshipScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Internship"> | string
+    userId?: StringWithAggregatesFilter<"Internship"> | string
+    status?: StringWithAggregatesFilter<"Internship"> | string
+    startDate?: DateTimeNullableWithAggregatesFilter<"Internship"> | Date | string | null
+    endDate?: DateTimeNullableWithAggregatesFilter<"Internship"> | Date | string | null
+    realStartDate?: DateTimeNullableWithAggregatesFilter<"Internship"> | Date | string | null
+    realEndDate?: DateTimeNullableWithAggregatesFilter<"Internship"> | Date | string | null
+    totalHours?: IntWithAggregatesFilter<"Internship"> | number
+    schedule?: StringNullableWithAggregatesFilter<"Internship"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Internship"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Internship"> | Date | string
+  }
+
+  export type InternshipCenterWhereInput = {
+    AND?: InternshipCenterWhereInput | InternshipCenterWhereInput[]
+    OR?: InternshipCenterWhereInput[]
+    NOT?: InternshipCenterWhereInput | InternshipCenterWhereInput[]
+    id?: StringFilter<"InternshipCenter"> | string
+    name?: StringFilter<"InternshipCenter"> | string
+    address?: StringNullableFilter<"InternshipCenter"> | string | null
+    province?: StringNullableFilter<"InternshipCenter"> | string | null
+    city?: StringNullableFilter<"InternshipCenter"> | string | null
+    tutorName?: StringNullableFilter<"InternshipCenter"> | string | null
+    tutorEmail?: StringNullableFilter<"InternshipCenter"> | string | null
+    tutorPhone?: StringNullableFilter<"InternshipCenter"> | string | null
+    universityTutor?: StringNullableFilter<"InternshipCenter"> | string | null
+    internshipId?: StringFilter<"InternshipCenter"> | string
+    internship?: XOR<InternshipRelationFilter, InternshipWhereInput>
+  }
+
+  export type InternshipCenterOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    address?: SortOrderInput | SortOrder
+    province?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    tutorName?: SortOrderInput | SortOrder
+    tutorEmail?: SortOrderInput | SortOrder
+    tutorPhone?: SortOrderInput | SortOrder
+    universityTutor?: SortOrderInput | SortOrder
+    internshipId?: SortOrder
+    internship?: InternshipOrderByWithRelationInput
+  }
+
+  export type InternshipCenterWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    internshipId?: string
+    AND?: InternshipCenterWhereInput | InternshipCenterWhereInput[]
+    OR?: InternshipCenterWhereInput[]
+    NOT?: InternshipCenterWhereInput | InternshipCenterWhereInput[]
+    name?: StringFilter<"InternshipCenter"> | string
+    address?: StringNullableFilter<"InternshipCenter"> | string | null
+    province?: StringNullableFilter<"InternshipCenter"> | string | null
+    city?: StringNullableFilter<"InternshipCenter"> | string | null
+    tutorName?: StringNullableFilter<"InternshipCenter"> | string | null
+    tutorEmail?: StringNullableFilter<"InternshipCenter"> | string | null
+    tutorPhone?: StringNullableFilter<"InternshipCenter"> | string | null
+    universityTutor?: StringNullableFilter<"InternshipCenter"> | string | null
+    internship?: XOR<InternshipRelationFilter, InternshipWhereInput>
+  }, "id" | "internshipId">
+
+  export type InternshipCenterOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    address?: SortOrderInput | SortOrder
+    province?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    tutorName?: SortOrderInput | SortOrder
+    tutorEmail?: SortOrderInput | SortOrder
+    tutorPhone?: SortOrderInput | SortOrder
+    universityTutor?: SortOrderInput | SortOrder
+    internshipId?: SortOrder
+    _count?: InternshipCenterCountOrderByAggregateInput
+    _max?: InternshipCenterMaxOrderByAggregateInput
+    _min?: InternshipCenterMinOrderByAggregateInput
+  }
+
+  export type InternshipCenterScalarWhereWithAggregatesInput = {
+    AND?: InternshipCenterScalarWhereWithAggregatesInput | InternshipCenterScalarWhereWithAggregatesInput[]
+    OR?: InternshipCenterScalarWhereWithAggregatesInput[]
+    NOT?: InternshipCenterScalarWhereWithAggregatesInput | InternshipCenterScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"InternshipCenter"> | string
+    name?: StringWithAggregatesFilter<"InternshipCenter"> | string
+    address?: StringNullableWithAggregatesFilter<"InternshipCenter"> | string | null
+    province?: StringNullableWithAggregatesFilter<"InternshipCenter"> | string | null
+    city?: StringNullableWithAggregatesFilter<"InternshipCenter"> | string | null
+    tutorName?: StringNullableWithAggregatesFilter<"InternshipCenter"> | string | null
+    tutorEmail?: StringNullableWithAggregatesFilter<"InternshipCenter"> | string | null
+    tutorPhone?: StringNullableWithAggregatesFilter<"InternshipCenter"> | string | null
+    universityTutor?: StringNullableWithAggregatesFilter<"InternshipCenter"> | string | null
+    internshipId?: StringWithAggregatesFilter<"InternshipCenter"> | string
+  }
+
+  export type InternshipLogWhereInput = {
+    AND?: InternshipLogWhereInput | InternshipLogWhereInput[]
+    OR?: InternshipLogWhereInput[]
+    NOT?: InternshipLogWhereInput | InternshipLogWhereInput[]
+    id?: StringFilter<"InternshipLog"> | string
+    date?: DateTimeFilter<"InternshipLog"> | Date | string
+    hours?: FloatFilter<"InternshipLog"> | number
+    activity?: StringFilter<"InternshipLog"> | string
+    observations?: StringNullableFilter<"InternshipLog"> | string | null
+    internshipId?: StringFilter<"InternshipLog"> | string
+    createdAt?: DateTimeFilter<"InternshipLog"> | Date | string
+    updatedAt?: DateTimeFilter<"InternshipLog"> | Date | string
+    internship?: XOR<InternshipRelationFilter, InternshipWhereInput>
+  }
+
+  export type InternshipLogOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    hours?: SortOrder
+    activity?: SortOrder
+    observations?: SortOrderInput | SortOrder
+    internshipId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    internship?: InternshipOrderByWithRelationInput
+  }
+
+  export type InternshipLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: InternshipLogWhereInput | InternshipLogWhereInput[]
+    OR?: InternshipLogWhereInput[]
+    NOT?: InternshipLogWhereInput | InternshipLogWhereInput[]
+    date?: DateTimeFilter<"InternshipLog"> | Date | string
+    hours?: FloatFilter<"InternshipLog"> | number
+    activity?: StringFilter<"InternshipLog"> | string
+    observations?: StringNullableFilter<"InternshipLog"> | string | null
+    internshipId?: StringFilter<"InternshipLog"> | string
+    createdAt?: DateTimeFilter<"InternshipLog"> | Date | string
+    updatedAt?: DateTimeFilter<"InternshipLog"> | Date | string
+    internship?: XOR<InternshipRelationFilter, InternshipWhereInput>
+  }, "id">
+
+  export type InternshipLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    hours?: SortOrder
+    activity?: SortOrder
+    observations?: SortOrderInput | SortOrder
+    internshipId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: InternshipLogCountOrderByAggregateInput
+    _avg?: InternshipLogAvgOrderByAggregateInput
+    _max?: InternshipLogMaxOrderByAggregateInput
+    _min?: InternshipLogMinOrderByAggregateInput
+    _sum?: InternshipLogSumOrderByAggregateInput
+  }
+
+  export type InternshipLogScalarWhereWithAggregatesInput = {
+    AND?: InternshipLogScalarWhereWithAggregatesInput | InternshipLogScalarWhereWithAggregatesInput[]
+    OR?: InternshipLogScalarWhereWithAggregatesInput[]
+    NOT?: InternshipLogScalarWhereWithAggregatesInput | InternshipLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"InternshipLog"> | string
+    date?: DateTimeWithAggregatesFilter<"InternshipLog"> | Date | string
+    hours?: FloatWithAggregatesFilter<"InternshipLog"> | number
+    activity?: StringWithAggregatesFilter<"InternshipLog"> | string
+    observations?: StringNullableWithAggregatesFilter<"InternshipLog"> | string | null
+    internshipId?: StringWithAggregatesFilter<"InternshipLog"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"InternshipLog"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"InternshipLog"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -20328,11 +23859,12 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
     assets?: AssetCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
+    internship?: InternshipCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -20349,11 +23881,12 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assets?: AssetUncheckedCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
+    internship?: InternshipUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -20370,11 +23903,12 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
     assets?: AssetUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
+    internship?: InternshipUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -20391,11 +23925,12 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
+    internship?: InternshipUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -20608,9 +24143,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: ActionItemCreateNestedManyWithoutCategoryInput
-    sections?: TaskSectionCreateNestedManyWithoutCategoryInput
     sessions?: ClassSessionCreateNestedManyWithoutCategoryInput
     projects?: ProjectCreateNestedManyWithoutCategoryInput
+    sections?: TaskSectionCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateInput = {
@@ -20623,9 +24158,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: ActionItemUncheckedCreateNestedManyWithoutCategoryInput
-    sections?: TaskSectionUncheckedCreateNestedManyWithoutCategoryInput
     sessions?: ClassSessionUncheckedCreateNestedManyWithoutCategoryInput
     projects?: ProjectUncheckedCreateNestedManyWithoutCategoryInput
+    sections?: TaskSectionUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUpdateInput = {
@@ -20638,9 +24173,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: ActionItemUpdateManyWithoutCategoryNestedInput
-    sections?: TaskSectionUpdateManyWithoutCategoryNestedInput
     sessions?: ClassSessionUpdateManyWithoutCategoryNestedInput
     projects?: ProjectUpdateManyWithoutCategoryNestedInput
+    sections?: TaskSectionUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateInput = {
@@ -20653,9 +24188,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: ActionItemUncheckedUpdateManyWithoutCategoryNestedInput
-    sections?: TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput
     sessions?: ClassSessionUncheckedUpdateManyWithoutCategoryNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutCategoryNestedInput
+    sections?: TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryCreateManyInput = {
@@ -20697,8 +24232,8 @@ export namespace Prisma {
     order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
-    category: CategoryCreateNestedOneWithoutSectionsInput
     items?: ActionItemCreateNestedManyWithoutSectionInput
+    category: CategoryCreateNestedOneWithoutSectionsInput
   }
 
   export type TaskSectionUncheckedCreateInput = {
@@ -20717,8 +24252,8 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: CategoryUpdateOneRequiredWithoutSectionsNestedInput
     items?: ActionItemUpdateManyWithoutSectionNestedInput
+    category?: CategoryUpdateOneRequiredWithoutSectionsNestedInput
   }
 
   export type TaskSectionUncheckedUpdateInput = {
@@ -20949,8 +24484,8 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    images?: ProjectImageCreateNestedManyWithoutProjectInput
     category: CategoryCreateNestedOneWithoutProjectsInput
+    images?: ProjectImageCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -20971,8 +24506,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    images?: ProjectImageUpdateManyWithoutProjectNestedInput
     category?: CategoryUpdateOneRequiredWithoutProjectsNestedInput
+    images?: ProjectImageUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -21074,8 +24609,8 @@ export namespace Prisma {
     finalGrade?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    assessments?: AssessmentCreateNestedManyWithoutSubjectInput
     tasks?: ActionItemCreateNestedManyWithoutSubjectInput
+    assessments?: AssessmentCreateNestedManyWithoutSubjectInput
   }
 
   export type SubjectUncheckedCreateInput = {
@@ -21089,8 +24624,8 @@ export namespace Prisma {
     finalGrade?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    assessments?: AssessmentUncheckedCreateNestedManyWithoutSubjectInput
     tasks?: ActionItemUncheckedCreateNestedManyWithoutSubjectInput
+    assessments?: AssessmentUncheckedCreateNestedManyWithoutSubjectInput
   }
 
   export type SubjectUpdateInput = {
@@ -21104,8 +24639,8 @@ export namespace Prisma {
     finalGrade?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    assessments?: AssessmentUpdateManyWithoutSubjectNestedInput
     tasks?: ActionItemUpdateManyWithoutSubjectNestedInput
+    assessments?: AssessmentUpdateManyWithoutSubjectNestedInput
   }
 
   export type SubjectUncheckedUpdateInput = {
@@ -21119,8 +24654,8 @@ export namespace Prisma {
     finalGrade?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    assessments?: AssessmentUncheckedUpdateManyWithoutSubjectNestedInput
     tasks?: ActionItemUncheckedUpdateManyWithoutSubjectNestedInput
+    assessments?: AssessmentUncheckedUpdateManyWithoutSubjectNestedInput
   }
 
   export type SubjectCreateManyInput = {
@@ -21449,50 +24984,44 @@ export namespace Prisma {
 
   export type AssetCreateInput = {
     id?: string
-    ticker?: string | null
     name: string
-    category?: string
+    ticker?: string | null
+    category: string
     platform?: string | null
-    quantity?: number
-    price_eur?: number
+    quantity: number
+    price_eur: number
     currency?: string | null
     yahoo_symbol?: string | null
     coingecko_id?: string | null
     coincap_id?: string | null
-    indexa_api?: boolean
-    manual?: boolean
+    indexa_api?: boolean | null
+    manual?: boolean | null
     image_url?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutAssetsInput
-    history?: HistoricalPriceCreateNestedManyWithoutAssetInput
+    user?: UserCreateNestedOneWithoutAssetsInput
   }
 
   export type AssetUncheckedCreateInput = {
     id?: string
-    ticker?: string | null
     name: string
-    category?: string
+    ticker?: string | null
+    category: string
     platform?: string | null
-    quantity?: number
-    price_eur?: number
+    quantity: number
+    price_eur: number
     currency?: string | null
     yahoo_symbol?: string | null
     coingecko_id?: string | null
     coincap_id?: string | null
-    indexa_api?: boolean
-    manual?: boolean
+    indexa_api?: boolean | null
+    manual?: boolean | null
     image_url?: string | null
-    userId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    history?: HistoricalPriceUncheckedCreateNestedManyWithoutAssetInput
+    userId?: string | null
   }
 
   export type AssetUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     category?: StringFieldUpdateOperationsInput | string
     platform?: NullableStringFieldUpdateOperationsInput | string | null
     quantity?: FloatFieldUpdateOperationsInput | number
@@ -21501,19 +25030,16 @@ export namespace Prisma {
     yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
     coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
     coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
-    indexa_api?: BoolFieldUpdateOperationsInput | boolean
-    manual?: BoolFieldUpdateOperationsInput | boolean
+    indexa_api?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    manual?: NullableBoolFieldUpdateOperationsInput | boolean | null
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutAssetsNestedInput
-    history?: HistoricalPriceUpdateManyWithoutAssetNestedInput
+    user?: UserUpdateOneWithoutAssetsNestedInput
   }
 
   export type AssetUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     category?: StringFieldUpdateOperationsInput | string
     platform?: NullableStringFieldUpdateOperationsInput | string | null
     quantity?: FloatFieldUpdateOperationsInput | number
@@ -21522,39 +25048,34 @@ export namespace Prisma {
     yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
     coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
     coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
-    indexa_api?: BoolFieldUpdateOperationsInput | boolean
-    manual?: BoolFieldUpdateOperationsInput | boolean
+    indexa_api?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    manual?: NullableBoolFieldUpdateOperationsInput | boolean | null
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    history?: HistoricalPriceUncheckedUpdateManyWithoutAssetNestedInput
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AssetCreateManyInput = {
     id?: string
-    ticker?: string | null
     name: string
-    category?: string
+    ticker?: string | null
+    category: string
     platform?: string | null
-    quantity?: number
-    price_eur?: number
+    quantity: number
+    price_eur: number
     currency?: string | null
     yahoo_symbol?: string | null
     coingecko_id?: string | null
     coincap_id?: string | null
-    indexa_api?: boolean
-    manual?: boolean
+    indexa_api?: boolean | null
+    manual?: boolean | null
     image_url?: string | null
-    userId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    userId?: string | null
   }
 
   export type AssetUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     category?: StringFieldUpdateOperationsInput | string
     platform?: NullableStringFieldUpdateOperationsInput | string | null
     quantity?: FloatFieldUpdateOperationsInput | number
@@ -21563,17 +25084,15 @@ export namespace Prisma {
     yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
     coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
     coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
-    indexa_api?: BoolFieldUpdateOperationsInput | boolean
-    manual?: BoolFieldUpdateOperationsInput | boolean
+    indexa_api?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    manual?: NullableBoolFieldUpdateOperationsInput | boolean | null
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AssetUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     category?: StringFieldUpdateOperationsInput | string
     platform?: NullableStringFieldUpdateOperationsInput | string | null
     quantity?: FloatFieldUpdateOperationsInput | number
@@ -21582,136 +25101,386 @@ export namespace Prisma {
     yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
     coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
     coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
-    indexa_api?: BoolFieldUpdateOperationsInput | boolean
-    manual?: BoolFieldUpdateOperationsInput | boolean
+    indexa_api?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    manual?: NullableBoolFieldUpdateOperationsInput | boolean | null
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type HistoricalPriceCreateInput = {
+    assetId: string
+    date: Date | string
+    price_eur: number
+  }
+
+  export type HistoricalPriceUncheckedCreateInput = {
+    id?: number
+    assetId: string
+    date: Date | string
+    price_eur: number
+  }
+
+  export type HistoricalPriceUpdateInput = {
+    assetId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type HistoricalPriceUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    assetId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type HistoricalPriceCreateManyInput = {
+    id?: number
+    assetId: string
+    date: Date | string
+    price_eur: number
+  }
+
+  export type HistoricalPriceUpdateManyMutationInput = {
+    assetId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type HistoricalPriceUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    assetId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    price_eur?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type PortfolioSnapshotCreateInput = {
+    date: Date | string
+    category?: string | null
+    asset_id?: string | null
+    total_value_eur: number
+    user?: UserCreateNestedOneWithoutPortfolioSnapshotsInput
+  }
+
+  export type PortfolioSnapshotUncheckedCreateInput = {
+    id?: number
+    date: Date | string
+    category?: string | null
+    asset_id?: string | null
+    total_value_eur: number
+    userId?: string | null
+  }
+
+  export type PortfolioSnapshotUpdateInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    user?: UserUpdateOneWithoutPortfolioSnapshotsNestedInput
+  }
+
+  export type PortfolioSnapshotUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PortfolioSnapshotCreateManyInput = {
+    id?: number
+    date: Date | string
+    category?: string | null
+    asset_id?: string | null
+    total_value_eur: number
+    userId?: string | null
+  }
+
+  export type PortfolioSnapshotUpdateManyMutationInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type PortfolioSnapshotUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type InternshipCreateInput = {
+    id?: string
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    realStartDate?: Date | string | null
+    realEndDate?: Date | string | null
+    totalHours?: number
+    schedule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutInternshipInput
+    center?: InternshipCenterCreateNestedOneWithoutInternshipInput
+    logs?: InternshipLogCreateNestedManyWithoutInternshipInput
+  }
+
+  export type InternshipUncheckedCreateInput = {
+    id?: string
+    userId: string
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    realStartDate?: Date | string | null
+    realEndDate?: Date | string | null
+    totalHours?: number
+    schedule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    center?: InternshipCenterUncheckedCreateNestedOneWithoutInternshipInput
+    logs?: InternshipLogUncheckedCreateNestedManyWithoutInternshipInput
+  }
+
+  export type InternshipUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutInternshipNestedInput
+    center?: InternshipCenterUpdateOneWithoutInternshipNestedInput
+    logs?: InternshipLogUpdateManyWithoutInternshipNestedInput
+  }
+
+  export type InternshipUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    center?: InternshipCenterUncheckedUpdateOneWithoutInternshipNestedInput
+    logs?: InternshipLogUncheckedUpdateManyWithoutInternshipNestedInput
+  }
+
+  export type InternshipCreateManyInput = {
+    id?: string
+    userId: string
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    realStartDate?: Date | string | null
+    realEndDate?: Date | string | null
+    totalHours?: number
+    schedule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InternshipUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type HistoricalPriceCreateInput = {
-    id?: string
-    price_eur?: number
-    date: Date | string
-    createdAt?: Date | string
-    asset: AssetCreateNestedOneWithoutHistoryInput
-  }
-
-  export type HistoricalPriceUncheckedCreateInput = {
-    id?: string
-    price_eur?: number
-    date: Date | string
-    assetId: string
-    createdAt?: Date | string
-  }
-
-  export type HistoricalPriceUpdateInput = {
+  export type InternshipUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    price_eur?: FloatFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    asset?: AssetUpdateOneRequiredWithoutHistoryNestedInput
-  }
-
-  export type HistoricalPriceUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    price_eur?: FloatFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    assetId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type HistoricalPriceCreateManyInput = {
-    id?: string
-    price_eur?: number
-    date: Date | string
-    assetId: string
-    createdAt?: Date | string
-  }
-
-  export type HistoricalPriceUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    price_eur?: FloatFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type HistoricalPriceUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    price_eur?: FloatFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    assetId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PortfolioSnapshotCreateInput = {
-    id?: string
-    total_value_eur?: number
-    date: Date | string
-    category?: string | null
-    asset_id?: string | null
-    createdAt?: Date | string
-    user: UserCreateNestedOneWithoutPortfolioSnapshotsInput
-  }
-
-  export type PortfolioSnapshotUncheckedCreateInput = {
-    id?: string
-    total_value_eur?: number
-    date: Date | string
-    category?: string | null
-    asset_id?: string | null
-    userId: string
-    createdAt?: Date | string
-  }
-
-  export type PortfolioSnapshotUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    total_value_eur?: FloatFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: NullableStringFieldUpdateOperationsInput | string | null
-    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutPortfolioSnapshotsNestedInput
-  }
-
-  export type PortfolioSnapshotUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    total_value_eur?: FloatFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: NullableStringFieldUpdateOperationsInput | string | null
-    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type PortfolioSnapshotCreateManyInput = {
+  export type InternshipCenterCreateInput = {
     id?: string
-    total_value_eur?: number
+    name: string
+    address?: string | null
+    province?: string | null
+    city?: string | null
+    tutorName?: string | null
+    tutorEmail?: string | null
+    tutorPhone?: string | null
+    universityTutor?: string | null
+    internship: InternshipCreateNestedOneWithoutCenterInput
+  }
+
+  export type InternshipCenterUncheckedCreateInput = {
+    id?: string
+    name: string
+    address?: string | null
+    province?: string | null
+    city?: string | null
+    tutorName?: string | null
+    tutorEmail?: string | null
+    tutorPhone?: string | null
+    universityTutor?: string | null
+    internshipId: string
+  }
+
+  export type InternshipCenterUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    province?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorName?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    universityTutor?: NullableStringFieldUpdateOperationsInput | string | null
+    internship?: InternshipUpdateOneRequiredWithoutCenterNestedInput
+  }
+
+  export type InternshipCenterUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    province?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorName?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    universityTutor?: NullableStringFieldUpdateOperationsInput | string | null
+    internshipId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InternshipCenterCreateManyInput = {
+    id?: string
+    name: string
+    address?: string | null
+    province?: string | null
+    city?: string | null
+    tutorName?: string | null
+    tutorEmail?: string | null
+    tutorPhone?: string | null
+    universityTutor?: string | null
+    internshipId: string
+  }
+
+  export type InternshipCenterUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    province?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorName?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    universityTutor?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type InternshipCenterUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    province?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorName?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    universityTutor?: NullableStringFieldUpdateOperationsInput | string | null
+    internshipId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InternshipLogCreateInput = {
+    id?: string
     date: Date | string
-    category?: string | null
-    asset_id?: string | null
-    userId: string
+    hours: number
+    activity: string
+    observations?: string | null
     createdAt?: Date | string
+    updatedAt?: Date | string
+    internship: InternshipCreateNestedOneWithoutLogsInput
   }
 
-  export type PortfolioSnapshotUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    total_value_eur?: FloatFieldUpdateOperationsInput | number
-    date?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: NullableStringFieldUpdateOperationsInput | string | null
-    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type InternshipLogUncheckedCreateInput = {
+    id?: string
+    date: Date | string
+    hours: number
+    activity: string
+    observations?: string | null
+    internshipId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type PortfolioSnapshotUncheckedUpdateManyInput = {
+  export type InternshipLogUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    total_value_eur?: FloatFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: NullableStringFieldUpdateOperationsInput | string | null
-    asset_id?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
+    hours?: FloatFieldUpdateOperationsInput | number
+    activity?: StringFieldUpdateOperationsInput | string
+    observations?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    internship?: InternshipUpdateOneRequiredWithoutLogsNestedInput
+  }
+
+  export type InternshipLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    hours?: FloatFieldUpdateOperationsInput | number
+    activity?: StringFieldUpdateOperationsInput | string
+    observations?: NullableStringFieldUpdateOperationsInput | string | null
+    internshipId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InternshipLogCreateManyInput = {
+    id?: string
+    date: Date | string
+    hours: number
+    activity: string
+    observations?: string | null
+    internshipId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InternshipLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    hours?: FloatFieldUpdateOperationsInput | number
+    activity?: StringFieldUpdateOperationsInput | string
+    observations?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InternshipLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    hours?: FloatFieldUpdateOperationsInput | number
+    activity?: StringFieldUpdateOperationsInput | string
+    observations?: NullableStringFieldUpdateOperationsInput | string | null
+    internshipId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -21767,12 +25536,6 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type SessionListRelationFilter = {
-    every?: SessionWhereInput
-    some?: SessionWhereInput
-    none?: SessionWhereInput
-  }
-
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
     some?: AccountWhereInput
@@ -21783,6 +25546,12 @@ export namespace Prisma {
     every?: EmployeeActivityWhereInput
     some?: EmployeeActivityWhereInput
     none?: EmployeeActivityWhereInput
+  }
+
+  export type SessionListRelationFilter = {
+    every?: SessionWhereInput
+    some?: SessionWhereInput
+    none?: SessionWhereInput
   }
 
   export type AssetListRelationFilter = {
@@ -21797,13 +25566,14 @@ export namespace Prisma {
     none?: PortfolioSnapshotWhereInput
   }
 
+  export type InternshipNullableRelationFilter = {
+    is?: InternshipWhereInput | null
+    isNot?: InternshipWhereInput | null
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
-  }
-
-  export type SessionOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type AccountOrderByRelationAggregateInput = {
@@ -21811,6 +25581,10 @@ export namespace Prisma {
   }
 
   export type EmployeeActivityOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22055,12 +25829,6 @@ export namespace Prisma {
     none?: ActionItemWhereInput
   }
 
-  export type TaskSectionListRelationFilter = {
-    every?: TaskSectionWhereInput
-    some?: TaskSectionWhereInput
-    none?: TaskSectionWhereInput
-  }
-
   export type ClassSessionListRelationFilter = {
     every?: ClassSessionWhereInput
     some?: ClassSessionWhereInput
@@ -22073,11 +25841,13 @@ export namespace Prisma {
     none?: ProjectWhereInput
   }
 
-  export type ActionItemOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type TaskSectionListRelationFilter = {
+    every?: TaskSectionWhereInput
+    some?: TaskSectionWhereInput
+    none?: TaskSectionWhereInput
   }
 
-  export type TaskSectionOrderByRelationAggregateInput = {
+  export type ActionItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22086,6 +25856,10 @@ export namespace Prisma {
   }
 
   export type ProjectOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TaskSectionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22624,20 +26398,20 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type HistoricalPriceListRelationFilter = {
-    every?: HistoricalPriceWhereInput
-    some?: HistoricalPriceWhereInput
-    none?: HistoricalPriceWhereInput
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
   }
 
-  export type HistoricalPriceOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type UserNullableRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
   }
 
   export type AssetCountOrderByAggregateInput = {
     id?: SortOrder
-    ticker?: SortOrder
     name?: SortOrder
+    ticker?: SortOrder
     category?: SortOrder
     platform?: SortOrder
     quantity?: SortOrder
@@ -22650,8 +26424,6 @@ export namespace Prisma {
     manual?: SortOrder
     image_url?: SortOrder
     userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type AssetAvgOrderByAggregateInput = {
@@ -22661,8 +26433,8 @@ export namespace Prisma {
 
   export type AssetMaxOrderByAggregateInput = {
     id?: SortOrder
-    ticker?: SortOrder
     name?: SortOrder
+    ticker?: SortOrder
     category?: SortOrder
     platform?: SortOrder
     quantity?: SortOrder
@@ -22675,14 +26447,12 @@ export namespace Prisma {
     manual?: SortOrder
     image_url?: SortOrder
     userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type AssetMinOrderByAggregateInput = {
     id?: SortOrder
-    ticker?: SortOrder
     name?: SortOrder
+    ticker?: SortOrder
     category?: SortOrder
     platform?: SortOrder
     quantity?: SortOrder
@@ -22695,8 +26465,6 @@ export namespace Prisma {
     manual?: SortOrder
     image_url?: SortOrder
     userId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type AssetSumOrderByAggregateInput = {
@@ -22704,86 +26472,230 @@ export namespace Prisma {
     price_eur?: SortOrder
   }
 
-  export type AssetRelationFilter = {
-    is?: AssetWhereInput
-    isNot?: AssetWhereInput
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type HistoricalPriceCountOrderByAggregateInput = {
     id?: SortOrder
-    price_eur?: SortOrder
-    date?: SortOrder
     assetId?: SortOrder
-    createdAt?: SortOrder
+    date?: SortOrder
+    price_eur?: SortOrder
   }
 
   export type HistoricalPriceAvgOrderByAggregateInput = {
+    id?: SortOrder
     price_eur?: SortOrder
   }
 
   export type HistoricalPriceMaxOrderByAggregateInput = {
     id?: SortOrder
-    price_eur?: SortOrder
-    date?: SortOrder
     assetId?: SortOrder
-    createdAt?: SortOrder
+    date?: SortOrder
+    price_eur?: SortOrder
   }
 
   export type HistoricalPriceMinOrderByAggregateInput = {
     id?: SortOrder
-    price_eur?: SortOrder
-    date?: SortOrder
     assetId?: SortOrder
-    createdAt?: SortOrder
+    date?: SortOrder
+    price_eur?: SortOrder
   }
 
   export type HistoricalPriceSumOrderByAggregateInput = {
+    id?: SortOrder
     price_eur?: SortOrder
   }
 
   export type PortfolioSnapshotCountOrderByAggregateInput = {
     id?: SortOrder
-    total_value_eur?: SortOrder
     date?: SortOrder
     category?: SortOrder
     asset_id?: SortOrder
+    total_value_eur?: SortOrder
     userId?: SortOrder
-    createdAt?: SortOrder
   }
 
   export type PortfolioSnapshotAvgOrderByAggregateInput = {
+    id?: SortOrder
     total_value_eur?: SortOrder
   }
 
   export type PortfolioSnapshotMaxOrderByAggregateInput = {
     id?: SortOrder
-    total_value_eur?: SortOrder
     date?: SortOrder
     category?: SortOrder
     asset_id?: SortOrder
+    total_value_eur?: SortOrder
     userId?: SortOrder
-    createdAt?: SortOrder
   }
 
   export type PortfolioSnapshotMinOrderByAggregateInput = {
     id?: SortOrder
-    total_value_eur?: SortOrder
     date?: SortOrder
     category?: SortOrder
     asset_id?: SortOrder
+    total_value_eur?: SortOrder
     userId?: SortOrder
-    createdAt?: SortOrder
   }
 
   export type PortfolioSnapshotSumOrderByAggregateInput = {
+    id?: SortOrder
     total_value_eur?: SortOrder
   }
 
-  export type SessionCreateNestedManyWithoutUserInput = {
-    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
-    createMany?: SessionCreateManyUserInputEnvelope
-    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+  export type InternshipCenterNullableRelationFilter = {
+    is?: InternshipCenterWhereInput | null
+    isNot?: InternshipCenterWhereInput | null
+  }
+
+  export type InternshipLogListRelationFilter = {
+    every?: InternshipLogWhereInput
+    some?: InternshipLogWhereInput
+    none?: InternshipLogWhereInput
+  }
+
+  export type InternshipLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type InternshipCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    status?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    realStartDate?: SortOrder
+    realEndDate?: SortOrder
+    totalHours?: SortOrder
+    schedule?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InternshipAvgOrderByAggregateInput = {
+    totalHours?: SortOrder
+  }
+
+  export type InternshipMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    status?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    realStartDate?: SortOrder
+    realEndDate?: SortOrder
+    totalHours?: SortOrder
+    schedule?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InternshipMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    status?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    realStartDate?: SortOrder
+    realEndDate?: SortOrder
+    totalHours?: SortOrder
+    schedule?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InternshipSumOrderByAggregateInput = {
+    totalHours?: SortOrder
+  }
+
+  export type InternshipRelationFilter = {
+    is?: InternshipWhereInput
+    isNot?: InternshipWhereInput
+  }
+
+  export type InternshipCenterCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    address?: SortOrder
+    province?: SortOrder
+    city?: SortOrder
+    tutorName?: SortOrder
+    tutorEmail?: SortOrder
+    tutorPhone?: SortOrder
+    universityTutor?: SortOrder
+    internshipId?: SortOrder
+  }
+
+  export type InternshipCenterMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    address?: SortOrder
+    province?: SortOrder
+    city?: SortOrder
+    tutorName?: SortOrder
+    tutorEmail?: SortOrder
+    tutorPhone?: SortOrder
+    universityTutor?: SortOrder
+    internshipId?: SortOrder
+  }
+
+  export type InternshipCenterMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    address?: SortOrder
+    province?: SortOrder
+    city?: SortOrder
+    tutorName?: SortOrder
+    tutorEmail?: SortOrder
+    tutorPhone?: SortOrder
+    universityTutor?: SortOrder
+    internshipId?: SortOrder
+  }
+
+  export type InternshipLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    hours?: SortOrder
+    activity?: SortOrder
+    observations?: SortOrder
+    internshipId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InternshipLogAvgOrderByAggregateInput = {
+    hours?: SortOrder
+  }
+
+  export type InternshipLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    hours?: SortOrder
+    activity?: SortOrder
+    observations?: SortOrder
+    internshipId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InternshipLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    hours?: SortOrder
+    activity?: SortOrder
+    observations?: SortOrder
+    internshipId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InternshipLogSumOrderByAggregateInput = {
+    hours?: SortOrder
   }
 
   export type AccountCreateNestedManyWithoutUserInput = {
@@ -22800,6 +26712,13 @@ export namespace Prisma {
     connect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
   }
 
+  export type SessionCreateNestedManyWithoutUserInput = {
+    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
+    createMany?: SessionCreateManyUserInputEnvelope
+    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+  }
+
   export type AssetCreateNestedManyWithoutUserInput = {
     create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
@@ -22814,11 +26733,10 @@ export namespace Prisma {
     connect?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
   }
 
-  export type SessionUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
-    createMany?: SessionCreateManyUserInputEnvelope
-    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+  export type InternshipCreateNestedOneWithoutUserInput = {
+    create?: XOR<InternshipCreateWithoutUserInput, InternshipUncheckedCreateWithoutUserInput>
+    connectOrCreate?: InternshipCreateOrConnectWithoutUserInput
+    connect?: InternshipWhereUniqueInput
   }
 
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
@@ -22835,6 +26753,13 @@ export namespace Prisma {
     connect?: EmployeeActivityWhereUniqueInput | EmployeeActivityWhereUniqueInput[]
   }
 
+  export type SessionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
+    createMany?: SessionCreateManyUserInputEnvelope
+    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+  }
+
   export type AssetUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
@@ -22847,6 +26772,12 @@ export namespace Prisma {
     connectOrCreate?: PortfolioSnapshotCreateOrConnectWithoutUserInput | PortfolioSnapshotCreateOrConnectWithoutUserInput[]
     createMany?: PortfolioSnapshotCreateManyUserInputEnvelope
     connect?: PortfolioSnapshotWhereUniqueInput | PortfolioSnapshotWhereUniqueInput[]
+  }
+
+  export type InternshipUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<InternshipCreateWithoutUserInput, InternshipUncheckedCreateWithoutUserInput>
+    connectOrCreate?: InternshipCreateOrConnectWithoutUserInput
+    connect?: InternshipWhereUniqueInput
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -22867,20 +26798,6 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
-  }
-
-  export type SessionUpdateManyWithoutUserNestedInput = {
-    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
-    upsert?: SessionUpsertWithWhereUniqueWithoutUserInput | SessionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: SessionCreateManyUserInputEnvelope
-    set?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
-    disconnect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
-    delete?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
-    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
-    update?: SessionUpdateWithWhereUniqueWithoutUserInput | SessionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: SessionUpdateManyWithWhereWithoutUserInput | SessionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
   export type AccountUpdateManyWithoutUserNestedInput = {
@@ -22911,6 +26828,20 @@ export namespace Prisma {
     deleteMany?: EmployeeActivityScalarWhereInput | EmployeeActivityScalarWhereInput[]
   }
 
+  export type SessionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
+    upsert?: SessionUpsertWithWhereUniqueWithoutUserInput | SessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SessionCreateManyUserInputEnvelope
+    set?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    disconnect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    delete?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    update?: SessionUpdateWithWhereUniqueWithoutUserInput | SessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SessionUpdateManyWithWhereWithoutUserInput | SessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
+  }
+
   export type AssetUpdateManyWithoutUserNestedInput = {
     create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
@@ -22939,18 +26870,14 @@ export namespace Prisma {
     deleteMany?: PortfolioSnapshotScalarWhereInput | PortfolioSnapshotScalarWhereInput[]
   }
 
-  export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
-    upsert?: SessionUpsertWithWhereUniqueWithoutUserInput | SessionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: SessionCreateManyUserInputEnvelope
-    set?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
-    disconnect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
-    delete?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
-    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
-    update?: SessionUpdateWithWhereUniqueWithoutUserInput | SessionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: SessionUpdateManyWithWhereWithoutUserInput | SessionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
+  export type InternshipUpdateOneWithoutUserNestedInput = {
+    create?: XOR<InternshipCreateWithoutUserInput, InternshipUncheckedCreateWithoutUserInput>
+    connectOrCreate?: InternshipCreateOrConnectWithoutUserInput
+    upsert?: InternshipUpsertWithoutUserInput
+    disconnect?: InternshipWhereInput | boolean
+    delete?: InternshipWhereInput | boolean
+    connect?: InternshipWhereUniqueInput
+    update?: XOR<XOR<InternshipUpdateToOneWithWhereWithoutUserInput, InternshipUpdateWithoutUserInput>, InternshipUncheckedUpdateWithoutUserInput>
   }
 
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
@@ -22981,6 +26908,20 @@ export namespace Prisma {
     deleteMany?: EmployeeActivityScalarWhereInput | EmployeeActivityScalarWhereInput[]
   }
 
+  export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
+    upsert?: SessionUpsertWithWhereUniqueWithoutUserInput | SessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SessionCreateManyUserInputEnvelope
+    set?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    disconnect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    delete?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+    update?: SessionUpdateWithWhereUniqueWithoutUserInput | SessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SessionUpdateManyWithWhereWithoutUserInput | SessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
+  }
+
   export type AssetUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AssetCreateWithoutUserInput, AssetUncheckedCreateWithoutUserInput> | AssetCreateWithoutUserInput[] | AssetUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AssetCreateOrConnectWithoutUserInput | AssetCreateOrConnectWithoutUserInput[]
@@ -23007,6 +26948,16 @@ export namespace Prisma {
     update?: PortfolioSnapshotUpdateWithWhereUniqueWithoutUserInput | PortfolioSnapshotUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PortfolioSnapshotUpdateManyWithWhereWithoutUserInput | PortfolioSnapshotUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PortfolioSnapshotScalarWhereInput | PortfolioSnapshotScalarWhereInput[]
+  }
+
+  export type InternshipUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<InternshipCreateWithoutUserInput, InternshipUncheckedCreateWithoutUserInput>
+    connectOrCreate?: InternshipCreateOrConnectWithoutUserInput
+    upsert?: InternshipUpsertWithoutUserInput
+    disconnect?: InternshipWhereInput | boolean
+    delete?: InternshipWhereInput | boolean
+    connect?: InternshipWhereUniqueInput
+    update?: XOR<XOR<InternshipUpdateToOneWithWhereWithoutUserInput, InternshipUpdateWithoutUserInput>, InternshipUncheckedUpdateWithoutUserInput>
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -23052,13 +27003,6 @@ export namespace Prisma {
     connect?: ActionItemWhereUniqueInput | ActionItemWhereUniqueInput[]
   }
 
-  export type TaskSectionCreateNestedManyWithoutCategoryInput = {
-    create?: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput> | TaskSectionCreateWithoutCategoryInput[] | TaskSectionUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: TaskSectionCreateOrConnectWithoutCategoryInput | TaskSectionCreateOrConnectWithoutCategoryInput[]
-    createMany?: TaskSectionCreateManyCategoryInputEnvelope
-    connect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
-  }
-
   export type ClassSessionCreateNestedManyWithoutCategoryInput = {
     create?: XOR<ClassSessionCreateWithoutCategoryInput, ClassSessionUncheckedCreateWithoutCategoryInput> | ClassSessionCreateWithoutCategoryInput[] | ClassSessionUncheckedCreateWithoutCategoryInput[]
     connectOrCreate?: ClassSessionCreateOrConnectWithoutCategoryInput | ClassSessionCreateOrConnectWithoutCategoryInput[]
@@ -23073,18 +27017,18 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
+  export type TaskSectionCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput> | TaskSectionCreateWithoutCategoryInput[] | TaskSectionUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TaskSectionCreateOrConnectWithoutCategoryInput | TaskSectionCreateOrConnectWithoutCategoryInput[]
+    createMany?: TaskSectionCreateManyCategoryInputEnvelope
+    connect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+  }
+
   export type ActionItemUncheckedCreateNestedManyWithoutCategoryInput = {
     create?: XOR<ActionItemCreateWithoutCategoryInput, ActionItemUncheckedCreateWithoutCategoryInput> | ActionItemCreateWithoutCategoryInput[] | ActionItemUncheckedCreateWithoutCategoryInput[]
     connectOrCreate?: ActionItemCreateOrConnectWithoutCategoryInput | ActionItemCreateOrConnectWithoutCategoryInput[]
     createMany?: ActionItemCreateManyCategoryInputEnvelope
     connect?: ActionItemWhereUniqueInput | ActionItemWhereUniqueInput[]
-  }
-
-  export type TaskSectionUncheckedCreateNestedManyWithoutCategoryInput = {
-    create?: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput> | TaskSectionCreateWithoutCategoryInput[] | TaskSectionUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: TaskSectionCreateOrConnectWithoutCategoryInput | TaskSectionCreateOrConnectWithoutCategoryInput[]
-    createMany?: TaskSectionCreateManyCategoryInputEnvelope
-    connect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
   }
 
   export type ClassSessionUncheckedCreateNestedManyWithoutCategoryInput = {
@@ -23101,6 +27045,13 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
+  export type TaskSectionUncheckedCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput> | TaskSectionCreateWithoutCategoryInput[] | TaskSectionUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TaskSectionCreateOrConnectWithoutCategoryInput | TaskSectionCreateOrConnectWithoutCategoryInput[]
+    createMany?: TaskSectionCreateManyCategoryInputEnvelope
+    connect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+  }
+
   export type ActionItemUpdateManyWithoutCategoryNestedInput = {
     create?: XOR<ActionItemCreateWithoutCategoryInput, ActionItemUncheckedCreateWithoutCategoryInput> | ActionItemCreateWithoutCategoryInput[] | ActionItemUncheckedCreateWithoutCategoryInput[]
     connectOrCreate?: ActionItemCreateOrConnectWithoutCategoryInput | ActionItemCreateOrConnectWithoutCategoryInput[]
@@ -23113,20 +27064,6 @@ export namespace Prisma {
     update?: ActionItemUpdateWithWhereUniqueWithoutCategoryInput | ActionItemUpdateWithWhereUniqueWithoutCategoryInput[]
     updateMany?: ActionItemUpdateManyWithWhereWithoutCategoryInput | ActionItemUpdateManyWithWhereWithoutCategoryInput[]
     deleteMany?: ActionItemScalarWhereInput | ActionItemScalarWhereInput[]
-  }
-
-  export type TaskSectionUpdateManyWithoutCategoryNestedInput = {
-    create?: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput> | TaskSectionCreateWithoutCategoryInput[] | TaskSectionUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: TaskSectionCreateOrConnectWithoutCategoryInput | TaskSectionCreateOrConnectWithoutCategoryInput[]
-    upsert?: TaskSectionUpsertWithWhereUniqueWithoutCategoryInput | TaskSectionUpsertWithWhereUniqueWithoutCategoryInput[]
-    createMany?: TaskSectionCreateManyCategoryInputEnvelope
-    set?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
-    disconnect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
-    delete?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
-    connect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
-    update?: TaskSectionUpdateWithWhereUniqueWithoutCategoryInput | TaskSectionUpdateWithWhereUniqueWithoutCategoryInput[]
-    updateMany?: TaskSectionUpdateManyWithWhereWithoutCategoryInput | TaskSectionUpdateManyWithWhereWithoutCategoryInput[]
-    deleteMany?: TaskSectionScalarWhereInput | TaskSectionScalarWhereInput[]
   }
 
   export type ClassSessionUpdateManyWithoutCategoryNestedInput = {
@@ -23157,6 +27094,20 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
+  export type TaskSectionUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput> | TaskSectionCreateWithoutCategoryInput[] | TaskSectionUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TaskSectionCreateOrConnectWithoutCategoryInput | TaskSectionCreateOrConnectWithoutCategoryInput[]
+    upsert?: TaskSectionUpsertWithWhereUniqueWithoutCategoryInput | TaskSectionUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: TaskSectionCreateManyCategoryInputEnvelope
+    set?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+    disconnect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+    delete?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+    connect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+    update?: TaskSectionUpdateWithWhereUniqueWithoutCategoryInput | TaskSectionUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: TaskSectionUpdateManyWithWhereWithoutCategoryInput | TaskSectionUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: TaskSectionScalarWhereInput | TaskSectionScalarWhereInput[]
+  }
+
   export type ActionItemUncheckedUpdateManyWithoutCategoryNestedInput = {
     create?: XOR<ActionItemCreateWithoutCategoryInput, ActionItemUncheckedCreateWithoutCategoryInput> | ActionItemCreateWithoutCategoryInput[] | ActionItemUncheckedCreateWithoutCategoryInput[]
     connectOrCreate?: ActionItemCreateOrConnectWithoutCategoryInput | ActionItemCreateOrConnectWithoutCategoryInput[]
@@ -23169,20 +27120,6 @@ export namespace Prisma {
     update?: ActionItemUpdateWithWhereUniqueWithoutCategoryInput | ActionItemUpdateWithWhereUniqueWithoutCategoryInput[]
     updateMany?: ActionItemUpdateManyWithWhereWithoutCategoryInput | ActionItemUpdateManyWithWhereWithoutCategoryInput[]
     deleteMany?: ActionItemScalarWhereInput | ActionItemScalarWhereInput[]
-  }
-
-  export type TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput = {
-    create?: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput> | TaskSectionCreateWithoutCategoryInput[] | TaskSectionUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: TaskSectionCreateOrConnectWithoutCategoryInput | TaskSectionCreateOrConnectWithoutCategoryInput[]
-    upsert?: TaskSectionUpsertWithWhereUniqueWithoutCategoryInput | TaskSectionUpsertWithWhereUniqueWithoutCategoryInput[]
-    createMany?: TaskSectionCreateManyCategoryInputEnvelope
-    set?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
-    disconnect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
-    delete?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
-    connect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
-    update?: TaskSectionUpdateWithWhereUniqueWithoutCategoryInput | TaskSectionUpdateWithWhereUniqueWithoutCategoryInput[]
-    updateMany?: TaskSectionUpdateManyWithWhereWithoutCategoryInput | TaskSectionUpdateManyWithWhereWithoutCategoryInput[]
-    deleteMany?: TaskSectionScalarWhereInput | TaskSectionScalarWhereInput[]
   }
 
   export type ClassSessionUncheckedUpdateManyWithoutCategoryNestedInput = {
@@ -23213,10 +27150,18 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
-  export type CategoryCreateNestedOneWithoutSectionsInput = {
-    create?: XOR<CategoryCreateWithoutSectionsInput, CategoryUncheckedCreateWithoutSectionsInput>
-    connectOrCreate?: CategoryCreateOrConnectWithoutSectionsInput
-    connect?: CategoryWhereUniqueInput
+  export type TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput> | TaskSectionCreateWithoutCategoryInput[] | TaskSectionUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: TaskSectionCreateOrConnectWithoutCategoryInput | TaskSectionCreateOrConnectWithoutCategoryInput[]
+    upsert?: TaskSectionUpsertWithWhereUniqueWithoutCategoryInput | TaskSectionUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: TaskSectionCreateManyCategoryInputEnvelope
+    set?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+    disconnect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+    delete?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+    connect?: TaskSectionWhereUniqueInput | TaskSectionWhereUniqueInput[]
+    update?: TaskSectionUpdateWithWhereUniqueWithoutCategoryInput | TaskSectionUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: TaskSectionUpdateManyWithWhereWithoutCategoryInput | TaskSectionUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: TaskSectionScalarWhereInput | TaskSectionScalarWhereInput[]
   }
 
   export type ActionItemCreateNestedManyWithoutSectionInput = {
@@ -23224,6 +27169,12 @@ export namespace Prisma {
     connectOrCreate?: ActionItemCreateOrConnectWithoutSectionInput | ActionItemCreateOrConnectWithoutSectionInput[]
     createMany?: ActionItemCreateManySectionInputEnvelope
     connect?: ActionItemWhereUniqueInput | ActionItemWhereUniqueInput[]
+  }
+
+  export type CategoryCreateNestedOneWithoutSectionsInput = {
+    create?: XOR<CategoryCreateWithoutSectionsInput, CategoryUncheckedCreateWithoutSectionsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutSectionsInput
+    connect?: CategoryWhereUniqueInput
   }
 
   export type ActionItemUncheckedCreateNestedManyWithoutSectionInput = {
@@ -23241,14 +27192,6 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type CategoryUpdateOneRequiredWithoutSectionsNestedInput = {
-    create?: XOR<CategoryCreateWithoutSectionsInput, CategoryUncheckedCreateWithoutSectionsInput>
-    connectOrCreate?: CategoryCreateOrConnectWithoutSectionsInput
-    upsert?: CategoryUpsertWithoutSectionsInput
-    connect?: CategoryWhereUniqueInput
-    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutSectionsInput, CategoryUpdateWithoutSectionsInput>, CategoryUncheckedUpdateWithoutSectionsInput>
-  }
-
   export type ActionItemUpdateManyWithoutSectionNestedInput = {
     create?: XOR<ActionItemCreateWithoutSectionInput, ActionItemUncheckedCreateWithoutSectionInput> | ActionItemCreateWithoutSectionInput[] | ActionItemUncheckedCreateWithoutSectionInput[]
     connectOrCreate?: ActionItemCreateOrConnectWithoutSectionInput | ActionItemCreateOrConnectWithoutSectionInput[]
@@ -23261,6 +27204,14 @@ export namespace Prisma {
     update?: ActionItemUpdateWithWhereUniqueWithoutSectionInput | ActionItemUpdateWithWhereUniqueWithoutSectionInput[]
     updateMany?: ActionItemUpdateManyWithWhereWithoutSectionInput | ActionItemUpdateManyWithWhereWithoutSectionInput[]
     deleteMany?: ActionItemScalarWhereInput | ActionItemScalarWhereInput[]
+  }
+
+  export type CategoryUpdateOneRequiredWithoutSectionsNestedInput = {
+    create?: XOR<CategoryCreateWithoutSectionsInput, CategoryUncheckedCreateWithoutSectionsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutSectionsInput
+    upsert?: CategoryUpsertWithoutSectionsInput
+    connect?: CategoryWhereUniqueInput
+    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutSectionsInput, CategoryUpdateWithoutSectionsInput>, CategoryUncheckedUpdateWithoutSectionsInput>
   }
 
   export type ActionItemUncheckedUpdateManyWithoutSectionNestedInput = {
@@ -23341,6 +27292,12 @@ export namespace Prisma {
     update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutSessionsInput, CategoryUpdateWithoutSessionsInput>, CategoryUncheckedUpdateWithoutSessionsInput>
   }
 
+  export type CategoryCreateNestedOneWithoutProjectsInput = {
+    create?: XOR<CategoryCreateWithoutProjectsInput, CategoryUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutProjectsInput
+    connect?: CategoryWhereUniqueInput
+  }
+
   export type ProjectImageCreateNestedManyWithoutProjectInput = {
     create?: XOR<ProjectImageCreateWithoutProjectInput, ProjectImageUncheckedCreateWithoutProjectInput> | ProjectImageCreateWithoutProjectInput[] | ProjectImageUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ProjectImageCreateOrConnectWithoutProjectInput | ProjectImageCreateOrConnectWithoutProjectInput[]
@@ -23348,17 +27305,19 @@ export namespace Prisma {
     connect?: ProjectImageWhereUniqueInput | ProjectImageWhereUniqueInput[]
   }
 
-  export type CategoryCreateNestedOneWithoutProjectsInput = {
-    create?: XOR<CategoryCreateWithoutProjectsInput, CategoryUncheckedCreateWithoutProjectsInput>
-    connectOrCreate?: CategoryCreateOrConnectWithoutProjectsInput
-    connect?: CategoryWhereUniqueInput
-  }
-
   export type ProjectImageUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<ProjectImageCreateWithoutProjectInput, ProjectImageUncheckedCreateWithoutProjectInput> | ProjectImageCreateWithoutProjectInput[] | ProjectImageUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ProjectImageCreateOrConnectWithoutProjectInput | ProjectImageCreateOrConnectWithoutProjectInput[]
     createMany?: ProjectImageCreateManyProjectInputEnvelope
     connect?: ProjectImageWhereUniqueInput | ProjectImageWhereUniqueInput[]
+  }
+
+  export type CategoryUpdateOneRequiredWithoutProjectsNestedInput = {
+    create?: XOR<CategoryCreateWithoutProjectsInput, CategoryUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: CategoryCreateOrConnectWithoutProjectsInput
+    upsert?: CategoryUpsertWithoutProjectsInput
+    connect?: CategoryWhereUniqueInput
+    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutProjectsInput, CategoryUpdateWithoutProjectsInput>, CategoryUncheckedUpdateWithoutProjectsInput>
   }
 
   export type ProjectImageUpdateManyWithoutProjectNestedInput = {
@@ -23373,14 +27332,6 @@ export namespace Prisma {
     update?: ProjectImageUpdateWithWhereUniqueWithoutProjectInput | ProjectImageUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: ProjectImageUpdateManyWithWhereWithoutProjectInput | ProjectImageUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: ProjectImageScalarWhereInput | ProjectImageScalarWhereInput[]
-  }
-
-  export type CategoryUpdateOneRequiredWithoutProjectsNestedInput = {
-    create?: XOR<CategoryCreateWithoutProjectsInput, CategoryUncheckedCreateWithoutProjectsInput>
-    connectOrCreate?: CategoryCreateOrConnectWithoutProjectsInput
-    upsert?: CategoryUpsertWithoutProjectsInput
-    connect?: CategoryWhereUniqueInput
-    update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutProjectsInput, CategoryUpdateWithoutProjectsInput>, CategoryUncheckedUpdateWithoutProjectsInput>
   }
 
   export type ProjectImageUncheckedUpdateManyWithoutProjectNestedInput = {
@@ -23411,13 +27362,6 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutImagesInput, ProjectUpdateWithoutImagesInput>, ProjectUncheckedUpdateWithoutImagesInput>
   }
 
-  export type AssessmentCreateNestedManyWithoutSubjectInput = {
-    create?: XOR<AssessmentCreateWithoutSubjectInput, AssessmentUncheckedCreateWithoutSubjectInput> | AssessmentCreateWithoutSubjectInput[] | AssessmentUncheckedCreateWithoutSubjectInput[]
-    connectOrCreate?: AssessmentCreateOrConnectWithoutSubjectInput | AssessmentCreateOrConnectWithoutSubjectInput[]
-    createMany?: AssessmentCreateManySubjectInputEnvelope
-    connect?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
-  }
-
   export type ActionItemCreateNestedManyWithoutSubjectInput = {
     create?: XOR<ActionItemCreateWithoutSubjectInput, ActionItemUncheckedCreateWithoutSubjectInput> | ActionItemCreateWithoutSubjectInput[] | ActionItemUncheckedCreateWithoutSubjectInput[]
     connectOrCreate?: ActionItemCreateOrConnectWithoutSubjectInput | ActionItemCreateOrConnectWithoutSubjectInput[]
@@ -23425,7 +27369,7 @@ export namespace Prisma {
     connect?: ActionItemWhereUniqueInput | ActionItemWhereUniqueInput[]
   }
 
-  export type AssessmentUncheckedCreateNestedManyWithoutSubjectInput = {
+  export type AssessmentCreateNestedManyWithoutSubjectInput = {
     create?: XOR<AssessmentCreateWithoutSubjectInput, AssessmentUncheckedCreateWithoutSubjectInput> | AssessmentCreateWithoutSubjectInput[] | AssessmentUncheckedCreateWithoutSubjectInput[]
     connectOrCreate?: AssessmentCreateOrConnectWithoutSubjectInput | AssessmentCreateOrConnectWithoutSubjectInput[]
     createMany?: AssessmentCreateManySubjectInputEnvelope
@@ -23437,6 +27381,13 @@ export namespace Prisma {
     connectOrCreate?: ActionItemCreateOrConnectWithoutSubjectInput | ActionItemCreateOrConnectWithoutSubjectInput[]
     createMany?: ActionItemCreateManySubjectInputEnvelope
     connect?: ActionItemWhereUniqueInput | ActionItemWhereUniqueInput[]
+  }
+
+  export type AssessmentUncheckedCreateNestedManyWithoutSubjectInput = {
+    create?: XOR<AssessmentCreateWithoutSubjectInput, AssessmentUncheckedCreateWithoutSubjectInput> | AssessmentCreateWithoutSubjectInput[] | AssessmentUncheckedCreateWithoutSubjectInput[]
+    connectOrCreate?: AssessmentCreateOrConnectWithoutSubjectInput | AssessmentCreateOrConnectWithoutSubjectInput[]
+    createMany?: AssessmentCreateManySubjectInputEnvelope
+    connect?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -23455,20 +27406,6 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type AssessmentUpdateManyWithoutSubjectNestedInput = {
-    create?: XOR<AssessmentCreateWithoutSubjectInput, AssessmentUncheckedCreateWithoutSubjectInput> | AssessmentCreateWithoutSubjectInput[] | AssessmentUncheckedCreateWithoutSubjectInput[]
-    connectOrCreate?: AssessmentCreateOrConnectWithoutSubjectInput | AssessmentCreateOrConnectWithoutSubjectInput[]
-    upsert?: AssessmentUpsertWithWhereUniqueWithoutSubjectInput | AssessmentUpsertWithWhereUniqueWithoutSubjectInput[]
-    createMany?: AssessmentCreateManySubjectInputEnvelope
-    set?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
-    disconnect?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
-    delete?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
-    connect?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
-    update?: AssessmentUpdateWithWhereUniqueWithoutSubjectInput | AssessmentUpdateWithWhereUniqueWithoutSubjectInput[]
-    updateMany?: AssessmentUpdateManyWithWhereWithoutSubjectInput | AssessmentUpdateManyWithWhereWithoutSubjectInput[]
-    deleteMany?: AssessmentScalarWhereInput | AssessmentScalarWhereInput[]
-  }
-
   export type ActionItemUpdateManyWithoutSubjectNestedInput = {
     create?: XOR<ActionItemCreateWithoutSubjectInput, ActionItemUncheckedCreateWithoutSubjectInput> | ActionItemCreateWithoutSubjectInput[] | ActionItemUncheckedCreateWithoutSubjectInput[]
     connectOrCreate?: ActionItemCreateOrConnectWithoutSubjectInput | ActionItemCreateOrConnectWithoutSubjectInput[]
@@ -23483,7 +27420,7 @@ export namespace Prisma {
     deleteMany?: ActionItemScalarWhereInput | ActionItemScalarWhereInput[]
   }
 
-  export type AssessmentUncheckedUpdateManyWithoutSubjectNestedInput = {
+  export type AssessmentUpdateManyWithoutSubjectNestedInput = {
     create?: XOR<AssessmentCreateWithoutSubjectInput, AssessmentUncheckedCreateWithoutSubjectInput> | AssessmentCreateWithoutSubjectInput[] | AssessmentUncheckedCreateWithoutSubjectInput[]
     connectOrCreate?: AssessmentCreateOrConnectWithoutSubjectInput | AssessmentCreateOrConnectWithoutSubjectInput[]
     upsert?: AssessmentUpsertWithWhereUniqueWithoutSubjectInput | AssessmentUpsertWithWhereUniqueWithoutSubjectInput[]
@@ -23509,6 +27446,20 @@ export namespace Prisma {
     update?: ActionItemUpdateWithWhereUniqueWithoutSubjectInput | ActionItemUpdateWithWhereUniqueWithoutSubjectInput[]
     updateMany?: ActionItemUpdateManyWithWhereWithoutSubjectInput | ActionItemUpdateManyWithWhereWithoutSubjectInput[]
     deleteMany?: ActionItemScalarWhereInput | ActionItemScalarWhereInput[]
+  }
+
+  export type AssessmentUncheckedUpdateManyWithoutSubjectNestedInput = {
+    create?: XOR<AssessmentCreateWithoutSubjectInput, AssessmentUncheckedCreateWithoutSubjectInput> | AssessmentCreateWithoutSubjectInput[] | AssessmentUncheckedCreateWithoutSubjectInput[]
+    connectOrCreate?: AssessmentCreateOrConnectWithoutSubjectInput | AssessmentCreateOrConnectWithoutSubjectInput[]
+    upsert?: AssessmentUpsertWithWhereUniqueWithoutSubjectInput | AssessmentUpsertWithWhereUniqueWithoutSubjectInput[]
+    createMany?: AssessmentCreateManySubjectInputEnvelope
+    set?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
+    disconnect?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
+    delete?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
+    connect?: AssessmentWhereUniqueInput | AssessmentWhereUniqueInput[]
+    update?: AssessmentUpdateWithWhereUniqueWithoutSubjectInput | AssessmentUpdateWithWhereUniqueWithoutSubjectInput[]
+    updateMany?: AssessmentUpdateManyWithWhereWithoutSubjectInput | AssessmentUpdateManyWithWhereWithoutSubjectInput[]
+    deleteMany?: AssessmentScalarWhereInput | AssessmentScalarWhereInput[]
   }
 
   export type SubjectCreateNestedOneWithoutAssessmentsInput = {
@@ -23545,68 +27496,18 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type HistoricalPriceCreateNestedManyWithoutAssetInput = {
-    create?: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput> | HistoricalPriceCreateWithoutAssetInput[] | HistoricalPriceUncheckedCreateWithoutAssetInput[]
-    connectOrCreate?: HistoricalPriceCreateOrConnectWithoutAssetInput | HistoricalPriceCreateOrConnectWithoutAssetInput[]
-    createMany?: HistoricalPriceCreateManyAssetInputEnvelope
-    connect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
   }
 
-  export type HistoricalPriceUncheckedCreateNestedManyWithoutAssetInput = {
-    create?: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput> | HistoricalPriceCreateWithoutAssetInput[] | HistoricalPriceUncheckedCreateWithoutAssetInput[]
-    connectOrCreate?: HistoricalPriceCreateOrConnectWithoutAssetInput | HistoricalPriceCreateOrConnectWithoutAssetInput[]
-    createMany?: HistoricalPriceCreateManyAssetInputEnvelope
-    connect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
-  }
-
-  export type UserUpdateOneRequiredWithoutAssetsNestedInput = {
+  export type UserUpdateOneWithoutAssetsNestedInput = {
     create?: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAssetsInput
     upsert?: UserUpsertWithoutAssetsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssetsInput, UserUpdateWithoutAssetsInput>, UserUncheckedUpdateWithoutAssetsInput>
-  }
-
-  export type HistoricalPriceUpdateManyWithoutAssetNestedInput = {
-    create?: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput> | HistoricalPriceCreateWithoutAssetInput[] | HistoricalPriceUncheckedCreateWithoutAssetInput[]
-    connectOrCreate?: HistoricalPriceCreateOrConnectWithoutAssetInput | HistoricalPriceCreateOrConnectWithoutAssetInput[]
-    upsert?: HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput | HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput[]
-    createMany?: HistoricalPriceCreateManyAssetInputEnvelope
-    set?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
-    disconnect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
-    delete?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
-    connect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
-    update?: HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput | HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput[]
-    updateMany?: HistoricalPriceUpdateManyWithWhereWithoutAssetInput | HistoricalPriceUpdateManyWithWhereWithoutAssetInput[]
-    deleteMany?: HistoricalPriceScalarWhereInput | HistoricalPriceScalarWhereInput[]
-  }
-
-  export type HistoricalPriceUncheckedUpdateManyWithoutAssetNestedInput = {
-    create?: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput> | HistoricalPriceCreateWithoutAssetInput[] | HistoricalPriceUncheckedCreateWithoutAssetInput[]
-    connectOrCreate?: HistoricalPriceCreateOrConnectWithoutAssetInput | HistoricalPriceCreateOrConnectWithoutAssetInput[]
-    upsert?: HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput | HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput[]
-    createMany?: HistoricalPriceCreateManyAssetInputEnvelope
-    set?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
-    disconnect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
-    delete?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
-    connect?: HistoricalPriceWhereUniqueInput | HistoricalPriceWhereUniqueInput[]
-    update?: HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput | HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput[]
-    updateMany?: HistoricalPriceUpdateManyWithWhereWithoutAssetInput | HistoricalPriceUpdateManyWithWhereWithoutAssetInput[]
-    deleteMany?: HistoricalPriceScalarWhereInput | HistoricalPriceScalarWhereInput[]
-  }
-
-  export type AssetCreateNestedOneWithoutHistoryInput = {
-    create?: XOR<AssetCreateWithoutHistoryInput, AssetUncheckedCreateWithoutHistoryInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutHistoryInput
-    connect?: AssetWhereUniqueInput
-  }
-
-  export type AssetUpdateOneRequiredWithoutHistoryNestedInput = {
-    create?: XOR<AssetCreateWithoutHistoryInput, AssetUncheckedCreateWithoutHistoryInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutHistoryInput
-    upsert?: AssetUpsertWithoutHistoryInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutHistoryInput, AssetUpdateWithoutHistoryInput>, AssetUncheckedUpdateWithoutHistoryInput>
   }
 
   export type UserCreateNestedOneWithoutPortfolioSnapshotsInput = {
@@ -23615,12 +27516,130 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutPortfolioSnapshotsNestedInput = {
+  export type UserUpdateOneWithoutPortfolioSnapshotsNestedInput = {
     create?: XOR<UserCreateWithoutPortfolioSnapshotsInput, UserUncheckedCreateWithoutPortfolioSnapshotsInput>
     connectOrCreate?: UserCreateOrConnectWithoutPortfolioSnapshotsInput
     upsert?: UserUpsertWithoutPortfolioSnapshotsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPortfolioSnapshotsInput, UserUpdateWithoutPortfolioSnapshotsInput>, UserUncheckedUpdateWithoutPortfolioSnapshotsInput>
+  }
+
+  export type UserCreateNestedOneWithoutInternshipInput = {
+    create?: XOR<UserCreateWithoutInternshipInput, UserUncheckedCreateWithoutInternshipInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInternshipInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type InternshipCenterCreateNestedOneWithoutInternshipInput = {
+    create?: XOR<InternshipCenterCreateWithoutInternshipInput, InternshipCenterUncheckedCreateWithoutInternshipInput>
+    connectOrCreate?: InternshipCenterCreateOrConnectWithoutInternshipInput
+    connect?: InternshipCenterWhereUniqueInput
+  }
+
+  export type InternshipLogCreateNestedManyWithoutInternshipInput = {
+    create?: XOR<InternshipLogCreateWithoutInternshipInput, InternshipLogUncheckedCreateWithoutInternshipInput> | InternshipLogCreateWithoutInternshipInput[] | InternshipLogUncheckedCreateWithoutInternshipInput[]
+    connectOrCreate?: InternshipLogCreateOrConnectWithoutInternshipInput | InternshipLogCreateOrConnectWithoutInternshipInput[]
+    createMany?: InternshipLogCreateManyInternshipInputEnvelope
+    connect?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+  }
+
+  export type InternshipCenterUncheckedCreateNestedOneWithoutInternshipInput = {
+    create?: XOR<InternshipCenterCreateWithoutInternshipInput, InternshipCenterUncheckedCreateWithoutInternshipInput>
+    connectOrCreate?: InternshipCenterCreateOrConnectWithoutInternshipInput
+    connect?: InternshipCenterWhereUniqueInput
+  }
+
+  export type InternshipLogUncheckedCreateNestedManyWithoutInternshipInput = {
+    create?: XOR<InternshipLogCreateWithoutInternshipInput, InternshipLogUncheckedCreateWithoutInternshipInput> | InternshipLogCreateWithoutInternshipInput[] | InternshipLogUncheckedCreateWithoutInternshipInput[]
+    connectOrCreate?: InternshipLogCreateOrConnectWithoutInternshipInput | InternshipLogCreateOrConnectWithoutInternshipInput[]
+    createMany?: InternshipLogCreateManyInternshipInputEnvelope
+    connect?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutInternshipNestedInput = {
+    create?: XOR<UserCreateWithoutInternshipInput, UserUncheckedCreateWithoutInternshipInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInternshipInput
+    upsert?: UserUpsertWithoutInternshipInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutInternshipInput, UserUpdateWithoutInternshipInput>, UserUncheckedUpdateWithoutInternshipInput>
+  }
+
+  export type InternshipCenterUpdateOneWithoutInternshipNestedInput = {
+    create?: XOR<InternshipCenterCreateWithoutInternshipInput, InternshipCenterUncheckedCreateWithoutInternshipInput>
+    connectOrCreate?: InternshipCenterCreateOrConnectWithoutInternshipInput
+    upsert?: InternshipCenterUpsertWithoutInternshipInput
+    disconnect?: InternshipCenterWhereInput | boolean
+    delete?: InternshipCenterWhereInput | boolean
+    connect?: InternshipCenterWhereUniqueInput
+    update?: XOR<XOR<InternshipCenterUpdateToOneWithWhereWithoutInternshipInput, InternshipCenterUpdateWithoutInternshipInput>, InternshipCenterUncheckedUpdateWithoutInternshipInput>
+  }
+
+  export type InternshipLogUpdateManyWithoutInternshipNestedInput = {
+    create?: XOR<InternshipLogCreateWithoutInternshipInput, InternshipLogUncheckedCreateWithoutInternshipInput> | InternshipLogCreateWithoutInternshipInput[] | InternshipLogUncheckedCreateWithoutInternshipInput[]
+    connectOrCreate?: InternshipLogCreateOrConnectWithoutInternshipInput | InternshipLogCreateOrConnectWithoutInternshipInput[]
+    upsert?: InternshipLogUpsertWithWhereUniqueWithoutInternshipInput | InternshipLogUpsertWithWhereUniqueWithoutInternshipInput[]
+    createMany?: InternshipLogCreateManyInternshipInputEnvelope
+    set?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+    disconnect?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+    delete?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+    connect?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+    update?: InternshipLogUpdateWithWhereUniqueWithoutInternshipInput | InternshipLogUpdateWithWhereUniqueWithoutInternshipInput[]
+    updateMany?: InternshipLogUpdateManyWithWhereWithoutInternshipInput | InternshipLogUpdateManyWithWhereWithoutInternshipInput[]
+    deleteMany?: InternshipLogScalarWhereInput | InternshipLogScalarWhereInput[]
+  }
+
+  export type InternshipCenterUncheckedUpdateOneWithoutInternshipNestedInput = {
+    create?: XOR<InternshipCenterCreateWithoutInternshipInput, InternshipCenterUncheckedCreateWithoutInternshipInput>
+    connectOrCreate?: InternshipCenterCreateOrConnectWithoutInternshipInput
+    upsert?: InternshipCenterUpsertWithoutInternshipInput
+    disconnect?: InternshipCenterWhereInput | boolean
+    delete?: InternshipCenterWhereInput | boolean
+    connect?: InternshipCenterWhereUniqueInput
+    update?: XOR<XOR<InternshipCenterUpdateToOneWithWhereWithoutInternshipInput, InternshipCenterUpdateWithoutInternshipInput>, InternshipCenterUncheckedUpdateWithoutInternshipInput>
+  }
+
+  export type InternshipLogUncheckedUpdateManyWithoutInternshipNestedInput = {
+    create?: XOR<InternshipLogCreateWithoutInternshipInput, InternshipLogUncheckedCreateWithoutInternshipInput> | InternshipLogCreateWithoutInternshipInput[] | InternshipLogUncheckedCreateWithoutInternshipInput[]
+    connectOrCreate?: InternshipLogCreateOrConnectWithoutInternshipInput | InternshipLogCreateOrConnectWithoutInternshipInput[]
+    upsert?: InternshipLogUpsertWithWhereUniqueWithoutInternshipInput | InternshipLogUpsertWithWhereUniqueWithoutInternshipInput[]
+    createMany?: InternshipLogCreateManyInternshipInputEnvelope
+    set?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+    disconnect?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+    delete?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+    connect?: InternshipLogWhereUniqueInput | InternshipLogWhereUniqueInput[]
+    update?: InternshipLogUpdateWithWhereUniqueWithoutInternshipInput | InternshipLogUpdateWithWhereUniqueWithoutInternshipInput[]
+    updateMany?: InternshipLogUpdateManyWithWhereWithoutInternshipInput | InternshipLogUpdateManyWithWhereWithoutInternshipInput[]
+    deleteMany?: InternshipLogScalarWhereInput | InternshipLogScalarWhereInput[]
+  }
+
+  export type InternshipCreateNestedOneWithoutCenterInput = {
+    create?: XOR<InternshipCreateWithoutCenterInput, InternshipUncheckedCreateWithoutCenterInput>
+    connectOrCreate?: InternshipCreateOrConnectWithoutCenterInput
+    connect?: InternshipWhereUniqueInput
+  }
+
+  export type InternshipUpdateOneRequiredWithoutCenterNestedInput = {
+    create?: XOR<InternshipCreateWithoutCenterInput, InternshipUncheckedCreateWithoutCenterInput>
+    connectOrCreate?: InternshipCreateOrConnectWithoutCenterInput
+    upsert?: InternshipUpsertWithoutCenterInput
+    connect?: InternshipWhereUniqueInput
+    update?: XOR<XOR<InternshipUpdateToOneWithWhereWithoutCenterInput, InternshipUpdateWithoutCenterInput>, InternshipUncheckedUpdateWithoutCenterInput>
+  }
+
+  export type InternshipCreateNestedOneWithoutLogsInput = {
+    create?: XOR<InternshipCreateWithoutLogsInput, InternshipUncheckedCreateWithoutLogsInput>
+    connectOrCreate?: InternshipCreateOrConnectWithoutLogsInput
+    connect?: InternshipWhereUniqueInput
+  }
+
+  export type InternshipUpdateOneRequiredWithoutLogsNestedInput = {
+    create?: XOR<InternshipCreateWithoutLogsInput, InternshipUncheckedCreateWithoutLogsInput>
+    connectOrCreate?: InternshipCreateOrConnectWithoutLogsInput
+    upsert?: InternshipUpsertWithoutLogsInput
+    connect?: InternshipWhereUniqueInput
+    update?: XOR<XOR<InternshipUpdateToOneWithWhereWithoutLogsInput, InternshipUpdateWithoutLogsInput>, InternshipUncheckedUpdateWithoutLogsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -23873,26 +27892,17 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
-  export type SessionCreateWithoutUserInput = {
-    id?: string
-    sessionToken: string
-    expires: Date | string
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
   }
 
-  export type SessionUncheckedCreateWithoutUserInput = {
-    id?: string
-    sessionToken: string
-    expires: Date | string
-  }
-
-  export type SessionCreateOrConnectWithoutUserInput = {
-    where: SessionWhereUniqueInput
-    create: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput>
-  }
-
-  export type SessionCreateManyUserInputEnvelope = {
-    data: SessionCreateManyUserInput | SessionCreateManyUserInput[]
-    skipDuplicates?: boolean
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type AccountCreateWithoutUserInput = {
@@ -23963,44 +27973,60 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SessionCreateWithoutUserInput = {
+    id?: string
+    sessionToken: string
+    expires: Date | string
+  }
+
+  export type SessionUncheckedCreateWithoutUserInput = {
+    id?: string
+    sessionToken: string
+    expires: Date | string
+  }
+
+  export type SessionCreateOrConnectWithoutUserInput = {
+    where: SessionWhereUniqueInput
+    create: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type SessionCreateManyUserInputEnvelope = {
+    data: SessionCreateManyUserInput | SessionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AssetCreateWithoutUserInput = {
     id?: string
-    ticker?: string | null
     name: string
-    category?: string
+    ticker?: string | null
+    category: string
     platform?: string | null
-    quantity?: number
-    price_eur?: number
+    quantity: number
+    price_eur: number
     currency?: string | null
     yahoo_symbol?: string | null
     coingecko_id?: string | null
     coincap_id?: string | null
-    indexa_api?: boolean
-    manual?: boolean
+    indexa_api?: boolean | null
+    manual?: boolean | null
     image_url?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    history?: HistoricalPriceCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUncheckedCreateWithoutUserInput = {
     id?: string
-    ticker?: string | null
     name: string
-    category?: string
+    ticker?: string | null
+    category: string
     platform?: string | null
-    quantity?: number
-    price_eur?: number
+    quantity: number
+    price_eur: number
     currency?: string | null
     yahoo_symbol?: string | null
     coingecko_id?: string | null
     coincap_id?: string | null
-    indexa_api?: boolean
-    manual?: boolean
+    indexa_api?: boolean | null
+    manual?: boolean | null
     image_url?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    history?: HistoricalPriceUncheckedCreateNestedManyWithoutAssetInput
   }
 
   export type AssetCreateOrConnectWithoutUserInput = {
@@ -24014,21 +28040,18 @@ export namespace Prisma {
   }
 
   export type PortfolioSnapshotCreateWithoutUserInput = {
-    id?: string
-    total_value_eur?: number
     date: Date | string
     category?: string | null
     asset_id?: string | null
-    createdAt?: Date | string
+    total_value_eur: number
   }
 
   export type PortfolioSnapshotUncheckedCreateWithoutUserInput = {
-    id?: string
-    total_value_eur?: number
+    id?: number
     date: Date | string
     category?: string | null
     asset_id?: string | null
-    createdAt?: Date | string
+    total_value_eur: number
   }
 
   export type PortfolioSnapshotCreateOrConnectWithoutUserInput = {
@@ -24041,30 +28064,39 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type SessionUpsertWithWhereUniqueWithoutUserInput = {
-    where: SessionWhereUniqueInput
-    update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
-    create: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput>
+  export type InternshipCreateWithoutUserInput = {
+    id?: string
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    realStartDate?: Date | string | null
+    realEndDate?: Date | string | null
+    totalHours?: number
+    schedule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    center?: InternshipCenterCreateNestedOneWithoutInternshipInput
+    logs?: InternshipLogCreateNestedManyWithoutInternshipInput
   }
 
-  export type SessionUpdateWithWhereUniqueWithoutUserInput = {
-    where: SessionWhereUniqueInput
-    data: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
+  export type InternshipUncheckedCreateWithoutUserInput = {
+    id?: string
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    realStartDate?: Date | string | null
+    realEndDate?: Date | string | null
+    totalHours?: number
+    schedule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    center?: InternshipCenterUncheckedCreateNestedOneWithoutInternshipInput
+    logs?: InternshipLogUncheckedCreateNestedManyWithoutInternshipInput
   }
 
-  export type SessionUpdateManyWithWhereWithoutUserInput = {
-    where: SessionScalarWhereInput
-    data: XOR<SessionUpdateManyMutationInput, SessionUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type SessionScalarWhereInput = {
-    AND?: SessionScalarWhereInput | SessionScalarWhereInput[]
-    OR?: SessionScalarWhereInput[]
-    NOT?: SessionScalarWhereInput | SessionScalarWhereInput[]
-    id?: StringFilter<"Session"> | string
-    sessionToken?: StringFilter<"Session"> | string
-    userId?: StringFilter<"Session"> | string
-    expires?: DateTimeFilter<"Session"> | Date | string
+  export type InternshipCreateOrConnectWithoutUserInput = {
+    where: InternshipWhereUniqueInput
+    create: XOR<InternshipCreateWithoutUserInput, InternshipUncheckedCreateWithoutUserInput>
   }
 
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
@@ -24131,6 +28163,32 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"EmployeeActivity"> | Date | string
   }
 
+  export type SessionUpsertWithWhereUniqueWithoutUserInput = {
+    where: SessionWhereUniqueInput
+    update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
+    create: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type SessionUpdateWithWhereUniqueWithoutUserInput = {
+    where: SessionWhereUniqueInput
+    data: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SessionUpdateManyWithWhereWithoutUserInput = {
+    where: SessionScalarWhereInput
+    data: XOR<SessionUpdateManyMutationInput, SessionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type SessionScalarWhereInput = {
+    AND?: SessionScalarWhereInput | SessionScalarWhereInput[]
+    OR?: SessionScalarWhereInput[]
+    NOT?: SessionScalarWhereInput | SessionScalarWhereInput[]
+    id?: StringFilter<"Session"> | string
+    sessionToken?: StringFilter<"Session"> | string
+    userId?: StringFilter<"Session"> | string
+    expires?: DateTimeFilter<"Session"> | Date | string
+  }
+
   export type AssetUpsertWithWhereUniqueWithoutUserInput = {
     where: AssetWhereUniqueInput
     update: XOR<AssetUpdateWithoutUserInput, AssetUncheckedUpdateWithoutUserInput>
@@ -24152,8 +28210,8 @@ export namespace Prisma {
     OR?: AssetScalarWhereInput[]
     NOT?: AssetScalarWhereInput | AssetScalarWhereInput[]
     id?: StringFilter<"Asset"> | string
-    ticker?: StringNullableFilter<"Asset"> | string | null
     name?: StringFilter<"Asset"> | string
+    ticker?: StringNullableFilter<"Asset"> | string | null
     category?: StringFilter<"Asset"> | string
     platform?: StringNullableFilter<"Asset"> | string | null
     quantity?: FloatFilter<"Asset"> | number
@@ -24162,12 +28220,10 @@ export namespace Prisma {
     yahoo_symbol?: StringNullableFilter<"Asset"> | string | null
     coingecko_id?: StringNullableFilter<"Asset"> | string | null
     coincap_id?: StringNullableFilter<"Asset"> | string | null
-    indexa_api?: BoolFilter<"Asset"> | boolean
-    manual?: BoolFilter<"Asset"> | boolean
+    indexa_api?: BoolNullableFilter<"Asset"> | boolean | null
+    manual?: BoolNullableFilter<"Asset"> | boolean | null
     image_url?: StringNullableFilter<"Asset"> | string | null
-    userId?: StringFilter<"Asset"> | string
-    createdAt?: DateTimeFilter<"Asset"> | Date | string
-    updatedAt?: DateTimeFilter<"Asset"> | Date | string
+    userId?: StringNullableFilter<"Asset"> | string | null
   }
 
   export type PortfolioSnapshotUpsertWithWhereUniqueWithoutUserInput = {
@@ -24190,13 +28246,53 @@ export namespace Prisma {
     AND?: PortfolioSnapshotScalarWhereInput | PortfolioSnapshotScalarWhereInput[]
     OR?: PortfolioSnapshotScalarWhereInput[]
     NOT?: PortfolioSnapshotScalarWhereInput | PortfolioSnapshotScalarWhereInput[]
-    id?: StringFilter<"PortfolioSnapshot"> | string
-    total_value_eur?: FloatFilter<"PortfolioSnapshot"> | number
+    id?: IntFilter<"PortfolioSnapshot"> | number
     date?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
     category?: StringNullableFilter<"PortfolioSnapshot"> | string | null
     asset_id?: StringNullableFilter<"PortfolioSnapshot"> | string | null
-    userId?: StringFilter<"PortfolioSnapshot"> | string
-    createdAt?: DateTimeFilter<"PortfolioSnapshot"> | Date | string
+    total_value_eur?: FloatFilter<"PortfolioSnapshot"> | number
+    userId?: StringNullableFilter<"PortfolioSnapshot"> | string | null
+  }
+
+  export type InternshipUpsertWithoutUserInput = {
+    update: XOR<InternshipUpdateWithoutUserInput, InternshipUncheckedUpdateWithoutUserInput>
+    create: XOR<InternshipCreateWithoutUserInput, InternshipUncheckedCreateWithoutUserInput>
+    where?: InternshipWhereInput
+  }
+
+  export type InternshipUpdateToOneWithWhereWithoutUserInput = {
+    where?: InternshipWhereInput
+    data: XOR<InternshipUpdateWithoutUserInput, InternshipUncheckedUpdateWithoutUserInput>
+  }
+
+  export type InternshipUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    center?: InternshipCenterUpdateOneWithoutInternshipNestedInput
+    logs?: InternshipLogUpdateManyWithoutInternshipNestedInput
+  }
+
+  export type InternshipUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    center?: InternshipCenterUncheckedUpdateOneWithoutInternshipNestedInput
+    logs?: InternshipLogUncheckedUpdateManyWithoutInternshipNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -24217,6 +28313,7 @@ export namespace Prisma {
     activities?: EmployeeActivityCreateNestedManyWithoutUserInput
     assets?: AssetCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
+    internship?: InternshipCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -24237,6 +28334,7 @@ export namespace Prisma {
     activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
     assets?: AssetUncheckedCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
+    internship?: InternshipUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -24273,6 +28371,7 @@ export namespace Prisma {
     activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
     assets?: AssetUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
+    internship?: InternshipUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -24293,6 +28392,7 @@ export namespace Prisma {
     activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
     assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
+    internship?: InternshipUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -24309,10 +28409,11 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
     assets?: AssetCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
+    internship?: InternshipCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -24329,10 +28430,11 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assets?: AssetUncheckedCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
+    internship?: InternshipUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -24365,10 +28467,11 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
     assets?: AssetUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
+    internship?: InternshipUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -24385,10 +28488,11 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
+    internship?: InternshipUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ActionItemCreateWithoutCategoryInput = {
@@ -24426,34 +28530,6 @@ export namespace Prisma {
 
   export type ActionItemCreateManyCategoryInputEnvelope = {
     data: ActionItemCreateManyCategoryInput | ActionItemCreateManyCategoryInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type TaskSectionCreateWithoutCategoryInput = {
-    id?: string
-    name: string
-    order?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    items?: ActionItemCreateNestedManyWithoutSectionInput
-  }
-
-  export type TaskSectionUncheckedCreateWithoutCategoryInput = {
-    id?: string
-    name: string
-    order?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    items?: ActionItemUncheckedCreateNestedManyWithoutSectionInput
-  }
-
-  export type TaskSectionCreateOrConnectWithoutCategoryInput = {
-    where: TaskSectionWhereUniqueInput
-    create: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput>
-  }
-
-  export type TaskSectionCreateManyCategoryInputEnvelope = {
-    data: TaskSectionCreateManyCategoryInput | TaskSectionCreateManyCategoryInput[]
     skipDuplicates?: boolean
   }
 
@@ -24519,6 +28595,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TaskSectionCreateWithoutCategoryInput = {
+    id?: string
+    name: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: ActionItemCreateNestedManyWithoutSectionInput
+  }
+
+  export type TaskSectionUncheckedCreateWithoutCategoryInput = {
+    id?: string
+    name: string
+    order?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: ActionItemUncheckedCreateNestedManyWithoutSectionInput
+  }
+
+  export type TaskSectionCreateOrConnectWithoutCategoryInput = {
+    where: TaskSectionWhereUniqueInput
+    create: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type TaskSectionCreateManyCategoryInputEnvelope = {
+    data: TaskSectionCreateManyCategoryInput | TaskSectionCreateManyCategoryInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ActionItemUpsertWithWhereUniqueWithoutCategoryInput = {
     where: ActionItemWhereUniqueInput
     update: XOR<ActionItemUpdateWithoutCategoryInput, ActionItemUncheckedUpdateWithoutCategoryInput>
@@ -24551,34 +28655,6 @@ export namespace Prisma {
     subjectId?: StringNullableFilter<"ActionItem"> | string | null
     createdAt?: DateTimeFilter<"ActionItem"> | Date | string
     updatedAt?: DateTimeFilter<"ActionItem"> | Date | string
-  }
-
-  export type TaskSectionUpsertWithWhereUniqueWithoutCategoryInput = {
-    where: TaskSectionWhereUniqueInput
-    update: XOR<TaskSectionUpdateWithoutCategoryInput, TaskSectionUncheckedUpdateWithoutCategoryInput>
-    create: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput>
-  }
-
-  export type TaskSectionUpdateWithWhereUniqueWithoutCategoryInput = {
-    where: TaskSectionWhereUniqueInput
-    data: XOR<TaskSectionUpdateWithoutCategoryInput, TaskSectionUncheckedUpdateWithoutCategoryInput>
-  }
-
-  export type TaskSectionUpdateManyWithWhereWithoutCategoryInput = {
-    where: TaskSectionScalarWhereInput
-    data: XOR<TaskSectionUpdateManyMutationInput, TaskSectionUncheckedUpdateManyWithoutCategoryInput>
-  }
-
-  export type TaskSectionScalarWhereInput = {
-    AND?: TaskSectionScalarWhereInput | TaskSectionScalarWhereInput[]
-    OR?: TaskSectionScalarWhereInput[]
-    NOT?: TaskSectionScalarWhereInput | TaskSectionScalarWhereInput[]
-    id?: StringFilter<"TaskSection"> | string
-    name?: StringFilter<"TaskSection"> | string
-    order?: IntFilter<"TaskSection"> | number
-    categoryId?: StringFilter<"TaskSection"> | string
-    createdAt?: DateTimeFilter<"TaskSection"> | Date | string
-    updatedAt?: DateTimeFilter<"TaskSection"> | Date | string
   }
 
   export type ClassSessionUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -24641,37 +28717,32 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Project"> | Date | string
   }
 
-  export type CategoryCreateWithoutSectionsInput = {
-    id?: string
-    name: string
-    slug: string
-    description?: string | null
-    color?: string | null
-    icon?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    items?: ActionItemCreateNestedManyWithoutCategoryInput
-    sessions?: ClassSessionCreateNestedManyWithoutCategoryInput
-    projects?: ProjectCreateNestedManyWithoutCategoryInput
+  export type TaskSectionUpsertWithWhereUniqueWithoutCategoryInput = {
+    where: TaskSectionWhereUniqueInput
+    update: XOR<TaskSectionUpdateWithoutCategoryInput, TaskSectionUncheckedUpdateWithoutCategoryInput>
+    create: XOR<TaskSectionCreateWithoutCategoryInput, TaskSectionUncheckedCreateWithoutCategoryInput>
   }
 
-  export type CategoryUncheckedCreateWithoutSectionsInput = {
-    id?: string
-    name: string
-    slug: string
-    description?: string | null
-    color?: string | null
-    icon?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    items?: ActionItemUncheckedCreateNestedManyWithoutCategoryInput
-    sessions?: ClassSessionUncheckedCreateNestedManyWithoutCategoryInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutCategoryInput
+  export type TaskSectionUpdateWithWhereUniqueWithoutCategoryInput = {
+    where: TaskSectionWhereUniqueInput
+    data: XOR<TaskSectionUpdateWithoutCategoryInput, TaskSectionUncheckedUpdateWithoutCategoryInput>
   }
 
-  export type CategoryCreateOrConnectWithoutSectionsInput = {
-    where: CategoryWhereUniqueInput
-    create: XOR<CategoryCreateWithoutSectionsInput, CategoryUncheckedCreateWithoutSectionsInput>
+  export type TaskSectionUpdateManyWithWhereWithoutCategoryInput = {
+    where: TaskSectionScalarWhereInput
+    data: XOR<TaskSectionUpdateManyMutationInput, TaskSectionUncheckedUpdateManyWithoutCategoryInput>
+  }
+
+  export type TaskSectionScalarWhereInput = {
+    AND?: TaskSectionScalarWhereInput | TaskSectionScalarWhereInput[]
+    OR?: TaskSectionScalarWhereInput[]
+    NOT?: TaskSectionScalarWhereInput | TaskSectionScalarWhereInput[]
+    id?: StringFilter<"TaskSection"> | string
+    name?: StringFilter<"TaskSection"> | string
+    order?: IntFilter<"TaskSection"> | number
+    categoryId?: StringFilter<"TaskSection"> | string
+    createdAt?: DateTimeFilter<"TaskSection"> | Date | string
+    updatedAt?: DateTimeFilter<"TaskSection"> | Date | string
   }
 
   export type ActionItemCreateWithoutSectionInput = {
@@ -24710,6 +28781,55 @@ export namespace Prisma {
   export type ActionItemCreateManySectionInputEnvelope = {
     data: ActionItemCreateManySectionInput | ActionItemCreateManySectionInput[]
     skipDuplicates?: boolean
+  }
+
+  export type CategoryCreateWithoutSectionsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    color?: string | null
+    icon?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: ActionItemCreateNestedManyWithoutCategoryInput
+    sessions?: ClassSessionCreateNestedManyWithoutCategoryInput
+    projects?: ProjectCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryUncheckedCreateWithoutSectionsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    color?: string | null
+    icon?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: ActionItemUncheckedCreateNestedManyWithoutCategoryInput
+    sessions?: ClassSessionUncheckedCreateNestedManyWithoutCategoryInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryCreateOrConnectWithoutSectionsInput = {
+    where: CategoryWhereUniqueInput
+    create: XOR<CategoryCreateWithoutSectionsInput, CategoryUncheckedCreateWithoutSectionsInput>
+  }
+
+  export type ActionItemUpsertWithWhereUniqueWithoutSectionInput = {
+    where: ActionItemWhereUniqueInput
+    update: XOR<ActionItemUpdateWithoutSectionInput, ActionItemUncheckedUpdateWithoutSectionInput>
+    create: XOR<ActionItemCreateWithoutSectionInput, ActionItemUncheckedCreateWithoutSectionInput>
+  }
+
+  export type ActionItemUpdateWithWhereUniqueWithoutSectionInput = {
+    where: ActionItemWhereUniqueInput
+    data: XOR<ActionItemUpdateWithoutSectionInput, ActionItemUncheckedUpdateWithoutSectionInput>
+  }
+
+  export type ActionItemUpdateManyWithWhereWithoutSectionInput = {
+    where: ActionItemScalarWhereInput
+    data: XOR<ActionItemUpdateManyMutationInput, ActionItemUncheckedUpdateManyWithoutSectionInput>
   }
 
   export type CategoryUpsertWithoutSectionsInput = {
@@ -24751,22 +28871,6 @@ export namespace Prisma {
     projects?: ProjectUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
-  export type ActionItemUpsertWithWhereUniqueWithoutSectionInput = {
-    where: ActionItemWhereUniqueInput
-    update: XOR<ActionItemUpdateWithoutSectionInput, ActionItemUncheckedUpdateWithoutSectionInput>
-    create: XOR<ActionItemCreateWithoutSectionInput, ActionItemUncheckedCreateWithoutSectionInput>
-  }
-
-  export type ActionItemUpdateWithWhereUniqueWithoutSectionInput = {
-    where: ActionItemWhereUniqueInput
-    data: XOR<ActionItemUpdateWithoutSectionInput, ActionItemUncheckedUpdateWithoutSectionInput>
-  }
-
-  export type ActionItemUpdateManyWithWhereWithoutSectionInput = {
-    where: ActionItemScalarWhereInput
-    data: XOR<ActionItemUpdateManyMutationInput, ActionItemUncheckedUpdateManyWithoutSectionInput>
-  }
-
   export type CategoryCreateWithoutItemsInput = {
     id?: string
     name: string
@@ -24776,9 +28880,9 @@ export namespace Prisma {
     icon?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    sections?: TaskSectionCreateNestedManyWithoutCategoryInput
     sessions?: ClassSessionCreateNestedManyWithoutCategoryInput
     projects?: ProjectCreateNestedManyWithoutCategoryInput
+    sections?: TaskSectionCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateWithoutItemsInput = {
@@ -24790,9 +28894,9 @@ export namespace Prisma {
     icon?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    sections?: TaskSectionUncheckedCreateNestedManyWithoutCategoryInput
     sessions?: ClassSessionUncheckedCreateNestedManyWithoutCategoryInput
     projects?: ProjectUncheckedCreateNestedManyWithoutCategoryInput
+    sections?: TaskSectionUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryCreateOrConnectWithoutItemsInput = {
@@ -24876,9 +28980,9 @@ export namespace Prisma {
     icon?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sections?: TaskSectionUpdateManyWithoutCategoryNestedInput
     sessions?: ClassSessionUpdateManyWithoutCategoryNestedInput
     projects?: ProjectUpdateManyWithoutCategoryNestedInput
+    sections?: TaskSectionUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateWithoutItemsInput = {
@@ -24890,9 +28994,9 @@ export namespace Prisma {
     icon?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sections?: TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput
     sessions?: ClassSessionUncheckedUpdateManyWithoutCategoryNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutCategoryNestedInput
+    sections?: TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type TaskSectionUpsertWithoutItemsInput = {
@@ -24973,8 +29077,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: ActionItemCreateNestedManyWithoutCategoryInput
-    sections?: TaskSectionCreateNestedManyWithoutCategoryInput
     projects?: ProjectCreateNestedManyWithoutCategoryInput
+    sections?: TaskSectionCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryUncheckedCreateWithoutSessionsInput = {
@@ -24987,8 +29091,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: ActionItemUncheckedCreateNestedManyWithoutCategoryInput
-    sections?: TaskSectionUncheckedCreateNestedManyWithoutCategoryInput
     projects?: ProjectUncheckedCreateNestedManyWithoutCategoryInput
+    sections?: TaskSectionUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type CategoryCreateOrConnectWithoutSessionsInput = {
@@ -25017,8 +29121,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: ActionItemUpdateManyWithoutCategoryNestedInput
-    sections?: TaskSectionUpdateManyWithoutCategoryNestedInput
     projects?: ProjectUpdateManyWithoutCategoryNestedInput
+    sections?: TaskSectionUpdateManyWithoutCategoryNestedInput
   }
 
   export type CategoryUncheckedUpdateWithoutSessionsInput = {
@@ -25031,8 +29135,41 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: ActionItemUncheckedUpdateManyWithoutCategoryNestedInput
-    sections?: TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutCategoryNestedInput
+    sections?: TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type CategoryCreateWithoutProjectsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    color?: string | null
+    icon?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: ActionItemCreateNestedManyWithoutCategoryInput
+    sessions?: ClassSessionCreateNestedManyWithoutCategoryInput
+    sections?: TaskSectionCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryUncheckedCreateWithoutProjectsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    color?: string | null
+    icon?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: ActionItemUncheckedCreateNestedManyWithoutCategoryInput
+    sessions?: ClassSessionUncheckedCreateNestedManyWithoutCategoryInput
+    sections?: TaskSectionUncheckedCreateNestedManyWithoutCategoryInput
+  }
+
+  export type CategoryCreateOrConnectWithoutProjectsInput = {
+    where: CategoryWhereUniqueInput
+    create: XOR<CategoryCreateWithoutProjectsInput, CategoryUncheckedCreateWithoutProjectsInput>
   }
 
   export type ProjectImageCreateWithoutProjectInput = {
@@ -25057,37 +29194,43 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type CategoryCreateWithoutProjectsInput = {
-    id?: string
-    name: string
-    slug: string
-    description?: string | null
-    color?: string | null
-    icon?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    items?: ActionItemCreateNestedManyWithoutCategoryInput
-    sections?: TaskSectionCreateNestedManyWithoutCategoryInput
-    sessions?: ClassSessionCreateNestedManyWithoutCategoryInput
-  }
-
-  export type CategoryUncheckedCreateWithoutProjectsInput = {
-    id?: string
-    name: string
-    slug: string
-    description?: string | null
-    color?: string | null
-    icon?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    items?: ActionItemUncheckedCreateNestedManyWithoutCategoryInput
-    sections?: TaskSectionUncheckedCreateNestedManyWithoutCategoryInput
-    sessions?: ClassSessionUncheckedCreateNestedManyWithoutCategoryInput
-  }
-
-  export type CategoryCreateOrConnectWithoutProjectsInput = {
-    where: CategoryWhereUniqueInput
+  export type CategoryUpsertWithoutProjectsInput = {
+    update: XOR<CategoryUpdateWithoutProjectsInput, CategoryUncheckedUpdateWithoutProjectsInput>
     create: XOR<CategoryCreateWithoutProjectsInput, CategoryUncheckedCreateWithoutProjectsInput>
+    where?: CategoryWhereInput
+  }
+
+  export type CategoryUpdateToOneWithWhereWithoutProjectsInput = {
+    where?: CategoryWhereInput
+    data: XOR<CategoryUpdateWithoutProjectsInput, CategoryUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type CategoryUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: ActionItemUpdateManyWithoutCategoryNestedInput
+    sessions?: ClassSessionUpdateManyWithoutCategoryNestedInput
+    sections?: TaskSectionUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type CategoryUncheckedUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: ActionItemUncheckedUpdateManyWithoutCategoryNestedInput
+    sessions?: ClassSessionUncheckedUpdateManyWithoutCategoryNestedInput
+    sections?: TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type ProjectImageUpsertWithWhereUniqueWithoutProjectInput = {
@@ -25114,45 +29257,6 @@ export namespace Prisma {
     url?: StringFilter<"ProjectImage"> | string
     projectId?: StringFilter<"ProjectImage"> | string
     createdAt?: DateTimeFilter<"ProjectImage"> | Date | string
-  }
-
-  export type CategoryUpsertWithoutProjectsInput = {
-    update: XOR<CategoryUpdateWithoutProjectsInput, CategoryUncheckedUpdateWithoutProjectsInput>
-    create: XOR<CategoryCreateWithoutProjectsInput, CategoryUncheckedCreateWithoutProjectsInput>
-    where?: CategoryWhereInput
-  }
-
-  export type CategoryUpdateToOneWithWhereWithoutProjectsInput = {
-    where?: CategoryWhereInput
-    data: XOR<CategoryUpdateWithoutProjectsInput, CategoryUncheckedUpdateWithoutProjectsInput>
-  }
-
-  export type CategoryUpdateWithoutProjectsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    icon?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    items?: ActionItemUpdateManyWithoutCategoryNestedInput
-    sections?: TaskSectionUpdateManyWithoutCategoryNestedInput
-    sessions?: ClassSessionUpdateManyWithoutCategoryNestedInput
-  }
-
-  export type CategoryUncheckedUpdateWithoutProjectsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    color?: NullableStringFieldUpdateOperationsInput | string | null
-    icon?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    items?: ActionItemUncheckedUpdateManyWithoutCategoryNestedInput
-    sections?: TaskSectionUncheckedUpdateManyWithoutCategoryNestedInput
-    sessions?: ClassSessionUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type ProjectCreateWithoutImagesInput = {
@@ -25211,34 +29315,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type AssessmentCreateWithoutSubjectInput = {
-    id?: string
-    title: string
-    weight: number
-    grade?: number | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type AssessmentUncheckedCreateWithoutSubjectInput = {
-    id?: string
-    title: string
-    weight: number
-    grade?: number | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type AssessmentCreateOrConnectWithoutSubjectInput = {
-    where: AssessmentWhereUniqueInput
-    create: XOR<AssessmentCreateWithoutSubjectInput, AssessmentUncheckedCreateWithoutSubjectInput>
-  }
-
-  export type AssessmentCreateManySubjectInputEnvelope = {
-    data: AssessmentCreateManySubjectInput | AssessmentCreateManySubjectInput[]
-    skipDuplicates?: boolean
-  }
-
   export type ActionItemCreateWithoutSubjectInput = {
     id?: string
     title: string
@@ -25277,6 +29353,50 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AssessmentCreateWithoutSubjectInput = {
+    id?: string
+    title: string
+    weight: number
+    grade?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssessmentUncheckedCreateWithoutSubjectInput = {
+    id?: string
+    title: string
+    weight: number
+    grade?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssessmentCreateOrConnectWithoutSubjectInput = {
+    where: AssessmentWhereUniqueInput
+    create: XOR<AssessmentCreateWithoutSubjectInput, AssessmentUncheckedCreateWithoutSubjectInput>
+  }
+
+  export type AssessmentCreateManySubjectInputEnvelope = {
+    data: AssessmentCreateManySubjectInput | AssessmentCreateManySubjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ActionItemUpsertWithWhereUniqueWithoutSubjectInput = {
+    where: ActionItemWhereUniqueInput
+    update: XOR<ActionItemUpdateWithoutSubjectInput, ActionItemUncheckedUpdateWithoutSubjectInput>
+    create: XOR<ActionItemCreateWithoutSubjectInput, ActionItemUncheckedCreateWithoutSubjectInput>
+  }
+
+  export type ActionItemUpdateWithWhereUniqueWithoutSubjectInput = {
+    where: ActionItemWhereUniqueInput
+    data: XOR<ActionItemUpdateWithoutSubjectInput, ActionItemUncheckedUpdateWithoutSubjectInput>
+  }
+
+  export type ActionItemUpdateManyWithWhereWithoutSubjectInput = {
+    where: ActionItemScalarWhereInput
+    data: XOR<ActionItemUpdateManyMutationInput, ActionItemUncheckedUpdateManyWithoutSubjectInput>
+  }
+
   export type AssessmentUpsertWithWhereUniqueWithoutSubjectInput = {
     where: AssessmentWhereUniqueInput
     update: XOR<AssessmentUpdateWithoutSubjectInput, AssessmentUncheckedUpdateWithoutSubjectInput>
@@ -25304,22 +29424,6 @@ export namespace Prisma {
     subjectId?: StringFilter<"Assessment"> | string
     createdAt?: DateTimeFilter<"Assessment"> | Date | string
     updatedAt?: DateTimeFilter<"Assessment"> | Date | string
-  }
-
-  export type ActionItemUpsertWithWhereUniqueWithoutSubjectInput = {
-    where: ActionItemWhereUniqueInput
-    update: XOR<ActionItemUpdateWithoutSubjectInput, ActionItemUncheckedUpdateWithoutSubjectInput>
-    create: XOR<ActionItemCreateWithoutSubjectInput, ActionItemUncheckedCreateWithoutSubjectInput>
-  }
-
-  export type ActionItemUpdateWithWhereUniqueWithoutSubjectInput = {
-    where: ActionItemWhereUniqueInput
-    data: XOR<ActionItemUpdateWithoutSubjectInput, ActionItemUncheckedUpdateWithoutSubjectInput>
-  }
-
-  export type ActionItemUpdateManyWithWhereWithoutSubjectInput = {
-    where: ActionItemScalarWhereInput
-    data: XOR<ActionItemUpdateManyMutationInput, ActionItemUncheckedUpdateManyWithoutSubjectInput>
   }
 
   export type SubjectCreateWithoutAssessmentsInput = {
@@ -25408,10 +29512,11 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
     assets?: AssetCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
+    internship?: InternshipCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActivitiesInput = {
@@ -25428,10 +29533,11 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assets?: AssetUncheckedCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
+    internship?: InternshipUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActivitiesInput = {
@@ -25464,10 +29570,11 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
     assets?: AssetUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
+    internship?: InternshipUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivitiesInput = {
@@ -25484,10 +29591,11 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
+    internship?: InternshipUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAssetsInput = {
@@ -25504,10 +29612,11 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
+    internship?: InternshipCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssetsInput = {
@@ -25524,39 +29633,16 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
+    internship?: InternshipUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssetsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutAssetsInput, UserUncheckedCreateWithoutAssetsInput>
-  }
-
-  export type HistoricalPriceCreateWithoutAssetInput = {
-    id?: string
-    price_eur?: number
-    date: Date | string
-    createdAt?: Date | string
-  }
-
-  export type HistoricalPriceUncheckedCreateWithoutAssetInput = {
-    id?: string
-    price_eur?: number
-    date: Date | string
-    createdAt?: Date | string
-  }
-
-  export type HistoricalPriceCreateOrConnectWithoutAssetInput = {
-    where: HistoricalPriceWhereUniqueInput
-    create: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput>
-  }
-
-  export type HistoricalPriceCreateManyAssetInputEnvelope = {
-    data: HistoricalPriceCreateManyAssetInput | HistoricalPriceCreateManyAssetInput[]
-    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutAssetsInput = {
@@ -25584,10 +29670,11 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
+    internship?: InternshipUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssetsInput = {
@@ -25604,133 +29691,11 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type HistoricalPriceUpsertWithWhereUniqueWithoutAssetInput = {
-    where: HistoricalPriceWhereUniqueInput
-    update: XOR<HistoricalPriceUpdateWithoutAssetInput, HistoricalPriceUncheckedUpdateWithoutAssetInput>
-    create: XOR<HistoricalPriceCreateWithoutAssetInput, HistoricalPriceUncheckedCreateWithoutAssetInput>
-  }
-
-  export type HistoricalPriceUpdateWithWhereUniqueWithoutAssetInput = {
-    where: HistoricalPriceWhereUniqueInput
-    data: XOR<HistoricalPriceUpdateWithoutAssetInput, HistoricalPriceUncheckedUpdateWithoutAssetInput>
-  }
-
-  export type HistoricalPriceUpdateManyWithWhereWithoutAssetInput = {
-    where: HistoricalPriceScalarWhereInput
-    data: XOR<HistoricalPriceUpdateManyMutationInput, HistoricalPriceUncheckedUpdateManyWithoutAssetInput>
-  }
-
-  export type HistoricalPriceScalarWhereInput = {
-    AND?: HistoricalPriceScalarWhereInput | HistoricalPriceScalarWhereInput[]
-    OR?: HistoricalPriceScalarWhereInput[]
-    NOT?: HistoricalPriceScalarWhereInput | HistoricalPriceScalarWhereInput[]
-    id?: StringFilter<"HistoricalPrice"> | string
-    price_eur?: FloatFilter<"HistoricalPrice"> | number
-    date?: DateTimeFilter<"HistoricalPrice"> | Date | string
-    assetId?: StringFilter<"HistoricalPrice"> | string
-    createdAt?: DateTimeFilter<"HistoricalPrice"> | Date | string
-  }
-
-  export type AssetCreateWithoutHistoryInput = {
-    id?: string
-    ticker?: string | null
-    name: string
-    category?: string
-    platform?: string | null
-    quantity?: number
-    price_eur?: number
-    currency?: string | null
-    yahoo_symbol?: string | null
-    coingecko_id?: string | null
-    coincap_id?: string | null
-    indexa_api?: boolean
-    manual?: boolean
-    image_url?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutAssetsInput
-  }
-
-  export type AssetUncheckedCreateWithoutHistoryInput = {
-    id?: string
-    ticker?: string | null
-    name: string
-    category?: string
-    platform?: string | null
-    quantity?: number
-    price_eur?: number
-    currency?: string | null
-    yahoo_symbol?: string | null
-    coingecko_id?: string | null
-    coincap_id?: string | null
-    indexa_api?: boolean
-    manual?: boolean
-    image_url?: string | null
-    userId: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type AssetCreateOrConnectWithoutHistoryInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutHistoryInput, AssetUncheckedCreateWithoutHistoryInput>
-  }
-
-  export type AssetUpsertWithoutHistoryInput = {
-    update: XOR<AssetUpdateWithoutHistoryInput, AssetUncheckedUpdateWithoutHistoryInput>
-    create: XOR<AssetCreateWithoutHistoryInput, AssetUncheckedCreateWithoutHistoryInput>
-    where?: AssetWhereInput
-  }
-
-  export type AssetUpdateToOneWithWhereWithoutHistoryInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutHistoryInput, AssetUncheckedUpdateWithoutHistoryInput>
-  }
-
-  export type AssetUpdateWithoutHistoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    ticker?: NullableStringFieldUpdateOperationsInput | string | null
-    name?: StringFieldUpdateOperationsInput | string
-    category?: StringFieldUpdateOperationsInput | string
-    platform?: NullableStringFieldUpdateOperationsInput | string | null
-    quantity?: FloatFieldUpdateOperationsInput | number
-    price_eur?: FloatFieldUpdateOperationsInput | number
-    currency?: NullableStringFieldUpdateOperationsInput | string | null
-    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
-    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
-    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
-    indexa_api?: BoolFieldUpdateOperationsInput | boolean
-    manual?: BoolFieldUpdateOperationsInput | boolean
-    image_url?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutAssetsNestedInput
-  }
-
-  export type AssetUncheckedUpdateWithoutHistoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    ticker?: NullableStringFieldUpdateOperationsInput | string | null
-    name?: StringFieldUpdateOperationsInput | string
-    category?: StringFieldUpdateOperationsInput | string
-    platform?: NullableStringFieldUpdateOperationsInput | string | null
-    quantity?: FloatFieldUpdateOperationsInput | number
-    price_eur?: FloatFieldUpdateOperationsInput | number
-    currency?: NullableStringFieldUpdateOperationsInput | string | null
-    yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
-    coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
-    coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
-    indexa_api?: BoolFieldUpdateOperationsInput | boolean
-    manual?: BoolFieldUpdateOperationsInput | boolean
-    image_url?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    internship?: InternshipUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPortfolioSnapshotsInput = {
@@ -25747,10 +29712,11 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
     assets?: AssetCreateNestedManyWithoutUserInput
+    internship?: InternshipCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPortfolioSnapshotsInput = {
@@ -25767,10 +29733,11 @@ export namespace Prisma {
     canAccessMasterUnie?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assets?: AssetUncheckedCreateNestedManyWithoutUserInput
+    internship?: InternshipUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPortfolioSnapshotsInput = {
@@ -25803,10 +29770,11 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
     assets?: AssetUpdateManyWithoutUserNestedInput
+    internship?: InternshipUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPortfolioSnapshotsInput = {
@@ -25823,16 +29791,387 @@ export namespace Prisma {
     canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
+    internship?: InternshipUncheckedUpdateOneWithoutUserNestedInput
   }
 
-  export type SessionCreateManyUserInput = {
+  export type UserCreateWithoutInternshipInput = {
     id?: string
-    sessionToken: string
-    expires: Date | string
+    email: string
+    passwordHash?: string | null
+    name?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    canAccessCasaRural?: boolean
+    canAccessFinanzas?: boolean
+    canAccessFpInformatica?: boolean
+    canAccessHogar?: boolean
+    canAccessMasterUnie?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    assets?: AssetCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutInternshipInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    name?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    canAccessCasaRural?: boolean
+    canAccessFinanzas?: boolean
+    canAccessFpInformatica?: boolean
+    canAccessHogar?: boolean
+    canAccessMasterUnie?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    activities?: EmployeeActivityUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    assets?: AssetUncheckedCreateNestedManyWithoutUserInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutInternshipInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutInternshipInput, UserUncheckedCreateWithoutInternshipInput>
+  }
+
+  export type InternshipCenterCreateWithoutInternshipInput = {
+    id?: string
+    name: string
+    address?: string | null
+    province?: string | null
+    city?: string | null
+    tutorName?: string | null
+    tutorEmail?: string | null
+    tutorPhone?: string | null
+    universityTutor?: string | null
+  }
+
+  export type InternshipCenterUncheckedCreateWithoutInternshipInput = {
+    id?: string
+    name: string
+    address?: string | null
+    province?: string | null
+    city?: string | null
+    tutorName?: string | null
+    tutorEmail?: string | null
+    tutorPhone?: string | null
+    universityTutor?: string | null
+  }
+
+  export type InternshipCenterCreateOrConnectWithoutInternshipInput = {
+    where: InternshipCenterWhereUniqueInput
+    create: XOR<InternshipCenterCreateWithoutInternshipInput, InternshipCenterUncheckedCreateWithoutInternshipInput>
+  }
+
+  export type InternshipLogCreateWithoutInternshipInput = {
+    id?: string
+    date: Date | string
+    hours: number
+    activity: string
+    observations?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InternshipLogUncheckedCreateWithoutInternshipInput = {
+    id?: string
+    date: Date | string
+    hours: number
+    activity: string
+    observations?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InternshipLogCreateOrConnectWithoutInternshipInput = {
+    where: InternshipLogWhereUniqueInput
+    create: XOR<InternshipLogCreateWithoutInternshipInput, InternshipLogUncheckedCreateWithoutInternshipInput>
+  }
+
+  export type InternshipLogCreateManyInternshipInputEnvelope = {
+    data: InternshipLogCreateManyInternshipInput | InternshipLogCreateManyInternshipInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutInternshipInput = {
+    update: XOR<UserUpdateWithoutInternshipInput, UserUncheckedUpdateWithoutInternshipInput>
+    create: XOR<UserCreateWithoutInternshipInput, UserUncheckedCreateWithoutInternshipInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutInternshipInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutInternshipInput, UserUncheckedUpdateWithoutInternshipInput>
+  }
+
+  export type UserUpdateWithoutInternshipInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    canAccessCasaRural?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFinanzas?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFpInformatica?: BoolFieldUpdateOperationsInput | boolean
+    canAccessHogar?: BoolFieldUpdateOperationsInput | boolean
+    canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    assets?: AssetUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutInternshipInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    canAccessCasaRural?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFinanzas?: BoolFieldUpdateOperationsInput | boolean
+    canAccessFpInformatica?: BoolFieldUpdateOperationsInput | boolean
+    canAccessHogar?: BoolFieldUpdateOperationsInput | boolean
+    canAccessMasterUnie?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    activities?: EmployeeActivityUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutUserNestedInput
+    portfolioSnapshots?: PortfolioSnapshotUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type InternshipCenterUpsertWithoutInternshipInput = {
+    update: XOR<InternshipCenterUpdateWithoutInternshipInput, InternshipCenterUncheckedUpdateWithoutInternshipInput>
+    create: XOR<InternshipCenterCreateWithoutInternshipInput, InternshipCenterUncheckedCreateWithoutInternshipInput>
+    where?: InternshipCenterWhereInput
+  }
+
+  export type InternshipCenterUpdateToOneWithWhereWithoutInternshipInput = {
+    where?: InternshipCenterWhereInput
+    data: XOR<InternshipCenterUpdateWithoutInternshipInput, InternshipCenterUncheckedUpdateWithoutInternshipInput>
+  }
+
+  export type InternshipCenterUpdateWithoutInternshipInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    province?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorName?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    universityTutor?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type InternshipCenterUncheckedUpdateWithoutInternshipInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    province?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorName?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    tutorPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    universityTutor?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type InternshipLogUpsertWithWhereUniqueWithoutInternshipInput = {
+    where: InternshipLogWhereUniqueInput
+    update: XOR<InternshipLogUpdateWithoutInternshipInput, InternshipLogUncheckedUpdateWithoutInternshipInput>
+    create: XOR<InternshipLogCreateWithoutInternshipInput, InternshipLogUncheckedCreateWithoutInternshipInput>
+  }
+
+  export type InternshipLogUpdateWithWhereUniqueWithoutInternshipInput = {
+    where: InternshipLogWhereUniqueInput
+    data: XOR<InternshipLogUpdateWithoutInternshipInput, InternshipLogUncheckedUpdateWithoutInternshipInput>
+  }
+
+  export type InternshipLogUpdateManyWithWhereWithoutInternshipInput = {
+    where: InternshipLogScalarWhereInput
+    data: XOR<InternshipLogUpdateManyMutationInput, InternshipLogUncheckedUpdateManyWithoutInternshipInput>
+  }
+
+  export type InternshipLogScalarWhereInput = {
+    AND?: InternshipLogScalarWhereInput | InternshipLogScalarWhereInput[]
+    OR?: InternshipLogScalarWhereInput[]
+    NOT?: InternshipLogScalarWhereInput | InternshipLogScalarWhereInput[]
+    id?: StringFilter<"InternshipLog"> | string
+    date?: DateTimeFilter<"InternshipLog"> | Date | string
+    hours?: FloatFilter<"InternshipLog"> | number
+    activity?: StringFilter<"InternshipLog"> | string
+    observations?: StringNullableFilter<"InternshipLog"> | string | null
+    internshipId?: StringFilter<"InternshipLog"> | string
+    createdAt?: DateTimeFilter<"InternshipLog"> | Date | string
+    updatedAt?: DateTimeFilter<"InternshipLog"> | Date | string
+  }
+
+  export type InternshipCreateWithoutCenterInput = {
+    id?: string
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    realStartDate?: Date | string | null
+    realEndDate?: Date | string | null
+    totalHours?: number
+    schedule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutInternshipInput
+    logs?: InternshipLogCreateNestedManyWithoutInternshipInput
+  }
+
+  export type InternshipUncheckedCreateWithoutCenterInput = {
+    id?: string
+    userId: string
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    realStartDate?: Date | string | null
+    realEndDate?: Date | string | null
+    totalHours?: number
+    schedule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    logs?: InternshipLogUncheckedCreateNestedManyWithoutInternshipInput
+  }
+
+  export type InternshipCreateOrConnectWithoutCenterInput = {
+    where: InternshipWhereUniqueInput
+    create: XOR<InternshipCreateWithoutCenterInput, InternshipUncheckedCreateWithoutCenterInput>
+  }
+
+  export type InternshipUpsertWithoutCenterInput = {
+    update: XOR<InternshipUpdateWithoutCenterInput, InternshipUncheckedUpdateWithoutCenterInput>
+    create: XOR<InternshipCreateWithoutCenterInput, InternshipUncheckedCreateWithoutCenterInput>
+    where?: InternshipWhereInput
+  }
+
+  export type InternshipUpdateToOneWithWhereWithoutCenterInput = {
+    where?: InternshipWhereInput
+    data: XOR<InternshipUpdateWithoutCenterInput, InternshipUncheckedUpdateWithoutCenterInput>
+  }
+
+  export type InternshipUpdateWithoutCenterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutInternshipNestedInput
+    logs?: InternshipLogUpdateManyWithoutInternshipNestedInput
+  }
+
+  export type InternshipUncheckedUpdateWithoutCenterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    logs?: InternshipLogUncheckedUpdateManyWithoutInternshipNestedInput
+  }
+
+  export type InternshipCreateWithoutLogsInput = {
+    id?: string
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    realStartDate?: Date | string | null
+    realEndDate?: Date | string | null
+    totalHours?: number
+    schedule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutInternshipInput
+    center?: InternshipCenterCreateNestedOneWithoutInternshipInput
+  }
+
+  export type InternshipUncheckedCreateWithoutLogsInput = {
+    id?: string
+    userId: string
+    status?: string
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    realStartDate?: Date | string | null
+    realEndDate?: Date | string | null
+    totalHours?: number
+    schedule?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    center?: InternshipCenterUncheckedCreateNestedOneWithoutInternshipInput
+  }
+
+  export type InternshipCreateOrConnectWithoutLogsInput = {
+    where: InternshipWhereUniqueInput
+    create: XOR<InternshipCreateWithoutLogsInput, InternshipUncheckedCreateWithoutLogsInput>
+  }
+
+  export type InternshipUpsertWithoutLogsInput = {
+    update: XOR<InternshipUpdateWithoutLogsInput, InternshipUncheckedUpdateWithoutLogsInput>
+    create: XOR<InternshipCreateWithoutLogsInput, InternshipUncheckedCreateWithoutLogsInput>
+    where?: InternshipWhereInput
+  }
+
+  export type InternshipUpdateToOneWithWhereWithoutLogsInput = {
+    where?: InternshipWhereInput
+    data: XOR<InternshipUpdateWithoutLogsInput, InternshipUncheckedUpdateWithoutLogsInput>
+  }
+
+  export type InternshipUpdateWithoutLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutInternshipNestedInput
+    center?: InternshipCenterUpdateOneWithoutInternshipNestedInput
+  }
+
+  export type InternshipUncheckedUpdateWithoutLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    realEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalHours?: IntFieldUpdateOperationsInput | number
+    schedule?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    center?: InternshipCenterUncheckedUpdateOneWithoutInternshipNestedInput
   }
 
   export type AccountCreateManyUserInput = {
@@ -25859,50 +30198,35 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type SessionCreateManyUserInput = {
+    id?: string
+    sessionToken: string
+    expires: Date | string
+  }
+
   export type AssetCreateManyUserInput = {
     id?: string
-    ticker?: string | null
     name: string
-    category?: string
+    ticker?: string | null
+    category: string
     platform?: string | null
-    quantity?: number
-    price_eur?: number
+    quantity: number
+    price_eur: number
     currency?: string | null
     yahoo_symbol?: string | null
     coingecko_id?: string | null
     coincap_id?: string | null
-    indexa_api?: boolean
-    manual?: boolean
+    indexa_api?: boolean | null
+    manual?: boolean | null
     image_url?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type PortfolioSnapshotCreateManyUserInput = {
-    id?: string
-    total_value_eur?: number
+    id?: number
     date: Date | string
     category?: string | null
     asset_id?: string | null
-    createdAt?: Date | string
-  }
-
-  export type SessionUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    sessionToken?: StringFieldUpdateOperationsInput | string
-    expires?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SessionUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    sessionToken?: StringFieldUpdateOperationsInput | string
-    expires?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SessionUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    sessionToken?: StringFieldUpdateOperationsInput | string
-    expires?: DateTimeFieldUpdateOperationsInput | Date | string
+    total_value_eur: number
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -25977,10 +30301,28 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SessionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    expires?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SessionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    expires?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SessionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
+    expires?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AssetUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     category?: StringFieldUpdateOperationsInput | string
     platform?: NullableStringFieldUpdateOperationsInput | string | null
     quantity?: FloatFieldUpdateOperationsInput | number
@@ -25989,18 +30331,15 @@ export namespace Prisma {
     yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
     coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
     coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
-    indexa_api?: BoolFieldUpdateOperationsInput | boolean
-    manual?: BoolFieldUpdateOperationsInput | boolean
+    indexa_api?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    manual?: NullableBoolFieldUpdateOperationsInput | boolean | null
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    history?: HistoricalPriceUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     category?: StringFieldUpdateOperationsInput | string
     platform?: NullableStringFieldUpdateOperationsInput | string | null
     quantity?: FloatFieldUpdateOperationsInput | number
@@ -26009,18 +30348,15 @@ export namespace Prisma {
     yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
     coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
     coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
-    indexa_api?: BoolFieldUpdateOperationsInput | boolean
-    manual?: BoolFieldUpdateOperationsInput | boolean
+    indexa_api?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    manual?: NullableBoolFieldUpdateOperationsInput | boolean | null
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    history?: HistoricalPriceUncheckedUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
+    ticker?: NullableStringFieldUpdateOperationsInput | string | null
     category?: StringFieldUpdateOperationsInput | string
     platform?: NullableStringFieldUpdateOperationsInput | string | null
     quantity?: FloatFieldUpdateOperationsInput | number
@@ -26029,38 +30365,32 @@ export namespace Prisma {
     yahoo_symbol?: NullableStringFieldUpdateOperationsInput | string | null
     coingecko_id?: NullableStringFieldUpdateOperationsInput | string | null
     coincap_id?: NullableStringFieldUpdateOperationsInput | string | null
-    indexa_api?: BoolFieldUpdateOperationsInput | boolean
-    manual?: BoolFieldUpdateOperationsInput | boolean
+    indexa_api?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    manual?: NullableBoolFieldUpdateOperationsInput | boolean | null
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PortfolioSnapshotUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    total_value_eur?: FloatFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     asset_id?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
   }
 
   export type PortfolioSnapshotUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     asset_id?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
   }
 
   export type PortfolioSnapshotUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    total_value_eur?: FloatFieldUpdateOperationsInput | number
+    id?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     asset_id?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    total_value_eur?: FloatFieldUpdateOperationsInput | number
   }
 
   export type ActionItemCreateManyCategoryInput = {
@@ -26073,14 +30403,6 @@ export namespace Prisma {
     isCompleted?: boolean
     sectionId?: string | null
     subjectId?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type TaskSectionCreateManyCategoryInput = {
-    id?: string
-    name: string
-    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -26101,6 +30423,14 @@ export namespace Prisma {
     title: string
     description?: string | null
     status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaskSectionCreateManyCategoryInput = {
+    id?: string
+    name: string
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -26143,32 +30473,6 @@ export namespace Prisma {
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     sectionId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type TaskSectionUpdateWithoutCategoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    items?: ActionItemUpdateManyWithoutSectionNestedInput
-  }
-
-  export type TaskSectionUncheckedUpdateWithoutCategoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    items?: ActionItemUncheckedUpdateManyWithoutSectionNestedInput
-  }
-
-  export type TaskSectionUncheckedUpdateManyWithoutCategoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26231,6 +30535,32 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaskSectionUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: ActionItemUpdateManyWithoutSectionNestedInput
+  }
+
+  export type TaskSectionUncheckedUpdateWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: ActionItemUncheckedUpdateManyWithoutSectionNestedInput
+  }
+
+  export type TaskSectionUncheckedUpdateManyWithoutCategoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26315,15 +30645,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type AssessmentCreateManySubjectInput = {
-    id?: string
-    title: string
-    weight: number
-    grade?: number | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
   export type ActionItemCreateManySubjectInput = {
     id?: string
     title: string
@@ -26338,31 +30659,13 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type AssessmentUpdateWithoutSubjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    weight?: FloatFieldUpdateOperationsInput | number
-    grade?: NullableFloatFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type AssessmentUncheckedUpdateWithoutSubjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    weight?: FloatFieldUpdateOperationsInput | number
-    grade?: NullableFloatFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type AssessmentUncheckedUpdateManyWithoutSubjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    weight?: FloatFieldUpdateOperationsInput | number
-    grade?: NullableFloatFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type AssessmentCreateManySubjectInput = {
+    id?: string
+    title: string
+    weight: number
+    grade?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ActionItemUpdateWithoutSubjectInput = {
@@ -26407,32 +30710,71 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type HistoricalPriceCreateManyAssetInput = {
+  export type AssessmentUpdateWithoutSubjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    grade?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssessmentUncheckedUpdateWithoutSubjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    grade?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssessmentUncheckedUpdateManyWithoutSubjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    grade?: NullableFloatFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InternshipLogCreateManyInternshipInput = {
     id?: string
-    price_eur?: number
     date: Date | string
+    hours: number
+    activity: string
+    observations?: string | null
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type HistoricalPriceUpdateWithoutAssetInput = {
+  export type InternshipLogUpdateWithoutInternshipInput = {
     id?: StringFieldUpdateOperationsInput | string
-    price_eur?: FloatFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    hours?: FloatFieldUpdateOperationsInput | number
+    activity?: StringFieldUpdateOperationsInput | string
+    observations?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type HistoricalPriceUncheckedUpdateWithoutAssetInput = {
+  export type InternshipLogUncheckedUpdateWithoutInternshipInput = {
     id?: StringFieldUpdateOperationsInput | string
-    price_eur?: FloatFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    hours?: FloatFieldUpdateOperationsInput | number
+    activity?: StringFieldUpdateOperationsInput | string
+    observations?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type HistoricalPriceUncheckedUpdateManyWithoutAssetInput = {
+  export type InternshipLogUncheckedUpdateManyWithoutInternshipInput = {
     id?: StringFieldUpdateOperationsInput | string
-    price_eur?: FloatFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    hours?: FloatFieldUpdateOperationsInput | number
+    activity?: StringFieldUpdateOperationsInput | string
+    observations?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 
@@ -26461,9 +30803,9 @@ export namespace Prisma {
      */
     export type SubjectCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SubjectCountOutputTypeDefaultArgs<ExtArgs>
     /**
-     * @deprecated Use AssetCountOutputTypeDefaultArgs instead
+     * @deprecated Use InternshipCountOutputTypeDefaultArgs instead
      */
-    export type AssetCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AssetCountOutputTypeDefaultArgs<ExtArgs>
+    export type InternshipCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InternshipCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use UserDefaultArgs instead
      */
@@ -26528,6 +30870,18 @@ export namespace Prisma {
      * @deprecated Use PortfolioSnapshotDefaultArgs instead
      */
     export type PortfolioSnapshotArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PortfolioSnapshotDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InternshipDefaultArgs instead
+     */
+    export type InternshipArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InternshipDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InternshipCenterDefaultArgs instead
+     */
+    export type InternshipCenterArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InternshipCenterDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InternshipLogDefaultArgs instead
+     */
+    export type InternshipLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InternshipLogDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

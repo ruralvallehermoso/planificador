@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
   output   = "./generated/prisma"
@@ -9,46 +6,29 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL_UNPOOLED") // For migrations (bypasses connection pooling)
-}
-
-// =====================
-// AUTHENTICATION MODELS
-// =====================
-
-enum Role {
-  ADMIN
-  OWNER
-  TEACHER
-  FAMILY
-  CASA_RURAL
-  EMPLEADO
-  GUEST
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User {
-  id           String  @id @default(cuid())
-  email        String  @unique
-  passwordHash String? // null if using OAuth
-  name         String?
-  image        String?
-  role         Role    @default(GUEST)
-
-  // Per-module access overrides
-  canAccessCasaRural     Boolean @default(false)
-  canAccessFinanzas      Boolean @default(false)
-  canAccessFpInformatica Boolean @default(false)
-  canAccessHogar         Boolean @default(false)
-  canAccessMasterUnie    Boolean @default(false)
-
-  sessions           Session[]
-  accounts           Account[]
-  activities         EmployeeActivity[]
-  assets             Asset[]
-  portfolioSnapshots PortfolioSnapshot[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                     String              @id @default(cuid())
+  email                  String              @unique
+  passwordHash           String?
+  name                   String?
+  image                  String?
+  role                   Role                @default(GUEST)
+  canAccessCasaRural     Boolean             @default(false)
+  canAccessFinanzas      Boolean             @default(false)
+  canAccessFpInformatica Boolean             @default(false)
+  canAccessHogar         Boolean             @default(false)
+  canAccessMasterUnie    Boolean             @default(false)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+  accounts               Account[]
+  activities             EmployeeActivity[]
+  sessions               Session[]
+  assets                 Asset[]
+  portfolioSnapshots     PortfolioSnapshot[]
+  internship             Internship?
 }
 
 model Session {
@@ -72,177 +52,129 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
-// Areas / Categories (The 4 main pillars)
 model Category {
-  id          String  @id @default(cuid())
-  name        String  @unique
-  slug        String  @unique
+  id          String         @id @default(cuid())
+  name        String         @unique
+  slug        String         @unique
   description String?
-  color       String? // Hex code for UI representation
-  icon        String? // Icon name (e.g. Lucide icon name)
-
-  items    ActionItem[]
-  sections TaskSection[]
-  sessions ClassSession[]
-  projects Project[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  color       String?
+  icon        String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  items       ActionItem[]
+  sessions    ClassSession[]
+  projects    Project[]
+  sections    TaskSection[]
 }
 
-// Task Sections for organizing tasks within a category
 model TaskSection {
-  id    String @id @default(cuid())
-  name  String
-  order Int    @default(0) // For ordering sections
-
-  // Relations
+  id         String       @id @default(cuid())
+  name       String
+  order      Int          @default(0)
   categoryId String
-  category   Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
   items      ActionItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  category   Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
-// General Task / Action Item
 model ActionItem {
-  id          String  @id @default(cuid())
+  id          String       @id @default(cuid())
   title       String
   description String?
-
-  // Status: TODO, IN_PROGRESS, DONE, ARCHIVED
-  status String @default("TODO")
-
-  // Priority: LOW, MEDIUM, HIGH, URGENT
-  priority String @default("MEDIUM")
-
-  dueDate DateTime?
-
-  isCompleted Boolean @default(false) // Helper for quick check
-
-  // Relations
-  categoryId String
-  category   Category     @relation(fields: [categoryId], references: [id])
-  sectionId  String?
-  section    TaskSection? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
-  subjectId  String?
-  subject    Subject?     @relation(fields: [subjectId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status      String       @default("TODO")
+  priority    String       @default("MEDIUM")
+  dueDate     DateTime?
+  isCompleted Boolean      @default(false)
+  categoryId  String
+  sectionId   String?
+  subjectId   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  category    Category     @relation(fields: [categoryId], references: [id])
+  section     TaskSection? @relation(fields: [sectionId], references: [id])
+  subject     Subject?     @relation(fields: [subjectId], references: [id])
 }
 
-// Teacher Module: Class Sessions / Calendar Events
 model ClassSession {
   id          String   @id @default(cuid())
   title       String
   description String?
-  date        DateTime // The day of the class
-  startTime   String? // e.g. "08:30"
-  endTime     String? // e.g. "09:20"
-
-  // Relations
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  date        DateTime
+  startTime   String?
+  endTime     String?
+  categoryId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  category    Category @relation(fields: [categoryId], references: [id])
 }
 
-// Teacher Module: Project Management
 model Project {
-  id          String  @id @default(cuid())
+  id          String         @id @default(cuid())
   title       String
   description String?
-
-  status String @default("PLANNING") // PLANNING, IN_PROGRESS, COMPLETED
-
-  images ProjectImage[]
-
-  // Relations
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status      String         @default("PLANNING")
+  categoryId  String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  category    Category       @relation(fields: [categoryId], references: [id])
+  images      ProjectImage[]
 }
 
 model ProjectImage {
-  id  String @id @default(cuid())
-  url String // /uploads/filename.jpg
-
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  url       String
   projectId String
-
   createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
-// Master UNIE Module
 model Subject {
-  id        String  @id @default(cuid())
-  name      String
-  code      String? // e.g. "MU-01"
-  professor String?
-  credits   Float   @default(6.0) // ECTS
-  semester  Int     @default(1)
-
-  // Status: ENROLLED, IN_PROGRESS, PASSED, FAILED
-  status String @default("ENROLLED")
-
-  // Grades
-  finalGrade Float? // 0-10
-
-  // Relations
-  assessments Assessment[]
+  id          String       @id @default(cuid())
+  name        String
+  code        String?
+  professor   String?
+  credits     Float        @default(6.0)
+  semester    Int          @default(1)
+  status      String       @default("ENROLLED")
+  finalGrade  Float?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   tasks       ActionItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  assessments Assessment[]
 }
 
 model Assessment {
-  id     String @id @default(cuid())
-  title  String // e.g. "Examen Final", "Práctica 1"
-  weight Float // Percentage 0-100
-  grade  Float? // 0-10
-
-  // Relations
+  id        String   @id @default(cuid())
+  title     String
+  weight    Float
+  grade     Float?
   subjectId String
-  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 }
 
-// Casa Rural: Employee Activity Log
 model EmployeeActivity {
   id          String   @id @default(cuid())
   title       String
   description String?
-  category    String // limpieza, mantenimiento, compras, incidencia, otro
+  category    String
   date        DateTime @default(now())
-
-  // Relations
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// Exam Generator Templates
 model ExamTemplate {
-  id   String @id @default(cuid())
-  name String
-
-  // Header Data
+  id              String   @id @default(cuid())
+  name            String
   logoUrl         String?
   cycle           String?
   course          String?
@@ -250,89 +182,140 @@ model ExamTemplate {
   duration        String?
   date            String?
   subject         String?
-  raEvaluated     String? // Stored as JSON string or comma separated
-  description     String? // Header description/instructions
+  raEvaluated     String?
+  description     String?
   part1Percentage String?
   part2Percentage String?
-
-  // Dynamic Content
-  sections String // JSON string: Array of { type, title, content, ... }
-
-  // Formatting
-  formatting String // JSON string: { font, size, spacing, ... }
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sections        String
+  formatting      String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
-// =====================
-// FINANCIAL MODELS
-// =====================
-
-// =====================
-// FINANCIAL MODELS
-// =====================
-
 model Asset {
-  id       String  @id @default(cuid())
-  ticker   String?
-  name     String
-  category String  @default("GENERAL") // Added default to fix migration
-  platform String?
+  id           String   @id @default(cuid()) @db.VarChar
+  name         String   @db.VarChar
+  ticker       String?  @db.VarChar
+  category     String   @db.VarChar
+  platform     String?  @db.VarChar
+  quantity     Float
+  price_eur    Float
+  currency     String?  @db.VarChar
+  yahoo_symbol String?  @db.VarChar
+  coingecko_id String?  @db.VarChar
+  coincap_id   String?  @db.VarChar
+  indexa_api   Boolean?
+  manual       Boolean?
+  image_url    String?  @db.VarChar
 
-  quantity  Float   @default(0.0)
-  price_eur Float   @default(0.0)
-  currency  String?
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Flags
-  yahoo_symbol String?
-  coingecko_id String?
-  coincap_id   String?
-  indexa_api   Boolean @default(false)
-  manual       Boolean @default(false)
-
-  // UI
-  image_url String?
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  history HistoricalPrice[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  @@index([id], map: "ix_assets_id")
   @@map("assets")
 }
 
 model HistoricalPrice {
-  id        String   @id @default(cuid())
-  price_eur Float    @default(0.0) // Added default to fix migration
-  date      DateTime
+  id        Int      @id @default(autoincrement())
+  assetId   String   @map("asset_id") @db.VarChar
+  date      DateTime @db.Date
+  price_eur Float
 
-  assetId String
-  asset   Asset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@index([assetId])
-  @@index([date])
+  @@index([assetId], map: "ix_historical_prices_asset_id")
+  @@index([date], map: "ix_historical_prices_date")
+  @@index([id], map: "ix_historical_prices_id")
   @@map("historical_prices")
 }
 
 model PortfolioSnapshot {
-  id              String   @id @default(cuid())
-  total_value_eur Float    @default(0.0) // Added default to fix migration
-  date            DateTime
-  category        String?
-  asset_id        String?
+  id              Int      @id @default(autoincrement())
+  date            DateTime @db.Date
+  category        String?  @db.VarChar
+  asset_id        String?  @db.VarChar
+  total_value_eur Float
 
-  userId String
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([asset_id], map: "ix_portfolio_snapshots_asset_id")
+  @@index([category], map: "ix_portfolio_snapshots_category")
+  @@index([date], map: "ix_portfolio_snapshots_date")
+  @@index([id], map: "ix_portfolio_snapshots_id")
+  @@map("portfolio_snapshots")
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  TEACHER
+  FAMILY
+  GUEST
+  CASA_RURAL
+  EMPLEADO
+}
+
+// =====================
+// INTERNSHIP MODELS
+// =====================
+
+model Internship {
+  id     String @id @default(cuid())
+  userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
+  // Status
+  status String @default("ASSIGNED") // ASSIGNED, IN_PROGRESS, COMPLETED
 
-  @@index([date])
-  @@index([userId])
-  @@map("portfolio_snapshots")
+  // Center Info
+  center InternshipCenter?
+
+  // Dates (Official/Normative)
+  startDate DateTime?
+  endDate   DateTime?
+
+  // Dates (Agreed)
+  realStartDate DateTime?
+  realEndDate   DateTime?
+
+  // Details
+  totalHours Int     @default(120) // Target
+  schedule   String? // Text description of schedule
+
+  logs InternshipLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InternshipCenter {
+  id       String  @id @default(cuid())
+  name     String
+  address  String?
+  province String?
+  city     String?
+
+  tutorName  String?
+  tutorEmail String?
+  tutorPhone String?
+
+  universityTutor String?
+
+  internshipId String     @unique
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+}
+
+model InternshipLog {
+  id           String   @id @default(cuid())
+  date         DateTime
+  hours        Float
+  activity     String
+  observations String?
+
+  internshipId String
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([internshipId])
 }

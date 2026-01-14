@@ -174,7 +174,8 @@ function SortableSectionItem({
                             value={section.questions}
                             onChange={(e) => handleTestQuestionChange(e.target.value)}
                             placeholder="1. Pregunta...\n   a) Opción...\n   b) Opción..."
-                            rows={5}
+                            rows={15}
+                            className="min-h-[150px]"
                         />
                     </div>
                 )}

@@ -66,19 +66,6 @@ export function ExamSectionsBuilder({ sections, onChange }: Props) {
         onChange(sections.filter(s => s.id !== id))
     }
 
-    const handleTestQuestionChange = (id: string, value: string) => {
-        // 1. Auto-format answers: Find patterns like "space + a)" and ensure they start on new line
-        let formatted = value.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
-
-        // 2. Auto-renumber questions: Find lines starting with "Number." and re-index them sequentially
-        let questionCounter = 1
-        formatted = formatted.replace(/^\d+[\.\)]\s/gm, (match) => {
-            return `${questionCounter++}. `
-        })
-
-        updateSection(id, 'questions', formatted)
-    }
-
     return (
         <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm border">
             <h2 className="text-xl font-semibold border-b pb-2">2. Secciones del Examen</h2>
@@ -135,6 +122,19 @@ function SortableSectionItem({
         transition,
     }
 
+    const handleTestQuestionChange = (value: string) => {
+        // 1. Auto-format answers: Find patterns like "space + a)" and ensure they start on new line
+        let formatted = value.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
+
+        // 2. Auto-renumber questions: Find lines starting with "Number." and re-index them sequentially
+        let questionCounter = 1
+        formatted = formatted.replace(/^\d+[\.\)]\s/gm, (match) => {
+            return `${questionCounter++}. `
+        })
+
+        onUpdate(section.id, 'questions', formatted)
+    }
+
     return (
         <div ref={setNodeRef} style={style} className="border rounded-md p-4 bg-gray-50 relative group">
             <div className="flex items-center gap-3 mb-3">
@@ -165,7 +165,7 @@ function SortableSectionItem({
                         <Label>Preguntas de Test (Una por línea)</Label>
                         <Textarea
                             value={section.questions}
-                            onChange={(e) => handleTestQuestionChange(section.id, e.target.value)}
+                            onChange={(e) => handleTestQuestionChange(e.target.value)}
                             placeholder="1. Pregunta...\n   a) Opción...\n   b) Opción..."
                             rows={5}
                         />

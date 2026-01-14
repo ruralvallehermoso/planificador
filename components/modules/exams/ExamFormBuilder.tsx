@@ -5,10 +5,10 @@ import { ExamHeaderForm } from "./ExamHeaderForm"
 import { ExamSectionsBuilder } from "./ExamSectionsBuilder"
 import { ExamFormattingForm } from "./ExamFormattingForm"
 import { ExamPreview } from "./ExamPreview"
-import { ExamHeaderData, ExamSection, ExamFormatting, saveExamTemplate, getExamTemplates, ExamTemplateData } from "@/lib/actions/exams"
+import { ExamHeaderData, ExamSection, ExamFormatting, saveExamTemplate, getExamTemplates, deleteTemplate, ExamTemplateData } from "@/lib/actions/exams"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Printer, Save, Loader2, ArrowLeft, Download } from "lucide-react"
+import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2 } from "lucide-react"
 import Link from "next/link"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -31,8 +31,10 @@ export function ExamFormBuilder() {
     const [formatting, setFormatting] = useState<ExamFormatting>(DEFAULT_FORMATTING)
     const [templates, setTemplates] = useState<any[]>([])
     const [isSaving, setIsSaving] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
     const [newTemplateName, setNewTemplateName] = useState("")
     const [saveDialogOpen, setSaveDialogOpen] = useState(false)
+    const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
 
     // Load templates on mount
     useEffect(() => {
@@ -47,6 +49,8 @@ export function ExamFormBuilder() {
     const handleLoadTemplate = (templateId: string) => {
         const template = templates.find(t => t.id === templateId)
         if (template) {
+            setSelectedTemplateId(templateId)
+            setNewTemplateName(template.name) // Pre-fill name for potential edit
             setHeader({
                 logoUrl: template.logoUrl,
                 cycle: template.cycle,
@@ -63,7 +67,18 @@ export function ExamFormBuilder() {
         }
     }
 
-    const handleSaveTemplate = async () => {
+    const handleDeleteTemplate = async () => {
+        if (!selectedTemplateId) return
+        if (!confirm("¿Estás seguro de que quieres eliminar esta plantilla?")) return
+
+        setIsDeleting(true)
+        await deleteTemplate(selectedTemplateId)
+        await loadTemplates()
+        setSelectedTemplateId(null)
+        setIsDeleting(false)
+    }
+
+    const handleSaveTemplate = async (asNew: boolean = false) => {
         if (!newTemplateName) return
         setIsSaving(true)
         const data: ExamTemplateData = {
@@ -72,16 +87,18 @@ export function ExamFormBuilder() {
             sections,
             formatting
         }
-        const result = await saveExamTemplate(data)
+        // If selectedTemplateId exists and not saving as new, update existing
+        const idToUpdate = (selectedTemplateId && !asNew) ? selectedTemplateId : undefined
+
+        const result = await saveExamTemplate(data, idToUpdate)
+
         if (result.success) {
-            // Force reload or optimistically add
             await loadTemplates()
-            // Optional: Select the new template
-            // if (result.id) handleLoadTemplate(result.id)
+            if (result.id) setSelectedTemplateId(result.id)
         }
         setIsSaving(false)
         setSaveDialogOpen(false)
-        setNewTemplateName("")
+        // Keep name if editing, otherwise clear? Actually better to keep purely for UX
     }
 
     const handlePrint = () => {
@@ -217,18 +234,23 @@ export function ExamFormBuilder() {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            {/* Top Bar */}
-            <header className="bg-white border-b sticky top-0 z-10 print:hidden">
+            {/* Top Bar - removed sticky to prevent overlap */}
+            <header className="bg-white border-b z-10 print:hidden relative shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/fp-informatica/exams" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                             <ArrowLeft className="h-5 w-5 text-gray-600" />
                         </Link>
                         <h1 className="text-xl font-bold text-gray-900">Generador de Exámenes</h1>
+                        {selectedTemplateId && (
+                            <span className="ml-4 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                                Editando: {templates.find(t => t.id === selectedTemplateId)?.name}
+                            </span>
+                        )}
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <Select onValueChange={handleLoadTemplate} key={templates.length}>
-                            <SelectTrigger className="w-[200px]">
+                            <SelectTrigger className="w-[200px] border-slate-300">
                                 <SelectValue placeholder="Cargar plantilla..." />
                             </SelectTrigger>
                             <SelectContent className="bg-white">
@@ -238,18 +260,38 @@ export function ExamFormBuilder() {
                             </SelectContent>
                         </Select>
 
+                        {selectedTemplateId && (
+                            <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={handleDeleteTemplate}
+                                disabled={isDeleting}
+                                className="h-9 w-9"
+                                title="Eliminar plantilla seleccionada"
+                            >
+                                {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                            </Button>
+                        )}
+
                         <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
                             <DialogTrigger asChild>
                                 <Button variant="outline">
                                     <Save className="h-4 w-4 mr-2" />
-                                    Guardar Plantilla
+                                    {selectedTemplateId ? 'Editar / Guardar' : 'Guardar Plantilla'}
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>Guardar como plantilla</DialogTitle>
+                                    <DialogTitle>
+                                        {selectedTemplateId ? 'Guardar Cambios' : 'Guardar nueva plantilla'}
+                                    </DialogTitle>
                                 </DialogHeader>
                                 <div className="space-y-4 py-4">
+                                    {selectedTemplateId && (
+                                        <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-4">
+                                            Estás editando la plantilla: <strong>{templates.find(t => t.id === selectedTemplateId)?.name}</strong>
+                                        </div>
+                                    )}
                                     <div className="space-y-2">
                                         <Label>Nombre de la plantilla</Label>
                                         <Input
@@ -259,10 +301,22 @@ export function ExamFormBuilder() {
                                         />
                                     </div>
                                 </div>
-                                <DialogFooter>
-                                    <Button onClick={handleSaveTemplate} disabled={!newTemplateName || isSaving}>
+                                <DialogFooter className="flex-col gap-2 sm:flex-row">
+                                    {selectedTemplateId && (
+                                        <Button
+                                            onClick={() => handleSaveTemplate(true)}
+                                            variant="outline"
+                                            disabled={!newTemplateName || isSaving}
+                                        >
+                                            Guardar como nueva
+                                        </Button>
+                                    )}
+                                    <Button
+                                        onClick={() => handleSaveTemplate(false)}
+                                        disabled={!newTemplateName || isSaving}
+                                    >
                                         {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        Guardar
+                                        {selectedTemplateId ? 'Sobrescribir' : 'Guardar'}
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>

@@ -137,6 +137,7 @@ export function ExamHeaderForm({ data, onChange }: Props) {
                         value={data.description}
                         onChange={(e) => handleChange('description', e.target.value)}
                         placeholder="Instrucciones generales para el examen..."
+                        className="placeholder:text-gray-400 placeholder:italic"
                         rows={3}
                     />
                 </div>

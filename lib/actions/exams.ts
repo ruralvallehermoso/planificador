@@ -42,28 +42,38 @@ export type ExamTemplateData = {
     formatting: ExamFormatting
 }
 
-export async function saveExamTemplate(data: ExamTemplateData) {
+export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
     try {
         const { name, header, sections, formatting } = data
 
-        const template = await prisma.examTemplate.create({
-            data: {
-                name,
-                logoUrl: header.logoUrl,
-                cycle: header.cycle,
-                course: header.course,
-                evaluation: header.evaluation,
-                duration: header.duration,
-                date: header.date,
-                subject: header.subject,
-                raEvaluated: JSON.stringify(header.raEvaluated),
-                description: header.description,
-                part1Percentage: header.part1Percentage,
-                part2Percentage: header.part2Percentage,
-                sections: JSON.stringify(sections),
-                formatting: JSON.stringify(formatting)
-            }
-        })
+        const payload = {
+            name,
+            logoUrl: header.logoUrl,
+            cycle: header.cycle,
+            course: header.course,
+            evaluation: header.evaluation,
+            duration: header.duration,
+            date: header.date,
+            subject: header.subject,
+            raEvaluated: JSON.stringify(header.raEvaluated),
+            description: header.description,
+            part1Percentage: header.part1Percentage,
+            part2Percentage: header.part2Percentage,
+            sections: JSON.stringify(sections),
+            formatting: JSON.stringify(formatting)
+        }
+
+        let template;
+        if (id) {
+            template = await prisma.examTemplate.update({
+                where: { id },
+                data: payload
+            })
+        } else {
+            template = await prisma.examTemplate.create({
+                data: payload
+            })
+        }
 
         revalidatePath("/fp-informatica/exams/create")
         return { success: true, id: template.id }

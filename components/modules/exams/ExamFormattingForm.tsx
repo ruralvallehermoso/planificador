@@ -75,6 +75,7 @@ export function ExamFormattingForm({ data, onChange }: Props) {
                         id="bold-questions"
                         checked={data.questionsBold ?? true}
                         onCheckedChange={(checked) => handleChange('questionsBold', checked)}
+                        className="data-[state=checked]:bg-blue-600"
                     />
                 </div>
 

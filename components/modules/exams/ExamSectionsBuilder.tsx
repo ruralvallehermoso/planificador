@@ -67,9 +67,15 @@ export function ExamSectionsBuilder({ sections, onChange }: Props) {
     }
 
     const handleTestQuestionChange = (id: string, value: string) => {
-        // Auto-format: Find patterns like "space + a)" and ensure they start on new line
-        // Regex looks for: (not a newline) followed by spaces, followed by a/b/c/d/e)
-        const formatted = value.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
+        // 1. Auto-format answers: Find patterns like "space + a)" and ensure they start on new line
+        let formatted = value.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
+
+        // 2. Auto-renumber questions: Find lines starting with "Number." and re-index them sequentially
+        let questionCounter = 1
+        formatted = formatted.replace(/^\d+[\.\)]\s/gm, (match) => {
+            return `${questionCounter++}. `
+        })
+
         updateSection(id, 'questions', formatted)
     }
 
@@ -159,12 +165,7 @@ function SortableSectionItem({
                         <Label>Preguntas de Test (Una por línea)</Label>
                         <Textarea
                             value={section.questions}
-                            onChange={(e) => {
-                                // Apply strict formatting - split options to new lines
-                                const val = e.target.value
-                                const formatted = val.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
-                                onUpdate(section.id, 'questions', formatted)
-                            }}
+                            onChange={(e) => handleTestQuestionChange(section.id, e.target.value)}
                             placeholder="1. Pregunta...\n   a) Opción...\n   b) Opción..."
                             rows={5}
                         />

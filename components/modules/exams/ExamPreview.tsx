@@ -174,15 +174,50 @@ function processHtmlContent(html: string) {
 function formatTestQuestions(text: string, boldQuestions: boolean) {
     if (!boldQuestions) return <div className="whitespace-pre-wrap">{text}</div>
 
-    return text.split('\n').map((line, i) => {
-        // Simple heuristic: If line starts with a number (e.g., "1.", "10)"), it's a question -> Bold
-        // If it starts with a letter like "a)", "a.", "- ", it's an answer -> Normal
-        const isQuestion = /^\d+[\.\)]/.test(line.trim())
+    const lines = text.split('\n')
+    const blocks: { question: string | null, options: string[] }[] = []
+
+    let currentBlock: { question: string | null, options: string[] } | null = null
+
+    lines.forEach(line => {
+        const trimmed = line.trim()
+        if (!trimmed) return // Skip empty lines
+
+        // Heuristic: Starts with number (e.g. "1.", "10)") is a new question
+        const isQuestion = /^\d+[\.\)]/.test(trimmed)
+
         if (isQuestion) {
-            return <div key={i} className="font-bold mt-4 break-after-avoid">{line}</div>
+            if (currentBlock) {
+                blocks.push(currentBlock)
+            }
+            currentBlock = { question: line, options: [] }
+        } else {
+            // It's an option or continuation
+            if (currentBlock) {
+                currentBlock.options.push(line)
+            } else {
+                // Orphaned line before any question? Create a block with just this line or treat as question?
+                // Let's treat as a separate block without special styling or attach to previous if possible.
+                // For simplicity, just render it as a text block.
+                blocks.push({ question: null, options: [line] })
+            }
         }
-        return <div key={i} className="font-normal ml-4">{line}</div>
     })
+
+    if (currentBlock) {
+        blocks.push(currentBlock)
+    }
+
+    return blocks.map((block, i) => (
+        <div key={i} className="mb-4 break-inside-avoid">
+            {block.question && (
+                <div className="font-bold">{block.question}</div>
+            )}
+            {block.options.map((opt, j) => (
+                <div key={j} className="font-normal ml-4">{opt}</div>
+            ))}
+        </div>
+    ))
 }
 
 function formatDevelopQuestions(text: string, boldQuestions: boolean) {

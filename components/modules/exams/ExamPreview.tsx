@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { ExamHeaderData, ExamSection, ExamFormatting } from "@/lib/actions/exams"
 import { cn } from "@/lib/utils"
 
@@ -9,6 +10,15 @@ interface Props {
 
 export function ExamPreview({ header, sections, formatting }: Props) {
     const { font, fontSize, isBoldTitle, lineHeight, paragraphSpacing } = formatting
+
+    // Clear document title to remove "Planificador" from print header
+    useEffect(() => {
+        const originalTitle = document.title
+        document.title = ' ' // Space triggers empty title in some browsers
+        return () => {
+            document.title = originalTitle
+        }
+    }, [])
 
     return (
         <div id="exam-document" className={cn(

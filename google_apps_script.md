@@ -1,156 +1,192 @@
 /**
- * Google Apps Script para compresión de facturas con iLovePDF API.
+ * Google Apps Script iLovePDF - Versión Debug
  * 
- * INSTRUCCIONES:
- * 1. Copia TODO este contenido.
- * 2. Pega en el editor de Apps Script (Código.gs).
- * 3. Rellena PUBLIC_KEY y SECRET_KEY al principio.
- * 4. Ejecuta primero 'testConnection' para verificar.
+ * CAMBIOS:
+ * 1. Logs detallados del server_filename.
+ * 2. Intento de 'Process' enviando JSON puro (Content-Type: application/json).
+ * 3. Captura exhaustiva de errores.
  */
 
-// --- CREDENCIALES (REEMPLAZA CON TUS CLAVES) ---
 const PUBLIC_KEY = "PON_AQUI_TU_PUBLIC_KEY"; 
 const SECRET_KEY = "PON_AQUI_TU_SECRET_KEY"; 
-
-// --- CONFIGURACIÓN ---
-const CLOUDMAILIN_ADDRESS = "tu-direccion@cloudmailin.net";
+const CLOUDMAILIN_ADDRESS = "f7360bbf8c3dab326297@cloudmailin.net";
 const LABEL_NAME = "Invoices";
 const PROCESSED_LABEL = "Invoices/Processed";
 
-// --- VALIDAR CONEXIÓN ---
+// --- TEST MANUAL ---
 function testConnection() {
-  Logger.log("=== PRUEBA DE CONEXIÓN (/auth) ===");
+  Logger.log("=== DIAGNÓSTICO RÁPIDO ===");
   try {
     const token = getAuthToken();
-    Logger.log("✅ Token recibido correctamente.");
-    Logger.log("Token: " + token.substring(0, 30) + "...");
+    Logger.log("✅ Auth Token OK: " + token.substring(0, 15) + "...");
     
-    // Prueba de uso del token
+    // Start
     const startResp = UrlFetchApp.fetch("https://api.ilovepdf.com/v1/start/compress", {
       headers: { "Authorization": "Bearer " + token },
       muteHttpExceptions: true
     });
+    Logger.log("Start Response: " + startResp.getContentText());
     
-    if (startResp.getResponseCode() === 200) {
-      Logger.log("✅ API Funcional. Todo listo.");
-    } else {
-      Logger.log("❌ Error usando el token: " + startResp.getContentText());
-    }
   } catch (e) {
-    Logger.log("❌ FALLO GRAVE: " + e.toString());
+    Logger.log("❌ Error fatal: " + e.toString());
   }
 }
 
-// --- OBTENER TOKEN DEL SERVIDOR ---
+
+function processInbox() {
+  const label = GmailApp.getUserLabelByName(LABEL_NAME);
+  let processedLabel = GmailApp.getUserLabelByName(PROCESSED_LABEL);
+  if (!processedLabel) processedLabel = GmailApp.createLabel(PROCESSED_LABEL);
+  
+  if (!label) { Logger.log("Label no encontrada"); return; }
+  
+  let token;
+  try {
+    token = getAuthToken();
+  } catch (e) {
+    Logger.log("⛔ Error de Auth: " + e.toString());
+    return;
+  }
+  
+  const threads = label.getThreads(0, 5);
+  Logger.log("Procesando " + threads.length + " hilos.");
+
+  for (const thread of threads) {
+    const messages = thread.getMessages();
+    // OPCIÓN A: Procesar SOLO el último mensaje del hilo (evita duplicados en conversaciones)
+    const message = messages[messages.length - 1]; 
+    
+    if (message.isInTrash()) continue;
+    
+    const attachments = message.getAttachments();
+    for (const attachment of attachments) {
+      if (attachment.getContentType() === "application/pdf") {
+        Logger.log(">>> Procesando (Último mensaje): " + attachment.getName() + " (" + (attachment.getSize()/1024).toFixed(0) + " KB)");
+        
+        try {
+          const compressedBlob = compressPdf(attachment, token);
+          if (compressedBlob) {
+            sendToCloudMailin(compressedBlob, attachment.getName(), message);
+          }
+        } catch(e) {
+          Logger.log("❌ LLAMADA FALLIDA a compressPdf: " + e.message);
+        }
+      }
+    }
+    
+    thread.removeLabel(label);
+    thread.addLabel(processedLabel);
+  }
+}
+
+function compressPdf(fileBlob, token) {
+  // 1. START
+  const startUrl = "https://api.ilovepdf.com/v1/start/compress";
+  const startJson = fetchJson(startUrl, { headers: { "Authorization": "Bearer " + token } });
+  
+  const server = startJson.server;
+  const taskId = startJson.task;
+  Logger.log(`   Task: ${taskId} | Server: ${server}`);
+  
+  // 2. UPLOAD
+  const uploadUrl = `https://${server}/v1/upload`;
+  const uploadPayload = {
+    "task": taskId,
+    "file": fileBlob
+  };
+  
+  // Nota: UrlFetchApp con payload objeto que tiene Blob -> Multipart automáticamente.
+  const uploadJson = fetchJson(uploadUrl, {
+    method: "post",
+    headers: { "Authorization": "Bearer " + token },
+    payload: uploadPayload
+  });
+  
+  const serverFilename = uploadJson.server_filename;
+  Logger.log(`   Upload OK. Filename reportado: ${serverFilename}`);
+  
+  // 3. PROCESS (CAMBIO A JSON)
+  const processUrl = `https://${server}/v1/process`;
+  
+  // Importante: Al enviar JSON, 'files' es un Array real, no un string.
+  const processBody = {
+    "task": taskId,
+    "tool": "compress",
+    "files": [{ 
+      "server_filename": serverFilename, 
+      "filename": fileBlob.getName() 
+    }],
+    "compression_level": "extreme" 
+  };
+  
+  const processResp = UrlFetchApp.fetch(processUrl, {
+    method: "post",
+    headers: { 
+      "Authorization": "Bearer " + token,
+      "Content-Type": "application/json" // <-- FORZAMOS JSON
+    },
+    payload: JSON.stringify(processBody),
+    muteHttpExceptions: true // Para ver el error completo si falla
+  });
+  
+  if (processResp.getResponseCode() !== 200) {
+    Logger.log("❌ ERROR EN PROCESS: " + processResp.getContentText());
+    throw new Error("Process Failed: " + processResp.getContentText());
+  }
+  
+  // 4. DOWNLOAD
+  const downloadUrl = `https://${server}/v1/download/${taskId}`;
+  const response = UrlFetchApp.fetch(downloadUrl, {
+    headers: { "Authorization": "Bearer " + token },
+    muteHttpExceptions: true
+  });
+  
+  if (response.getResponseCode() !== 200) {
+    Logger.log("❌ ERROR EN DOWNLOAD: " + response.getContentText());
+    throw new Error("Download Failed");
+  }
+  
+  const newBlob = response.getBlob();
+  Logger.log("✅ FIN: Compresión exitosa. Nuevo tamaño: " + (newBlob.getBytes().length / 1024).toFixed(0) + " KB");
+  
+  return newBlob.setName(fileBlob.getName());
+}
+
+function sendToCloudMailin(blob, filename, msg) {
+  Logger.log("   Enviando email a CloudMailin...");
+  GmailApp.sendEmail(CLOUDMAILIN_ADDRESS, "Fwd: " + msg.getSubject(), "Compressed Invoice", {
+    attachments: [blob],
+    name: "Automator"
+  });
+}
+
 function getAuthToken() {
   const url = "https://api.ilovepdf.com/v1/auth";
   const payload = {
     "public_key": PUBLIC_KEY.trim(),
     "secret_key": SECRET_KEY.trim()
   };
-  
-  const options = {
+  const response = UrlFetchApp.fetch(url, {
     method: "post",
     payload: payload,
-    muteHttpExceptions: true
-  };
-  
-  const response = UrlFetchApp.fetch(url, options);
+    muteHttpExceptions: true // Evitamos que getAuthToken explote sin log
+  });
   
   if (response.getResponseCode() !== 200) {
-    throw new Error("Error en /auth (" + response.getResponseCode() + "): " + response.getContentText());
+    throw new Error("Auth Error: " + response.getContentText());
   }
   
-  const json = JSON.parse(response.getContentText());
-  return json.token;
+  return JSON.parse(response.getContentText()).token;
 }
 
-// --- PROCESAMIENTO EMAILS ---
-function processInbox() {
-  const label = GmailApp.getUserLabelByName(LABEL_NAME);
-  const processedLabel = GmailApp.getUserLabelByName(PROCESSED_LABEL) || GmailApp.createLabel(PROCESSED_LABEL);
-  
-  if (!label) { Logger.log("Label '" + LABEL_NAME + "' no encontrada"); return; }
-  
-  // Obtenemos el token UNA vez para todos los correos del lote
-  let token;
-  try {
-    token = getAuthToken();
-  } catch (e) {
-    Logger.log("No se pudo obtener token: " + e.toString());
-    return;
+function fetchJson(url, options) {
+  // Helper que lanza error si falla, pero logueando antes
+  options.muteHttpExceptions = true;
+  const resp = UrlFetchApp.fetch(url, options);
+  if (resp.getResponseCode() !== 200) {
+    Logger.log("❌ Error Fetch (" + url + "): " + resp.getContentText());
+    throw new Error("API Fail: " + resp.getContentText());
   }
-  
-  const threads = label.getThreads(0, 5);
-  
-  for (const thread of threads) {
-    const messages = thread.getMessages();
-    for (const message of messages) {
-      if (message.isInTrash()) continue;
-      
-      const attachments = message.getAttachments();
-      for (const attachment of attachments) {
-        if (attachment.getContentType() === "application/pdf") {
-          Logger.log("Procesando: " + attachment.getName());
-          try {
-            const compressedBlob = compressPdf(attachment, token);
-            sendToCloudMailin(compressedBlob, attachment.getName(), message);
-          } catch(e) {
-            Logger.log("Error procesando fichero '" + attachment.getName() + "': " + e.toString());
-          }
-        }
-      }
-    }
-    // Una vez procesados todos los adjuntos (o intentados), movemos el hilo
-    thread.removeLabel(label);
-    thread.addLabel(processedLabel);
-  }
+  return JSON.parse(resp.getContentText());
 }
-
-// --- LÓGICA DE COMPRESIÓN ---
-function compressPdf(fileBlob, token) {
-  // 1. Start Task
-  const startResp = UrlFetchApp.fetch("https://api.ilovepdf.com/v1/start/compress", {
-    headers: { "Authorization": "Bearer " + token }
-  });
-  const taskData = JSON.parse(startResp.getContentText());
-  const server = taskData.server;
-  const taskId = taskData.task;
-  
-  // 2. Upload
-  const uploadResp = UrlFetchApp.fetch(`https://${server}/v1/upload`, {
-    method: "post",
-    headers: { "Authorization": "Bearer " + token },
-    payload: { "task": taskId, "file": fileBlob }
-  });
-  const uploadData = JSON.parse(uploadResp.getContentText());
-  const serverFilename = uploadData.server_filename;
-  
-  // 3. Process
-  UrlFetchApp.fetch(`https://${server}/v1/process`, {
-    method: "post",
-    headers: { "Authorization": "Bearer " + token },
-    payload: {
-      "task": taskId,
-      "tool": "compress",
-      "files": JSON.stringify([{ "server_filename": serverFilename, "filename": fileBlob.getName() }]),
-      "compression_level": "extreme"
-    }
-  });
-  
-  // 4. Download
-  const downloadResp = UrlFetchApp.fetch(`https://${server}/v1/download/${taskId}`, {
-    headers: { "Authorization": "Bearer " + token }
-  });
-  
-  return downloadResp.getBlob().setName(fileBlob.getName());
-}
-
-// --- ENVÍO A CLOUDMAILIN ---
-function sendToCloudMailin(blob, filename, msg) {
-  Logger.log("Enviando a CloudMailin: " + filename + " (" + (blob.getSize()/1024).toFixed(2) + " KB)");
-  GmailApp.sendEmail(CLOUDMAILIN_ADDRESS, "Fwd: " + msg.getSubject(), "Compressed Invoice via iLovePDF", {
-    attachments: [blob],
-    name: "Automator"
-  });
-}
+```

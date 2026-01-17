@@ -109,12 +109,21 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
 
                 {/* Time Block */}
                 <div className="bg-slate-50 rounded-lg p-4 border border-slate-100 flex flex-col justify-between">
-                    <div className="text-sm text-slate-500 mb-1">Tiempo Restante</div>
+                    <div className="text-sm text-slate-500 mb-1">Planificación Temporal</div>
                     {endDate ? (
                         <>
                             <div className="text-2xl font-bold text-slate-900">{businessDaysRemaining} <span className="text-sm font-normal text-slate-400">días hábiles</span></div>
-                            <div className="mt-2 text-xs text-slate-500">
-                                Según calendario (festivos Madrid excluidos)
+                            <div className="mt-2 text-xs text-slate-500 flex flex-col gap-1">
+                                {startDate && (
+                                    <div className="flex justify-between">
+                                        <span>Inicio:</span>
+                                        <span className="font-medium text-slate-700">{startDate.toLocaleDateString('es-ES')}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between">
+                                    <span>Fin Previsto:</span>
+                                    <span className="font-medium text-slate-700">{endDate.toLocaleDateString('es-ES')}</span>
+                                </div>
                             </div>
                         </>
                     ) : (

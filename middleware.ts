@@ -44,8 +44,8 @@ export default auth((req) => {
         }
     }
 
-    // Skip auth check for login and API routes (auth)
-    const isPublicRoute = path.startsWith('/login') || path.startsWith('/api/auth')
+    // Skip auth check for login and API routes (auth) and webhooks
+    const isPublicRoute = path.startsWith('/login') || path.startsWith('/api/auth') || path.startsWith('/api/webhooks') || path.startsWith('/api/inngest')
     if (isPublicRoute) {
         console.log('[MIDDLEWARE] Public route, allowing access');
         return NextResponse.next()

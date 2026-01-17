@@ -5,10 +5,13 @@ import { clsx } from "clsx";
 import { auth } from "@/auth";
 import { canAccessModule } from "@/lib/auth/permissions";
 import { MODULES, type ModuleName } from "@/lib/auth/config";
+import { CasaRuralFinancialCard } from "@/components/dashboard/CasaRuralFinancialCard";
+import { PortfolioCard } from "@/components/dashboard/PortfolioCard";
+import { SimulatorCard } from "@/components/dashboard/SimulatorCard";
 
 // Map category slugs to module names and icons
 const MODULES_CONFIG: Record<string, { module: ModuleName; icon: any; color: string; tasksPath: string }> = {
-  'casa-rural': { module: MODULES.CASA_RURAL, icon: HomeIcon, color: '#10b981', tasksPath: '/casa-rural/tareas' },
+  'casa-rural': { module: MODULES.CASA_RURAL, icon: HomeIcon, color: '#10b981', tasksPath: '/casa-rural' },
   'finanzas': { module: MODULES.FINANZAS, icon: Wallet, color: '#6366f1', tasksPath: '/finanzas' },
   'fp-informatica': { module: MODULES.FP_INFORMATICA, icon: GraduationCap, color: '#f59e0b', tasksPath: '/fp-informatica' },
   'hogar': { module: MODULES.HOGAR, icon: Coffee, color: '#ec4899', tasksPath: '/hogar/tareas' },
@@ -43,13 +46,24 @@ export default async function Home() {
     return canAccessModule(user || null, config.module);
   });
 
-  // Fetch pending Master Tasks count separately
-  const pendingMasterTasksCount = user ? await prisma.masterTask.count({
-    where: {
-      userId: user.id,
-      completed: false
-    }
-  }) : 0;
+  // Fetch pending Master Tasks count and preview items separately
+  const [pendingMasterTasksCount, pendingMasterTasks] = user ? await Promise.all([
+    prisma.masterTask.count({
+      where: {
+        userId: user.id,
+        completed: false
+      }
+    }),
+    prisma.masterTask.findMany({
+      where: {
+        userId: user.id,
+        completed: false
+      },
+      take: 3,
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, title: true }
+    })
+  ]) : [0, []];
 
   // Merge Master Tasks count into categories
   const categoriesWithMaster = categories.map(cat => {
@@ -57,7 +71,12 @@ export default async function Home() {
       return {
         ...cat,
         _count: { items: pendingMasterTasksCount },
-        items: [] // We don't have Items for MasterTask, so clearing generic preview
+        items: pendingMasterTasks.map(t => ({
+          id: t.id,
+          title: t.title,
+          status: 'TODO',
+          priority: 'MEDIUM'
+        }))
       }
     }
     return cat;
@@ -66,43 +85,8 @@ export default async function Home() {
   // Calculate total pending
   const totalPending = categoriesWithMaster.reduce((sum, c) => sum + c._count.items, 0);
 
-  // Fetch financial data
-  let portfolioData: { current_value: number; change_percent: number } | null = null;
-  let simulatorBalance: number | null = null;
-
-  if (canAccessModule(user || null, MODULES.FINANZAS) || BYPASS_PERMISSIONS) {
-    const finanzasBackendUrl = process.env.FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
-
-    try {
-      const [portfolioRes, simRes] = await Promise.all([
-        fetch(`${finanzasBackendUrl}/api/portfolio/performance?period=24h`, {
-          cache: 'no-store',
-          signal: AbortSignal.timeout(5000)
-        }),
-        fetch(`${finanzasBackendUrl}/api/simulator/compare`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            mortgage: { principal: 127000, annual_rate: 2.5, years: 15 },
-            tax_rate: 19,
-            start_date: "2025-11-24"
-          }),
-          cache: 'no-store',
-          signal: AbortSignal.timeout(5000)
-        })
-      ]);
-
-      if (portfolioRes.ok) {
-        portfolioData = await portfolioRes.json();
-      }
-      if (simRes.ok) {
-        const simData = await simRes.json();
-        simulatorBalance = simData.balance || 0;
-      }
-    } catch (error) {
-      console.error('[Dashboard] Error fetching financial data:', error);
-    }
-  }
+  // Financial module access check
+  const showFinances = canAccessModule(user || null, MODULES.FINANZAS) || BYPASS_PERMISSIONS;
 
   return (
     <div className="space-y-8">
@@ -196,97 +180,10 @@ export default async function Home() {
       </div>
 
       {/* Financial Cards */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        {/* Portfolio Master Card */}
-        {portfolioData && portfolioData.current_value > 0 && (
-          <Link
-            href="/finanzas/portfolio"
-            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 p-6 text-white shadow-lg transition-all hover:shadow-xl hover:scale-[1.01]"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-
-            <div className="relative">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-indigo-200 text-sm font-medium">Portfolio Master</span>
-                <div className={clsx(
-                  "flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold",
-                  portfolioData.change_percent >= 0
-                    ? "bg-green-400/20 text-green-200"
-                    : "bg-red-400/20 text-red-200"
-                )}>
-                  {portfolioData.change_percent >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                  {portfolioData.change_percent >= 0 ? '+' : ''}{portfolioData.change_percent.toFixed(2)}%
-                </div>
-              </div>
-
-              <p className="text-4xl font-bold tracking-tight mb-1">
-                €{portfolioData.current_value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-              </p>
-              <p className="text-indigo-200 text-sm">Valor actual del patrimonio</p>
-
-              <div className="mt-4 flex items-center text-indigo-200 text-sm group-hover:text-white transition-colors">
-                Ver cartera <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-          </Link>
-        )}
-
-        {/* Plan Financiero Card */}
-        {simulatorBalance !== null && (
-          <Link
-            href="/finanzas/simulador"
-            className={clsx(
-              "group relative overflow-hidden rounded-2xl p-6 text-white shadow-lg transition-all hover:shadow-xl hover:scale-[1.01]",
-              simulatorBalance >= 0
-                ? "bg-gradient-to-br from-emerald-500 to-teal-600"
-                : "bg-gradient-to-br from-red-500 to-rose-600"
-            )}
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-
-            <div className="relative">
-              <div className="flex items-center justify-between mb-4">
-                <span className={clsx(
-                  "text-sm font-medium",
-                  simulatorBalance >= 0 ? "text-emerald-200" : "text-red-200"
-                )}>
-                  Plan Financiero
-                </span>
-                <div className={clsx(
-                  "flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold",
-                  simulatorBalance >= 0
-                    ? "bg-green-400/20 text-green-200"
-                    : "bg-red-400/20 text-red-200"
-                )}>
-                  {simulatorBalance >= 0 ? <CheckCircle2 className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                  {simulatorBalance >= 0 ? 'Saludable' : 'Riesgo'}
-                </div>
-              </div>
-
-              <p className="text-4xl font-bold tracking-tight mb-1">
-                €{Math.abs(simulatorBalance).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-              </p>
-              <p className={clsx(
-                "text-sm",
-                simulatorBalance >= 0 ? "text-emerald-200" : "text-red-200"
-              )}>
-                {simulatorBalance >= 0
-                  ? 'Saldo proyectado positivo'
-                  : 'Déficit proyectado'
-                }
-              </p>
-
-              <div className={clsx(
-                "mt-4 flex items-center text-sm group-hover:text-white transition-colors",
-                simulatorBalance >= 0 ? "text-emerald-200" : "text-red-200"
-              )}>
-                Ver simulador <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-          </Link>
-        )}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {showFinances && <PortfolioCard />}
+        {showFinances && <SimulatorCard />}
+        <CasaRuralFinancialCard />
       </div>
     </div>
   );

@@ -1,12 +1,13 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "./generated/prisma"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters", "multiSchema"]
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL_UNPOOLED")
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+  schemas   = ["public", "casarural"]
 }
 
 model User {
@@ -30,6 +31,8 @@ model User {
   portfolioSnapshots     PortfolioSnapshot[]
   internship             Internship?
   masterTasks            MasterTask[]
+
+  @@schema("public")
 }
 
 model Session {
@@ -38,6 +41,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
 }
 
 model Account {
@@ -56,6 +61,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@schema("public")
 }
 
 model Category {
@@ -71,6 +77,8 @@ model Category {
   sessions    ClassSession[]
   projects    Project[]
   sections    TaskSection[]
+
+  @@schema("public")
 }
 
 model TaskSection {
@@ -82,6 +90,8 @@ model TaskSection {
   updatedAt  DateTime     @updatedAt
   items      ActionItem[]
   category   Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
 }
 
 model ActionItem {
@@ -100,6 +110,8 @@ model ActionItem {
   category    Category     @relation(fields: [categoryId], references: [id])
   section     TaskSection? @relation(fields: [sectionId], references: [id])
   subject     Subject?     @relation(fields: [subjectId], references: [id])
+
+  @@schema("public")
 }
 
 model ClassSession {
@@ -113,6 +125,8 @@ model ClassSession {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   category    Category @relation(fields: [categoryId], references: [id])
+
+  @@schema("public")
 }
 
 model Project {
@@ -126,6 +140,8 @@ model Project {
   category    Category       @relation(fields: [categoryId], references: [id])
   images      ProjectImage[]
   links       ProjectLink[]
+
+  @@schema("public")
 }
 
 model ProjectImage {
@@ -134,6 +150,8 @@ model ProjectImage {
   projectId String
   createdAt DateTime @default(now())
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
 }
 
 model ProjectLink {
@@ -143,6 +161,8 @@ model ProjectLink {
   projectId String
   createdAt DateTime @default(now())
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
 }
 
 model Subject {
@@ -158,6 +178,8 @@ model Subject {
   updatedAt   DateTime     @updatedAt
   tasks       ActionItem[]
   assessments Assessment[]
+
+  @@schema("public")
 }
 
 model Assessment {
@@ -169,6 +191,8 @@ model Assessment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
 }
 
 model EmployeeActivity {
@@ -181,6 +205,8 @@ model EmployeeActivity {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
 }
 
 model ExamTemplate {
@@ -201,6 +227,8 @@ model ExamTemplate {
   formatting      String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@schema("public")
 }
 
 model Asset {
@@ -224,6 +252,7 @@ model Asset {
 
   @@index([id], map: "ix_assets_id")
   @@map("assets")
+  @@schema("public")
 }
 
 model HistoricalPrice {
@@ -236,6 +265,7 @@ model HistoricalPrice {
   @@index([date], map: "ix_historical_prices_date")
   @@index([id], map: "ix_historical_prices_id")
   @@map("historical_prices")
+  @@schema("public")
 }
 
 model PortfolioSnapshot {
@@ -253,6 +283,7 @@ model PortfolioSnapshot {
   @@index([date], map: "ix_portfolio_snapshots_date")
   @@index([id], map: "ix_portfolio_snapshots_id")
   @@map("portfolio_snapshots")
+  @@schema("public")
 }
 
 enum Role {
@@ -263,6 +294,8 @@ enum Role {
   GUEST
   CASA_RURAL
   EMPLEADO
+
+  @@schema("public")
 }
 
 // =====================
@@ -297,6 +330,8 @@ model Internship {
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@schema("public")
 }
 
 model InternshipCenter {
@@ -314,6 +349,8 @@ model InternshipCenter {
   
   internshipId  String   @unique
   internship    Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
 }
 
 model InternshipLog {
@@ -330,8 +367,8 @@ model InternshipLog {
   updatedAt     DateTime @updatedAt
   
   @@index([internshipId])
+  @@schema("public")
 }
-
 
 model MasterTask {
   id            String   @id @default(cuid())
@@ -345,4 +382,38 @@ model MasterTask {
   updatedAt     DateTime @updatedAt
   
   @@index([userId])
+  @@schema("public")
+}
+
+model WebhookLog {
+  id        String   @id @default(cuid())
+  provider  String   @default("cloudmailin")
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  @@schema("public")
+}
+
+enum ExpenseCategory {
+  LUZ
+  AGUA
+  INTERNET
+  LAVANDERIA
+  IBI
+  OTROS
+
+  @@schema("public")
+}
+
+model Expense {
+  id             Int      @id @default(autoincrement())
+  date           DateTime
+  amount         Decimal
+  type           String
+  category       String
+  description    String?
+  applicableYear Int?
+  createdAt      DateTime @default(now())
+
+  @@schema("casarural")
 }

@@ -1,6 +1,8 @@
 import { MicrofrontendFrame } from '@/components/microfrontend/MicrofrontendFrame';
 import { getMicrofrontend } from '@/lib/microfrontends';
 import { AlertCircle } from 'lucide-react';
+import { PortfolioRefreshButton } from '@/components/dashboard/PortfolioRefreshButton';
+
 
 export default function PortfolioPage() {
     const portfolio = getMicrofrontend('portfolio-master');
@@ -26,11 +28,16 @@ export default function PortfolioPage() {
     }
 
     return (
-        <MicrofrontendFrame
-            src={portfolio.url}
-            title={portfolio.name}
-            fallbackMessage="Portfolio Master no está disponible. Asegúrate de que el servidor está corriendo en el puerto 5173."
-        />
+        <div className="space-y-4">
+            <div className="flex justify-end px-4">
+                <PortfolioRefreshButton />
+            </div>
+            <MicrofrontendFrame
+                src={portfolio.url}
+                title={portfolio.name}
+                fallbackMessage="Portfolio Master no está disponible. Asegúrate de que el servidor está corriendo en el puerto 5173."
+            />
+        </div>
     );
 }
 

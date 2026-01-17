@@ -10,20 +10,22 @@ export const authConfig = {
             const isLoggedIn = !!auth?.user
             const isOnLogin = nextUrl.pathname.startsWith('/login')
             const isOnApiAuth = nextUrl.pathname.startsWith('/api/auth')
+            const isWebhook = nextUrl.pathname.startsWith('/api/webhooks')
 
             console.log('[AUTH MIDDLEWARE] authorized callback:', {
                 path: nextUrl.pathname,
                 isLoggedIn,
                 isOnLogin,
                 isOnApiAuth,
+                isWebhook,
                 hasAuth: !!auth,
                 hasUser: !!auth?.user,
                 userEmail: auth?.user?.email,
             });
 
-            // Allow access to login and auth API routes
-            if (isOnLogin || isOnApiAuth) {
-                console.log('[AUTH MIDDLEWARE] Allowing access to auth route');
+            // Allow access to login, auth API routes, and webhooks
+            if (isOnLogin || isOnApiAuth || isWebhook) {
+                console.log('[AUTH MIDDLEWARE] Allowing access to public route');
                 return true
             }
 

@@ -5,10 +5,11 @@ import { ExamHeaderForm } from "./ExamHeaderForm"
 import { ExamSectionsBuilder } from "./ExamSectionsBuilder"
 import { ExamFormattingForm } from "./ExamFormattingForm"
 import { ExamPreview } from "./ExamPreview"
-import { ExamHeaderData, ExamSection, ExamFormatting, saveExamTemplate, getExamTemplates, deleteTemplate, ExamTemplateData } from "@/lib/actions/exams"
+import { ExamHeaderData, ExamSection, ExamFormatting, saveExamTemplate, getExamTemplates, deleteTemplate, ExamTemplateData, generateExamSolution } from "@/lib/actions/exams"
+import { ExamSolutionModal } from "./ExamSolutionModal"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2 } from "lucide-react"
+import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -35,6 +36,9 @@ export function ExamFormBuilder() {
     const [newTemplateName, setNewTemplateName] = useState("")
     const [saveDialogOpen, setSaveDialogOpen] = useState(false)
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
+    const [isGeneratingSolution, setIsGeneratingSolution] = useState(false)
+    const [solutionModalOpen, setSolutionModalOpen] = useState(false)
+    const [solutionHtml, setSolutionHtml] = useState("")
 
     // Load templates on mount
     useEffect(() => {
@@ -246,6 +250,32 @@ export function ExamFormBuilder() {
         document.body.removeChild(link)
     }
 
+
+    const handleGenerateSolution = async () => {
+        setIsGeneratingSolution(true)
+        const data: ExamTemplateData = {
+            name: newTemplateName || 'Borrador',
+            header,
+            sections,
+            formatting
+        }
+
+        try {
+            const result = await generateExamSolution(data)
+            if (result.success && result.solution) {
+                setSolutionHtml(result.solution)
+                setSolutionModalOpen(true)
+            } else {
+                alert("Error generando el solucionario: " + result.error)
+            }
+        } catch (error) {
+            console.error(error)
+            alert("Error al conectar con Gemini")
+        } finally {
+            setIsGeneratingSolution(false)
+        }
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
             {/* Top Bar - removed sticky to prevent overlap */}
@@ -341,6 +371,15 @@ export function ExamFormBuilder() {
                             Exportar (Word)
                         </Button>
 
+                        <Button
+                            onClick={handleGenerateSolution}
+                            disabled={isGeneratingSolution || sections.length === 0}
+                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                            {isGeneratingSolution ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+                            Solucionario IA
+                        </Button>
+
                         <Button onClick={handlePrint} className="bg-blue-600 hover:bg-blue-700 text-white">
                             <Printer className="h-4 w-4 mr-2" />
                             Imprimir / PDF
@@ -348,6 +387,13 @@ export function ExamFormBuilder() {
                     </div>
                 </div>
             </header>
+
+            <ExamSolutionModal
+                isOpen={solutionModalOpen}
+                onOpenChange={setSolutionModalOpen}
+                solutionHtml={solutionHtml}
+                examTitle={header.subject || 'Examen'}
+            />
 
             <main className="w-full max-w-[1800px] mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 print:block print:w-full">

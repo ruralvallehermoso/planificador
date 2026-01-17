@@ -104,3 +104,50 @@ export async function deleteTemplate(id: string) {
         return { success: false, error: "Failed to delete template" }
     }
 }
+
+export async function generateExamSolution(data: ExamTemplateData) {
+    try {
+        const { GoogleGenerativeAI } = await import("@google/generative-ai");
+        const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+        if (!apiKey) {
+            return { success: false, error: "API Key not configured" };
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        const prompt = `
+        Actúa como un profesor experto de Formación Profesional en Informática.
+        Genera un SOLUCIONARIO detallado y didáctico para el siguiente examen.
+        
+        DATOS DEL EXAMEN:
+        Módulo: ${data.header.subject}
+        Ciclo: ${data.header.cycle}
+        Curso: ${data.header.course}
+        Evaluación: ${data.header.evaluation}
+        
+        CONTENIDO DEL EXAMEN:
+        ${data.sections.map((s, i) => `
+        SECCIÓN ${i + 1}: ${s.title} (${s.type})
+        ${s.questions || s.content || ''}
+        `).join('\n')}
+        
+        INSTRUCCIONES DE FORMATO:
+        Genera la respuesta en formato HTML limpio y estructurado (sin tags <html> ni <body>, solo el contenido).
+        Usa estilos en línea (inline css) muy básicos si es necesario para resaltar títulos.
+        Para las preguntas tipo TEST: Indica claramente la opción correcta y una breve justificación.
+        Para las preguntas de DESARROLLO/ESTÁNDAR: Proporciona una respuesta modelo completa y los puntos clave que debe contener.
+        
+        Estructura el solucionario por secciones igual que el examen.
+        `;
+
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+
+        return { success: true, solution: text };
+    } catch (error) {
+        console.error("Failed to generate solution:", error);
+        return { success: false, error: "Failed to generate solution" };
+    }
+}

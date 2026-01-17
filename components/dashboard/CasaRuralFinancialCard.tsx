@@ -50,7 +50,7 @@ export function CasaRuralFinancialCard() {
 
     return (
         <Link
-            href="/casa-rural"
+            href="/casa-rural/contabilidad"
             className={clsx(
                 "group relative overflow-hidden rounded-2xl p-6 text-white shadow-lg transition-all hover:shadow-xl hover:scale-[1.01] h-[180px] flex flex-col justify-between",
                 isHealthy

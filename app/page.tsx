@@ -11,7 +11,7 @@ import { SimulatorCard } from "@/components/dashboard/SimulatorCard";
 
 // Map category slugs to module names and icons
 const MODULES_CONFIG: Record<string, { module: ModuleName; icon: any; color: string; tasksPath: string }> = {
-  'casa-rural': { module: MODULES.CASA_RURAL, icon: HomeIcon, color: '#10b981', tasksPath: '/casa-rural' },
+  'casa-rural': { module: MODULES.CASA_RURAL, icon: HomeIcon, color: '#10b981', tasksPath: '/casa-rural/contabilidad' },
   'finanzas': { module: MODULES.FINANZAS, icon: Wallet, color: '#6366f1', tasksPath: '/finanzas' },
   'fp-informatica': { module: MODULES.FP_INFORMATICA, icon: GraduationCap, color: '#f59e0b', tasksPath: '/fp-informatica' },
   'hogar': { module: MODULES.HOGAR, icon: Coffee, color: '#ec4899', tasksPath: '/hogar/tareas' },

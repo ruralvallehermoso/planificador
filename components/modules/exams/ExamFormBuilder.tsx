@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2, Sparkles } from "lucide-react"
 import Link from "next/link"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -40,6 +41,10 @@ export function ExamFormBuilder() {
     const [solutionModalOpen, setSolutionModalOpen] = useState(false)
     const [solutionHtml, setSolutionHtml] = useState("")
 
+    const searchParams = useSearchParams()
+    const router = useRouter()
+    const urlTemplateId = searchParams.get('id')
+
     // Load templates on mount
     useEffect(() => {
         loadTemplates()
@@ -48,6 +53,28 @@ export function ExamFormBuilder() {
     const loadTemplates = async () => {
         const t = await getExamTemplates()
         setTemplates(t)
+
+        // Auto-load template from URL if present and templates loaded
+        if (urlTemplateId && t.length > 0) {
+            const template = t.find((tmpl: any) => tmpl.id === urlTemplateId)
+            if (template) {
+                setSelectedTemplateId(urlTemplateId)
+                setNewTemplateName(template.name)
+                setHeader({
+                    logoUrl: template.logoUrl,
+                    cycle: template.cycle,
+                    course: template.course,
+                    evaluation: template.evaluation,
+                    duration: template.duration,
+                    date: template.date,
+                    subject: template.subject,
+                    raEvaluated: JSON.parse(template.raEvaluated || "[]"),
+                    description: template.description
+                })
+                setSections(JSON.parse(template.sections))
+                setFormatting(JSON.parse(template.formatting))
+            }
+        }
     }
 
     const handleLoadTemplate = (templateId: string) => {

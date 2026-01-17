@@ -296,7 +296,7 @@ export function ExamFormBuilder() {
             const result = await generateExamSolution(data)
             if (result.success && result.solution) {
                 setSolutionHtml(result.solution)
-                setSolutionModalOpen(true)
+                setActiveTab("solution")
             } else {
                 alert("Error generando el solucionario: " + result.error)
             }

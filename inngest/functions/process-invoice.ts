@@ -62,18 +62,27 @@ export const processInvoice = inngest.createFunction(
             }
             `;
 
-            const result = await model.generateContent([
-                prompt,
-                {
-                    inlineData: {
-                        data: finalPdfBase64,
-                        mimeType: "application/pdf",
-                    },
-                },
-            ]);
+            console.log(`[Inngest] Calling Gemini Model: ${model.model}`);
+            console.log(`[Inngest] Payload size: ${finalPdfBase64.length} chars`);
 
-            const text = result.response.text();
-            return { text };
+            try {
+                const result = await model.generateContent([
+                    prompt,
+                    {
+                        inlineData: {
+                            data: finalPdfBase64,
+                            mimeType: "application/pdf",
+                        },
+                    },
+                ]);
+
+                const text = result.response.text();
+                console.log(`[Inngest] Gemini Response: ${text.substring(0, 100)}...`);
+                return { text };
+            } catch (error) {
+                console.error(`[Inngest] Gemini Error:`, error);
+                throw error;
+            }
         });
 
         // 3. Validate and Save to Database

@@ -26,11 +26,25 @@ export default function SimuladorPage() {
     }
 
     return (
-        <MicrofrontendFrame
-            src={dashboard.url}
-            title={dashboard.name}
-            fallbackMessage="No se pudo cargar el Simulador Financiero. Asegúrate de que el microfrontend de Finanzas esté operativo."
-        />
+        <div className="flex flex-col h-screen">
+            <div className="bg-amber-50 border-b border-amber-200 p-4 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+                <div className="text-sm text-amber-900">
+                    <p className="font-medium">Aviso sobre el cálculo</p>
+                    <p>
+                        La tabla detallada inferior proviene de un sistema externo y <strong>puede no reflejar el ajuste manual</strong> de la retirada de 9.500€ (Margarita).
+                        <br />
+                        El saldo correcto ajustado (beneficio real de la inversión restante) es el que se muestra en la <strong>tarjeta del Cuadro de Mandos</strong> principal.
+                    </p>
+                </div>
+            </div>
+            <MicrofrontendFrame
+                src={dashboard.url}
+                title={dashboard.name}
+                className="flex-1"
+                fallbackMessage="No se pudo cargar el Simulador Financiero. Asegúrate de que el microfrontend de Finanzas esté operativo."
+            />
+        </div>
     );
 }
 

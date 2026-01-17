@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
+
 import { Printer, Download, Copy, Check } from "lucide-react"
 
 interface Props {
@@ -65,12 +65,12 @@ export function ExamSolutionModal({ isOpen, onOpenChange, solutionHtml, examTitl
                 </DialogHeader>
 
                 <div className="flex-1 overflow-hidden border rounded-md bg-white p-4">
-                    <ScrollArea className="h-full pr-4">
+                    <div className="h-full pr-4 overflow-y-auto custom-scrollbar">
                         <div
                             className="prose prose-sm max-w-none text-gray-800"
                             dangerouslySetInnerHTML={{ __html: solutionHtml }}
                         />
-                    </ScrollArea>
+                    </div>
                 </div>
 
                 <DialogFooter className="gap-2 sm:justify-start lg:justify-end">

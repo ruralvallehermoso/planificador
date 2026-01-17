@@ -148,6 +148,7 @@ export async function generateExamSolution(data: ExamTemplateData) {
         return { success: true, solution: text };
     } catch (error) {
         console.error("Failed to generate solution:", error);
-        return { success: false, error: "Failed to generate solution" };
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return { success: false, error: `Error: ${errorMessage}` };
     }
 }

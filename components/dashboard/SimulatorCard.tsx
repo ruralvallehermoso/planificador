@@ -7,9 +7,6 @@ import { clsx } from "clsx";
 
 interface SimulatorData {
     balance: number;
-    portfolio_value?: number;
-    portfolio_basis?: number;
-    total_interest_paid?: number;
 }
 
 export function SimulatorCard() {
@@ -23,15 +20,13 @@ export function SimulatorCard() {
         setError(false);
         try {
             const finanzasBackendUrl = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
-            const TAX_RATE = 0.19;
-
             // Use Client-side fetch
             const res = await fetch(`${finanzasBackendUrl}/api/simulator/compare`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     mortgage: { principal: 127000, annual_rate: 2.5, years: 15 },
-                    tax_rate: TAX_RATE * 100,
+                    tax_rate: 19,
                     start_date: "2025-11-24"
                 }),
                 cache: 'no-store'
@@ -40,19 +35,7 @@ export function SimulatorCard() {
             if (!res.ok) throw new Error("Failed to fetch");
 
             const json: SimulatorData = await res.json();
-
-            // Recalculate with adjustment for Margarita's fund withdrawal (16/01/2026).
-            // User requested to adjust the initial value (basis) by subtracting 9500.
-            if (typeof json.portfolio_value === 'number' && typeof json.portfolio_basis === 'number' && typeof json.total_interest_paid === 'number') {
-                const adjustedBasis = json.portfolio_basis - 9500;
-                const adjustedProfit = json.portfolio_value - adjustedBasis;
-                const netBenefit = adjustedProfit * (1 - TAX_RATE);
-                const adjustedBalance = netBenefit - json.total_interest_paid;
-                setBalance(adjustedBalance);
-            } else {
-                // Fallback if detailed fields are missing
-                setBalance(json.balance + (9500 * (1 - 0.19)));
-            }
+            setBalance(json.balance);
         } catch (err) {
             console.error("Failed to load simulator data", err);
             setError(true);

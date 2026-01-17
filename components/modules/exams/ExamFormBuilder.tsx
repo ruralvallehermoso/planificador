@@ -61,15 +61,17 @@ export function ExamFormBuilder() {
                 setSelectedTemplateId(urlTemplateId)
                 setNewTemplateName(template.name)
                 setHeader({
-                    logoUrl: template.logoUrl,
-                    cycle: template.cycle,
-                    course: template.course,
-                    evaluation: template.evaluation,
-                    duration: template.duration,
-                    date: template.date,
-                    subject: template.subject,
+                    logoUrl: template.logoUrl || undefined,
+                    cycle: template.cycle || "",
+                    course: template.course || "",
+                    evaluation: template.evaluation || "",
+                    duration: template.duration || "",
+                    date: template.date ? new Date(template.date).toISOString() : "",
+                    subject: template.subject || "",
                     raEvaluated: JSON.parse(template.raEvaluated || "[]"),
-                    description: template.description
+                    description: template.description || "",
+                    part1Percentage: template.part1Percentage || undefined,
+                    part2Percentage: template.part2Percentage || undefined,
                 })
                 setSections(JSON.parse(template.sections))
                 setFormatting(JSON.parse(template.formatting))
@@ -83,15 +85,17 @@ export function ExamFormBuilder() {
             setSelectedTemplateId(templateId)
             setNewTemplateName(template.name) // Pre-fill name for potential edit
             setHeader({
-                logoUrl: template.logoUrl,
-                cycle: template.cycle,
-                course: template.course,
-                evaluation: template.evaluation,
-                duration: template.duration,
-                date: template.date,
-                subject: template.subject,
+                logoUrl: template.logoUrl || undefined,
+                cycle: template.cycle || "",
+                course: template.course || "",
+                evaluation: template.evaluation || "",
+                duration: template.duration || "",
+                date: template.date ? new Date(template.date).toISOString() : "",
+                subject: template.subject || "",
                 raEvaluated: JSON.parse(template.raEvaluated || "[]"),
-                description: template.description
+                description: template.description || "",
+                part1Percentage: template.part1Percentage || undefined,
+                part2Percentage: template.part2Percentage || undefined,
             })
             setSections(JSON.parse(template.sections))
             setFormatting(JSON.parse(template.formatting))

@@ -51,7 +51,19 @@ const allNavigation: NavItem[] = [
             { name: 'Proyectos', href: '/fp-informatica/projects', icon: Package },
         ]
     },
-    { name: 'Master UNIE', href: '/master-unie', icon: BookOpen, module: MODULES.MASTER_UNIE },
+    {
+        name: 'Master UNIE',
+        href: '/master-unie',
+        icon: BookOpen,
+        module: MODULES.MASTER_UNIE,
+        children: [
+            { name: 'Dashboard', href: '/master-unie', icon: LayoutDashboard },
+            { name: 'Asignaturas', href: '/master-unie/asignaturas', icon: BookOpen },
+            { name: 'Evaluaciones', href: '/master-unie/evaluaciones', icon: ClipboardList },
+            { name: 'TFM', href: '/master-unie/tfm', icon: GraduationCap },
+            { name: 'Prácticas', href: '/master-unie/practicum', icon: Wallet },
+        ]
+    },
     {
         name: 'Casa Rural',
         href: '/casa-rural',

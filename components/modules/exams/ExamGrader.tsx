@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ExamSection } from "@/lib/actions/exams"
-import { Calculator, Save, AlertCircle } from "lucide-react"
+import { Calculator, Save, AlertCircle, Settings2 } from "lucide-react"
 
 interface GradingRules {
     testPointsPerQuestion: number

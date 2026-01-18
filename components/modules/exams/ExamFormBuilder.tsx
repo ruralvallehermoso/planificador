@@ -581,8 +581,14 @@ export function ExamFormBuilder() {
                                         <ExamGrader
                                             sections={sections}
                                             gradingRules={grading}
+                                            onGradingChange={setGrading}
                                             part1Weight={weights.p1}
                                             part2Weight={weights.p2}
+                                            onWeightsChange={(p1, p2) => setHeader(prev => ({
+                                                ...prev,
+                                                part1Percentage: p1 + '%',
+                                                part2Percentage: p2 + '%'
+                                            }))}
                                         />
                                     </div>
                                 </TabsContent>

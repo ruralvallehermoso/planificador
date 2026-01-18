@@ -64,6 +64,10 @@ export function ExamFormBuilder() {
     const [solutionHtml, setSolutionHtml] = useState("")
     const [manualSolution, setManualSolution] = useState("") // NotebookLM/Manual content
 
+    // Panel Visibility States
+    const [showGrading, setShowGrading] = useState(false)
+    const [showNotebook, setShowNotebook] = useState(false)
+
     // Grader Persistence State
     const [gradingValues, setGradingValues] = useState<{ hits: number, errors: number, manualScores: Record<string, number> }>({
         hits: 0,

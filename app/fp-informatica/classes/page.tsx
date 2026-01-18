@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen, Calendar, Clock, FileText, ExternalLink, Trash2 } from "lucide-react"
+import { ArrowLeft, BookOpen, Calendar, Clock, FileText, ExternalLink, Trash2, Pencil } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { ClassForm } from "@/components/modules/fp/ClassForm"
@@ -50,14 +50,25 @@ export default async function ClassesPage() {
                                     <h3 className="text-lg font-semibold text-gray-900">{session.title}</h3>
                                     {session.description && <p className="text-gray-600">{session.description}</p>}
                                 </div>
-                                <form action={async () => {
-                                    'use server'
-                                    await deleteClass(session.id)
-                                }}>
-                                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </form>
+                                <div className="flex items-center gap-2">
+                                    <ClassForm
+                                        categoryId={category.id}
+                                        initialData={session}
+                                        trigger={
+                                            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-blue-600">
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                        }
+                                    />
+                                    <form action={async () => {
+                                        'use server'
+                                        await deleteClass(session.id)
+                                    }}>
+                                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500">
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </form>
+                                </div>
                             </div>
 
                             <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-500">
@@ -88,7 +99,7 @@ export default async function ClassesPage() {
                                                 href={session.driveLink}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                                                className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-3 py-1.5 rounded-full transition-colors hover:bg-blue-100"
                                             >
                                                 <ExternalLink className="h-4 w-4" />
                                                 Ver materiales en Drive

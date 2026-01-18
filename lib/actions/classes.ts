@@ -36,7 +36,6 @@ export async function createClass(formData: FormData) {
         await prisma.classSession.create({
             data: {
                 ...data,
-                // Ensure date is a DateTime object (zod transform should handle it, but being explicit helps)
             }
         })
 
@@ -47,6 +46,39 @@ export async function createClass(formData: FormData) {
             return { error: e.issues[0].message }
         }
         return { error: 'Error al crear la clase' }
+    }
+}
+
+export async function updateClass(id: string, formData: FormData) {
+    const rawData = {
+        title: formData.get('title'),
+        description: formData.get('description'),
+        date: formData.get('date'),
+        startTime: formData.get('startTime'),
+        endTime: formData.get('endTime'),
+        content: formData.get('content'),
+        driveLink: formData.get('driveLink'),
+        categoryId: formData.get('categoryId'),
+    }
+
+    try {
+        const data = classSchema.parse(rawData)
+
+        // Remove empty strings for optional fields
+        if (data.driveLink === '') data.driveLink = undefined
+
+        await prisma.classSession.update({
+            where: { id },
+            data: { ...data }
+        })
+
+        revalidatePath('/fp-informatica/classes')
+        return { success: true }
+    } catch (e) {
+        if (e instanceof z.ZodError) {
+            return { error: e.issues[0].message }
+        }
+        return { error: 'Error al actualizar la clase' }
     }
 }
 

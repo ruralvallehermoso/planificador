@@ -2,7 +2,7 @@ import { ArrowLeft, Book, Calendar, Clock, FileText, Plus, Trash2, Pencil, Libra
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Button } from "@/components/ui/button"
-import { deleteSubject } from "@/lib/actions/subjects"
+import { deleteSubject } from "@/lib/actions/fp-subjects"
 
 export default async function SubjectsListPage() {
     const subjects = await prisma.subject.findMany({

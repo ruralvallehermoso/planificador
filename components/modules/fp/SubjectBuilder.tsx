@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { SortableList } from "@/components/ui/sortable-list"
-import { createSubject, updateSubject } from "@/lib/actions/subjects"
+import { createSubject, updateSubject } from "@/lib/actions/fp-subjects"
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Loader2, Plus, Trash2, Save, FileText } from 'lucide-react'

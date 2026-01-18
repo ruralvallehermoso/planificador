@@ -16,6 +16,17 @@ const classSchema = z.object({
 })
 
 export async function createClass(formData: FormData) {
+    const rawData = {
+        title: formData.get('title'),
+        description: formData.get('description'),
+        date: formData.get('date'),
+        startTime: formData.get('startTime'),
+        endTime: formData.get('endTime'),
+        content: formData.get('content'),
+        driveLink: formData.get('driveLink'),
+        categoryId: formData.get('categoryId'),
+    }
+
     const LINKS_JSON = formData.get('links') as string
     let links: { title: string, url: string }[] = []
     try {

@@ -84,7 +84,7 @@ export default async function FPInformaticaDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
                 {/* Tareas Pendientes */}
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-1" id="tasks">
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-full">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-semibold text-gray-900">Tareas Pendientes</h2>
@@ -113,7 +113,7 @@ export default async function FPInformaticaDashboard() {
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6" id="events">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">Próximos Eventos</h2>
                         <div className="flex flex-col items-center justify-center h-48 text-gray-400 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-200">
                             No hay eventos próximos

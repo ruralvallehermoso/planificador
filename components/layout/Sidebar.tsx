@@ -36,7 +36,21 @@ const allNavigation: NavItem[] = [
             { name: 'Simulador Financiero', href: '/finanzas/simulador', icon: BarChart3 },
         ]
     },
-    { name: 'FP Informática', href: '/fp-informatica', icon: GraduationCap, module: MODULES.FP_INFORMATICA },
+    {
+        name: 'FP Informática',
+        href: '/fp-informatica',
+        icon: GraduationCap,
+        module: MODULES.FP_INFORMATICA,
+        children: [
+            { name: 'Dashboard', href: '/fp-informatica', icon: LayoutDashboard },
+            { name: 'Calendario', href: '/fp-informatica/calendar', icon: Calendar },
+            { name: 'Clases', href: '/fp-informatica/classes', icon: BookOpen },
+            { name: 'Exámenes', href: '/fp-informatica/exams', icon: ClipboardList },
+            { name: 'Temas Pendientes', href: '/fp-informatica#tasks', icon: Target },
+            { name: 'Próximos Eventos', href: '/fp-informatica#events', icon: Calendar },
+            { name: 'Proyectos', href: '/fp-informatica/projects', icon: Package },
+        ]
+    },
     { name: 'Master UNIE', href: '/master-unie', icon: BookOpen, module: MODULES.MASTER_UNIE },
     {
         name: 'Casa Rural',

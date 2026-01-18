@@ -40,7 +40,7 @@ export default async function SubjectsListPage() {
                     </div>
                 ) : (
                     subjects.map((subject) => (
-                        <div key={subject.id} className="relative bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all hover:shadow-md group">
+                        <div key={subject.id} className="relative bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-xl hover:border-blue-300 group cursor-pointer">
                             <Link href={`/fp-informatica/subjects/${subject.id}`} className="absolute inset-0 z-0" />
                             <div className="flex justify-between items-start relative z-10">
                                 <div className="space-y-1">
@@ -49,7 +49,7 @@ export default async function SubjectsListPage() {
                                             {subject.name}
                                         </h3>
                                         {subject.code && (
-                                            <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-600">
+                                            <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-700 transition-colors">
                                                 {subject.code}
                                             </span>
                                         )}
@@ -58,7 +58,7 @@ export default async function SubjectsListPage() {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Link href={`/fp-informatica/subjects/${subject.id}/edit`}>
-                                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-blue-600">
+                                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-blue-600 hover:bg-blue-50 hover:scale-110 transition-all">
                                             <Pencil className="h-4 w-4" />
                                         </Button>
                                     </Link>

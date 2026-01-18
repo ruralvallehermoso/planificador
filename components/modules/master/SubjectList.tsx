@@ -22,7 +22,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 
 interface Subject {
     id: string
@@ -43,7 +43,6 @@ interface SubjectListProps {
 export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const { toast } = useToast()
 
     async function handleSubmit(formData: FormData) {
         setIsLoading(true)
@@ -59,14 +58,14 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
             const result = await createSubject(data, categoryId)
 
             if (result.success) {
-                toast({ title: "Asignatura creada correctamente" })
+                toast.success("Asignatura creada correctamente")
                 setIsDialogOpen(false)
             } else {
-                toast({ title: "Error al crear", description: result.error, variant: "destructive" })
+                toast.error("Error al crear", { description: result.error })
             }
         } catch (error) {
             console.error(error)
-            toast({ title: "Error inesperado", variant: "destructive" })
+            toast.error("Error inesperado")
         } finally {
             setIsLoading(false)
         }
@@ -77,9 +76,9 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
 
         const result = await deleteSubject(id)
         if (result.success) {
-            toast({ title: "Asignatura eliminada" })
+            toast.success("Asignatura eliminada")
         } else {
-            toast({ title: "Error al eliminar", description: result.error, variant: "destructive" })
+            toast.error("Error al eliminar", { description: result.error })
         }
     }
 
@@ -177,8 +176,8 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
                                     <BookOpen className="h-6 w-6" />
                                 </div>
                                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${subject.status === 'PASSED' ? 'bg-green-100 text-green-700' :
-                                        subject.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
-                                            'bg-slate-100 text-slate-700'
+                                    subject.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
+                                        'bg-slate-100 text-slate-700'
                                     }`}>
                                     {subject.status === 'PASSED' ? 'Aprobada' :
                                         subject.status === 'IN_PROGRESS' ? 'En Curso' : 'Matriculada'}

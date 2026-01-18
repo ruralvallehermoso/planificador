@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { AppShell } from "@/components/layout/AppShell";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default async function RootLayout({
         <AuthProvider session={session}>
           <AppShell>
             {children}
+            <Toaster />
           </AppShell>
         </AuthProvider>
       </body>

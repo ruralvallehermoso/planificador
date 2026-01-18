@@ -553,24 +553,161 @@ export function ExamFormBuilder() {
                     <div className={cn(
                         "print:w-full print:static h-full transition-all duration-300",
                         viewMode === 'editor' ? "hidden" : "block",
-                        viewMode === 'preview' ? (activeTab === 'notebook' ? "max-w-5xl mx-auto" : "max-w-[210mm] mx-auto") : ""
+                        {/* Preview Column (Right) */ }
+                        < div className = {
+                            cn(
+                        "print:w-full print:static h-full transition-all duration-300",
+                            viewMode === 'editor' ? "hidden" : "block",
+                        viewMode === 'preview' ? (showNotebook ? "max-w-5xl mx-auto" : "max-w-[210mm] mx-auto") : ""
                     )}>
-                        <div className="print:static sticky top-6">
+                        <div className="print:static sticky top-6 space-y-4">
+
+                            {/* Tools Toolbar */}
+                            <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm flex items-center gap-2 mb-4 print:hidden">
+                                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-2 mr-2">Herramientas:</span>
+                                <Button
+                                    variant={showGrading ? "secondary" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setShowGrading(!showGrading)}
+                                    className={cn("gap-2", showGrading && "bg-emerald-100 text-emerald-800 hover:bg-emerald-200")}
+                                >
+                                    <Calculator className="h-4 w-4" />
+                                    Calculadora
+                                </Button>
+                                <Button
+                                    variant={showNotebook ? "secondary" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setShowNotebook(!showNotebook)}
+                                    className={cn("gap-2", showNotebook && "bg-orange-100 text-orange-800 hover:bg-orange-200")}
+                                >
+                                    <BookOpen className="h-4 w-4" />
+                                    Manual / NotebookLM
+                                </Button>
+                            </div>
+
+                            {/* Grading Panel */}
+                            {showGrading && (
+                                <div className="bg-white p-6 shadow-lg rounded-lg border border-emerald-100 animate-in slide-in-from-top-2">
+                                    <div className="mb-4 flex items-center justify-between">
+                                        <h3 className="font-bold text-lg text-emerald-900 flex items-center gap-2">
+                                            <Calculator className="h-5 w-5 text-emerald-600" />
+                                            Calculadora de Calificaciones
+                                        </h3>
+                                        <Button variant="ghost" size="sm" onClick={() => setShowGrading(false)}><ArrowLeft className="h-4 w-4 rotate-90" /></Button>
+                                    </div>
+                                    <ExamGrader
+                                        sections={sections}
+                                        gradingRules={grading}
+                                        onGradingChange={setGrading}
+                                        part1Weight={weights.p1}
+                                        part2Weight={weights.p2}
+                                        onWeightsChange={(p1, p2) => setHeader(prev => ({
+                                            ...prev,
+                                            part1Percentage: p1 + '%',
+                                            part2Percentage: p2 + '%'
+                                        }))}
+                                        gradingValues={gradingValues}
+                                        onQuestionValuesChange={setGradingValues}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Notebook Panel */}
+                            {showNotebook && (
+                                <div className="bg-white p-6 shadow-lg rounded-lg border border-orange-100 animate-in slide-in-from-top-2">
+                                    <div className="mb-6 flex items-center justify-between">
+                                        <div>
+                                            <h3 className="font-bold text-lg text-orange-900 flex items-center gap-2">
+                                                <BookOpen className="h-5 w-5 text-orange-600" />
+                                                Solución Manual / NotebookLM
+                                            </h3>
+                                            <p className="text-sm text-gray-500">Pega aquí el contenido generado por NotebookLM u otra fuente.</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button variant="outline" size="sm" onClick={() => {
+                                                const printWindow = window.open('', '_blank')
+                                                if (!printWindow) return
+                                                printWindow.document.write(`
+                                                     <html>
+                                                         <head>
+                                                             <title>Solucionario: ${header.subject || 'Examen'}</title>
+                                                             <style>
+                                                                 body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; }
+                                                                 h1 { color: #ea580c; border-bottom: 2px solid #ea580c; padding-bottom: 10px; }
+                                                                 strong { font-weight: bold; color: #000; }
+                                                                 h2, h3 { color: #333; margin-top: 20px; }
+                                                                 ul { padding-left: 20px; }
+                                                                 li { margin-bottom: 5px; }
+                                                                 code { background: #f3f4f6; padding: 2px 4px; rounded: 4px; font-family: monospace; }
+                                                             </style>
+                                                         </head>
+                                                         <body>
+                                                             <h1>Solucionario: ${header.subject || 'Examen'}</h1>
+                                                             <div style="white-space: pre-wrap;">${manualSolution}</div>
+                                                             <script>window.onload = () => { window.print(); window.close(); }</script>
+                                                         </body>
+                                                     </html>
+                                                 `)
+                                                printWindow.document.close()
+                                            }}>
+                                                <Printer className="h-4 w-4 mr-2" />
+                                                Imprimir
+                                            </Button>
+                                            <Button variant="ghost" size="sm" onClick={() => setShowNotebook(false)}><ArrowLeft className="h-4 w-4 rotate-90" /></Button>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="notebook-input" className="text-orange-800">Pegar Contenido</Label>
+                                            <textarea
+                                                id="notebook-input"
+                                                className="flex min-h-[150px] w-full rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-sm placeholder:text-orange-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                                placeholder="Pega aquí el texto extraído de NotebookLM..."
+                                                value={manualSolution}
+                                                onChange={(e) => setManualSolution(e.target.value)}
+                                            />
+                                        </div>
+
+                                        {manualSolution && (
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2 text-orange-800 font-medium">
+                                                    <Sparkles className="h-4 w-4" />
+                                                    Vista Previa Formateada
+                                                </div>
+                                                <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-inner prose prose-sm max-w-none prose-orange">
+                                                    <ReactMarkdown
+                                                        remarkPlugins={[remarkGfm, remarkMath]}
+                                                        rehypePlugins={[rehypeKatex]}
+                                                        components={{
+                                                            table: ({ node, ...props }) => <table className="w-full border-collapse border border-gray-300 my-4" {...props} />,
+                                                            th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 bg-gray-100 font-bold text-left" {...props} />,
+                                                            td: ({ node, ...props }) => <td className="border border-gray-300 px-4 py-2" {...props} />,
+                                                            p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-gray-800" {...props} />,
+                                                            ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-2" {...props} />,
+                                                            ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...props} />,
+                                                            li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                                                            h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-8 mb-4 border-b pb-2 text-orange-800" {...props} />,
+                                                            h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-6 mb-3 text-orange-700" {...props} />,
+                                                            h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-5 mb-2 text-gray-900" {...props} />,
+                                                        }}
+                                                    >
+                                                        {manualSolution}
+                                                    </ReactMarkdown>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                                 <div className="mb-4 flex items-center justify-between print:hidden">
                                     <TabsList className="bg-gray-100">
                                         <TabsTrigger value="preview" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Vista Previa</TabsTrigger>
                                         <TabsTrigger value="solution" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
                                             <Sparkles className="h-3 w-3 mr-2 text-purple-600" />
-                                            Solucionario
-                                        </TabsTrigger>
-                                        <TabsTrigger value="grading" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                                            <Calculator className="h-3 w-3 mr-2 text-emerald-600" />
-                                            Calificaciones
-                                        </TabsTrigger>
-                                        <TabsTrigger value="notebook" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                                            <BookOpen className="h-3 w-3 mr-2 text-orange-600" />
-                                            Manual / NotebookLM
+                                            Solucionario IA
                                         </TabsTrigger>
                                     </TabsList>
                                     {/* ... existing span ... */}
@@ -631,126 +768,12 @@ export function ExamFormBuilder() {
                                     </div>
                                 </TabsContent>
 
-                                <TabsContent value="grading" className="mt-0 outline-none">
-                                    <div className="bg-white p-8 shadow-lg min-h-[500px] rounded-lg border border-emerald-100">
-                                        <div className="mb-6">
-                                            <h3 className="font-bold text-lg text-emerald-900 flex items-center gap-2">
-                                                <Calculator className="h-5 w-5 text-emerald-600" />
-                                                Calculadora de Calificaciones
-                                            </h3>
-                                            <p className="text-sm text-gray-500">Calcula la nota final basada en los pesos y reglas definidas.</p>
-                                        </div>
-                                        <ExamGrader
-                                            sections={sections}
-                                            gradingRules={grading}
-                                            onGradingChange={setGrading}
-                                            part1Weight={weights.p1}
-                                            part2Weight={weights.p2}
-                                            onWeightsChange={(p1, p2) => setHeader(prev => ({
-                                                ...prev,
-                                                part1Percentage: p1 + '%',
-                                                part2Percentage: p2 + '%'
-                                            }))}
-                                            gradingValues={gradingValues}
-                                            onQuestionValuesChange={setGradingValues}
-                                        />
-                                    </div>
-                                </TabsContent>
-
-                                <TabsContent value="notebook" className="mt-0 outline-none">
-                                    <div className="bg-white p-6 shadow-lg min-h-[500px] rounded-lg border border-orange-100">
-                                        <div className="mb-6 flex items-center justify-between">
-                                            <div>
-                                                <h3 className="font-bold text-lg text-orange-900 flex items-center gap-2">
-                                                    <BookOpen className="h-5 w-5 text-orange-600" />
-                                                    Solución Manual / NotebookLM
-                                                </h3>
-                                                <p className="text-sm text-gray-500">Pega aquí el contenido generado por NotebookLM u otra fuente.</p>
-                                            </div>
-                                            <Button variant="outline" size="sm" onClick={() => {
-                                                // Simple print for manual content
-                                                const printWindow = window.open('', '_blank')
-                                                if (!printWindow) return
-                                                printWindow.document.write(`
-                                                     <html>
-                                                         <head>
-                                                             <title>Solucionario: ${header.subject || 'Examen'}</title>
-                                                             <style>
-                                                                 body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; }
-                                                                 h1 { color: #ea580c; border-bottom: 2px solid #ea580c; padding-bottom: 10px; }
-                                                                 strong { font-weight: bold; color: #000; }
-                                                                 /* Markdown-ish styles */
-                                                                 h2, h3 { color: #333; margin-top: 20px; }
-                                                                 ul { padding-left: 20px; }
-                                                                 li { margin-bottom: 5px; }
-                                                                 code { background: #f3f4f6; padding: 2px 4px; rounded: 4px; font-family: monospace; }
-                                                             </style>
-                                                         </head>
-                                                         <body>
-                                                             <h1>Solucionario: ${header.subject || 'Examen'}</h1>
-                                                             <div style="white-space: pre-wrap;">${manualSolution}</div>
-                                                             <script>
-                                                                 window.onload = () => { window.print(); window.close(); }
-                                                             </script>
-                                                         </body>
-                                                     </html>
-                                                 `)
-                                                printWindow.document.close()
-                                            }}>
-                                                <Printer className="h-4 w-4 mr-2" />
-                                                Imprimir
-                                            </Button>
-                                        </div>
-
-                                        <div className="space-y-6">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="notebook-input" className="text-orange-800">Pegar Contenido</Label>
-                                                <textarea
-                                                    id="notebook-input"
-                                                    className="flex min-h-[150px] w-full rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-sm placeholder:text-orange-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
-                                                    placeholder="Pega aquí el texto extraído de NotebookLM..."
-                                                    value={manualSolution}
-                                                    onChange={(e) => setManualSolution(e.target.value)}
-                                                />
-                                            </div>
-
-                                            {manualSolution && (
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2 text-orange-800 font-medium">
-                                                        <Sparkles className="h-4 w-4" />
-                                                        Vista Previa Formateada
-                                                    </div>
-                                                    <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-inner prose prose-sm max-w-none prose-orange">
-                                                        <ReactMarkdown
-                                                            remarkPlugins={[remarkGfm, remarkMath]}
-                                                            rehypePlugins={[rehypeKatex]}
-                                                            components={{
-                                                                // Custom styling for tables if needed beyond 'prose'
-                                                                table: ({ node, ...props }) => <table className="w-full border-collapse border border-gray-300 my-4" {...props} />,
-                                                                th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 bg-gray-100 font-bold text-left" {...props} />,
-                                                                td: ({ node, ...props }) => <td className="border border-gray-300 px-4 py-2" {...props} />,
-                                                                p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-gray-800" {...props} />,
-                                                                ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-2" {...props} />,
-                                                                ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...props} />,
-                                                                li: ({ node, ...props }) => <li className="pl-1" {...props} />,
-                                                                h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-8 mb-4 border-b pb-2 text-orange-800" {...props} />,
-                                                                h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-6 mb-3 text-orange-700" {...props} />,
-                                                                h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-5 mb-2 text-gray-900" {...props} />,
-                                                            }}
-                                                        >
-                                                            {manualSolution}
-                                                        </ReactMarkdown>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </TabsContent>
-                            </Tabs>
-                        </div>
+                            </TabsContent>
+                        </Tabs>
                     </div>
                 </div>
-            </main>
         </div>
+            </main >
+        </div >
     )
 }

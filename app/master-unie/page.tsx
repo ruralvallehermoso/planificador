@@ -5,9 +5,15 @@ import { getMasterTasks } from './actions';
 import { MasterTaskList } from '@/components/master/MasterTaskList';
 
 export default async function MasterDashboardPage() {
-    const subjects = await prisma.subject.findMany({
-        orderBy: { name: 'asc' }
+    const categorySlug = 'master-unie';
+    const category = await prisma.category.findUnique({
+        where: { slug: categorySlug }
     });
+
+    const subjects = category ? await prisma.subject.findMany({
+        where: { categoryId: category.id },
+        orderBy: { name: 'asc' }
+    }) : [];
 
     const tasks = await getMasterTasks();
 

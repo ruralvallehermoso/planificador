@@ -105,13 +105,8 @@ export default async function FPInformaticaDashboard() {
                 </div>
 
                 {/* Actividad Reciente & Eventos */}
-                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Actividad Reciente</h2>
-                        <div className="flex flex-col items-center justify-center h-48 text-gray-400 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                            No hay actividad reciente
-                        </div>
-                    </div>
+                <div className="lg:col-span-2 space-y-6">
+
 
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6" id="events">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">Próximos Eventos</h2>

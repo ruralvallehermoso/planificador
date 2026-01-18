@@ -7,30 +7,30 @@ datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
-  schemas   = ["public", "casarural"]
+  schemas   = ["casarural", "public"]
 }
 
 model User {
-  id                     String             @id @default(cuid())
-  email                  String             @unique
+  id                     String              @id @default(cuid())
+  email                  String              @unique
   passwordHash           String?
   name                   String?
   image                  String?
-  role                   Role               @default(GUEST)
-  canAccessCasaRural     Boolean            @default(false)
-  canAccessFinanzas      Boolean            @default(false)
-  canAccessFpInformatica Boolean            @default(false)
-  canAccessHogar         Boolean            @default(false)
-  canAccessMasterUnie    Boolean            @default(false)
-  createdAt              DateTime           @default(now())
-  updatedAt              DateTime           @updatedAt
+  role                   Role                @default(GUEST)
+  canAccessCasaRural     Boolean             @default(false)
+  canAccessFinanzas      Boolean             @default(false)
+  canAccessFpInformatica Boolean             @default(false)
+  canAccessHogar         Boolean             @default(false)
+  canAccessMasterUnie    Boolean             @default(false)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
   accounts               Account[]
   activities             EmployeeActivity[]
+  internship             Internship?
+  masterTasks            MasterTask[]
   sessions               Session[]
   assets                 Asset[]
   portfolioSnapshots     PortfolioSnapshot[]
-  internship             Internship?
-  masterTasks            MasterTask[]
 
   @@schema("public")
 }
@@ -76,6 +76,7 @@ model Category {
   items       ActionItem[]
   sessions    ClassSession[]
   projects    Project[]
+  subjects    Subject[]
   sections    TaskSection[]
 
   @@schema("public")
@@ -121,6 +122,8 @@ model ClassSession {
   date        DateTime
   startTime   String?
   endTime     String?
+  content     String?   @db.Text
+  driveLink   String?
   categoryId  String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -174,6 +177,8 @@ model Subject {
   semester    Int          @default(1)
   status      String       @default("ENROLLED")
   finalGrade  Float?
+  categoryId  String?
+  category    Category?    @relation(fields: [categoryId], references: [id])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   tasks       ActionItem[]
@@ -246,7 +251,6 @@ model Asset {
   indexa_api   Boolean?
   manual       Boolean?
   image_url    String?  @db.VarChar
-  
   userId       String?
   user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -274,9 +278,8 @@ model PortfolioSnapshot {
   category        String?  @db.VarChar
   asset_id        String?  @db.VarChar
   total_value_eur Float
-  
   userId          String?
-  user            User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([asset_id], map: "ix_portfolio_snapshots_asset_id")
   @@index([category], map: "ix_portfolio_snapshots_category")
@@ -286,101 +289,66 @@ model PortfolioSnapshot {
   @@schema("public")
 }
 
-enum Role {
-  ADMIN
-  OWNER
-  TEACHER
-  FAMILY
-  GUEST
-  CASA_RURAL
-  EMPLEADO
-
-  @@schema("public")
-}
-
-// =====================
-// INTERNSHIP MODELS
-// =====================
-
 model Internship {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Status
-  status        String   @default("ASSIGNED") // ASSIGNED, IN_PROGRESS, COMPLETED
-
-  // Center Info
-  center        InternshipCenter?
-
-  // Dates (Official/Normative)
+  id            String            @id @default(cuid())
+  userId        String            @unique
+  status        String            @default("ASSIGNED")
   startDate     DateTime?
   endDate       DateTime?
-
-  // Dates (Agreed)
   realStartDate DateTime?
   realEndDate   DateTime?
-
-  // Details
-  totalHours    Int      @default(120) // Target
-  schedule      String?  // Text description of schedule
-  workingDays   String   @default("1,2,3,4,5") // Comma separated days (0=Sun, 1=Mon...). Default Mon-Fri
-
+  totalHours    Int               @default(120)
+  schedule      String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  workingDays   String            @default("1,2,3,4,5")
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  center        InternshipCenter?
   logs          InternshipLog[]
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 
   @@schema("public")
 }
 
 model InternshipCenter {
-  id            String   @id @default(cuid())
-  name          String
-  address       String?
-  province      String?
-  city          String?
-  
-  tutorName     String?
-  tutorEmail    String?
-  tutorPhone    String?
-  
-  universityTutor String? 
-  
-  internshipId  String   @unique
-  internship    Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  id              String     @id @default(cuid())
+  name            String
+  address         String?
+  province        String?
+  city            String?
+  tutorName       String?
+  tutorEmail      String?
+  tutorPhone      String?
+  universityTutor String?
+  internshipId    String     @unique
+  internship      Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
 
   @@schema("public")
 }
 
 model InternshipLog {
-  id            String   @id @default(cuid())
-  date          DateTime
-  hours         Float
-  activity      String
-  observations  String?
-  
-  internshipId  String
-  internship    Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
+  id           String     @id @default(cuid())
+  date         DateTime
+  hours        Float
+  activity     String
+  observations String?
+  internshipId String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+
   @@index([internshipId])
   @@schema("public")
 }
 
 model MasterTask {
-  id            String   @id @default(cuid())
-  title         String
-  completed     Boolean  @default(false)
-  
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
+  id        String   @id @default(cuid())
+  title     String
+  completed Boolean  @default(false)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@schema("public")
 }
@@ -390,17 +358,6 @@ model WebhookLog {
   provider  String   @default("cloudmailin")
   payload   Json?
   createdAt DateTime @default(now())
-
-  @@schema("public")
-}
-
-enum ExpenseCategory {
-  LUZ
-  AGUA
-  INTERNET
-  LAVANDERIA
-  IBI
-  OTROS
 
   @@schema("public")
 }
@@ -416,4 +373,209 @@ model Expense {
   createdAt      DateTime @default(now())
 
   @@schema("casarural")
+}
+
+model BusinessConfig {
+  id         Int      @id @default(autoincrement())
+  name       String
+  nif        String
+  address    String
+  phone      String
+  email      String
+  vatRate    Decimal  @default(10)
+  city       String?
+  postalCode String?
+  logo       String?
+  updatedAt  DateTime
+
+  @@schema("casarural")
+}
+
+model Employee {
+  id           Int       @id @default(autoincrement())
+  name         String
+  surname      String
+  dni          String    @unique
+  nss          String?
+  address      String?
+  phone        String?
+  email        String?
+  position     String?
+  grossSalary  Decimal
+  payments     Int       @default(12)
+  startDate    DateTime
+  endDate      DateTime?
+  contractType String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime
+  Leave        Leave[]
+  Payslip      Payslip[]
+
+  @@schema("casarural")
+}
+
+model Guest {
+  id               Int        @id @default(autoincrement())
+  name             String
+  surname          String
+  surname2         String?
+  dni              String
+  documentType     String     @default("D")
+  documentSupport  String?
+  address          String?
+  addressExtra     String?
+  postalCode       String?
+  municipality     String?
+  municipalityName String?
+  country          String     @default("ESP")
+  birthDate        DateTime?
+  nationality      String?
+  sex              String?
+  phone            String?
+  phone2           String?
+  email            String?
+  role             String     @default("VI")
+  kinship          String?
+  incomeId         Int?
+  sesReportId      Int?
+  Income           Income?    @relation(fields: [incomeId], references: [id], onDelete: Cascade)
+  SesReport        SesReport? @relation(fields: [sesReportId], references: [id])
+
+  @@schema("casarural")
+}
+
+model Income {
+  id            Int         @id @default(autoincrement())
+  date          DateTime
+  checkOut      DateTime?
+  amount        Decimal
+  description   String?
+  propertyType  String      @default("BOTH")
+  nights        Int         @default(1)
+  invoiceNumber String?     @unique
+  invoiceDate   DateTime?
+  createdAt     DateTime    @default(now())
+  Guest         Guest[]
+  SesReport     SesReport[]
+
+  @@schema("casarural")
+}
+
+model Leave {
+  id          Int      @id @default(autoincrement())
+  employeeId  Int
+  type        String
+  startDate   DateTime
+  endDate     DateTime
+  description String?
+  status      String   @default("APPROVED")
+  createdAt   DateTime @default(now())
+  Employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@schema("casarural")
+}
+
+model Payslip {
+  id           Int      @id @default(autoincrement())
+  employeeId   Int
+  month        Int
+  year         Int
+  grossAmount  Decimal
+  netAmount    Decimal
+  employerCost Decimal
+  details      String?
+  generatedAt  DateTime @default(now())
+  Employee     Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@schema("casarural")
+}
+
+model SesConfig {
+  id                      Int      @id @default(autoincrement())
+  codigoArrendador        String
+  codigoEstablecimiento   String
+  nombreEstablecimiento   String
+  tipoEstablecimiento     String   @default("VT")
+  aplicacion              String   @default("CasaRuralWeb")
+  sesUsername             String?
+  sesPassword             String?
+  direccion               String
+  direccionComplementaria String?
+  codigoPostal            String
+  codigoMunicipio         String
+  nombreMunicipio         String
+  pais                    String   @default("ESP")
+  isActive                Boolean  @default(true)
+  updatedAt               DateTime
+
+  @@schema("casarural")
+}
+
+model SesReport {
+  id                 Int       @id @default(autoincrement())
+  referencia         String    @unique
+  fechaContrato      DateTime
+  fechaEntrada       DateTime
+  fechaSalida        DateTime
+  numPersonas        Int
+  numHabitaciones    Int?
+  internet           Boolean   @default(true)
+  tipoPago           String
+  fechaPago          DateTime?
+  medioPago          String?
+  titularPago        String?
+  caducidadTarjeta   String?
+  status             String    @default("PENDING")
+  codigoComunicacion String?
+  codigoLote         String?
+  lastError          String?
+  sentAt             DateTime?
+  incomeId           Int?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime
+  Guest              Guest[]
+  Income             Income?   @relation(fields: [incomeId], references: [id])
+
+  @@schema("casarural")
+}
+
+model public_Expense {
+  id          String          @id
+  provider    String
+  date        DateTime
+  baseAmount  Float
+  vatAmount   Float
+  vatRate     Float
+  totalAmount Float
+  category    ExpenseCategory @default(OTROS)
+  status      String          @default("PENDIENTE_DE_REVISION")
+  rawText     String?
+  pdfUrl      String?
+  createdAt   DateTime        @default(now())
+
+  @@map("Expense")
+  @@schema("public")
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  TEACHER
+  FAMILY
+  GUEST
+  CASA_RURAL
+  EMPLEADO
+
+  @@schema("public")
+}
+
+enum ExpenseCategory {
+  LUZ
+  AGUA
+  INTERNET
+  LAVANDERIA
+  IBI
+  OTROS
+
+  @@schema("public")
 }

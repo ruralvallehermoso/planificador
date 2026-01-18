@@ -720,6 +720,13 @@ export function ExamFormBuilder() {
                                                                 table: ({ node, ...props }) => <table className="w-full border-collapse border border-gray-300 my-4" {...props} />,
                                                                 th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 bg-gray-100 font-bold text-left" {...props} />,
                                                                 td: ({ node, ...props }) => <td className="border border-gray-300 px-4 py-2" {...props} />,
+                                                                p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-gray-800" {...props} />,
+                                                                ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-2" {...props} />,
+                                                                ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...props} />,
+                                                                li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                                                                h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-8 mb-4 border-b pb-2 text-orange-800" {...props} />,
+                                                                h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-6 mb-3 text-orange-700" {...props} />,
+                                                                h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-5 mb-2 text-gray-900" {...props} />,
                                                             }}
                                                         >
                                                             {manualSolution}

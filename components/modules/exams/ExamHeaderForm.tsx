@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ExamHeaderData } from "@/lib/actions/exams"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Sparkles } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -103,7 +103,42 @@ export function ExamHeaderForm({ data, grading, onChange, onGradingChange }: Exa
             </div>
 
             <div className="space-y-2">
-                <Label>Instrucciones / Descripción</Label>
+                <div className="flex justify-between items-baseline mb-2">
+                    <Label>Instrucciones / Descripción</Label>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                        onClick={() => {
+                            const desc = data.description || ""
+                            // Parse Logic
+                            const rules: Partial<GradingRules> = {}
+                            const headerUpdates: Partial<ExamHeaderData> = {}
+
+                            // 1. Test Percentage
+                            const testPctMatch = desc.match(/Test\s*(\d+)%/i) || desc.match(/Parte 1[:\s]*(\d+)%/i)
+                            if (testPctMatch) {
+                                headerUpdates.part1Percentage = testPctMatch[1] + "%"
+                                headerUpdates.part2Percentage = (100 - parseInt(testPctMatch[1])) + "%"
+                            }
+
+                            // 2. Points per Question
+                            const pointsMatch = desc.match(/(\d+(?:[.,]\d+)?)\s*punt(?:os|o)?\s*por\s*acierto/i)
+                            if (pointsMatch) rules.testPointsPerQuestion = parseFloat(pointsMatch[1].replace(',', '.'))
+
+                            // 3. Penalty
+                            const penaltyMatch = desc.match(/(\d+(?:[.,]\d+)?)\s*penaliza(?:ción)?/i) || desc.match(/resta\s*(\d+(?:[.,]\d+)?)/i)
+                            if (penaltyMatch) rules.testPenaltyPerError = parseFloat(penaltyMatch[1].replace(',', '.'))
+
+                            // Apply
+                            if (Object.keys(headerUpdates).length > 0) onChange({ ...data, ...headerUpdates })
+                            if (Object.keys(rules).length > 0) onGradingChange({ ...grading, ...rules })
+                        }}
+                    >
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        Autocompletar
+                    </Button>
+                </div>
                 <Textarea
                     value={data.description}
                     onChange={e => handleChange("description", e.target.value)}

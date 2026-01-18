@@ -76,7 +76,11 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm border p-4 bg-gray-50/50">
+                <div className={cn(
+                    "grid gap-x-8 gap-y-2 text-sm border p-4 bg-gray-50/50",
+                    (formatting.headerInfoCols === 3) ? "grid-cols-3" : (formatting.headerInfoCols === 4) ? "grid-cols-4" : "grid-cols-2",
+                    formatting.headerSize === 'sm' ? "py-2 text-xs" : formatting.headerSize === 'lg' ? "p-6 text-base" : ""
+                )}>
                     <div className="flex gap-2">
                         <span className="font-semibold">Evaluación:</span>
                         <span>{header.evaluation}</span>

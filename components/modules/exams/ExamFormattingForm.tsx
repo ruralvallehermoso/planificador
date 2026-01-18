@@ -113,6 +113,36 @@ export function ExamFormattingForm({ data, onChange }: Props) {
                     </Select>
                 </div>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t mt-4">
+                <div className="space-y-2">
+                    <Label>Tamaño Cabecera</Label>
+                    <Select value={data.headerSize || 'md'} onValueChange={(v) => handleChange('headerSize', v)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Normal" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                            <SelectItem value="sm">Compacta</SelectItem>
+                            <SelectItem value="md">Normal</SelectItem>
+                            <SelectItem value="lg">Grande</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label>Columnas Info (Parte Derecha)</Label>
+                    <Select value={String(data.headerInfoCols || 2)} onValueChange={(v) => handleChange('headerInfoCols', parseInt(v))}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="2 Columnas" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                            <SelectItem value="2">2 Columnas (Estándar)</SelectItem>
+                            <SelectItem value="3">3 Columnas (Más compacto)</SelectItem>
+                            <SelectItem value="4">4 Columnas (Una línea)</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
         </div>
+        </div >
     )
 }

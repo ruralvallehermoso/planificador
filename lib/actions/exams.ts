@@ -33,6 +33,8 @@ export type ExamFormatting = {
     lineHeight: string
     paragraphSpacing: string
     questionsBold?: boolean
+    headerSize?: 'sm' | 'md' | 'lg'
+    headerInfoCols?: 2 | 3 | 4
 }
 
 export type ExamTemplateData = {

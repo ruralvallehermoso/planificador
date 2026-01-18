@@ -557,7 +557,7 @@ export function ExamFormBuilder() {
                     <div className={cn(
                         "print:w-full print:static h-full transition-all duration-300",
                         viewMode === 'editor' ? "hidden" : "block",
-                        viewMode === 'preview' ? (showNotebook ? "max-w-5xl mx-auto" : "max-w-[210mm] mx-auto") : ""
+                        viewMode === 'preview' ? ((showNotebook || showGrading) ? "max-w-[95vw] mx-auto" : "max-w-[210mm] mx-auto") : ""
                     )}>
                         <div className="print:static sticky top-6 space-y-4">
 

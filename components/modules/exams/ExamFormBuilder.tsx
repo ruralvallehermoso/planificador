@@ -18,6 +18,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 
 const DEFAULT_HEADER: ExamHeaderData = {
     cycle: "", course: "", evaluation: "", duration: "", date: "",
@@ -539,7 +544,7 @@ export function ExamFormBuilder() {
                     <div className={cn(
                         "print:w-full print:static h-full transition-all duration-300",
                         viewMode === 'editor' ? "hidden" : "block",
-                        viewMode === 'preview' ? "max-w-[210mm] mx-auto" : ""
+                        viewMode === 'preview' ? (activeTab === 'notebook' ? "max-w-5xl mx-auto" : "max-w-[210mm] mx-auto") : ""
                     )}>
                         <div className="print:static sticky top-6">
                             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -705,31 +710,18 @@ export function ExamFormBuilder() {
                                                         Vista Previa Formateada
                                                     </div>
                                                     <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-inner prose prose-sm max-w-none prose-orange">
-                                                        {manualSolution.split('\n').map((line, i) => {
-                                                            // Basic Markdown Simulation
-                                                            if (line.startsWith('## ')) return <h3 key={i} className="text-lg font-bold mt-4 mb-2 text-gray-900">{line.replace('## ', '')}</h3>
-                                                            if (line.startsWith('# ')) return <h2 key={i} className="text-xl font-bold mt-6 mb-3 text-orange-700">{line.replace('# ', '')}</h2>
-                                                            if (line.startsWith('* ') || line.startsWith('- ')) return (
-                                                                <div key={i} className="flex gap-2 ml-4 mb-1">
-                                                                    <span className="text-orange-500">•</span>
-                                                                    <span>{line.replace(/^[\*\-]\s/, '')}</span>
-                                                                </div>
-                                                            )
-                                                            if (line.trim() === '') return <br key={i} />
-
-                                                            // Bold text parser for simple paragraphs
-                                                            const parts = line.split(/(\*\*.*?\*\*)/g)
-                                                            return (
-                                                                <p key={i} className="mb-2 text-gray-700 leading-relaxed">
-                                                                    {parts.map((part, j) => {
-                                                                        if (part.startsWith('**') && part.endsWith('**')) {
-                                                                            return <strong key={j} className="text-gray-900">{part.slice(2, -2)}</strong>
-                                                                        }
-                                                                        return part
-                                                                    })}
-                                                                </p>
-                                                            )
-                                                        })}
+                                                        <ReactMarkdown
+                                                            remarkPlugins={[remarkGfm, remarkMath]}
+                                                            rehypePlugins={[rehypeKatex]}
+                                                            components={{
+                                                                // Custom styling for tables if needed beyond 'prose'
+                                                                table: ({ node, ...props }) => <table className="w-full border-collapse border border-gray-300 my-4" {...props} />,
+                                                                th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 bg-gray-100 font-bold text-left" {...props} />,
+                                                                td: ({ node, ...props }) => <td className="border border-gray-300 px-4 py-2" {...props} />,
+                                                            }}
+                                                        >
+                                                            {manualSolution}
+                                                        </ReactMarkdown>
                                                     </div>
                                                 </div>
                                             )}

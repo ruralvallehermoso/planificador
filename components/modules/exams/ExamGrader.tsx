@@ -22,6 +22,13 @@ interface ExamGraderProps {
     part1Weight?: number // 0-100
     part2Weight?: number // 0-100
     onWeightsChange?: (p1: number, p2: number) => void
+    // Controlled state for inputs
+    gradingValues?: {
+        hits: number
+        errors: number
+        manualScores: Record<string, number>
+    }
+    onQuestionValuesChange?: (values: { hits: number, errors: number, manualScores: Record<string, number> }) => void
 }
 
 export function ExamGrader({
@@ -30,7 +37,9 @@ export function ExamGrader({
     onGradingChange,
     part1Weight = 50,
     part2Weight = 50,
-    onWeightsChange
+    onWeightsChange,
+    gradingValues,
+    onQuestionValuesChange
 }: ExamGraderProps) {
 
     // Auto-detect questions
@@ -41,11 +50,26 @@ export function ExamGrader({
             return acc + s.questions.split('\n').filter(l => /^\d+[\.\)]/.test(l.trim())).length
         }, 0)
 
-    // State
+    // State (Internal fallback if not provided, though we intend to provide it)
+    const [testHitsLocal, setTestHitsLocal] = useState(0)
+    const [testErrorsLocal, setTestErrorsLocal] = useState(0)
+    const [manualScoresLocal, setManualScoresLocal] = useState<Record<string, number>>({})
     const [customTotalQuestions, setCustomTotalQuestions] = useState<number | null>(null)
-    const [testHits, setTestHits] = useState(0)
-    const [testErrors, setTestErrors] = useState(0)
-    const [manualScores, setManualScores] = useState<Record<string, number>>({})
+
+    // Use props if available, otherwise local
+    const testHits = gradingValues ? gradingValues.hits : testHitsLocal
+    const testErrors = gradingValues ? gradingValues.errors : testErrorsLocal
+    const manualScores = gradingValues ? gradingValues.manualScores : manualScoresLocal
+
+    const updateValues = (hits: number, errors: number, scores: Record<string, number>) => {
+        if (onQuestionValuesChange) {
+            onQuestionValuesChange({ hits, errors, manualScores: scores })
+        } else {
+            setTestHitsLocal(hits)
+            setTestErrorsLocal(errors)
+            setManualScoresLocal(scores)
+        }
+    }
 
     const totalQuestions = customTotalQuestions ?? detectedQuestions
 
@@ -149,9 +173,7 @@ export function ExamGrader({
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                        setTestHits(0)
-                        setTestErrors(0)
-                        setManualScores({})
+                        updateValues(0, 0, {})
                     }}
                     className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
                 >
@@ -186,7 +208,7 @@ export function ExamGrader({
                                     min="0"
                                     max={totalQuestions}
                                     value={testHits}
-                                    onChange={e => setTestHits(Number(e.target.value))}
+                                    onChange={e => updateValues(Number(e.target.value), testErrors, manualScores)}
                                     className="border-green-200 focus:ring-green-500"
                                 />
                             </div>
@@ -197,7 +219,7 @@ export function ExamGrader({
                                     min="0"
                                     max={totalQuestions}
                                     value={testErrors}
-                                    onChange={e => setTestErrors(Number(e.target.value))}
+                                    onChange={e => updateValues(testHits, Number(e.target.value), manualScores)}
                                     className="border-red-200 focus:ring-red-500"
                                 />
                             </div>
@@ -257,7 +279,7 @@ export function ExamGrader({
                                         placeholder="Nota"
                                         className="w-24 text-right"
                                         value={manualScores[section.id] || ''}
-                                        onChange={e => setManualScores({ ...manualScores, [section.id]: Number(e.target.value) })}
+                                        onChange={e => updateValues(testHits, testErrors, { ...manualScores, [section.id]: Number(e.target.value) })}
                                     />
                                 </div>
                             ))

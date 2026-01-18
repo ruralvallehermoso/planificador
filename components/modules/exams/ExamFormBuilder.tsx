@@ -64,6 +64,13 @@ export function ExamFormBuilder() {
     const [solutionHtml, setSolutionHtml] = useState("")
     const [manualSolution, setManualSolution] = useState("") // NotebookLM/Manual content
 
+    // Grader Persistence State
+    const [gradingValues, setGradingValues] = useState<{ hits: number, errors: number, manualScores: Record<string, number> }>({
+        hits: 0,
+        errors: 0,
+        manualScores: {}
+    })
+
     const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split')
 
     const searchParams = useSearchParams()
@@ -644,6 +651,8 @@ export function ExamFormBuilder() {
                                                 part1Percentage: p1 + '%',
                                                 part2Percentage: p2 + '%'
                                             }))}
+                                            gradingValues={gradingValues}
+                                            onQuestionValuesChange={setGradingValues}
                                         />
                                     </div>
                                 </TabsContent>

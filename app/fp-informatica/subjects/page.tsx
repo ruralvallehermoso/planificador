@@ -40,11 +40,14 @@ export default async function SubjectsListPage() {
                     </div>
                 ) : (
                     subjects.map((subject) => (
-                        <div key={subject.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all hover:shadow-md">
-                            <div className="flex justify-between items-start">
+                        <div key={subject.id} className="relative bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all hover:shadow-md group">
+                            <Link href={`/fp-informatica/subjects/${subject.id}`} className="absolute inset-0 z-0" />
+                            <div className="flex justify-between items-start relative z-10">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
-                                        <h3 className="text-lg font-semibold text-gray-900">{subject.name}</h3>
+                                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                            {subject.name}
+                                        </h3>
                                         {subject.code && (
                                             <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-600">
                                                 {subject.code}

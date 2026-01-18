@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ExamSection } from "@/lib/actions/exams"
-import { Calculator, Save, AlertCircle, Settings2 } from "lucide-react"
+import { Calculator, Save, AlertCircle, Settings2, RefreshCcw } from "lucide-react"
 
 interface GradingRules {
     testPointsPerQuestion: number
@@ -142,6 +142,22 @@ export function ExamGrader({
                         />
                     </div>
                 </div>
+            </div>
+
+            <div className="flex justify-end">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                        setTestHits(0)
+                        setTestErrors(0)
+                        setManualScores({})
+                    }}
+                    className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+                >
+                    <RefreshCcw className="w-4 h-4 mr-2" />
+                    Limpiar Entradas
+                </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

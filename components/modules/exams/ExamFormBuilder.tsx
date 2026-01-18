@@ -763,11 +763,10 @@ export function ExamFormBuilder() {
                                     </div>
                                 </TabsContent>
 
-                            </TabsContent>
-                        </Tabs>
+                            </Tabs>
+                        </div>
                     </div>
                 </div>
-        </div>
             </main >
         </div >
     )

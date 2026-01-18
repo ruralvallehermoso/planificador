@@ -143,6 +143,6 @@ export function ExamFormattingForm({ data, onChange }: Props) {
                 </div>
             </div>
         </div>
-        </div >
+
     )
 }

@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2, Sparkles, Check, Copy, AlertCircle, Calculator, PanelLeft, PanelRight, Columns } from "lucide-react"
+import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2, Sparkles, Check, Copy, AlertCircle, Calculator, PanelLeft, PanelRight, Columns, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
@@ -55,7 +55,9 @@ export function ExamFormBuilder() {
     const [isGeneratingSolution, setIsGeneratingSolution] = useState(false)
     const [activeTab, setActiveTab] = useState("preview")
     const [copiedSolution, setCopiedSolution] = useState(false)
+
     const [solutionHtml, setSolutionHtml] = useState("")
+    const [manualSolution, setManualSolution] = useState("") // NotebookLM/Manual content
 
     const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split')
 
@@ -552,6 +554,10 @@ export function ExamFormBuilder() {
                                             <Calculator className="h-3 w-3 mr-2 text-emerald-600" />
                                             Calificaciones
                                         </TabsTrigger>
+                                        <TabsTrigger value="notebook" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                            <BookOpen className="h-3 w-3 mr-2 text-orange-600" />
+                                            Manual / NotebookLM
+                                        </TabsTrigger>
                                     </TabsList>
                                     {/* ... existing span ... */}
                                 </div>
@@ -632,6 +638,102 @@ export function ExamFormBuilder() {
                                                 part2Percentage: p2 + '%'
                                             }))}
                                         />
+                                    </div>
+                                </TabsContent>
+
+                                <TabsContent value="notebook" className="mt-0 outline-none">
+                                    <div className="bg-white p-6 shadow-lg min-h-[500px] rounded-lg border border-orange-100">
+                                        <div className="mb-6 flex items-center justify-between">
+                                            <div>
+                                                <h3 className="font-bold text-lg text-orange-900 flex items-center gap-2">
+                                                    <BookOpen className="h-5 w-5 text-orange-600" />
+                                                    Solución Manual / NotebookLM
+                                                </h3>
+                                                <p className="text-sm text-gray-500">Pega aquí el contenido generado por NotebookLM u otra fuente.</p>
+                                            </div>
+                                            <Button variant="outline" size="sm" onClick={() => {
+                                                // Simple print for manual content
+                                                const printWindow = window.open('', '_blank')
+                                                if (!printWindow) return
+                                                printWindow.document.write(`
+                                                     <html>
+                                                         <head>
+                                                             <title>Solucionario: ${header.subject || 'Examen'}</title>
+                                                             <style>
+                                                                 body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; }
+                                                                 h1 { color: #ea580c; border-bottom: 2px solid #ea580c; padding-bottom: 10px; }
+                                                                 strong { font-weight: bold; color: #000; }
+                                                                 /* Markdown-ish styles */
+                                                                 h2, h3 { color: #333; margin-top: 20px; }
+                                                                 ul { padding-left: 20px; }
+                                                                 li { margin-bottom: 5px; }
+                                                                 code { background: #f3f4f6; padding: 2px 4px; rounded: 4px; font-family: monospace; }
+                                                             </style>
+                                                         </head>
+                                                         <body>
+                                                             <h1>Solucionario: ${header.subject || 'Examen'}</h1>
+                                                             <div style="white-space: pre-wrap;">${manualSolution}</div>
+                                                             <script>
+                                                                 window.onload = () => { window.print(); window.close(); }
+                                                             </script>
+                                                         </body>
+                                                     </html>
+                                                 `)
+                                                printWindow.document.close()
+                                            }}>
+                                                <Printer className="h-4 w-4 mr-2" />
+                                                Imprimir
+                                            </Button>
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="notebook-input" className="text-orange-800">Pegar Contenido</Label>
+                                                <textarea
+                                                    id="notebook-input"
+                                                    className="flex min-h-[150px] w-full rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-sm placeholder:text-orange-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                                    placeholder="Pega aquí el texto extraído de NotebookLM..."
+                                                    value={manualSolution}
+                                                    onChange={(e) => setManualSolution(e.target.value)}
+                                                />
+                                            </div>
+
+                                            {manualSolution && (
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2 text-orange-800 font-medium">
+                                                        <Sparkles className="h-4 w-4" />
+                                                        Vista Previa Formateada
+                                                    </div>
+                                                    <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-inner prose prose-sm max-w-none prose-orange">
+                                                        {manualSolution.split('\n').map((line, i) => {
+                                                            // Basic Markdown Simulation
+                                                            if (line.startsWith('## ')) return <h3 key={i} className="text-lg font-bold mt-4 mb-2 text-gray-900">{line.replace('## ', '')}</h3>
+                                                            if (line.startsWith('# ')) return <h2 key={i} className="text-xl font-bold mt-6 mb-3 text-orange-700">{line.replace('# ', '')}</h2>
+                                                            if (line.startsWith('* ') || line.startsWith('- ')) return (
+                                                                <div key={i} className="flex gap-2 ml-4 mb-1">
+                                                                    <span className="text-orange-500">•</span>
+                                                                    <span>{line.replace(/^[\*\-]\s/, '')}</span>
+                                                                </div>
+                                                            )
+                                                            if (line.trim() === '') return <br key={i} />
+
+                                                            // Bold text parser for simple paragraphs
+                                                            const parts = line.split(/(\*\*.*?\*\*)/g)
+                                                            return (
+                                                                <p key={i} className="mb-2 text-gray-700 leading-relaxed">
+                                                                    {parts.map((part, j) => {
+                                                                        if (part.startsWith('**') && part.endsWith('**')) {
+                                                                            return <strong key={j} className="text-gray-900">{part.slice(2, -2)}</strong>
+                                                                        }
+                                                                        return part
+                                                                    })}
+                                                                </p>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </TabsContent>
                             </Tabs>

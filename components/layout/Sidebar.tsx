@@ -4,7 +4,12 @@ import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import Image from 'next/image'
-import { Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, TrendingDown, BarChart3, ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield, X, LogOut, Wallet, Wrench, Users, PiggyBank, Settings, Target, Utensils, Calendar, Package } from 'lucide-react'
+import {
+    Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, TrendingDown, BarChart3,
+    ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield, X,
+    LogOut, Wallet, Wrench, Users, PiggyBank, Settings, Target, Utensils, Calendar, Package,
+    CheckSquare, Clock, CreditCard, DollarSign, FileText, User, Briefcase, Library
+} from 'lucide-react'
 import { clsx } from 'clsx'
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { canAccessModule } from '@/lib/auth/permissions'
@@ -44,6 +49,7 @@ const allNavigation: NavItem[] = [
         children: [
             { name: 'Dashboard', href: '/fp-informatica', icon: LayoutDashboard },
             { name: 'Calendario', href: '/fp-informatica/calendar', icon: Calendar },
+            { name: 'Asignaturas', href: '/fp-informatica/subjects', icon: Library },
             { name: 'Clases', href: '/fp-informatica/classes', icon: BookOpen },
             { name: 'Exámenes', href: '/fp-informatica/exams', icon: ClipboardList },
             { name: 'Temas Pendientes', href: '/fp-informatica#tasks', icon: Target },

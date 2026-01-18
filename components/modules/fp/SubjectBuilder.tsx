@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { SortableList } from "@/components/ui/sortable-list"
-import { createSubject } from "@/lib/actions/fp-subjects"
+import { createSubject, updateSubject } from "@/lib/actions/subjects"
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Loader2, Plus, Trash2, Save, FileText } from 'lucide-react'
@@ -27,16 +27,36 @@ interface Practice {
     deliveryFolderLink: string
 }
 
-export function SubjectBuilder() {
+interface SubjectData {
+    id?: string
+    name: string
+    code?: string | null
+    semester: number
+    description?: string | null
+    notes?: string | null
+    topics: Topic[]
+    practices: Practice[]
+}
+
+interface SubjectBuilderProps {
+    initialData?: SubjectData
+}
+
+export function SubjectBuilder({ initialData }: SubjectBuilderProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
-    const [topics, setTopics] = useState<Topic[]>([])
-    const [practices, setPractices] = useState<Practice[]>([])
+    const isEditing = !!initialData?.id
+
+    const [topics, setTopics] = useState<Topic[]>(initialData?.topics || [])
+    const [practices, setPractices] = useState<Practice[]>(initialData?.practices?.map(p => ({
+        ...p,
+        deliveryDate: p.deliveryDate ? new Date(p.deliveryDate).toISOString().split('T')[0] : ''
+    })) || [])
 
     // Tiptap Editor for Notes
     const editor = useEditor({
         extensions: [StarterKit],
-        content: '',
+        content: initialData?.notes || '',
         editorProps: {
             attributes: {
                 class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl m-5 focus:outline-none min-h-[150px]',
@@ -48,7 +68,7 @@ export function SubjectBuilder() {
     const addTopic = () => {
         setTopics([...topics, { id: crypto.randomUUID(), title: '', materialLink: '' }])
     }
-    const updateTopic = (id: string, field: keyof Topic, value: string) => {
+    const updateTopicItem = (id: string, field: keyof Topic, value: string) => {
         setTopics(topics.map(t => t.id === id ? { ...t, [field]: value } : t))
     }
     const removeTopic = (id: string) => {
@@ -65,7 +85,7 @@ export function SubjectBuilder() {
             deliveryFolderLink: ''
         }])
     }
-    const updatePractice = (id: string, field: keyof Practice, value: string) => {
+    const updatePracticeItem = (id: string, field: keyof Practice, value: string) => {
         setPractices(practices.map(p => p.id === id ? { ...p, [field]: value } : p))
     }
     const removePractice = (id: string) => {
@@ -80,14 +100,19 @@ export function SubjectBuilder() {
         formData.append('topics', JSON.stringify(topics))
         formData.append('practices', JSON.stringify(practices))
 
-        const result = await createSubject(formData)
+        let result
+        if (isEditing && initialData?.id) {
+            result = await updateSubject(initialData.id, formData)
+        } else {
+            result = await createSubject(formData)
+        }
 
         if (result.error) {
             toast.error(result.error)
             setIsLoading(false)
         } else {
-            toast.success('Asignatura creada correctamente')
-            router.push('/fp-informatica')
+            toast.success(isEditing ? 'Asignatura actualizada' : 'Asignatura creada correctamente')
+            router.push('/fp-informatica/subjects')
             router.refresh()
         }
     }
@@ -106,24 +131,47 @@ export function SubjectBuilder() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">Nombre de la Asignatura</Label>
-                        <Input id="name" name="name" required placeholder="Ej: Desarrollo Web en Entorno Cliente" />
+                        <Input
+                            id="name"
+                            name="name"
+                            required
+                            placeholder="Ej: Desarrollo Web en Entorno Cliente"
+                            defaultValue={initialData?.name}
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="code">Código</Label>
-                        <Input id="code" name="code" placeholder="Ej: DWEC" />
+                        <Input
+                            id="code"
+                            name="code"
+                            placeholder="Ej: DWEC"
+                            defaultValue={initialData?.code || ''}
+                        />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="semester">Cuatrimestre</Label>
-                        <Input id="semester" name="semester" type="number" min="1" max="2" defaultValue="1" />
+                        <Input
+                            id="semester"
+                            name="semester"
+                            type="number"
+                            min="1"
+                            max="2"
+                            defaultValue={initialData?.semester || 1}
+                        />
                     </div>
                 </div>
 
                 <div className="space-y-2">
                     <Label htmlFor="description">Descripción Corta</Label>
-                    <Input id="description" name="description" placeholder="Breve resumen de la asignatura..." />
+                    <Input
+                        id="description"
+                        name="description"
+                        placeholder="Breve resumen de la asignatura..."
+                        defaultValue={initialData?.description || ''}
+                    />
                 </div>
             </div>
 
@@ -144,13 +192,13 @@ export function SubjectBuilder() {
                             <Input
                                 placeholder="Título del Tema"
                                 value={topic.title}
-                                onChange={(e) => updateTopic(topic.id, 'title', e.target.value)}
+                                onChange={(e) => updateTopicItem(topic.id, 'title', e.target.value)}
                             />
                             <div className="flex gap-2">
                                 <Input
                                     placeholder="Enlace a Drive (Materiales)"
                                     value={topic.materialLink}
-                                    onChange={(e) => updateTopic(topic.id, 'materialLink', e.target.value)}
+                                    onChange={(e) => updateTopicItem(topic.id, 'materialLink', e.target.value)}
                                 />
                                 <Button type="button" variant="ghost" size="icon" onClick={() => removeTopic(topic.id)} className="text-gray-400 hover:text-red-500">
                                     <Trash2 className="w-4 h-4" />
@@ -185,7 +233,7 @@ export function SubjectBuilder() {
                                 <Input
                                     placeholder="Título de la Práctica"
                                     value={practice.title}
-                                    onChange={(e) => updatePractice(practice.id, 'title', e.target.value)}
+                                    onChange={(e) => updatePracticeItem(practice.id, 'title', e.target.value)}
                                     className="font-medium"
                                 />
                                 <Button type="button" variant="ghost" size="icon" onClick={() => removePractice(practice.id)} className="text-gray-400 hover:text-red-500">
@@ -196,17 +244,17 @@ export function SubjectBuilder() {
                                 <Input
                                     type="date"
                                     value={practice.deliveryDate}
-                                    onChange={(e) => updatePractice(practice.id, 'deliveryDate', e.target.value)}
+                                    onChange={(e) => updatePracticeItem(practice.id, 'deliveryDate', e.target.value)}
                                 />
                                 <Input
                                     placeholder="Enlace Enunciado (Drive)"
                                     value={practice.statementLink}
-                                    onChange={(e) => updatePractice(practice.id, 'statementLink', e.target.value)}
+                                    onChange={(e) => updatePracticeItem(practice.id, 'statementLink', e.target.value)}
                                 />
                                 <Input
                                     placeholder="Carpeta de Entrega (Drive)"
                                     value={practice.deliveryFolderLink}
-                                    onChange={(e) => updatePractice(practice.id, 'deliveryFolderLink', e.target.value)}
+                                    onChange={(e) => updatePracticeItem(practice.id, 'deliveryFolderLink', e.target.value)}
                                 />
                             </div>
                         </div>
@@ -237,7 +285,7 @@ export function SubjectBuilder() {
                     <Button type="submit" disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
                         {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                         <Save className="w-4 h-4 mr-2" />
-                        Crear Asignatura
+                        {isEditing ? 'Actualizar Asignatura' : 'Crear Asignatura'}
                     </Button>
                 </div>
             </div>

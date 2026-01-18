@@ -129,6 +129,18 @@ export function ExamGrader({
                             className="h-8 bg-white"
                         />
                     </div>
+                    <div className="space-y-1">
+                        <Label className="text-xs text-slate-500">Valor Desarr. (%)</Label>
+                        <Input
+                            type="number"
+                            value={part2Weight}
+                            onChange={(e) => {
+                                const p2 = Number(e.target.value)
+                                if (onWeightsChange) onWeightsChange(100 - p2, p2)
+                            }}
+                            className="h-8 bg-white"
+                        />
+                    </div>
                 </div>
             </div>
 

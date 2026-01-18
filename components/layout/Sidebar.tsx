@@ -53,7 +53,7 @@ const allNavigation: NavItem[] = [
             { name: 'Clases', href: '/fp-informatica/classes', icon: BookOpen },
             { name: 'Exámenes', href: '/fp-informatica/exams', icon: ClipboardList },
             { name: 'Temas Pendientes', href: '/fp-informatica#tasks', icon: Target },
-            { name: 'Próximos Eventos', href: '/fp-informatica#events', icon: Calendar },
+
             { name: 'Proyectos', href: '/fp-informatica/projects', icon: Package },
         ]
     },

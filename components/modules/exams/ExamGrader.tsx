@@ -50,10 +50,12 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
     const totalManualScore = Object.values(manualScores).reduce((a, b) => a + b, 0)
     // Assuming manual score is direct points (e.g. out of 10 or whatever the user inputs)
     // We might need a "Max Score" for manual part to normalize, but for now let's assume the user inputs the normalized score or we sum them up.
-    // Let's assume the "Part 2" grade is the sum of manual scores up to 10 ?? 
-    // Or maybe we just sum them. Let's assume the sum is the grade out of 10 for simplicity unless specified.
+    // Let's assume the sum is the grade out of 10 for simplicity unless specified.
 
-    const finalGrade = (finalTestGrade * (part1Weight / 100)) + (totalManualScore * (part2Weight / 100))
+    // ADJUSTMENT: User requested that Manual Score be "Additive" (Absolute Points)
+    // while Test Score is weighted.
+    // Logic: Final = (TestGrade * Weight%) + ManualSum
+    const finalGrade = (finalTestGrade * (part1Weight / 100)) + totalManualScore
 
     return (
         <div className="space-y-6">
@@ -128,10 +130,13 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
                 {/* Part 2: Manual Grading */}
                 <Card>
                     <div className="bg-blue-50 p-4 border-b flex items-center justify-between">
-                        <h3 className="font-semibold text-blue-900 flex items-center gap-2">
-                            <Calculator className="w-4 h-4" />
-                            Parte 2: Desarrollo ({part2Weight}%)
-                        </h3>
+                        <div className="flex flex-col">
+                            <h3 className="font-semibold text-blue-900 flex items-center gap-2">
+                                <Calculator className="w-4 h-4" />
+                                Parte 2: Desarrollo
+                            </h3>
+                            <span className="text-xs text-blue-600 mt-1">Suma directa de puntos</span>
+                        </div>
                     </div>
                     <CardContent className="p-6 space-y-4">
                         {manualSections.length === 0 ? (
@@ -158,7 +163,7 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
                         <Separator className="my-4" />
 
                         <div className="flex items-center justify-between">
-                            <span className="font-bold text-gray-700">Nota Desarrollo:</span>
+                            <span className="font-bold text-gray-700">Total Desarrollo:</span>
                             <span className="text-2xl font-bold text-blue-600">{totalManualScore.toFixed(2)}</span>
                         </div>
                     </CardContent>
@@ -170,7 +175,7 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
                 <div className="p-8 flex items-center justify-between">
                     <div>
                         <h2 className="text-2xl font-bold">Nota Final</h2>
-                        <p className="text-slate-400">Ponderada según los pesos establecidos</p>
+                        <p className="text-slate-400">Test ({part1Weight}%) + Desarrollo (Directo)</p>
                     </div>
                     <div className="text-5xl font-bold text-emerald-400">
                         {finalGrade.toFixed(2)}

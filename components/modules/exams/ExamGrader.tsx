@@ -18,13 +18,23 @@ interface GradingRules {
 interface ExamGraderProps {
     sections: ExamSection[]
     gradingRules: GradingRules
+    onGradingChange?: (rules: GradingRules) => void
     part1Weight?: number // 0-100
     part2Weight?: number // 0-100
+    onWeightsChange?: (p1: number, p2: number) => void
 }
 
-export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weight = 50 }: ExamGraderProps) {
-    // Calculate total questions from sections
-    const totalDetectedQuestions = sections
+export function ExamGrader({
+    sections,
+    gradingRules,
+    onGradingChange,
+    part1Weight = 50,
+    part2Weight = 50,
+    onWeightsChange
+}: ExamGraderProps) {
+
+    // Auto-detect questions
+    const detectedQuestions = sections
         .filter(s => s.type === 'TEST')
         .reduce((acc, s) => {
             if (!s.questions) return acc
@@ -32,33 +42,96 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
         }, 0)
 
     // State
+    const [customTotalQuestions, setCustomTotalQuestions] = useState<number | null>(null)
     const [testHits, setTestHits] = useState(0)
     const [testErrors, setTestErrors] = useState(0)
     const [manualScores, setManualScores] = useState<Record<string, number>>({})
 
+    const totalQuestions = customTotalQuestions ?? detectedQuestions
+
+    // Handlers for configuration changes
+    const handleGradingChange = (field: keyof GradingRules, value: number) => {
+        if (onGradingChange) {
+            onGradingChange({
+                ...gradingRules,
+                [field]: value
+            })
+        }
+    }
+
+    const handleWeightChange = (p1: number) => {
+        if (onWeightsChange) {
+            onWeightsChange(p1, 100 - p1)
+        }
+    }
+
     // Computed
-    const testUnanswered = Math.max(0, totalDetectedQuestions - testHits - testErrors)
+    const testUnanswered = Math.max(0, totalQuestions - testHits - testErrors)
     const rawTestScore = Math.max(0, (testHits * gradingRules.testPointsPerQuestion) - (testErrors * gradingRules.testPenaltyPerError))
 
     // Normalize to Max Score
-    const maxPossibleRaw = totalDetectedQuestions * gradingRules.testPointsPerQuestion
-    const finalTestGrade = totalDetectedQuestions > 0
+    // If total questions is 0, avoid div by zero
+    const maxPossibleRaw = totalQuestions * gradingRules.testPointsPerQuestion
+    const finalTestGrade = maxPossibleRaw > 0
         ? (rawTestScore / maxPossibleRaw) * gradingRules.testMaxScore
         : 0
 
     const manualSections = sections.filter(s => s.type !== 'TEST')
     const totalManualScore = Object.values(manualScores).reduce((a, b) => a + b, 0)
-    // Assuming manual score is direct points (e.g. out of 10 or whatever the user inputs)
-    // We might need a "Max Score" for manual part to normalize, but for now let's assume the user inputs the normalized score or we sum them up.
-    // Let's assume the sum is the grade out of 10 for simplicity unless specified.
 
-    // ADJUSTMENT: User requested that Manual Score be "Additive" (Absolute Points)
-    // while Test Score is weighted.
-    // Logic: Final = (TestGrade * Weight%) + ManualSum
-    const finalGrade = (finalTestGrade * (part1Weight / 100)) + totalManualScore
+    // Final Calculation: (TestScore * Weight) + ManualScore
+    const part1Points = finalTestGrade * (part1Weight / 100)
+    const finalGrade = part1Points + totalManualScore
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
+            {/* Configuration Panel */}
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 className="font-semibold text-sm text-slate-700 mb-3 flex items-center gap-2">
+                    <Settings2 className="w-4 h-4" />
+                    Configuración de Evaluación
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="space-y-1">
+                        <Label className="text-xs text-slate-500">Preguntas Test</Label>
+                        <Input
+                            type="number"
+                            min="1"
+                            value={totalQuestions}
+                            onChange={(e) => setCustomTotalQuestions(Number(e.target.value))}
+                            className="h-8 bg-white"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <Label className="text-xs text-slate-500">Acierto (+)</Label>
+                        <Input
+                            type="number" step="0.1"
+                            value={gradingRules.testPointsPerQuestion}
+                            onChange={(e) => handleGradingChange('testPointsPerQuestion', parseFloat(e.target.value))}
+                            className="h-8 bg-white"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <Label className="text-xs text-slate-500">Fallo (-)</Label>
+                        <Input
+                            type="number" step="0.1"
+                            value={gradingRules.testPenaltyPerError}
+                            onChange={(e) => handleGradingChange('testPenaltyPerError', parseFloat(e.target.value))}
+                            className="h-8 bg-white"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <Label className="text-xs text-slate-500">Valor Test (%)</Label>
+                        <Input
+                            type="number"
+                            value={part1Weight}
+                            onChange={(e) => handleWeightChange(Number(e.target.value))}
+                            className="h-8 bg-white"
+                        />
+                    </div>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Part 1: Test Calculator */}
                 <Card>
@@ -68,10 +141,12 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
                                 <Calculator className="w-4 h-4" />
                                 Parte 1: Test ({part1Weight}%)
                             </h3>
-                            <span className="text-xs text-purple-600 mt-1">Detectadas: {totalDetectedQuestions} preguntas</span>
+                            <span className="text-xs text-purple-600 mt-1">
+                                {totalQuestions} preguntas · Max: {((gradingRules.testMaxScore * part1Weight) / 100).toFixed(2)} pts reales
+                            </span>
                         </div>
                         <div className="text-xs text-purple-700 bg-purple-100 px-2 py-1 rounded">
-                            Max: {gradingRules.testMaxScore} pts
+                            Base 10
                         </div>
                     </div>
                     <CardContent className="p-6 space-y-4">
@@ -81,7 +156,7 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
                                 <Input
                                     type="number"
                                     min="0"
-                                    max={totalDetectedQuestions}
+                                    max={totalQuestions}
                                     value={testHits}
                                     onChange={e => setTestHits(Number(e.target.value))}
                                     className="border-green-200 focus:ring-green-500"
@@ -92,7 +167,7 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
                                 <Input
                                     type="number"
                                     min="0"
-                                    max={totalDetectedQuestions}
+                                    max={totalQuestions}
                                     value={testErrors}
                                     onChange={e => setTestErrors(Number(e.target.value))}
                                     className="border-red-200 focus:ring-red-500"
@@ -106,10 +181,10 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
                             </div>
                         </div>
 
-                        {(testHits + testErrors) > totalDetectedQuestions && (
+                        {(testHits + testErrors) > totalQuestions && (
                             <div className="p-3 bg-red-50 text-red-600 text-xs rounded flex items-start gap-2">
                                 <AlertCircle className="w-4 h-4 mt-0.5" />
-                                Suma de aciertos y fallos supera el total de preguntas ({totalDetectedQuestions}).
+                                Suma de aciertos y fallos supera el total de preguntas ({totalQuestions}).
                             </div>
                         )}
 
@@ -121,8 +196,8 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
                         </div>
 
                         <div className="flex items-center justify-between pt-2 border-t">
-                            <span className="font-bold text-gray-700">Nota Test (0-{gradingRules.testMaxScore}):</span>
-                            <span className="text-2xl font-bold text-purple-600">{finalTestGrade.toFixed(2)}</span>
+                            <span className="font-bold text-gray-700">Nota Test (Ponderada):</span>
+                            <span className="text-2xl font-bold text-purple-600">{part1Points.toFixed(2)}</span>
                         </div>
                     </CardContent>
                 </Card>
@@ -175,7 +250,9 @@ export function ExamGrader({ sections, gradingRules, part1Weight = 50, part2Weig
                 <div className="p-8 flex items-center justify-between">
                     <div>
                         <h2 className="text-2xl font-bold">Nota Final</h2>
-                        <p className="text-slate-400">Test ({part1Weight}%) + Desarrollo (Directo)</p>
+                        <p className="text-slate-400">
+                            Test ({part1Points.toFixed(2)}) + Desarrollo ({totalManualScore.toFixed(2)})
+                        </p>
                     </div>
                     <div className="text-5xl font-bold text-emerald-400">
                         {finalGrade.toFixed(2)}

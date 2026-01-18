@@ -1,167 +1,164 @@
-"use client"
-
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
 import { ExamHeaderData } from "@/lib/actions/exams"
-import { ChangeEvent } from "react"
+import { CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-interface Props {
-    data: ExamHeaderData
-    onChange: (data: ExamHeaderData) => void
+interface GradingRules {
+    testPointsPerQuestion: number
+    testPenaltyPerError: number
+    testMaxScore: number
 }
 
-export function ExamHeaderForm({ data, onChange }: Props) {
-    const handleChange = (field: keyof ExamHeaderData, value: string | string[]) => {
+interface ExamHeaderFormProps {
+    data: ExamHeaderData
+    grading: GradingRules
+    onChange: (data: ExamHeaderData) => void
+    onGradingChange: (data: GradingRules) => void
+}
+
+export function ExamHeaderForm({ data, grading, onChange, onGradingChange }: ExamHeaderFormProps) {
+    const handleChange = (field: keyof ExamHeaderData, value: any) => {
         onChange({ ...data, [field]: value })
     }
 
-    const handleRaChange = (e: ChangeEvent<HTMLInputElement>) => {
-        // Split by comma and trim
-        const values = e.target.value.split(',').map(s => s.trim()).filter(Boolean)
-        handleChange('raEvaluated', values)
+    const handleGradingChange = (field: keyof GradingRules, value: number) => {
+        onGradingChange({ ...grading, [field]: value })
+    }
+
+    const handleRAChange = (value: string) => {
+        const ras = value.split(",").map(s => s.trim()).filter(s => s)
+        handleChange("raEvaluated", ras)
     }
 
     return (
-        <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm border">
-            <h2 className="text-xl font-semibold border-b pb-2">1. Datos de Cabecera</h2>
+        <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900 border-b pb-2">Cabecera del Examen</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label htmlFor="logoUrl">Logo (URL o Archivo)</Label>
-                    <div className="flex gap-2">
-                        <Input
-                            id="logoUrl"
-                            value={data.logoUrl || ''}
-                            onChange={(e) => handleChange('logoUrl', e.target.value)}
-                            placeholder="URL del logo..."
-                        />
-                        <div className="relative">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0]
-                                    if (file) {
-                                        const reader = new FileReader()
-                                        reader.onloadend = () => {
-                                            handleChange('logoUrl', reader.result as string)
-                                        }
-                                        reader.readAsDataURL(file)
-                                    }
-                                }}
-                            />
-                            <Button variant="outline" type="button" size="icon">
-                                <span className="font-bold">↑</span>
+                    <Label>Módulo / Asignatura</Label>
+                    <Input value={data.subject} onChange={e => handleChange("subject", e.target.value)} placeholder="Ej: Desarrollo Web Entorno Cliente" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Ciclo</Label>
+                        <Input value={data.cycle} onChange={e => handleChange("cycle", e.target.value)} placeholder="Ej: DAW" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Curso</Label>
+                        <Input value={data.course} onChange={e => handleChange("course", e.target.value)} placeholder="Ej: 2º" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                    <Label>Evaluación</Label>
+                    <Input value={data.evaluation} onChange={e => handleChange("evaluation", e.target.value)} placeholder="Ej: 1ª Evaluación" />
+                </div>
+                <div className="space-y-2">
+                    <Label>Duración</Label>
+                    <Input value={data.duration} onChange={e => handleChange("duration", e.target.value)} placeholder="Ej: 2 horas" />
+                </div>
+                <div className="space-y-2 flex flex-col">
+                    <Label className="mb-2">Fecha</Label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !data.date && "text-muted-foreground"
+                                )}
+                            >
+                                {data.date ? (
+                                    format(new Date(data.date), "PPP")
+                                ) : (
+                                    <span>Seleccionar fecha</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
-                        </div>
-                    </div>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={data.date ? new Date(data.date) : undefined}
+                                onSelect={(date) => handleChange("date", date ? date.toISOString() : "")}
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
                 </div>
+            </div>
 
+            <div className="space-y-2">
+                <Label>Resultados de Aprendizaje (separados por comas)</Label>
+                <Input value={data.raEvaluated.join(", ")} onChange={e => handleRAChange(e.target.value)} placeholder="RA1, RA2, RA3..." />
+            </div>
+
+            <div className="space-y-2">
+                <Label>Instrucciones / Descripción</Label>
+                <Textarea
+                    value={data.description}
+                    onChange={e => handleChange("description", e.target.value)}
+                    placeholder="Instrucciones generales para el alumno..."
+                    className="h-20"
+                />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                 <div className="space-y-2">
-                    <Label htmlFor="course">Curso</Label>
-                    <Input
-                        id="course"
-                        value={data.course}
-                        onChange={(e) => handleChange('course', e.target.value)}
-                        placeholder="Ej: 1º"
-                    />
+                    <Label>Peso Parte 1 (Test %)</Label>
+                    <Input value={data.part1Percentage || ''} onChange={e => handleChange("part1Percentage", e.target.value)} placeholder="Ej: 60%" />
                 </div>
-
                 <div className="space-y-2">
-                    <Label htmlFor="cycle">Ciclo Formativo</Label>
-                    <Input
-                        id="cycle"
-                        value={data.cycle}
-                        onChange={(e) => handleChange('cycle', e.target.value)}
-                        placeholder="Ej: DAM / DAW"
-                    />
+                    <Label>Peso Parte 2 (Desarrollo %)</Label>
+                    <Input value={data.part2Percentage || ''} onChange={e => handleChange("part2Percentage", e.target.value)} placeholder="Ej: 40%" />
                 </div>
+            </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="evaluation">Evaluación</Label>
-                    <Input
-                        id="evaluation"
-                        value={data.evaluation}
-                        onChange={(e) => handleChange('evaluation', e.target.value)}
-                        placeholder="Ej: 1ª Evaluación"
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="date">Fecha</Label>
-                    <Input
-                        id="date"
-                        type="date"
-                        value={data.date}
-                        onChange={(e) => handleChange('date', e.target.value)}
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="duration">Duración</Label>
-                    <Input
-                        id="duration"
-                        value={data.duration}
-                        onChange={(e) => handleChange('duration', e.target.value)}
-                        placeholder="Ej: 2 horas"
-                    />
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="subject">Asignatura / Módulo</Label>
-                    <Input
-                        id="subject"
-                        value={data.subject}
-                        onChange={(e) => handleChange('subject', e.target.value)}
-                        placeholder="Ej: Programación"
-                    />
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="ra">RAs Evaluados (separados por coma)</Label>
-                    <Input
-                        id="ra"
-                        defaultValue={data.raEvaluated.join(', ')}
-                        onChange={handleRaChange}
-                        placeholder="RA1, RA2, RA4"
-                    />
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="desc">Instrucciones / Descripción</Label>
-                    <Textarea
-                        id="desc"
-                        value={data.description}
-                        onChange={(e) => handleChange('description', e.target.value)}
-                        placeholder="Instrucciones generales para el examen..."
-                        className="placeholder:text-gray-400 placeholder:italic"
-                        rows={3}
-                    />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 md:col-span-2">
+            <div className="pt-4 border-t">
+                <Label className="text-purple-700 font-semibold mb-3 block">Reglas de Calificación (Test)</Label>
+                <div className="grid grid-cols-3 gap-4 bg-purple-50 p-4 rounded-lg">
                     <div className="space-y-2">
-                        <Label htmlFor="part1Percentage">% Parte 1 (Test)</Label>
+                        <Label className="text-xs">Puntos por Acierto</Label>
                         <Input
-                            id="part1Percentage"
-                            value={data.part1Percentage || ''}
-                            onChange={(e) => handleChange('part1Percentage', e.target.value)}
-                            placeholder="Ej: 40%"
+                            type="number"
+                            step="0.1"
+                            value={grading.testPointsPerQuestion}
+                            onChange={e => handleGradingChange("testPointsPerQuestion", parseFloat(e.target.value))}
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="part2Percentage">% Parte 2 (Desarrollo)</Label>
+                        <Label className="text-xs">Penalización Error</Label>
                         <Input
-                            id="part2Percentage"
-                            value={data.part2Percentage || ''}
-                            onChange={(e) => handleChange('part2Percentage', e.target.value)}
-                            placeholder="Ej: 60%"
+                            type="number"
+                            step="0.01"
+                            value={grading.testPenaltyPerError}
+                            onChange={e => handleGradingChange("testPenaltyPerError", parseFloat(e.target.value))}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs">Nota Máxima Test</Label>
+                        <Input
+                            type="number"
+                            step="0.1"
+                            value={grading.testMaxScore}
+                            onChange={e => handleGradingChange("testMaxScore", parseFloat(e.target.value))}
                         />
                     </div>
                 </div>
+            </div>
+
+            <div className="space-y-2">
+                <Label>Logo URL</Label>
+                <Input value={data.logoUrl || ''} onChange={e => handleChange("logoUrl", e.target.value)} placeholder="https://..." />
             </div>
         </div>
     )

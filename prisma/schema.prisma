@@ -273,7 +273,13 @@ model ExamTemplate {
   part1Percentage String?
   part2Percentage String?
   sections        String
-  formatting      String
+  formatting      String   @db.Text
+  
+  // Grading Rules
+  testPointsPerQuestion Float @default(1.0)
+  testPenaltyPerError   Float @default(0.33)
+  testMaxScore          Float @default(10.0)
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

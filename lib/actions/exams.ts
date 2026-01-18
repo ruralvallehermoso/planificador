@@ -40,6 +40,11 @@ export type ExamTemplateData = {
     header: ExamHeaderData
     sections: ExamSection[]
     formatting: ExamFormatting
+    grading: {
+        testPointsPerQuestion: number
+        testPenaltyPerError: number
+        testMaxScore: number
+    }
 }
 
 export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
@@ -60,7 +65,10 @@ export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
             part1Percentage: header.part1Percentage,
             part2Percentage: header.part2Percentage,
             sections: JSON.stringify(sections),
-            formatting: JSON.stringify(formatting)
+            formatting: JSON.stringify(formatting),
+            testPointsPerQuestion: data.grading.testPointsPerQuestion,
+            testPenaltyPerError: data.grading.testPenaltyPerError,
+            testMaxScore: data.grading.testMaxScore,
         }
 
         let template;

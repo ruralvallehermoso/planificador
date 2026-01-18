@@ -5,11 +5,12 @@ import { ExamHeaderForm } from "./ExamHeaderForm"
 import { ExamSectionsBuilder } from "./ExamSectionsBuilder"
 import { ExamFormattingForm } from "./ExamFormattingForm"
 import { ExamPreview } from "./ExamPreview"
+import { ExamGrader } from "./ExamGrader"
 import { ExamHeaderData, ExamSection, ExamFormatting, saveExamTemplate, getExamTemplates, deleteTemplate, ExamTemplateData, generateExamSolution } from "@/lib/actions/exams"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2, Sparkles, Check, Copy, AlertCircle } from "lucide-react"
+import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2, Sparkles, Check, Copy, AlertCircle, Calculator } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
@@ -27,10 +28,23 @@ const DEFAULT_FORMATTING: ExamFormatting = {
     lineHeight: "leading-normal", paragraphSpacing: "space-y-4"
 }
 
+interface GradingRules {
+    testPointsPerQuestion: number
+    testPenaltyPerError: number
+    testMaxScore: number
+}
+
+const DEFAULT_GRADING: GradingRules = {
+    testPointsPerQuestion: 1.0,
+    testPenaltyPerError: 0.33,
+    testMaxScore: 10.0
+}
+
 export function ExamFormBuilder() {
     const [header, setHeader] = useState<ExamHeaderData>(DEFAULT_HEADER)
     const [sections, setSections] = useState<ExamSection[]>([])
     const [formatting, setFormatting] = useState<ExamFormatting>(DEFAULT_FORMATTING)
+    const [grading, setGrading] = useState<GradingRules>(DEFAULT_GRADING)
     const [templates, setTemplates] = useState<any[]>([])
     const [isSaving, setIsSaving] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -59,47 +73,40 @@ export function ExamFormBuilder() {
         if (urlTemplateId && t.length > 0) {
             const template = t.find((tmpl: any) => tmpl.id === urlTemplateId)
             if (template) {
-                setSelectedTemplateId(urlTemplateId)
-                setNewTemplateName(template.name)
-                setHeader({
-                    logoUrl: template.logoUrl || undefined,
-                    cycle: template.cycle || "",
-                    course: template.course || "",
-                    evaluation: template.evaluation || "",
-                    duration: template.duration || "",
-                    date: template.date ? new Date(template.date).toISOString() : "",
-                    subject: template.subject || "",
-                    raEvaluated: JSON.parse(template.raEvaluated || "[]"),
-                    description: template.description || "",
-                    part1Percentage: template.part1Percentage || undefined,
-                    part2Percentage: template.part2Percentage || undefined,
-                })
-                setSections(JSON.parse(template.sections))
-                setFormatting(JSON.parse(template.formatting))
+                loadTemplateData(template)
             }
         }
+    }
+
+    const loadTemplateData = (template: any) => {
+        setSelectedTemplateId(template.id)
+        setNewTemplateName(template.name)
+        setHeader({
+            logoUrl: template.logoUrl || undefined,
+            cycle: template.cycle || "",
+            course: template.course || "",
+            evaluation: template.evaluation || "",
+            duration: template.duration || "",
+            date: template.date ? new Date(template.date).toISOString() : "",
+            subject: template.subject || "",
+            raEvaluated: JSON.parse(template.raEvaluated || "[]"),
+            description: template.description || "",
+            part1Percentage: template.part1Percentage || undefined,
+            part2Percentage: template.part2Percentage || undefined,
+        })
+        setSections(JSON.parse(template.sections))
+        setFormatting(JSON.parse(template.formatting))
+        setGrading({
+            testPointsPerQuestion: template.testPointsPerQuestion ?? 1.0,
+            testPenaltyPerError: template.testPenaltyPerError ?? 0.33,
+            testMaxScore: template.testMaxScore ?? 10.0
+        })
     }
 
     const handleLoadTemplate = (templateId: string) => {
         const template = templates.find(t => t.id === templateId)
         if (template) {
-            setSelectedTemplateId(templateId)
-            setNewTemplateName(template.name) // Pre-fill name for potential edit
-            setHeader({
-                logoUrl: template.logoUrl || undefined,
-                cycle: template.cycle || "",
-                course: template.course || "",
-                evaluation: template.evaluation || "",
-                duration: template.duration || "",
-                date: template.date ? new Date(template.date).toISOString() : "",
-                subject: template.subject || "",
-                raEvaluated: JSON.parse(template.raEvaluated || "[]"),
-                description: template.description || "",
-                part1Percentage: template.part1Percentage || undefined,
-                part2Percentage: template.part2Percentage || undefined,
-            })
-            setSections(JSON.parse(template.sections))
-            setFormatting(JSON.parse(template.formatting))
+            loadTemplateData(template)
         }
     }
 
@@ -121,7 +128,8 @@ export function ExamFormBuilder() {
             name: newTemplateName,
             header,
             sections,
-            formatting
+            formatting,
+            grading
         }
         // If selectedTemplateId exists and not saving as new, update existing
         const idToUpdate = (selectedTemplateId && !asNew) ? selectedTemplateId : undefined
@@ -289,7 +297,8 @@ export function ExamFormBuilder() {
             name: newTemplateName || 'Borrador',
             header,
             sections,
-            formatting
+            formatting,
+            grading
         }
 
         try {
@@ -343,6 +352,19 @@ export function ExamFormBuilder() {
         `)
         printWindow.document.close()
     }
+
+    // Helper to parse weights
+    const getWeights = () => {
+        const w1 = parseFloat(header.part1Percentage?.replace('%', '') || '50')
+        const w2 = parseFloat(header.part2Percentage?.replace('%', '') || '50')
+        // Normalize if NaN
+        return {
+            p1: isNaN(w1) ? 50 : w1,
+            p2: isNaN(w2) ? 50 : w2
+        }
+    }
+
+    const weights = getWeights()
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
@@ -462,7 +484,12 @@ export function ExamFormBuilder() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 print:block print:w-full">
                     {/* Editor Column (Left) - Hidden on print */}
                     <div className="space-y-6 print:hidden">
-                        <ExamHeaderForm data={header} onChange={setHeader} />
+                        <ExamHeaderForm
+                            data={header}
+                            onChange={setHeader}
+                            grading={grading}
+                            onGradingChange={setGrading}
+                        />
                         <ExamSectionsBuilder sections={sections} onChange={setSections} />
                         <ExamFormattingForm data={formatting} onChange={setFormatting} />
                     </div>
@@ -478,9 +505,13 @@ export function ExamFormBuilder() {
                                             <Sparkles className="h-3 w-3 mr-2 text-purple-600" />
                                             Solucionario
                                         </TabsTrigger>
+                                        <TabsTrigger value="grading" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                            <Calculator className="h-3 w-3 mr-2 text-emerald-600" />
+                                            Calificaciones
+                                        </TabsTrigger>
                                     </TabsList>
                                     <span className="text-sm text-gray-500 hidden sm:block">
-                                        {activeTab === 'preview' ? 'Se actualiza en tiempo real' : 'Generado por IA'}
+                                        {activeTab === 'preview' ? 'Se actualiza en tiempo real' : activeTab === 'grading' ? 'Calculadora de Notas' : 'Generado por IA'}
                                     </span>
                                 </div>
 
@@ -535,6 +566,24 @@ export function ExamFormBuilder() {
                                                 </Button>
                                             </div>
                                         )}
+                                    </div>
+                                </TabsContent>
+
+                                <TabsContent value="grading" className="mt-0 outline-none">
+                                    <div className="bg-white p-8 shadow-lg min-h-[500px] rounded-lg border border-emerald-100">
+                                        <div className="mb-6">
+                                            <h3 className="font-bold text-lg text-emerald-900 flex items-center gap-2">
+                                                <Calculator className="h-5 w-5 text-emerald-600" />
+                                                Calculadora de Calificaciones
+                                            </h3>
+                                            <p className="text-sm text-gray-500">Calcula la nota final basada en los pesos y reglas definidas.</p>
+                                        </div>
+                                        <ExamGrader
+                                            sections={sections}
+                                            gradingRules={grading}
+                                            part1Weight={weights.p1}
+                                            part2Weight={weights.p2}
+                                        />
                                     </div>
                                 </TabsContent>
                             </Tabs>

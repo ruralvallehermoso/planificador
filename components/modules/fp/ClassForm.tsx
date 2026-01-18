@@ -7,8 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { createClass, updateClass } from "@/lib/actions/classes"
-import { Plus, Loader2, Pencil } from 'lucide-react'
+import { Plus, Loader2, Pencil, Link as LinkIcon, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+
+interface ClassLink {
+    title: string
+    url: string
+}
 
 interface ClassData {
     id?: string
@@ -18,7 +23,7 @@ interface ClassData {
     endTime?: string | null
     description?: string | null
     content?: string | null
-    driveLink?: string | null
+    links?: ClassLink[]
 }
 
 interface ClassFormProps {
@@ -31,10 +36,26 @@ export function ClassForm({ categoryId, initialData, trigger }: ClassFormProps) 
     const [open, setOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const isEditing = !!initialData
+    const [links, setLinks] = useState<ClassLink[]>(initialData?.links || [])
+
+    const addLink = () => {
+        setLinks([...links, { title: '', url: '' }])
+    }
+
+    const removeLink = (index: number) => {
+        setLinks(links.filter((_, i) => i !== index))
+    }
+
+    const updateLink = (index: number, field: keyof ClassLink, value: string) => {
+        const newLinks = [...links]
+        newLinks[index] = { ...newLinks[index], [field]: value }
+        setLinks(newLinks)
+    }
 
     async function handleSubmit(formData: FormData) {
         setIsLoading(true)
         formData.append('categoryId', categoryId)
+        formData.append('links', JSON.stringify(links.filter(l => l.title && l.url))) // Only send valid links
 
         let result
         if (isEditing && initialData?.id) {
@@ -49,6 +70,7 @@ export function ClassForm({ categoryId, initialData, trigger }: ClassFormProps) 
         } else {
             toast.success(isEditing ? 'Clase actualizada' : 'Clase creada correctamente')
             setOpen(false)
+            if (!isEditing) setLinks([]) // Reset links on new creation
         }
     }
 
@@ -60,13 +82,13 @@ export function ClassForm({ categoryId, initialData, trigger }: ClassFormProps) 
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {trigger || (
-                    <Button>
-                        <Plus className="w-4 h-4 mr-2" />
+                    <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md transition-all hover:shadow-lg rounded-full px-6">
+                        <Plus className="w-5 h-5 mr-2" />
                         Nueva Clase
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px]">
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{isEditing ? 'Editar Clase' : 'Añadir Nueva Clase'}</DialogTitle>
                 </DialogHeader>
@@ -136,19 +158,40 @@ export function ClassForm({ categoryId, initialData, trigger }: ClassFormProps) 
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="driveLink">Enlace a Drive</Label>
-                        <Input
-                            id="driveLink"
-                            name="driveLink"
-                            type="url"
-                            placeholder="https://drive.google.com/..."
-                            defaultValue={initialData?.driveLink || ''}
-                        />
+                    {/* Resources Section */}
+                    <div className="space-y-3 pt-2 border-t">
+                        <div className="flex items-center justify-between">
+                            <Label className="text-base font-semibold">Recursos (Drive / Links)</Label>
+                            <Button type="button" variant="outline" size="sm" onClick={addLink}>
+                                <Plus className="w-4 h-4 mr-2" /> Añadir Enlace
+                            </Button>
+                        </div>
+
+                        {links.map((link, index) => (
+                            <div key={index} className="flex items-start gap-2 bg-slate-50 p-2 rounded-md">
+                                <div className="grid gap-2 flex-1">
+                                    <Input
+                                        placeholder="Título (ej: Diapositivas)"
+                                        value={link.title}
+                                        onChange={(e) => updateLink(index, 'title', e.target.value)}
+                                        className="h-8 text-sm"
+                                    />
+                                    <Input
+                                        placeholder="URL (https://...)"
+                                        value={link.url}
+                                        onChange={(e) => updateLink(index, 'url', e.target.value)}
+                                        className="h-8 text-sm font-mono"
+                                    />
+                                </div>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => removeLink(index)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        ))}
                     </div>
 
                     <div className="pt-4 flex justify-end">
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading} className="bg-slate-900 hover:bg-slate-800">
                             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             {isEditing ? 'Actualizar Clase' : 'Guardar Clase'}
                         </Button>

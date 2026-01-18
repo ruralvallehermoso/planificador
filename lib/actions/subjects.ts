@@ -4,63 +4,83 @@ import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
-const subjectSchema = z.object({
-    name: z.string().min(1, "El nombre es obligatorio"),
-    code: z.string().optional(),
-    professor: z.string().optional(),
-    credits: z.number().min(0).default(6),
-    semester: z.number().min(1).default(1),
+const topicSchema = z.object({
+    title: z.string().min(1, "El título del tema es obligatorio"),
+    materialLink: z.string().optional().or(z.literal('')),
 })
 
-export async function getSubjects(categoryId: string) {
-    try {
-        const subjects = await prisma.subject.findMany({
-            where: { categoryId }, // Filter by category
-            orderBy: { semester: 'asc' },
-            include: {
-                _count: {
-                    select: { tasks: true, assessments: true }
-                }
-            }
-        })
-        return { success: true, subjects }
-    } catch (error) {
-        console.error("Error fetching subjects:", error)
-        return { success: false, error: "Error al cargar las asignaturas" }
-    }
-}
+const practiceSchema = z.object({
+    title: z.string().min(1, "El título de la práctica es obligatorio"),
+    deliveryDate: z.string().optional().or(z.literal('')),
+    statementLink: z.string().optional().or(z.literal('')),
+    deliveryFolderLink: z.string().optional().or(z.literal('')),
+})
 
-export async function createSubject(data: z.infer<typeof subjectSchema>, categoryId: string) {
+const subjectSchema = z.object({
+    name: z.string().min(1, "El nombre de la asignatura es obligatorio"),
+    code: z.string().optional(),
+    semester: z.string().transform(val => parseInt(val)).or(z.number()),
+    description: z.string().optional(),
+    content: z.string().optional(), // Represents the HTML notes
+    topics: z.array(topicSchema).optional(),
+    practices: z.array(practiceSchema).optional(),
+})
+
+export async function createSubject(formData: FormData) {
+    const rawData = {
+        name: formData.get('name'),
+        code: formData.get('code'),
+        semester: formData.get('semester'),
+        description: formData.get('description'),
+        content: formData.get('content'),
+        topics: JSON.parse(formData.get('topics') as string || '[]'),
+        practices: JSON.parse(formData.get('practices') as string || '[]'),
+    }
+
     try {
-        const validated = subjectSchema.parse(data)
+        const data = subjectSchema.parse(rawData)
+
+        // Fetch FP category
+        const category = await prisma.category.findUnique({
+            where: { slug: 'fp-informatica' }
+        })
+
+        if (!category) throw new Error("Categoría FP no encontrada")
 
         await prisma.subject.create({
             data: {
-                ...validated,
-                categoryId
+                name: data.name,
+                code: data.code,
+                semester: data.semester,
+                description: data.description,
+                notes: data.content,
+                categoryId: category.id,
+                topics: {
+                    create: data.topics?.map((t, idx) => ({
+                        title: t.title,
+                        materialLink: t.materialLink || undefined,
+                        order: idx
+                    }))
+                },
+                practices: {
+                    create: data.practices?.map((p, idx) => ({
+                        title: p.title,
+                        deliveryDate: p.deliveryDate ? new Date(p.deliveryDate) : undefined,
+                        statementLink: p.statementLink || undefined,
+                        deliveryFolderLink: p.deliveryFolderLink || undefined,
+                        order: idx
+                    }))
+                }
             }
         })
 
-        revalidatePath('/master-unie/asignaturas')
-        revalidatePath('/master-unie') // Dashboard
+        revalidatePath('/fp-informatica')
         return { success: true }
-    } catch (error) {
-        console.error("Error creating subject:", error)
-        return { success: false, error: "Error al crear la asignatura" }
-    }
-}
-
-export async function deleteSubject(id: string) {
-    try {
-        await prisma.subject.delete({
-            where: { id }
-        })
-
-        revalidatePath('/master-unie/asignaturas')
-        revalidatePath('/master-unie')
-        return { success: true }
-    } catch (error) {
-        console.error("Error deleting subject:", error)
-        return { success: false, error: "Error al eliminar la asignatura" }
+    } catch (e) {
+        if (e instanceof z.ZodError) {
+            return { error: e.issues[0].message }
+        }
+        console.error(e)
+        return { error: 'Error al crear la asignatura' }
     }
 }

@@ -127,7 +127,19 @@ model ClassSession {
   categoryId  String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  category    Category @relation(fields: [categoryId], references: [id])
+  category    Category    @relation(fields: [categoryId], references: [id])
+  links       ClassLink[]
+
+  @@schema("public")
+}
+
+model ClassLink {
+  id             String       @id @default(cuid())
+  title          String
+  url            String
+  classSessionId String
+  createdAt      DateTime     @default(now())
+  classSession   ClassSession @relation(fields: [classSessionId], references: [id], onDelete: Cascade)
 
   @@schema("public")
 }
@@ -181,8 +193,40 @@ model Subject {
   category    Category?    @relation(fields: [categoryId], references: [id])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  description String?
+  notes       String?      @db.Text
   tasks       ActionItem[]
   assessments Assessment[]
+  topics      SubjectTopic[]
+  practices   SubjectPractice[]
+
+  @@schema("public")
+}
+
+model SubjectTopic {
+  id           String   @id @default(cuid())
+  title        String
+  order        Int      @default(0)
+  materialLink String?
+  subjectId    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  subject      Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model SubjectPractice {
+  id                 String    @id @default(cuid())
+  title              String
+  order              Int       @default(0)
+  deliveryDate       DateTime?
+  statementLink      String?
+  deliveryFolderLink String?
+  subjectId          String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  subject            Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
   @@schema("public")
 }

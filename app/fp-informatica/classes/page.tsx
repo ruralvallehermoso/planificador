@@ -17,7 +17,8 @@ export default async function ClassesPage() {
 
     const classes = await prisma.classSession.findMany({
         where: { categoryId: category.id },
-        orderBy: { date: 'desc' }
+        orderBy: { date: 'desc' },
+        include: { links: true }
     })
 
     return (
@@ -86,7 +87,7 @@ export default async function ClassesPage() {
                                 )}
                             </div>
 
-                            {(session.content || session.driveLink) && (
+                            {(session.content || session.driveLink || (session.links && session.links.length > 0)) && (
                                 <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
                                     {session.content && (
                                         <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-700 whitespace-pre-wrap">
@@ -102,8 +103,24 @@ export default async function ClassesPage() {
                                                 className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-3 py-1.5 rounded-full transition-colors hover:bg-blue-100"
                                             >
                                                 <ExternalLink className="h-4 w-4" />
-                                                Ver materiales en Drive
+                                                Ver materiales en Drive (Legacy)
                                             </a>
+                                        </div>
+                                    )}
+                                    {session.links && session.links.length > 0 && (
+                                        <div className="flex flex-wrap gap-2">
+                                            {session.links.map(link => (
+                                                <a
+                                                    key={link.id}
+                                                    href={link.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-3 py-1.5 rounded-full transition-colors hover:bg-blue-100"
+                                                >
+                                                    <ExternalLink className="h-4 w-4" />
+                                                    {link.title}
+                                                </a>
+                                            ))}
                                         </div>
                                     )}
                                 </div>

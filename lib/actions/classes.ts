@@ -16,26 +16,26 @@ const classSchema = z.object({
 })
 
 export async function createClass(formData: FormData) {
-    const rawData = {
-        title: formData.get('title'),
-        description: formData.get('description'),
-        date: formData.get('date'),
-        startTime: formData.get('startTime'),
-        endTime: formData.get('endTime'),
-        content: formData.get('content'),
-        driveLink: formData.get('driveLink'),
-        categoryId: formData.get('categoryId'),
+    const LINKS_JSON = formData.get('links') as string
+    let links: { title: string, url: string }[] = []
+    try {
+        if (LINKS_JSON) {
+            links = JSON.parse(LINKS_JSON)
+        }
+    } catch (e) {
+        console.error("Error parsing links", e)
     }
 
     try {
         const data = classSchema.parse(rawData)
-
-        // Remove empty strings for optional fields
         if (data.driveLink === '') data.driveLink = undefined
 
         await prisma.classSession.create({
             data: {
                 ...data,
+                links: {
+                    create: links
+                }
             }
         })
 
@@ -61,15 +61,29 @@ export async function updateClass(id: string, formData: FormData) {
         categoryId: formData.get('categoryId'),
     }
 
+    const LINKS_JSON = formData.get('links') as string
+    let links: { title: string, url: string }[] = []
+    try {
+        if (LINKS_JSON) {
+            links = JSON.parse(LINKS_JSON)
+        }
+    } catch (e) {
+        console.error("Error parsing links", e)
+    }
+
     try {
         const data = classSchema.parse(rawData)
-
-        // Remove empty strings for optional fields
         if (data.driveLink === '') data.driveLink = undefined
 
         await prisma.classSession.update({
             where: { id },
-            data: { ...data }
+            data: {
+                ...data,
+                links: {
+                    deleteMany: {},
+                    create: links
+                }
+            }
         })
 
         revalidatePath('/fp-informatica/classes')

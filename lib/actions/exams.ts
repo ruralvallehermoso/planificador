@@ -47,6 +47,7 @@ export type ExamTemplateData = {
         testPenaltyPerError: number
         testMaxScore: number
     }
+    manualSolution?: string
 }
 
 export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
@@ -71,6 +72,7 @@ export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
             testPointsPerQuestion: data.grading.testPointsPerQuestion,
             testPenaltyPerError: data.grading.testPenaltyPerError,
             testMaxScore: data.grading.testMaxScore,
+            manualSolution: data.manualSolution,
         }
 
         let template;

@@ -111,6 +111,7 @@ export function ExamFormBuilder() {
             testPenaltyPerError: template.testPenaltyPerError ?? 0.33,
             testMaxScore: template.testMaxScore ?? 10.0
         })
+        setManualSolution(template.manualSolution || "")
     }
 
     const handleLoadTemplate = (templateId: string) => {
@@ -139,7 +140,8 @@ export function ExamFormBuilder() {
             header,
             sections,
             formatting,
-            grading
+            grading,
+            manualSolution
         }
         // If selectedTemplateId exists and not saving as new, update existing
         const idToUpdate = (selectedTemplateId && !asNew) ? selectedTemplateId : undefined

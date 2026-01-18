@@ -274,6 +274,7 @@ model ExamTemplate {
   part2Percentage String?
   sections        String
   formatting      String   @db.Text
+  manualSolution  String?  @db.Text
   
   // Grading Rules
   testPointsPerQuestion Float @default(1.0)

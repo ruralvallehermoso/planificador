@@ -1,4 +1,4 @@
-import { Calendar, BookOpen, GraduationCap } from "lucide-react"
+import { Calendar, BookOpen, GraduationCap, FilePlus } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { SidebarTaskManager } from "@/components/modules/teacher/SidebarTaskManager"
@@ -33,6 +33,16 @@ const DASHBOARD_CARDS = [
         bgColor: "bg-amber-100",
         borderColor: "border-amber-200",
         hoverBorder: "hover:border-amber-300",
+    },
+    {
+        title: "Diseñador de Asignaturas",
+        description: "Crea y estructura planes de estudio, temas y prácticas.",
+        icon: FilePlus,
+        href: "/fp-informatica/subjects/new",
+        color: "text-emerald-600",
+        bgColor: "bg-emerald-100",
+        borderColor: "border-emerald-200",
+        hoverBorder: "hover:border-emerald-300",
     }
 ]
 

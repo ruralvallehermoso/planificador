@@ -48,7 +48,7 @@ const allNavigation: NavItem[] = [
         module: MODULES.FP_INFORMATICA,
         children: [
             { name: 'Dashboard', href: '/fp-informatica', icon: LayoutDashboard },
-            { name: 'Calendario', href: '/fp-informatica/calendar', icon: Calendar },
+            { name: 'Programación', href: '/fp-informatica/calendar', icon: Calendar },
             { name: 'Asignaturas', href: '/fp-informatica/subjects', icon: Library },
             { name: 'Clases', href: '/fp-informatica/classes', icon: BookOpen },
             { name: 'Exámenes', href: '/fp-informatica/exams', icon: ClipboardList },

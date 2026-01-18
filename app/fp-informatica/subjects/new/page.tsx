@@ -11,7 +11,7 @@ export default function NewSubjectPage() {
                 </Link>
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Nueva Asignatura</h1>
-                    <p className="text-sm text-gray-500">Diseñador de asignaturas</p>
+                    <p className="text-sm text-gray-500">Definir estructura y contenidos</p>
                 </div>
             </div>
 

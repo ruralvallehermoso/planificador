@@ -4,9 +4,10 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { notFound } from "next/navigation"
 
-export default async function SubjectDetailPage({ params }: { params: { id: string } }) {
+export default async function SubjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
     const subject = await prisma.subject.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: {
             topics: { orderBy: { order: 'asc' } },
             practices: { orderBy: { order: 'asc' } }

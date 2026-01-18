@@ -44,7 +44,7 @@ export async function createClass(formData: FormData) {
         return { success: true }
     } catch (e) {
         if (e instanceof z.ZodError) {
-            return { error: e.errors[0].message }
+            return { error: e.issues[0].message }
         }
         return { error: 'Error al crear la clase' }
     }

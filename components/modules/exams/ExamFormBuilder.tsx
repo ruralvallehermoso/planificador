@@ -60,9 +60,314 @@ export function ExamFormBuilder() {
     const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split')
 
     const searchParams = useSearchParams()
-    // ... (rest of existing hooks)
+    const router = useRouter()
+    const urlTemplateId = searchParams.get('id')
 
-    // ... (existing functions)
+    // Load templates on mount
+    useEffect(() => {
+        loadTemplates()
+    }, [])
+
+    const loadTemplates = async () => {
+        const t = await getExamTemplates()
+        setTemplates(t)
+
+        // Auto-load template from URL if present and templates loaded
+        if (urlTemplateId && t.length > 0) {
+            const template = t.find((tmpl: any) => tmpl.id === urlTemplateId)
+            if (template) {
+                loadTemplateData(template)
+            }
+        }
+    }
+
+    const loadTemplateData = (template: any) => {
+        setSelectedTemplateId(template.id)
+        setNewTemplateName(template.name)
+        setHeader({
+            logoUrl: template.logoUrl || undefined,
+            cycle: template.cycle || "",
+            course: template.course || "",
+            evaluation: template.evaluation || "",
+            duration: template.duration || "",
+            date: template.date ? new Date(template.date).toISOString() : "",
+            subject: template.subject || "",
+            raEvaluated: JSON.parse(template.raEvaluated || "[]"),
+            description: template.description || "",
+            part1Percentage: template.part1Percentage || undefined,
+            part2Percentage: template.part2Percentage || undefined,
+        })
+        setSections(JSON.parse(template.sections))
+        setFormatting(JSON.parse(template.formatting))
+        setGrading({
+            testPointsPerQuestion: template.testPointsPerQuestion ?? 1.0,
+            testPenaltyPerError: template.testPenaltyPerError ?? 0.33,
+            testMaxScore: template.testMaxScore ?? 10.0
+        })
+    }
+
+    const handleLoadTemplate = (templateId: string) => {
+        const template = templates.find(t => t.id === templateId)
+        if (template) {
+            loadTemplateData(template)
+        }
+    }
+
+    const handleDeleteTemplate = async () => {
+        if (!selectedTemplateId) return
+        if (!confirm("¿Estás seguro de que quieres eliminar esta plantilla?")) return
+
+        setIsDeleting(true)
+        await deleteTemplate(selectedTemplateId)
+        await loadTemplates()
+        setSelectedTemplateId(null)
+        setIsDeleting(false)
+    }
+
+    const handleSaveTemplate = async (asNew: boolean = false) => {
+        if (!newTemplateName) return
+        setIsSaving(true)
+        const data: ExamTemplateData = {
+            name: newTemplateName,
+            header,
+            sections,
+            formatting,
+            grading
+        }
+        // If selectedTemplateId exists and not saving as new, update existing
+        const idToUpdate = (selectedTemplateId && !asNew) ? selectedTemplateId : undefined
+
+        const result = await saveExamTemplate(data, idToUpdate)
+
+        if (result.success) {
+            await loadTemplates()
+            if (result.id) setSelectedTemplateId(result.id)
+        }
+        setIsSaving(false)
+        setSaveDialogOpen(false)
+        // Keep name if editing, otherwise clear? Actually better to keep purely for UX
+    }
+
+    const handlePrint = () => {
+        window.print()
+    }
+
+    const handleExportDoc = () => {
+        const fontMap: Record<string, string> = {
+            'font-sans': 'Arial, sans-serif',
+            'font-serif': '"Times New Roman", serif',
+            'font-mono': '"Courier New", monospace',
+            "font-[Arial]": 'Arial, sans-serif',
+            "font-[Verdana]": 'Verdana, sans-serif',
+            "font-[Helvetica]": 'Helvetica, sans-serif',
+            "font-['Times_New_Roman']": '"Times New Roman", serif',
+            "font-[Georgia]": 'Georgia, serif',
+            "font-['Courier_New']": '"Courier New", monospace',
+            "font-['Trebuchet_MS']": '"Trebuchet MS", sans-serif',
+            "font-[Impact]": 'Impact, sans-serif',
+        }
+        const fontFamily = fontMap[formatting.font] || 'Arial, sans-serif'
+
+        // Helper to formatting questions for export
+        const formatQuestionsExport = (text: string, isTest: boolean) => {
+            if (!text) return ''
+
+            if (isTest) {
+                return text.split('\n').map(line => {
+                    const isQuestion = /^\d+[\.\)]/.test(line.trim())
+                    const style = isQuestion && (formatting.questionsBold ?? true) ? 'font-weight: bold; margin-top: 10px;' : 'margin-left: 20px;'
+                    return `<div style="${style} margin-bottom: 5px;">${line}</div>`
+                }).join('')
+            } else {
+                // Develop questions
+                return text.split('\n').filter(l => l.trim().length > 0).map(line => {
+                    // Bold score pattern logic
+                    const scoreRegex = /(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/i
+                    const parts = line.split(scoreRegex)
+                    const content = parts.map(part => {
+                        if (scoreRegex.test(part)) return `<b>${part}</b>`
+                        return part
+                    }).join('')
+
+                    const isBold = formatting.questionsBold ?? true
+                    return `<div style="margin-bottom: 15px; ${isBold ? 'font-weight: bold;' : ''}">${content}</div>`
+                }).join('')
+            }
+        }
+
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body { font-family: ${fontFamily}; color: #000; line-height: 1.5; }
+                    /* Generic Table Styles */
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                    td, th { padding: 5px; vertical-align: top; border: 1px solid #ccc; }
+                    th { background-color: #2563eb; color: white; font-weight: bold; text-align: left; }
+                    
+                    /* Specific overrides for layout tables if needed */
+                    .header-table td, .info-table td { border: none; } /* Reset for layout tables if they use generic tag */
+                    .info-table td { border: 1px solid #ccc; background-color: #f9f9f9; }
+                    .header-table td { text-align: center; border: none; background: none; }
+
+                    h1 { font-size: 24px; text-transform: uppercase; margin: 0; }
+                    h2 { font-size: 18px; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 30px; }
+                    .ra-item { display: inline-block; margin-right: 20px; }
+                    .logo { max-height: 80px; width: auto; }
+                </style>
+            </head>
+            <body>
+                <!-- Header -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    ${header.logoUrl ? `<img src="${header.logoUrl}" class="logo" style="max-height: 80px;" /><br/>` : ''}
+                    <div style="margin-top: 10px;">
+                        <h1>${header.subject}</h1>
+                        <div style="font-size: 16px; color: #666; margin-top: 5px;">${header.course} - ${header.cycle}</div>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <table class="info-table">
+                    <tr>
+                        <td><strong>Evaluación:</strong> ${header.evaluation}</td>
+                        <td><strong>Fecha:</strong> ${header.date ? new Date(header.date).toLocaleDateString("es-ES") : ''}</td>
+                    </tr>
+                    <tr>
+                         <td><strong>Duración:</strong> ${header.duration}</td>
+                         <td><strong>RA Evaluados:</strong> ${header.raEvaluated.join(", ")}</td>
+                    </tr>
+                    ${(header.part1Percentage || header.part2Percentage) ? `
+                    <tr>
+                        <td>${header.part1Percentage ? `<strong>Parte 1 (Test):</strong> ${header.part1Percentage}` : ''}</td>
+                        <td>${header.part2Percentage ? `<strong>Parte 2 (Desarrollo):</strong> ${header.part2Percentage}` : ''}</td>
+                    </tr>` : ''}
+                </table>
+
+                <!-- Name Field -->
+                <div style="margin-bottom: 20px;">
+                    <strong>Nombre y Apellidos:</strong> _________________________________________________________________
+                </div>
+
+                <!-- RA Ratings -->
+                <div style="margin-bottom: 20px;">
+                    ${header.raEvaluated.map(ra =>
+            `<span style="margin-right: 30px;"><strong>${ra}</strong> Calificación: ________</span>`
+        ).join('')}
+                    ${header.raEvaluated.length === 0 ? '<span><strong>Calificación:</strong> ________</span>' : ''}
+                </div>
+
+                <!-- Description -->
+                ${header.description ? `<div style="font-style: italic; color: #666; border-left: 3px solid #ccc; padding-left: 10px; margin-bottom: 30px; white-space: pre-wrap;">${header.description}</div>` : ''}
+
+                <!-- Sections -->
+                ${sections.map((section, idx) => `
+                    <div>
+                        <h2>${idx + 1}. ${section.title} ${section.ra && section.ra.length > 0 ? `<span style="font-size: 12px; background: #eee; padding: 2px 6px; border-radius: 4px; font-weight: normal;">${section.ra.join(", ")}</span>` : ''}</h2>
+                        
+                        ${section.type === 'STANDARD' ?
+                ((section.content || '').trim().startsWith('<') ?
+                    `<div>${(section.content || '').replace(/(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/gi, '<strong>$1</strong>')}</div>`
+                    : `<div style="white-space: pre-wrap;">${section.content || ''}</div>`)
+                : ''}
+                        
+                        ${section.type !== 'STANDARD' ?
+                ((section.questions || '').trim().startsWith('<') ?
+                    `<div>${(section.questions || '').replace(/(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/gi, '<strong>$1</strong>')}</div>`
+                    : `<div>${formatQuestionsExport(section.questions || '', section.type === 'TEST')}</div>`)
+                : ''}
+                    </div>
+                `).join('')}
+            </body>
+            </html>
+        `
+
+        const blob = new Blob([htmlContent], { type: 'application/msword' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${header.subject || 'Examen'}.doc`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    }
+
+
+    const handleGenerateSolution = async () => {
+        setIsGeneratingSolution(true)
+        const data: ExamTemplateData = {
+            name: newTemplateName || 'Borrador',
+            header,
+            sections,
+            formatting,
+            grading
+        }
+
+        try {
+            const result = await generateExamSolution(data)
+            if (result.success && result.solution) {
+                setSolutionHtml(result.solution)
+                setActiveTab("solution")
+            } else {
+                alert("Error generando el solucionario: " + result.error)
+            }
+        } catch (error) {
+            console.error(error)
+            alert("Error al conectar con Gemini")
+        } finally {
+            setIsGeneratingSolution(false)
+            if (!isGeneratingSolution) { // simple check to avoid race conditions visually
+                setActiveTab("solution")
+            }
+        }
+    }
+
+    const handleCopySolution = () => {
+        const text = new DOMParser().parseFromString(solutionHtml, "text/html").body.textContent || ""
+        navigator.clipboard.writeText(text)
+        setCopiedSolution(true)
+        setTimeout(() => setCopiedSolution(false), 2000)
+    }
+
+    const handlePrintSolution = () => {
+        const printWindow = window.open('', '_blank')
+        if (!printWindow) return
+
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Solucionario: ${header.subject || 'Examen'}</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; }
+                        h1 { color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+                        strong { font-weight: bold; color: #000; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Solucionario: ${header.subject || 'Examen'}</h1>
+                    ${solutionHtml}
+                    <script>
+                        window.onload = () => { window.print(); window.close(); }
+                    </script>
+                </body>
+            </html>
+        `)
+        printWindow.document.close()
+    }
+
+    // Helper to parse weights
+    const getWeights = () => {
+        const w1 = parseFloat(header.part1Percentage?.replace('%', '') || '50')
+        const w2 = parseFloat(header.part2Percentage?.replace('%', '') || '50')
+        // Normalize if NaN
+        return {
+            p1: isNaN(w1) ? 50 : w1,
+            p2: isNaN(w2) ? 50 : w2
+        }
+    }
+
+    const weights = getWeights()
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">

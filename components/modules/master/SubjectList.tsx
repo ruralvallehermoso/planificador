@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Plus, Trash2, BookOpen, GraduationCap, Calendar, User } from "lucide-react"
-import { createSubject, deleteSubject } from "@/lib/actions/subjects"
+import { createSubject, deleteSubject } from "@/lib/actions/master-subjects"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,

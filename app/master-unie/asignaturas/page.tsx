@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { getSubjects } from '@/lib/actions/subjects';
+import { getSubjects } from '@/lib/actions/master-subjects';
 import { SubjectList } from '@/components/modules/master/SubjectList';
 
 export default async function SubjectsPage() {

@@ -60,9 +60,9 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                     uploadProjectImage(formData).then(res => {
                         if (res.success && res.url) {
                             const { schema } = view.state
-                            const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY })
+                            // Use current selection for paste, as ClipboardEvent doesn't have coordinates
                             const node = schema.nodes.image.create({ src: res.url })
-                            const transaction = view.state.tr.insert(coordinates?.pos || view.state.selection.from, node)
+                            const transaction = view.state.tr.insert(view.state.selection.from, node)
                             view.dispatch(transaction)
                         }
                     })

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, X, Upload, Trash2, Link as LinkIcon, Save, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Heading2, Globe } from 'lucide-react'
 import { createProject, updateProject, uploadProjectImage, deleteProjectImage, addProjectLink, deleteProjectLink } from '@/lib/actions/projects'
 import { toast } from 'sonner'
@@ -27,6 +27,18 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
     const [links, setLinks] = useState<any[]>(project?.links || [])
     const [images, setImages] = useState<any[]>(project?.images || [])
 
+    // Sync content when project changes
+    useEffect(() => {
+        if (editor && project) {
+            // Only update if editor is empty or we are switching projects (though usually remounts)
+            // Ideally check if content differs, but for now just rely on initial content.
+            // Actually, since we unmount, this might not be needed, but safe to add if we reuse component.
+            if (editor.isEmpty && project.description) {
+                editor.commands.setContent(project.description)
+            }
+        }
+    }, [project, editor])
+
     // Tiptap Editor
     const editor = useEditor({
         extensions: [
@@ -38,6 +50,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
             }),
             Image.configure({
                 HTMLAttributes: { class: 'rounded-lg max-h-96 object-contain' },
+                allowBase64: true,
             })
         ],
         content: project?.description || '',
@@ -54,17 +67,42 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                     const file = imageItem.getAsFile()
                     if (!file) return true
 
-                    // Use Base64 for immediate feedback and to avoid server-side upload issues on Vercel
+                    // Use Base64 with resizing to avoid payload issues
                     const reader = new FileReader()
                     reader.onload = (readerEvent) => {
-                        const base64 = readerEvent.target?.result as string
-                        if (base64) {
+                        const img = new window.Image()
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas')
+                            const MAX_WIDTH = 800
+                            const MAX_HEIGHT = 800
+                            let width = img.width
+                            let height = img.height
+
+                            if (width > height) {
+                                if (width > MAX_WIDTH) {
+                                    height *= MAX_WIDTH / width
+                                    width = MAX_WIDTH
+                                }
+                            } else {
+                                if (height > MAX_HEIGHT) {
+                                    width *= MAX_HEIGHT / height
+                                    height = MAX_HEIGHT
+                                }
+                            }
+                            canvas.width = width
+                            canvas.height = height
+                            const ctx = canvas.getContext('2d')
+                            ctx?.drawImage(img, 0, 0, width, height)
+                            // Convert to WebP for better compression
+                            const dataUrl = canvas.toDataURL('image/webp', 0.8)
+
                             const { schema } = view.state
-                            const node = schema.nodes.image.create({ src: base64 })
+                            const node = schema.nodes.image.create({ src: dataUrl })
                             const transaction = view.state.tr.insert(view.state.selection.from, node)
                             view.dispatch(transaction)
-                            toast.success("Imagen pegada correctamente")
+                            toast.success("Imagen procesada y añadida")
                         }
+                        img.src = readerEvent.target?.result as string
                     }
                     reader.readAsDataURL(file)
 

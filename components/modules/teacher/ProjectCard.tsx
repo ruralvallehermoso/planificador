@@ -26,8 +26,11 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
     const techStack = project.technologies ? project.technologies.split(',').map((t: string) => t.trim()) : []
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow relative">
-            <div className="relative h-48 bg-gray-100 items-center justify-center flex shrink-0">
+        <div
+            onClick={onEdit}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-all cursor-pointer group relative"
+        >
+            <div className="relative h-48 bg-gray-100 items-center justify-center flex shrink-0 group-hover:opacity-95 transition-opacity">
                 {project.coverImage || project.images.length > 0 ? (
                     <img
                         src={project.coverImage || project.images[0].url}
@@ -47,7 +50,7 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                     <h3 className="text-lg font-semibold text-gray-900 line-clamp-1 flex-1 pr-2">{project.title}</h3>
                     <div className="relative">
                         <button
-                            onClick={() => setShowMenu(!showMenu)}
+                            onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
                             className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
                         >
                             <MoreVertical className="h-5 w-5" />

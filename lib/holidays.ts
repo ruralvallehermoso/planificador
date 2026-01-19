@@ -31,13 +31,21 @@ export const HOLIDAYS_2026: Holiday[] = [
     { date: '2026-12-25', name: 'Navidad', type: 'national' },
 ];
 
+// Helper to format date as YYYY-MM-DD in local timezone (not UTC)
+function formatDateLocal(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 export function isHoliday(date: Date): boolean {
-    const dateString = date.toISOString().split('T')[0];
+    const dateString = formatDateLocal(date);
     return HOLIDAYS_2026.some(h => h.date === dateString);
 }
 
 export function getHolidayInfo(date: Date): Holiday | undefined {
-    const dateString = date.toISOString().split('T')[0];
+    const dateString = formatDateLocal(date);
     return HOLIDAYS_2026.find(h => h.date === dateString);
 }
 

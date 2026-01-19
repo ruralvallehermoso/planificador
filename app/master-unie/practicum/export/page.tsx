@@ -39,7 +39,7 @@ export default async function ExportPage() {
             <div className="mb-8 p-4 bg-slate-50 rounded-lg border text-sm">
                 <div className="flex justify-between items-center">
                     <div>
-                        <span className="font-semibold">Periodo:</span> {internship.realStartDate ? new Date(internship.realStartDate).toLocaleDateString() : '-'} a {internship.realEndDate ? new Date(internship.realEndDate).toLocaleDateString() : '-'}
+                        <span className="font-semibold">Periodo:</span> {internship.realStartDate ? new Date(internship.realStartDate).toLocaleDateString() : '-'} a {internship.endDate ? new Date(internship.endDate).toLocaleDateString() : '-'}
                     </div>
                     <div>
                         <span className="font-semibold">Total Horas Registradas:</span> {internship.logs.reduce((acc, log) => acc + log.hours, 0)} h

@@ -50,30 +50,19 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                     const file = imageItem.getAsFile()
                     if (!file) return true
 
-                    // Upload logic
-                    const toastId = toast.loading("Subiendo imagen desde el portapapeles...")
-
-                    const formData = new FormData()
-                    formData.append('file', file)
-                    formData.append('projectId', project?.id || '')
-                    formData.append('categorySlug', categorySlug)
-
-                    uploadProjectImage(formData).then(res => {
-                        if (res.success && res.url) {
+                    // Use Base64 for immediate feedback and to avoid server-side upload issues on Vercel
+                    const reader = new FileReader()
+                    reader.onload = (readerEvent) => {
+                        const base64 = readerEvent.target?.result as string
+                        if (base64) {
                             const { schema } = view.state
-                            // Use current selection for paste, as ClipboardEvent doesn't have coordinates
-                            const node = schema.nodes.image.create({ src: res.url })
+                            const node = schema.nodes.image.create({ src: base64 })
                             const transaction = view.state.tr.insert(view.state.selection.from, node)
                             view.dispatch(transaction)
-                            toast.success("Imagen insertada", { id: toastId })
-                        } else {
-                            toast.error("Error al subir imagen", { id: toastId })
-                            console.error("Upload failed", res.error)
+                            toast.success("Imagen pegada correctamente")
                         }
-                    }).catch(err => {
-                        toast.error("Error de red al subir", { id: toastId })
-                        console.error("Upload error", err)
-                    })
+                    }
+                    reader.readAsDataURL(file)
 
                     return true // Handled
                 }

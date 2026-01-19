@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Plus, X, Upload, Trash2, Link as LinkIcon, Save, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Heading2, Globe } from 'lucide-react'
 import { createProject, updateProject, uploadProjectImage, deleteProjectImage, addProjectLink, deleteProjectLink } from '@/lib/actions/projects'
+import { toast } from 'sonner'
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -50,7 +51,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                     if (!file) return true
 
                     // Upload logic
-                    const toastId = Math.random().toString() // Simple toast placeholder if we had one
+                    const toastId = toast.loading("Subiendo imagen desde el portapapeles...")
 
                     const formData = new FormData()
                     formData.append('file', file)
@@ -64,7 +65,14 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                             const node = schema.nodes.image.create({ src: res.url })
                             const transaction = view.state.tr.insert(view.state.selection.from, node)
                             view.dispatch(transaction)
+                            toast.success("Imagen insertada", { id: toastId })
+                        } else {
+                            toast.error("Error al subir imagen", { id: toastId })
+                            console.error("Upload failed", res.error)
                         }
+                    }).catch(err => {
+                        toast.error("Error de red al subir", { id: toastId })
+                        console.error("Upload error", err)
                     })
 
                     return true // Handled

@@ -111,11 +111,12 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
 
     async function handleAddLink(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-        const formData = new FormData(e.currentTarget)
+        const form = e.currentTarget
+        const formData = new FormData(form)
         formData.append('projectId', project.id)
         formData.append('categorySlug', categorySlug)
         await addProjectLink(formData)
-        e.currentTarget.reset()
+        form.reset()
     }
 
     async function handleDeleteLink(linkId: string) {

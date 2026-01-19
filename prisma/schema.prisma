@@ -31,6 +31,7 @@ model User {
   sessions               Session[]
   assets                 Asset[]
   portfolioSnapshots     PortfolioSnapshot[]
+  tfmItems               TFMItem[]
 
   @@schema("public")
 }
@@ -630,5 +631,23 @@ enum ExpenseCategory {
   IBI
   OTROS
 
+  @@schema("public")
+}
+
+model TFMItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  date        DateTime?
+  status      String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  order       Int      @default(0)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
   @@schema("public")
 }

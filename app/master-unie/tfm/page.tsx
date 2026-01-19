@@ -1,19 +1,18 @@
 import { prisma } from '@/lib/prisma';
-import { CheckCircle2, Circle, Clock, FileText, Send } from 'lucide-react';
+import { auth } from '@/auth';
+import { TFMList } from '@/components/modules/master/TFMList';
+import { FileText } from 'lucide-react';
 
 export default async function TfmPage() {
-    // Ideally we would fetch the specific TFM subject or a TFM model. 
-    // For now we mock the phases or use a task list from the "Master UNIE" category filtered by TFM?
-    // Let's build a dedicated UI that eventually links to real data.
+    const session = await auth()
 
-    const phases = [
-        { id: 1, title: 'Elección de Tema y Tutor', status: 'COMPLETED', date: '10 Dic 2025' },
-        { id: 2, title: 'Anteproyecto / Propuesta', status: 'IN_PROGRESS', date: 'Due: 15 Ene 2026' },
-        { id: 3, title: 'Desarrollo de Memoria', status: 'PENDING', date: 'Due: 15 Abr 2026' },
-        { id: 4, title: 'Revisión con Tutor', status: 'PENDING', date: 'Due: 1 May 2026' },
-        { id: 5, title: 'Depósito TFM', status: 'PENDING', date: 'Due: 15 Jun 2026' },
-        { id: 6, title: 'Defensa ante Tribunal', status: 'PENDING', date: 'Jul 2026' },
-    ];
+    // Fetch real items from database
+    const items = session?.user?.id
+        ? await prisma.tFMItem.findMany({
+            where: { userId: session.user.id },
+            orderBy: { order: 'asc' }
+        })
+        : []
 
     return (
         <div className="space-y-8">
@@ -27,47 +26,11 @@ export default async function TfmPage() {
                 </div>
             </div>
 
-            {/* Main Tracker */}
+            {/* Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Phases / Milestones */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-xl border shadow-sm p-8">
-                        <h2 className="text-xl font-bold text-slate-900 mb-6">Hitos del Proyecto</h2>
-
-                        <div className="relative">
-                            {/* Connector Line */}
-                            <div className="absolute left-4 top-2 bottom-4 w-0.5 bg-slate-100"></div>
-
-                            <div className="space-y-8 relative">
-                                {phases.map((phase) => (
-                                    <div key={phase.id} className="flex items-start space-x-4">
-                                        <div className="bg-white z-10">
-                                            {phase.status === 'COMPLETED' ? (
-                                                <CheckCircle2 className="h-8 w-8 text-green-500" />
-                                            ) : phase.status === 'IN_PROGRESS' ? (
-                                                <Clock className="h-8 w-8 text-amber-500 animate-pulse" />
-                                            ) : (
-                                                <Circle className="h-8 w-8 text-slate-300" />
-                                            )}
-                                        </div>
-                                        <div className="flex-1 pt-1">
-                                            <div className="flex justify-between items-center">
-                                                <h3 className={`font-semibold text-lg ${phase.status === 'PENDING' ? 'text-slate-400' : 'text-slate-900'}`}>
-                                                    {phase.title}
-                                                </h3>
-                                                <span className="text-sm text-slate-500 font-medium">{phase.date}</span>
-                                            </div>
-                                            {phase.status === 'IN_PROGRESS' && (
-                                                <div className="mt-2 text-sm text-slate-600 bg-amber-50 p-3 rounded-lg border border-amber-100">
-                                                    <p>Objetivo actual: Completar la redacción de la introducción y metodología.</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                {/* Timeline */}
+                <div className="lg:col-span-2">
+                    <TFMList initialItems={items} />
                 </div>
 
                 {/* Info Sidebar */}

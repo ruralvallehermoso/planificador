@@ -147,8 +147,11 @@ model ClassLink {
 model Project {
   id          String         @id @default(cuid())
   title       String
-  description String?
-  status      String         @default("PLANNING")
+  description   String?        @db.Text
+  technologies  String?
+  repositoryUrl String?
+  deploymentUrl String?
+  status        String         @default("PLANNING")
   categoryId  String
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt

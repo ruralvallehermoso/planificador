@@ -21,6 +21,10 @@ export async function createProject(formData: FormData) {
     const description = formData.get('description') as string
     const categorySlug = formData.get('categorySlug') as string
 
+    const technologies = formData.get('technologies') as string
+    const repositoryUrl = formData.get('repositoryUrl') as string
+    const deploymentUrl = formData.get('deploymentUrl') as string
+
     // Resolve slug to ID
     const category = await prisma.category.findUnique({ where: { slug: categorySlug } })
     if (!category) return { success: false, error: "Category not found" }
@@ -30,6 +34,9 @@ export async function createProject(formData: FormData) {
             data: {
                 title,
                 description,
+                technologies,
+                repositoryUrl,
+                deploymentUrl,
                 categoryId: category.id,
                 status: "PLANNING"
             }
@@ -47,12 +54,19 @@ export async function updateProject(projectId: string, formData: FormData) {
     const description = formData.get('description') as string
     const categorySlug = formData.get('categorySlug') as string
 
+    const technologies = formData.get('technologies') as string
+    const repositoryUrl = formData.get('repositoryUrl') as string
+    const deploymentUrl = formData.get('deploymentUrl') as string
+
     try {
         await prisma.project.update({
             where: { id: projectId },
             data: {
                 title,
                 description,
+                technologies,
+                repositoryUrl,
+                deploymentUrl,
             }
         })
 

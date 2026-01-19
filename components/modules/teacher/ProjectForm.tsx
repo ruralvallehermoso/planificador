@@ -113,6 +113,18 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
         },
     })
 
+    // Sync content when project changes
+    useEffect(() => {
+        if (editor && project) {
+            // Only update if editor is empty or we are switching projects (though usually remounts)
+            // Ideally check if content differs, but for now just rely on initial content.
+            // Actually, since we unmount, this might not be needed, but safe to add if we reuse component.
+            if (editor.isEmpty && project.description) {
+                editor.commands.setContent(project.description)
+            }
+        }
+    }, [project, editor])
+
     async function handleSubmit(formData: FormData) {
         setLoading(true)
         formData.append('categorySlug', categorySlug)

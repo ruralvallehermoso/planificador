@@ -23,6 +23,10 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
     const [uploading, setUploading] = useState(false)
     const [activeTab, setActiveTab] = useState<'content' | 'links' | 'media'>('content')
 
+    // Local state for immediate UI updates
+    const [links, setLinks] = useState<any[]>(project?.links || [])
+    const [images, setImages] = useState<any[]>(project?.images || [])
+
     // Tiptap Editor
     const editor = useEditor({
         extensions: [
@@ -100,13 +104,31 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
         formData.append('file', e.target.files[0])
         formData.append('projectId', project.id)
         formData.append('categorySlug', categorySlug)
-        await uploadProjectImage(formData)
+
+        const res = await uploadProjectImage(formData)
+
+        if (res.success && res.url) {
+            // We need the ID to delete it later. The updated action should return it.
+            // If we don't have it, we might need to reload or guess. 
+            // Ideally we update the action to return the created image object.
+            if (res.id) {
+                setImages([...images, { id: res.id, url: res.url, projectId: project.id }])
+                toast.success("Imagen subida")
+            } else {
+                setImages([...images, { id: Math.random().toString(), url: res.url, projectId: project.id }]) // Temporary ID fallback
+                toast.success("Imagen subida")
+            }
+        }
         setUploading(false)
     }
 
     async function handleDeleteImage(imageId: string) {
         if (!confirm('¿Estás seguro de querer eliminar esta imagen?')) return
-        await deleteProjectImage(imageId, categorySlug)
+        const res = await deleteProjectImage(imageId, categorySlug)
+        if (res.success) {
+            setImages(images.filter(img => img.id !== imageId))
+            toast.success("Imagen eliminada")
+        }
     }
 
     async function handleAddLink(e: React.FormEvent<HTMLFormElement>) {
@@ -115,13 +137,22 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
         const formData = new FormData(form)
         formData.append('projectId', project.id)
         formData.append('categorySlug', categorySlug)
-        await addProjectLink(formData)
-        form.reset()
+
+        const res = await addProjectLink(formData)
+        if (res.success && res.data) {
+            setLinks([...links, res.data])
+            toast.success("Enlace añadido")
+            form.reset()
+        }
     }
 
     async function handleDeleteLink(linkId: string) {
         if (!confirm('¿Eliminar este enlace?')) return
-        await deleteProjectLink(linkId, categorySlug)
+        const res = await deleteProjectLink(linkId, categorySlug)
+        if (res.success) {
+            setLinks(links.filter(l => l.id !== linkId))
+            toast.success("Enlace eliminado")
+        }
     }
 
     // Floating Menu Component
@@ -249,7 +280,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                                     <LinkIcon className="w-4 h-4" /> Recursos Adicionales (Drive, Docs)
                                 </h4>
                                 <div className="grid gap-2">
-                                    {project.links?.map((link: any) => (
+                                    {links.map((link: any) => (
                                         <div key={link.id} className="flex items-center justify-between bg-white p-3 rounded-md border hover:shadow-sm transition-shadow">
                                             <div className="flex items-center gap-3 overflow-hidden">
                                                 <div className="p-2 bg-indigo-50 rounded text-indigo-600 shrink-0"><LinkIcon className="w-4 h-4" /></div>
@@ -282,7 +313,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                             </div>
 
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                {project.images?.map((img: any) => (
+                                {images.map((img: any) => (
                                     <div key={img.id} className="group relative aspect-video bg-white rounded-lg border shadow-sm overflow-hidden">
                                         <img src={img.url} alt="" className="w-full h-full object-cover" />
                                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity flex justify-end">
@@ -290,7 +321,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                                         </div>
                                     </div>
                                 ))}
-                                {project.images?.length === 0 && (
+                                {images.length === 0 && (
                                     <div className="col-span-full py-12 text-center text-gray-500 bg-white rounded-lg border border-dashed">
                                         No hay imágenes todavía. Sube capturas del proyecto.
                                     </div>

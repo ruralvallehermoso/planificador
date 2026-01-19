@@ -141,7 +141,7 @@ export async function uploadProjectImage(formData: FormData) {
         if (categorySlug) {
             revalidatePath(`/${categorySlug}/projects`)
         }
-        return { success: true, url }
+        return { success: true, url, id: projectId ? (await prisma.projectImage.findFirst({ where: { url } }))?.id : undefined }
     } catch (e) {
         console.error(e)
         return { success: false, error: "Failed to upload image" }
@@ -181,7 +181,8 @@ export async function addProjectLink(formData: FormData) {
             }
         })
         revalidatePath(`/${categorySlug}/projects`)
-        return { success: true }
+        revalidatePath(`/${categorySlug}/projects`)
+        return { success: true, data: await prisma.projectLink.findFirst({ orderBy: { id: 'desc' }, where: { url, projectId } }) }
     } catch (e) {
         return { success: false, error: "Failed to add link" }
     }

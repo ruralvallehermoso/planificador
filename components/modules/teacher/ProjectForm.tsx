@@ -40,6 +40,37 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
             attributes: {
                 class: 'prose prose-sm max-w-none focus:outline-none min-h-[200px] p-4',
             },
+            handlePaste: (view, event, slice) => {
+                const items = Array.from(event.clipboardData?.items || [])
+                const imageItem = items.find(item => item.type.startsWith('image/'))
+
+                if (imageItem) {
+                    event.preventDefault()
+                    const file = imageItem.getAsFile()
+                    if (!file) return true
+
+                    // Upload logic
+                    const toastId = Math.random().toString() // Simple toast placeholder if we had one
+
+                    const formData = new FormData()
+                    formData.append('file', file)
+                    formData.append('projectId', project?.id || '')
+                    formData.append('categorySlug', categorySlug)
+
+                    uploadProjectImage(formData).then(res => {
+                        if (res.success && res.url) {
+                            const { schema } = view.state
+                            const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY })
+                            const node = schema.nodes.image.create({ src: res.url })
+                            const transaction = view.state.tr.insert(coordinates?.pos || view.state.selection.from, node)
+                            view.dispatch(transaction)
+                        }
+                    })
+
+                    return true // Handled
+                }
+                return false
+            }
         },
     })
 

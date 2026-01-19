@@ -128,14 +128,19 @@ export async function uploadProjectImage(formData: FormData) {
         await writeFile(path, buffer)
         const url = `/uploads/${filename}`
 
-        await prisma.projectImage.create({
-            data: {
-                url,
-                projectId
-            }
-        })
+        // Only create DB record if we have a projectId (i.e. we are editing, or associating with gallery)
+        if (projectId) {
+            await prisma.projectImage.create({
+                data: {
+                    url,
+                    projectId
+                }
+            })
+        }
 
-        revalidatePath(`/${categorySlug}/projects`)
+        if (categorySlug) {
+            revalidatePath(`/${categorySlug}/projects`)
+        }
         return { success: true, url }
     } catch (e) {
         console.error(e)

@@ -26,9 +26,14 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
     const completedHours = internship.logs.reduce((acc, log) => acc + log.hours, 0);
     const remainingHours = Math.max(0, targetHours - completedHours);
 
-    // 2. Dates
-    const startDate = internship.realStartDate ? new Date(internship.realStartDate) : (internship.startDate ? new Date(internship.startDate) : null);
+    // 2. Dates - normalize all dates to noon local time for consistent comparison
+    const startDate = internship.realStartDate
+        ? new Date(internship.realStartDate)
+        : (internship.startDate ? new Date(internship.startDate) : null);
+    if (startDate) startDate.setHours(12, 0, 0, 0);
+
     const normativeEndDate = internship.endDate ? new Date(internship.endDate) : null;
+    if (normativeEndDate) normativeEndDate.setHours(12, 0, 0, 0);
 
     // 3. Calculate Projected End Date based on hoursPerDay and remaining hours
     const today = new Date();
@@ -39,9 +44,22 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
     // Calculate how many working days are needed to complete remaining hours
     const workingDaysNeeded = Math.ceil(remainingHours / hoursPerDay);
 
-    // Calculate projected end date by counting working days from today (or start date if in future)
+    // DEBUG: Log values
+    console.log('DEBUG InternshipPlanningCard:', {
+        targetHours,
+        hoursPerDay,
+        completedHours,
+        remainingHours,
+        workingDaysNeeded,
+        workingDaysConfig,
+        startDate: startDate?.toISOString(),
+        today: today.toISOString()
+    });
+
+    // Calculate projected end date by counting working days
+    // Use startDate if it exists, otherwise use today
     let projectedEndDate: Date | null = null;
-    const countFromDate = startDate && startDate > today ? new Date(startDate) : new Date(today);
+    const countFromDate = startDate ? new Date(startDate) : new Date(today);
     countFromDate.setHours(12, 0, 0, 0);
 
     if (workingDaysNeeded > 0) {
@@ -60,6 +78,7 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
             }
         }
         projectedEndDate = new Date(currentDate);
+        console.log('DEBUG: Day', workingDaysNeeded, 'is', projectedEndDate.toISOString());
     } else {
         projectedEndDate = today; // Already done
     }

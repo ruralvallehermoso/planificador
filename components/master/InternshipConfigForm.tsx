@@ -33,9 +33,8 @@ interface InternshipConfigFormProps {
         startDate: Date | null;
         endDate: Date | null;
         realStartDate: Date | null;
-        realEndDate: Date | null;
         totalHours: number;
-
+        hoursPerDay: number;
         schedule: string | null;
         workingDays: string | null;
     } | null;
@@ -56,9 +55,8 @@ export function InternshipConfigForm({ initialData }: InternshipConfigFormProps)
         startDate: initialData?.startDate ? new Date(initialData.startDate).toISOString().split('T')[0] : '',
         endDate: initialData?.endDate ? new Date(initialData.endDate).toISOString().split('T')[0] : '',
         realStartDate: initialData?.realStartDate ? new Date(initialData.realStartDate).toISOString().split('T')[0] : '',
-        realEndDate: initialData?.realEndDate ? new Date(initialData.realEndDate).toISOString().split('T')[0] : '',
         totalHours: initialData?.totalHours || 120,
-
+        hoursPerDay: initialData?.hoursPerDay || 5,
         schedule: initialData?.schedule || '',
         workingDays: initialData?.workingDays || '1,2,3,4,5'
     });
@@ -93,8 +91,8 @@ export function InternshipConfigForm({ initialData }: InternshipConfigFormProps)
                 startDate: formData.startDate ? new Date(formData.startDate) : undefined,
                 endDate: formData.endDate ? new Date(formData.endDate) : undefined,
                 realStartDate: formData.realStartDate ? new Date(formData.realStartDate) : undefined,
-                realEndDate: formData.realEndDate ? new Date(formData.realEndDate) : undefined,
                 totalHours: Number(formData.totalHours),
+                hoursPerDay: Number(formData.hoursPerDay),
                 workingDays: formData.workingDays
             });
             setOpen(false);
@@ -179,8 +177,8 @@ export function InternshipConfigForm({ initialData }: InternshipConfigFormProps)
                                 <Input type="date" id="realStartDate" name="realStartDate" value={formData.realStartDate} onChange={handleChange} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="realEndDate">Fin Real</Label>
-                                <Input type="date" id="realEndDate" name="realEndDate" value={formData.realEndDate} onChange={handleChange} />
+                                <Label htmlFor="hoursPerDay">Horas por Día</Label>
+                                <Input type="number" id="hoursPerDay" name="hoursPerDay" value={formData.hoursPerDay} onChange={handleChange} step="0.5" min="0.5" max="12" />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">

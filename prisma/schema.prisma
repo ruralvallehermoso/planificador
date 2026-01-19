@@ -352,8 +352,8 @@ model Internship {
   startDate     DateTime?
   endDate       DateTime?
   realStartDate DateTime?
-  realEndDate   DateTime?
   totalHours    Int               @default(120)
+  hoursPerDay   Float             @default(5)
   schedule      String?
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt

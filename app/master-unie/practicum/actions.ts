@@ -46,8 +46,8 @@ export async function updateInternshipDetails(data: {
     startDate?: Date;
     endDate?: Date;
     realStartDate?: Date;
-    realEndDate?: Date;
     totalHours?: number;
+    hoursPerDay?: number;
     schedule?: string;
     workingDays?: string;
 }) {
@@ -63,8 +63,8 @@ export async function updateInternshipDetails(data: {
             startDate: data.startDate,
             endDate: data.endDate,
             realStartDate: data.realStartDate,
-            realEndDate: data.realEndDate,
             totalHours: data.totalHours || 120,
+            hoursPerDay: data.hoursPerDay || 5,
             schedule: data.schedule,
             workingDays: data.workingDays || "1,2,3,4,5",
             center: {
@@ -84,8 +84,8 @@ export async function updateInternshipDetails(data: {
             startDate: data.startDate,
             endDate: data.endDate,
             realStartDate: data.realStartDate,
-            realEndDate: data.realEndDate,
             totalHours: data.totalHours,
+            hoursPerDay: data.hoursPerDay,
             schedule: data.schedule,
             workingDays: data.workingDays,
             center: {

@@ -149,8 +149,7 @@ model Project {
   title       String
   description   String?        @db.Text
   technologies  String?
-  repositoryUrl String?
-  deploymentUrl String?
+  coverImage    String?        @db.Text
   status        String         @default("PLANNING")
   categoryId  String
   createdAt   DateTime       @default(now())

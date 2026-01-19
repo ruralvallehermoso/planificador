@@ -28,27 +28,16 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow relative">
             <div className="relative h-48 bg-gray-100 items-center justify-center flex shrink-0">
-                {project.images.length > 0 ? (
-                    <Image
-                        src={project.images[currentImageIndex].url}
+                {project.coverImage || project.images.length > 0 ? (
+                    <img
+                        src={project.coverImage || project.images[0].url}
                         alt={project.title}
-                        fill
-                        className="object-cover"
+                        className="w-full h-full object-cover"
                     />
                 ) : (
-                    <ImageIcon className="h-10 w-10 text-gray-300" />
-                )}
-
-                {/* Image Controls if multiple */}
-                {project.images.length > 1 && (
-                    <div className="absolute bottom-2 right-2 flex space-x-1 z-10">
-                        {project.images.map((_: any, idx: number) => (
-                            <div
-                                key={idx}
-                                className={`h-1.5 w-1.5 rounded-full cursor-pointer ${idx === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}
-                                onClick={(e) => { e.preventDefault(); setCurrentImageIndex(idx); }}
-                            />
-                        ))}
+                    <div className="flex flex-col items-center text-gray-400 gap-2">
+                        <ImageIcon className="h-10 w-10" />
+                        <span className="text-xs">Sin imagen</span>
                     </div>
                 )}
             </div>
@@ -56,7 +45,6 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
             <div className="p-4 flex-1 flex flex-col">
                 <div className="flex justify-between items-start relative mb-2">
                     <h3 className="text-lg font-semibold text-gray-900 line-clamp-1 flex-1 pr-2">{project.title}</h3>
-
                     <div className="relative">
                         <button
                             onClick={() => setShowMenu(!showMenu)}
@@ -102,25 +90,11 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                     {descriptionPreview}
                 </p>
 
-                {/* Primary Actions / Links */}
+                {/* Additional Links */}
                 <div className="mt-auto space-y-2">
-                    <div className="flex gap-2">
-                        {project.repositoryUrl && (
-                            <a href={project.repositoryUrl} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
-                                <Github className="w-3 h-3" /> Repo
-                            </a>
-                        )}
-                        {project.deploymentUrl && (
-                            <a href={project.deploymentUrl} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors">
-                                <Globe className="w-3 h-3" /> Demo
-                            </a>
-                        )}
-                    </div>
-
-                    {/* Additional Links */}
                     {project.links && project.links.length > 0 && (
                         <div className="pt-2 border-t border-gray-100 flex flex-wrap gap-2">
-                            {project.links.slice(0, 2).map((link: any) => (
+                            {project.links.slice(0, 3).map((link: any) => (
                                 <a
                                     key={link.id}
                                     href={link.url}
@@ -132,7 +106,7 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                                     <span className="truncate">{link.title || 'Enlace'}</span>
                                 </a>
                             ))}
-                            {project.links.length > 2 && <span className="text-xs text-gray-400">+{project.links.length - 2}</span>}
+                            {project.links.length > 3 && <span className="text-xs text-gray-400">+{project.links.length - 3}</span>}
                         </div>
                     )}
                 </div>

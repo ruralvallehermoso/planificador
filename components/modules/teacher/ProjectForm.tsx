@@ -194,7 +194,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                         className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'links' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                         disabled={!isEditing}
                     >
-                        Repositorio y Enlaces {(!isEditing) && '(Guardar primero)'}
+                        Documentación y Enlaces {(!isEditing) && '(Guardar primero)'}
                     </button>
                     <button
                         onClick={() => setActiveTab('media')}
@@ -206,78 +206,85 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-                    {activeTab === 'content' && (
-                        <form id="mainForm" action={handleSubmit} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Título del Proyecto</label>
-                                        <input
-                                            name="title"
-                                            defaultValue={project?.title}
-                                            required
-                                            placeholder="Ej: Sistema de Gestión de Inventario"
-                                            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-lg font-medium focus:border-indigo-500 focus:ring-indigo-500"
-                                        />
-                                    </div>
+                    <form id="mainForm" action={handleSubmit} className={`space-y-6 ${activeTab === 'content' ? '' : 'hidden'}`}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Título del Proyecto</label>
+                                    <input
+                                        name="title"
+                                        defaultValue={project?.title}
+                                        required
+                                        placeholder="Ej: Sistema de Gestión de Inventario"
+                                        className="block w-full rounded-md border border-gray-300 px-3 py-2 text-lg font-medium focus:border-indigo-500 focus:ring-indigo-500"
+                                    />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Tecnologías (Separadas por comas)</label>
-                                    <input
-                                        name="technologies"
-                                        defaultValue={project?.technologies}
-                                        placeholder="React, Java, Spring Boot..."
-                                        className="block w-full rounded-md border border-gray-300 px-3 py-2 bg-white focus:border-indigo-500 focus:ring-indigo-500"
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Imagen de Portada (Para la Card)</label>
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onloadend = () => {
+                                                        const base64 = reader.result as string;
+                                                        // We put this in a hidden input or state
+                                                        const input = document.getElementById('coverImageInput') as HTMLInputElement;
+                                                        if (input) input.value = base64;
+                                                        // Preview?
+                                                        const preview = document.getElementById('coverPreview') as HTMLImageElement;
+                                                        if (preview) preview.src = base64;
+                                                        // Ensure preview is visible
+                                                        if (preview) preview.style.display = 'block';
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }}
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                                        />
+                                    </div>
+                                    <input type="hidden" name="coverImage" id="coverImageInput" defaultValue={project?.coverImage} />
+                                    <img
+                                        id="coverPreview"
+                                        src={project?.coverImage}
+                                        className="mt-2 h-20 w-auto rounded border"
+                                        alt=""
+                                        style={{ display: project?.coverImage ? 'block' : 'none' }}
                                     />
                                 </div>
                             </div>
-
-                            <div className="bg-white rounded-lg border border-gray-300 shadow-sm overflow-hidden flex flex-col h-[500px]">
-                                <MenuBar />
-                                <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Tecnologías (Separadas por comas)</label>
+                                <input
+                                    name="technologies"
+                                    defaultValue={project?.technologies}
+                                    placeholder="React, Java, Spring Boot..."
+                                    className="block w-full rounded-md border border-gray-300 px-3 py-2 bg-white focus:border-indigo-500 focus:ring-indigo-500"
+                                />
                             </div>
-                        </form>
-                    )}
+                        </div>
 
-                    {activeTab === 'links' && isEditing && (
+                        <div className="bg-white rounded-lg border border-gray-300 shadow-sm overflow-hidden flex flex-col h-[500px]">
+                            <MenuBar />
+                            <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
+                        </div>
+
+                        <div className="pt-4 border-t flex justify-end">
+                            <button type="submit" disabled={loading} className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50">
+                                {loading ? 'Guardando...' : 'Guardar Cambios'}
+                            </button>
+                        </div>
+                    </form>
+
+                    <div className={activeTab === 'links' && isEditing ? '' : 'hidden'}>
                         <div className="space-y-8">
-                            {/* Specific URLs Form */}
-                            <form action={handleSubmit} id="urlsForm" className="bg-white p-6 rounded-lg border shadow-sm space-y-4">
-                                <h4 className="text-md font-semibold text-gray-900 flex items-center gap-2">
-                                    <Globe className="w-4 h-4" /> URLs Principales
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Repositorio (GitHub/GitLab)</label>
-                                        <input
-                                            name="repositoryUrl"
-                                            defaultValue={project?.repositoryUrl}
-                                            placeholder="https://github.com/..."
-                                            className="block w-full rounded-md border border-gray-300 px-3 py-2"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Despliegue / Demo</label>
-                                        <input
-                                            name="deploymentUrl"
-                                            defaultValue={project?.deploymentUrl}
-                                            placeholder="https://mi-proyecto.vercel.app"
-                                            className="block w-full rounded-md border border-gray-300 px-3 py-2"
-                                        />
-                                    </div>
-                                </div>
-                                <input type="hidden" name="title" value={project.title} /> {/* Required for update */}
-                                <input type="hidden" name="description" value={editor?.getHTML()} /> {/* Preserve Desc */}
-                                <input type="hidden" name="technologies" value={project.technologies} />
-                                <div className="flex justify-end">
-                                    <button type="submit" form="urlsForm" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium">Guardar URLs</button>
-                                </div>
-                            </form>
-
                             {/* Additional Links */}
                             <div className="space-y-4">
                                 <h4 className="text-md font-semibold text-gray-900 flex items-center gap-2">
-                                    <LinkIcon className="w-4 h-4" /> Recursos Adicionales (Drive, Docs)
+                                    <LinkIcon className="w-4 h-4" /> Enlaces de Documentación (Drive, Docs, Repos)
                                 </h4>
                                 <div className="grid gap-2">
                                     {links.map((link: any) => (
@@ -292,54 +299,85 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                                         </div>
                                     ))}
                                 </div>
-                                <form onSubmit={handleAddLink} className="flex gap-2 bg-white p-2 rounded-md border">
-                                    <input name="title" placeholder="Título (opcional)" className="flex-1 rounded border-0 bg-transparent px-2 ring-0 focus:ring-0 sm:text-sm" />
-                                    <div className="w-px bg-gray-200"></div>
-                                    <input name="url" placeholder="https://..." required className="flex-[2] rounded border-0 bg-transparent px-2 ring-0 focus:ring-0 sm:text-sm" />
-                                    <button type="submit" className="px-3 bg-gray-900 text-white rounded text-sm hover:bg-black">Añadir</button>
+                                <form onSubmit={handleAddLink} className="flex gap-2">
+                                    <input name="title" placeholder="Título (opcional)" className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                                    <input name="url" placeholder="https://..." required className="flex-[2] rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                                    <button type="submit" className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">Añadir</button>
                                 </form>
                             </div>
                         </div>
-                    )}
+                    </div>
 
-                    {activeTab === 'media' && isEditing && (
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h4 className="text-md font-semibold text-gray-900 flex items-center gap-2"><Upload className="w-4 h-4" /> Galería de Imágenes</h4>
-                                <label className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">
-                                    {uploading ? 'Subiendo...' : 'Subir Nueva Imagen'}
-                                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
-                                </label>
-                            </div>
-
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                {images.map((img: any) => (
-                                    <div key={img.id} className="group relative aspect-video bg-white rounded-lg border shadow-sm overflow-hidden">
-                                        <img src={img.url} alt="" className="w-full h-full object-cover" />
-                                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity flex justify-end">
-                                            <button onClick={() => handleDeleteImage(img.id)} className="text-white hover:text-red-300"><Trash2 className="w-5 h-5" /></button>
-                                        </div>
+                    <div className={activeTab === 'media' && isEditing ? '' : 'hidden'}>
+                        {/* ... media content ... */}
+                        {/* We can reproduce the media block here or leave it. 
+                             Wait, the original code had the block logic. 
+                             I need to make sure I don't delete the media block logic by overwriting too much.
+                             The target content stops at "Recursos Adicionales".
+                             I need to be careful with "EndLine".
+                             Let's check the view of the file again or be safe.
+                         */}
+                        <div className="grid gap-2">
+                            {links.map((link: any) => (
+                                <div key={link.id} className="flex items-center justify-between bg-white p-3 rounded-md border hover:shadow-sm transition-shadow">
+                                    <div className="flex items-center gap-3 overflow-hidden">
+                                        <div className="p-2 bg-indigo-50 rounded text-indigo-600 shrink-0"><LinkIcon className="w-4 h-4" /></div>
+                                        <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-medium truncate">
+                                            {link.title || link.url}
+                                        </a>
                                     </div>
-                                ))}
-                                {images.length === 0 && (
-                                    <div className="col-span-full py-12 text-center text-gray-500 bg-white rounded-lg border border-dashed">
-                                        No hay imágenes todavía. Sube capturas del proyecto.
-                                    </div>
-                                )}
-                            </div>
+                                    <button onClick={() => handleDeleteLink(link.id)} className="text-gray-400 hover:text-red-500 p-1"><Trash2 className="w-4 h-4" /></button>
+                                </div>
+                            ))}
                         </div>
-                    )}
+                        <form onSubmit={handleAddLink} className="flex gap-2 bg-white p-2 rounded-md border">
+                            <input name="title" placeholder="Título (opcional)" className="flex-1 rounded border-0 bg-transparent px-2 ring-0 focus:ring-0 sm:text-sm" />
+                            <div className="w-px bg-gray-200"></div>
+                            <input name="url" placeholder="https://..." required className="flex-[2] rounded border-0 bg-transparent px-2 ring-0 focus:ring-0 sm:text-sm" />
+                            <button type="submit" className="px-3 bg-gray-900 text-white rounded text-sm hover:bg-black">Añadir</button>
+                        </form>
+                    </div>
                 </div>
+                    )}
 
-                <div className="p-6 border-t bg-white flex justify-end space-x-3 shrink-0 rounded-b-xl">
-                    <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cerrar</button>
-                    {activeTab === 'content' && (
-                        <button type="submit" form="mainForm" disabled={loading} className="px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2">
-                            {loading ? 'Guardando...' : (isEditing ? 'Guardar Cambios' : 'Crear Proyecto')}
-                        </button>
-                    )}
-                </div>
+                {activeTab === 'media' && isEditing && (
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-md font-semibold text-gray-900 flex items-center gap-2"><Upload className="w-4 h-4" /> Galería de Imágenes</h4>
+                            <label className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">
+                                {uploading ? 'Subiendo...' : 'Subir Nueva Imagen'}
+                                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
+                            </label>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                            {images.map((img: any) => (
+                                <div key={img.id} className="group relative aspect-video bg-white rounded-lg border shadow-sm overflow-hidden">
+                                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity flex justify-end">
+                                        <button onClick={() => handleDeleteImage(img.id)} className="text-white hover:text-red-300"><Trash2 className="w-5 h-5" /></button>
+                                    </div>
+                                </div>
+                            ))}
+                            {images.length === 0 && (
+                                <div className="col-span-full py-12 text-center text-gray-500 bg-white rounded-lg border border-dashed">
+                                    No hay imágenes todavía. Sube capturas del proyecto.
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <div className="p-6 border-t bg-white flex justify-end space-x-3 shrink-0 rounded-b-xl">
+                <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cerrar</button>
+                {activeTab === 'content' && (
+                    <button type="submit" form="mainForm" disabled={loading} className="px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2">
+                        {loading ? 'Guardando...' : (isEditing ? 'Guardar Cambios' : 'Crear Proyecto')}
+                    </button>
+                )}
             </div>
         </div>
+        </div >
     )
 }

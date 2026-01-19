@@ -5,7 +5,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb',
+      bodySizeLimit: '50mb',
     },
   },
   // Microfrontend rewrites - solo se activan si hay URLs configuradas

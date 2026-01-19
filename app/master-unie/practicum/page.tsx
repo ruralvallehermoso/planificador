@@ -3,6 +3,7 @@ import { InternshipLogForm } from '@/components/master/InternshipLogForm';
 import { InternshipConfigForm } from '@/components/master/InternshipConfigForm';
 import { LogEntryActions } from '@/components/master/LogEntryActions';
 import { InternshipPlanningCard } from '@/components/master/InternshipPlanningCard';
+import { HolidayCalendar } from '@/components/master/HolidayCalendar';
 import { Building2, MapPin, CalendarDays, Download, Settings } from 'lucide-react';
 import Link from 'next/link';
 
@@ -103,6 +104,13 @@ export default async function PracticumPage() {
 
             {/* Planning Card */}
             <InternshipPlanningCard internship={internship} />
+
+            {/* Holiday Calendar */}
+            <HolidayCalendar
+                startDate={internship?.realStartDate || internship?.startDate}
+                endDate={internship?.endDate}
+                workingDays={internship?.workingDays || "1,2,3,4,5"}
+            />
 
             {/* Daily Log */}
             <div className="bg-white rounded-xl border shadow-sm overflow-hidden">

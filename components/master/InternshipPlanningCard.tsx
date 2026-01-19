@@ -32,31 +32,38 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
 
     // 3. Calculate Projected End Date based on hoursPerDay and remaining hours
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setHours(12, 0, 0, 0); // Use noon to avoid timezone edge cases
 
     const workingDaysConfig = (internship.workingDays || "1,2,3,4,5").split(',').map(Number);
 
     // Calculate how many working days are needed to complete remaining hours
     const workingDaysNeeded = Math.ceil(remainingHours / hoursPerDay);
 
-    // Calculate projected end date by counting working days from today
+    // Calculate projected end date by counting working days from today (or start date if in future)
     let projectedEndDate: Date | null = null;
+    const countFromDate = startDate && startDate > today ? new Date(startDate) : new Date(today);
+    countFromDate.setHours(12, 0, 0, 0);
+
     if (workingDaysNeeded > 0) {
         let daysCount = 0;
-        let currentDate = new Date(today);
+        let currentDate = new Date(countFromDate);
+
+        // If today is a working day, count it as day 1
         while (daysCount < workingDaysNeeded) {
             const dayOfWeek = currentDate.getDay();
             if (workingDaysConfig.includes(dayOfWeek) && !isHoliday(currentDate)) {
                 daysCount++;
+                if (daysCount >= workingDaysNeeded) {
+                    break;
+                }
             }
-            if (daysCount < workingDaysNeeded) {
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
+            currentDate.setDate(currentDate.getDate() + 1);
         }
         projectedEndDate = currentDate;
     } else {
         projectedEndDate = today; // Already done
     }
+
 
     // 4. Calculate days remaining until normative end (for comparison)
     let businessDaysUntilNormativeEnd = 0;

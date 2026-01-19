@@ -32,6 +32,8 @@ model User {
   assets                 Asset[]
   portfolioSnapshots     PortfolioSnapshot[]
   tfmItems               TFMItem[]
+  tfmConfig              TFMConfig?
+  tfmResources           TFMResource[]
 
   @@schema("public")
 }
@@ -640,6 +642,39 @@ model TFMItem {
   description String?  @db.Text
   date        DateTime?
   status      String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+  order       Int      @default(0)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@schema("public")
+}
+
+model TFMConfig {
+  id             String   @id @default(cuid())
+  title          String?
+  tutor          String?
+  tutorInitials  String?
+  researchLine   String?
+  convocatoria   String?
+  
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@schema("public")
+}
+
+model TFMResource {
+  id          String   @id @default(cuid())
+  title       String
+  url         String?
   order       Int      @default(0)
   
   userId      String

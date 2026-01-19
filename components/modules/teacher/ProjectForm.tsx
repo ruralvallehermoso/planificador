@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Plus, X, Upload, Trash2, Link as LinkIcon, Save, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Heading2, Globe } from 'lucide-react'
-import { createProject, updateProject, uploadProjectImage, deleteProjectImage, addProjectLink, deleteProjectLink } from '@/lib/actions/projects'
+import { createProject, updateProject, addProjectLink, deleteProjectLink } from '@/lib/actions/projects'
 import { toast } from 'sonner'
 
 import { useEditor, EditorContent } from '@tiptap/react'
@@ -21,11 +21,10 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
     const isEditing = !!project
     const [loading, setLoading] = useState(false)
     const [uploading, setUploading] = useState(false)
-    const [activeTab, setActiveTab] = useState<'content' | 'links' | 'media'>('content')
+    const [activeTab, setActiveTab] = useState<'content' | 'links'>('content')
 
     // Local state for immediate UI updates
     const [links, setLinks] = useState<any[]>(project?.links || [])
-    const [images, setImages] = useState<any[]>(project?.images || [])
 
     // Tiptap Editor
     const editor = useEditor({
@@ -135,39 +134,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
     }
 
     // ... (keep handleImageUpload, handleDeleteImage, handleAddLink, handleDeleteLink same as before)
-    async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-        if (!e.target.files?.[0] || !isEditing) return
-        setUploading(true)
-        const formData = new FormData()
-        formData.append('file', e.target.files[0])
-        formData.append('projectId', project.id)
-        formData.append('categorySlug', categorySlug)
 
-        const res = await uploadProjectImage(formData)
-
-        if (res.success && res.url) {
-            // We need the ID to delete it later. The updated action should return it.
-            // If we don't have it, we might need to reload or guess. 
-            // Ideally we update the action to return the created image object.
-            if (res.id) {
-                setImages([...images, { id: res.id, url: res.url, projectId: project.id }])
-                toast.success("Imagen subida")
-            } else {
-                setImages([...images, { id: Math.random().toString(), url: res.url, projectId: project.id }]) // Temporary ID fallback
-                toast.success("Imagen subida")
-            }
-        }
-        setUploading(false)
-    }
-
-    async function handleDeleteImage(imageId: string) {
-        if (!confirm('¿Estás seguro de querer eliminar esta imagen?')) return
-        const res = await deleteProjectImage(imageId, categorySlug)
-        if (res.success) {
-            setImages(images.filter(img => img.id !== imageId))
-            toast.success("Imagen eliminada")
-        }
-    }
 
     async function handleAddLink(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -233,13 +200,6 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                         disabled={!isEditing}
                     >
                         Documentación y Enlaces {(!isEditing) && '(Guardar primero)'}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('media')}
-                        className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'media' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                        disabled={!isEditing}
-                    >
-                        Multimedia {(!isEditing) && '(Guardar primero)'}
                     </button>
                 </div>
 
@@ -346,33 +306,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                         </div>
                     </div>
 
-                    <div className={activeTab === 'media' && isEditing ? '' : 'hidden'}>
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h4 className="text-md font-semibold text-gray-900 flex items-center gap-2"><Upload className="w-4 h-4" /> Galería de Imágenes</h4>
-                                <label className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">
-                                    {uploading ? 'Subiendo...' : 'Subir Nueva Imagen'}
-                                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
-                                </label>
-                            </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                {images.map((img: any) => (
-                                    <div key={img.id} className="group relative aspect-video bg-white rounded-lg border shadow-sm overflow-hidden">
-                                        <img src={img.url} alt="" className="w-full h-full object-cover" />
-                                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity flex justify-end">
-                                            <button onClick={() => handleDeleteImage(img.id)} className="text-white hover:text-red-300"><Trash2 className="w-5 h-5" /></button>
-                                        </div>
-                                    </div>
-                                ))}
-                                {images.length === 0 && (
-                                    <div className="col-span-full py-12 text-center text-gray-500 bg-white rounded-lg border border-dashed">
-                                        No hay imágenes todavía. Sube capturas del proyecto.
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div className="p-6 border-t bg-white flex justify-end space-x-3 shrink-0 rounded-b-xl">

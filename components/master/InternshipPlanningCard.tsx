@@ -49,18 +49,17 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
         let currentDate = new Date(countFromDate);
 
         // Find the Nth working day
-        while (true) {
+        while (daysCount < workingDaysNeeded) {
             const dayOfWeek = currentDate.getDay();
             if (workingDaysConfig.includes(dayOfWeek) && !isHoliday(currentDate)) {
                 daysCount++;
-                if (daysCount === workingDaysNeeded) {
-                    // This is day N, stop here
-                    projectedEndDate = new Date(currentDate);
-                    break;
-                }
             }
-            currentDate.setDate(currentDate.getDate() + 1);
+            // Only advance if we haven't reached the target yet
+            if (daysCount < workingDaysNeeded) {
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
         }
+        projectedEndDate = new Date(currentDate);
     } else {
         projectedEndDate = today; // Already done
     }

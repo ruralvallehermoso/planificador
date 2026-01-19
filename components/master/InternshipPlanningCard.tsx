@@ -44,18 +44,6 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
     // Calculate how many working days are needed to complete remaining hours
     const workingDaysNeeded = Math.ceil(remainingHours / hoursPerDay);
 
-    // DEBUG: Log values
-    console.log('DEBUG InternshipPlanningCard:', {
-        targetHours,
-        hoursPerDay,
-        completedHours,
-        remainingHours,
-        workingDaysNeeded,
-        workingDaysConfig,
-        startDate: startDate?.toISOString(),
-        today: today.toISOString()
-    });
-
     // Calculate projected end date by counting working days
     // Use startDate if it exists, otherwise use today
     let projectedEndDate: Date | null = null;
@@ -78,7 +66,6 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
             }
         }
         projectedEndDate = new Date(currentDate);
-        console.log('DEBUG: Day', workingDaysNeeded, 'is', projectedEndDate.toISOString());
     } else {
         projectedEndDate = today; // Already done
     }

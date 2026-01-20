@@ -38,8 +38,8 @@ export default async function Home() {
     },
   });
 
-  // TEMPORARY: Skip permission filtering
-  const BYPASS_PERMISSIONS = true;
+  // Enforce permission filtering
+  const BYPASS_PERMISSIONS = false;
   const categories = BYPASS_PERMISSIONS ? allCategories : allCategories.filter(category => {
     const config = MODULES_CONFIG[category.slug];
     if (!config) return true;
@@ -183,7 +183,7 @@ export default async function Home() {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {showFinances && <PortfolioCard />}
         {showFinances && <SimulatorCard />}
-        <CasaRuralFinancialCard />
+        {canAccessModule(user || null, MODULES.CASA_RURAL) && <CasaRuralFinancialCard />}
       </div>
     </div>
   );

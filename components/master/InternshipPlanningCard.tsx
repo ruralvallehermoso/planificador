@@ -20,7 +20,7 @@ interface InternshipPlanningCardProps {
 export function InternshipPlanningCard({ internship }: InternshipPlanningCardProps) {
     if (!internship) return null;
 
-    // 1. Basic Data
+    // 1. Basic Data from Configuration
     const targetHours = internship.totalHours || 120;
     const hoursPerDay = internship.hoursPerDay || 5;
     const completedHours = internship.logs.reduce((acc, log) => acc + log.hours, 0);
@@ -35,40 +35,72 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
     const normativeEndDate = internship.endDate ? new Date(internship.endDate) : null;
     if (normativeEndDate) normativeEndDate.setHours(12, 0, 0, 0);
 
-    // 3. Calculate Projected End Date based on hoursPerDay and remaining hours
     const today = new Date();
-    today.setHours(12, 0, 0, 0); // Use noon to avoid timezone edge cases
+    today.setHours(12, 0, 0, 0);
 
     const workingDaysConfig = (internship.workingDays || "1,2,3,4,5").split(',').map(Number);
 
-    // Calculate how many working days are needed to complete remaining hours
-    const workingDaysNeeded = Math.ceil(remainingHours / hoursPerDay);
+    // 3. Calculate BASE projected end date using ONLY configuration data
+    // This gives us a stable end date that doesn't change with each log entry
+    const totalWorkingDaysNeeded = Math.ceil(targetHours / hoursPerDay);
 
-    // Calculate projected end date by counting working days
-    // Use startDate if it exists, otherwise use today
-    let projectedEndDate: Date | null = null;
-    const countFromDate = startDate ? new Date(startDate) : new Date(today);
-    countFromDate.setHours(12, 0, 0, 0);
-
-    if (workingDaysNeeded > 0) {
+    // Helper function to find the Nth working day from a start date
+    const findNthWorkingDay = (from: Date, n: number): Date => {
         let daysCount = 0;
-        let currentDate = new Date(countFromDate);
+        const currentDate = new Date(from);
+        currentDate.setHours(12, 0, 0, 0);
 
-        // Find the Nth working day
-        while (daysCount < workingDaysNeeded) {
+        while (daysCount < n) {
             const dayOfWeek = currentDate.getDay();
             if (workingDaysConfig.includes(dayOfWeek) && !isHoliday(currentDate)) {
                 daysCount++;
             }
-            // Only advance if we haven't reached the target yet
-            if (daysCount < workingDaysNeeded) {
+            if (daysCount < n) {
                 currentDate.setDate(currentDate.getDate() + 1);
             }
         }
-        projectedEndDate = new Date(currentDate);
-    } else {
-        projectedEndDate = today; // Already done
+        return currentDate;
+    };
+
+    // Calculate base end date from start date + total working days needed
+    let baseEndDate: Date | null = null;
+    let projectedEndDate: Date | null = null;
+
+    if (startDate && totalWorkingDaysNeeded > 0) {
+        baseEndDate = findNthWorkingDay(startDate, totalWorkingDaysNeeded);
     }
+
+    // 4. Calculate hour adjustment from logged entries
+    // For each log, calculate if more or fewer hours were logged than expected
+    let totalHoursDiff = 0;
+    internship.logs.forEach(log => {
+        const hoursDiff = log.hours - hoursPerDay;
+        totalHoursDiff += hoursDiff;
+    });
+
+    // Convert hour differential to working days adjustment
+    // Positive diff (more hours logged) = end date moves earlier
+    // Negative diff (fewer hours logged) = end date moves later
+    const dayAdjustment = Math.floor(totalHoursDiff / hoursPerDay);
+
+    // 5. Calculate final projected end date
+    if (remainingHours <= 0) {
+        projectedEndDate = today; // Already completed
+    } else if (baseEndDate) {
+        // Adjust the base end date by the day adjustment
+        if (dayAdjustment !== 0) {
+            // Find the adjusted end date
+            // If dayAdjustment is positive, we need fewer days (move date earlier)
+            // If dayAdjustment is negative, we need more days (move date later)
+            const adjustedWorkingDays = totalWorkingDaysNeeded - dayAdjustment;
+            projectedEndDate = findNthWorkingDay(startDate!, Math.max(1, adjustedWorkingDays));
+        } else {
+            projectedEndDate = new Date(baseEndDate);
+        }
+    }
+
+    // Calculate remaining working days for display
+    const remainingWorkingDays = Math.ceil(remainingHours / hoursPerDay);
 
 
     // 4. Calculate days remaining until normative end (for comparison)
@@ -142,7 +174,7 @@ export function InternshipPlanningCard({ internship }: InternshipPlanningCardPro
                             {hoursPerDay} <span className="text-sm font-normal opacity-70">h/día</span>
                         </div>
                         <div className={`mt-2 text-xs ${remainingHours <= 0 ? 'text-green-600' : 'text-indigo-600'}`}>
-                            {workingDaysNeeded} días laborables restantes
+                            {remainingWorkingDays} días laborables restantes
                         </div>
                     </div>
                 </div>

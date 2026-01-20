@@ -122,48 +122,46 @@ export default async function PracticumPage() {
                     {/* Optional: Filter or Sort controls could go here */}
                 </div>
 
-                <div>
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                                <th className="px-4 py-2 border w-24 text-center">Horas</th>
-                                <th className="px-4 py-2 border">Actividad Realizada</th>
-                                <th className="px-4 py-2 border">Observaciones</th>
-                                <th className="px-4 py-2 border w-10"></th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {internship?.logs && internship.logs.length > 0 ? (
-                                internship.logs.map((log) => (
-                                    <tr key={log.id} className="hover:bg-slate-50">
-                                        <td className="px-4 py-3 border whitespace-nowrap text-sm text-slate-600">
-                                            {new Date(log.date).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-4 py-3 border text-center font-medium text-slate-900">
-                                            {log.hours}
-                                        </td>
-                                        <td className="px-4 py-3 border text-sm text-slate-700">
-                                            {log.activity}
-                                        </td>
-                                        <td className="px-4 py-3 border text-sm italic text-slate-500">
-                                            {log.observations}
-                                        </td>
-                                        <td className="px-2 py-2 border text-center">
-                                            <LogEntryActions log={log} />
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
-                                        No hay registros todavía. ¡Añade tu primera jornada!
+                <table className="w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                            <th className="px-4 py-2 border w-24 text-center">Horas</th>
+                            <th className="px-4 py-2 border">Actividad Realizada</th>
+                            <th className="px-4 py-2 border">Observaciones</th>
+                            <th className="px-4 py-2 border w-10"></th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {internship?.logs && internship.logs.length > 0 ? (
+                            internship.logs.map((log) => (
+                                <tr key={log.id} className="hover:bg-slate-50">
+                                    <td className="px-4 py-3 border whitespace-nowrap text-sm text-slate-600">
+                                        {new Date(log.date).toLocaleDateString()}
+                                    </td>
+                                    <td className="px-4 py-3 border text-center font-medium text-slate-900">
+                                        {log.hours}
+                                    </td>
+                                    <td className="px-4 py-3 border text-sm text-slate-700">
+                                        {log.activity}
+                                    </td>
+                                    <td className="px-4 py-3 border text-sm italic text-slate-500">
+                                        {log.observations}
+                                    </td>
+                                    <td className="px-2 py-2 border text-center">
+                                        <LogEntryActions log={log} />
                                     </td>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
+                                    No hay registros todavía. ¡Añade tu primera jornada!
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

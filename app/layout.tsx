@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { AppShell } from "@/components/layout/AppShell";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +33,7 @@ export default async function RootLayout({
             <Toaster />
           </AppShell>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );

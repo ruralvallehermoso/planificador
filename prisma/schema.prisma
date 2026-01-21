@@ -686,3 +686,45 @@ model TFMResource {
   @@index([userId])
   @@schema("public")
 }
+
+model Recipe {
+  id          String   @id @default(cuid())
+  name        String
+  emoji       String?
+  time        String?
+  difficulty  String?
+  servings    Int?
+  imageUrl    String?
+  recipeUrl   String?
+  youtubeUrl  String?
+  ingredients String?  @db.Text
+  steps       String?  @db.Text
+  notes       String?  @db.Text
+  
+  filters     RecipeFilterAssignment[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@schema("public")
+}
+
+model RecipeFilter {
+  id      String @id @default(cuid())
+  name    String @unique
+  color   String @default("#f97316")
+  
+  recipes RecipeFilterAssignment[]
+
+  @@schema("public")
+}
+
+model RecipeFilterAssignment {
+  recipeId  String
+  filterId  String
+  recipe    Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  filter    RecipeFilter @relation(fields: [filterId], references: [id], onDelete: Cascade)
+  
+  @@id([recipeId, filterId])
+  @@schema("public")
+}

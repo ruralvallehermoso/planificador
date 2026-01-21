@@ -21,3 +21,40 @@ model Event {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model Recipe {
+  id          String   @id @default(uuid())
+  name        String
+  emoji       String?
+  time        String?    // ej: "30m"
+  difficulty  String?    // Fácil, Media, Difícil
+  servings    Int?
+  imageUrl    String?    // Imagen subida por usuario
+  recipeUrl   String?    // URL externa a web de receta
+  youtubeUrl  String?    // URL de video YouTube
+  ingredients String?    // Texto libre
+  steps       String?    // Texto libre
+  notes       String?
+  
+  filters     RecipeFilterAssignment[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RecipeFilter {
+  id      String @id @default(uuid())
+  name    String @unique
+  color   String @default("#f97316")
+  
+  recipes RecipeFilterAssignment[]
+}
+
+model RecipeFilterAssignment {
+  recipeId  String
+  filterId  String
+  recipe    Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  filter    RecipeFilter @relation(fields: [filterId], references: [id], onDelete: Cascade)
+  
+  @@id([recipeId, filterId])
+}

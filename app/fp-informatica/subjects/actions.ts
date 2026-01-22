@@ -86,3 +86,23 @@ export async function getSubjectPractice(id: string) {
         return null
     }
 }
+
+export async function deleteSubjectPractice(id: string) {
+    const session = await auth()
+
+    if (!session?.user) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    try {
+        const practice = await prisma.subjectPractice.delete({
+            where: { id }
+        })
+
+        revalidatePath(`/fp-informatica/subjects/${practice.subjectId}`)
+        return { success: true }
+    } catch (error) {
+        console.error("Error deleting practice:", error)
+        return { success: false, error: "Failed to delete practice" }
+    }
+}

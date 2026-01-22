@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { CalendarIcon, Save, ArrowLeft, Loader2, FileText, Target, CalendarDays, BookOpen } from "lucide-react"
+import { CalendarIcon, Save, ArrowLeft, Loader2, FileText, Target, CalendarDays, Columns, PanelLeft, PanelRight, Printer } from "lucide-react"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { createSubjectPractice, updateSubjectPractice, PracticeInput } from "@/app/fp-informatica/subjects/actions"
 import { toast } from "sonner"
@@ -23,6 +23,7 @@ interface PracticeFormBuilderProps {
 export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuilderProps) {
     const router = useRouter()
     const [isSaving, setIsSaving] = useState(false)
+    const [viewMode, setViewMode] = useState<'split' | 'editor' | 'preview'>('split')
     const [data, setData] = useState<PracticeInput>(initialData || {
         title: "",
         subjectId: subjectId,
@@ -62,141 +63,237 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
         }
     }
 
+    const handlePrint = () => {
+        window.print()
+    }
+
     return (
-        <div className="max-w-5xl mx-auto space-y-8 pb-20">
+        <div className="min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0">
             {/* Header */}
-            <div className="flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-sm z-10 py-4 border-b">
-                <div className="flex items-center gap-4">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => router.back()}
-                    >
-                        <ArrowLeft className="w-5 h-5 text-gray-500" />
-                    </Button>
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">
+            <header className="bg-white border-b z-10 print:hidden sticky top-0 shadow-sm">
+                <div className="w-full max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.back()}
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        >
+                            <ArrowLeft className="h-5 w-5 text-gray-600" />
+                        </Button>
+                        <h1 className="text-xl font-bold text-gray-900 hidden md:block">
                             {initialData ? "Editar Práctica" : "Nueva Práctica"}
                         </h1>
-                        <p className="text-sm text-gray-500">
-                            Configura los detalles de la práctica o entrega
-                        </p>
+
+                        {/* View Mode Toggles */}
+                        <div className="flex items-center bg-gray-100 p-1 rounded-lg border ml-4">
+                            <Button
+                                variant="ghost" size="sm"
+                                onClick={() => setViewMode('editor')}
+                                className={cn("h-7 px-2", viewMode === 'editor' && "bg-white shadow text-blue-600")}
+                                title="Solo Editor"
+                            >
+                                <PanelLeft className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                variant="ghost" size="sm"
+                                onClick={() => setViewMode('split')}
+                                className={cn("h-7 px-2", viewMode === 'split' && "bg-white shadow text-blue-600")}
+                                title="Dividido"
+                            >
+                                <Columns className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                variant="ghost" size="sm"
+                                onClick={() => setViewMode('preview')}
+                                className={cn("h-7 px-2", viewMode === 'preview' && "bg-white shadow text-blue-600")}
+                                title="Solo Vista Previa"
+                            >
+                                <PanelRight className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <Button onClick={handlePrint} variant="outline" className="hidden sm:flex">
+                            <Printer className="h-4 w-4 mr-2" />
+                            Imprimir
+                        </Button>
+
+                        <Button
+                            onClick={handleSave}
+                            disabled={isSaving}
+                            className="bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+                        >
+                            {isSaving ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Guardando...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="w-4 h-4 mr-2" />
+                                    Guardar
+                                </>
+                            )}
+                        </Button>
                     </div>
                 </div>
-                <div className="flex gap-2">
-                    <Button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className="bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        {isSaving ? (
-                            <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Guardando...
-                            </>
-                        ) : (
-                            <>
-                                <Save className="w-4 h-4 mr-2" />
-                                Guardar
-                            </>
-                        )}
-                    </Button>
-                </div>
-            </div>
+            </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Content (2/3) */}
-                <div className="lg:col-span-2 space-y-6">
-                    {/* Basic Info Card */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
-                        <div className="flex items-center gap-2 pb-4 border-b border-gray-100 mb-4">
-                            <FileText className="w-5 h-5 text-blue-600" />
-                            <h2 className="font-semibold text-gray-900">Información General</h2>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <Label>Título de la Práctica</Label>
-                                <Input
-                                    placeholder="Ej: Práctica 1: Configuración de Redes"
-                                    value={data.title}
-                                    onChange={(e) => handleChange("title", e.target.value)}
-                                    className="text-lg font-medium"
-                                />
+            <main className="w-full max-w-[1800px] mx-auto px-4 py-8 print:p-0">
+                <div className={cn(
+                    "grid gap-8 print:block print:w-full transition-all duration-300",
+                    viewMode === 'split' ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"
+                )}>
+                    {/* Editor Column (Left) */}
+                    <div className={cn(
+                        "space-y-6 print:hidden transition-all duration-300",
+                        viewMode === 'preview' ? "hidden" : "block",
+                        viewMode === 'editor' ? "max-w-3xl mx-auto w-full" : ""
+                    )}>
+                        {/* Basic Info Card */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+                            <div className="flex items-center gap-2 pb-4 border-b border-gray-100 mb-4">
+                                <FileText className="w-5 h-5 text-blue-600" />
+                                <h2 className="font-semibold text-gray-900">Información General</h2>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label>Descripción y Enunciado</Label>
-                                <div className="border rounded-md min-h-[300px]">
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label>Título de la Práctica</Label>
+                                    <Input
+                                        placeholder="Ej: Práctica 1: Configuración de Redes"
+                                        value={data.title}
+                                        onChange={(e) => handleChange("title", e.target.value)}
+                                        className="text-lg font-medium"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Descripción y Enunciado</Label>
+                                    <div className="border rounded-md min-h-[300px]">
+                                        <RichTextEditor
+                                            value={data.description || ""}
+                                            onChange={(html) => handleChange("description", html)}
+                                            placeholder="Describe los pasos a seguir de la práctica..."
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Objectives Card */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+                                <div className="flex items-center gap-2 pb-4 border-b border-gray-100 mb-4">
+                                    <Target className="w-5 h-5 text-emerald-600" />
+                                    <h2 className="font-semibold text-gray-900">Objetivos</h2>
+                                </div>
+                                <div className="min-h-[200px] border rounded-md bg-gray-50/50">
                                     <RichTextEditor
-                                        value={data.description || ""}
-                                        onChange={(html) => handleChange("description", html)}
-                                        placeholder="Describe los pasos a seguir de la práctica..."
+                                        value={data.objectives || ""}
+                                        onChange={(html) => handleChange("objectives", html)}
+                                        placeholder="Lista los objetivos de aprendizaje..."
+                                        className="min-h-[200px]"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Delivery Settings Card */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+                                <div className="flex items-center gap-2 pb-4 border-b border-gray-100 mb-4">
+                                    <CalendarDays className="w-5 h-5 text-purple-600" />
+                                    <h2 className="font-semibold text-gray-900">Entrega</h2>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Fecha Límite</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "w-full pl-3 text-left font-normal",
+                                                    !data.date && "text-muted-foreground"
+                                                )}
+                                            >
+                                                {data.date ? (
+                                                    format(new Date(data.date), "PPP", { locale: es })
+                                                ) : (
+                                                    <span>Seleccionar fecha</span>
+                                                )}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0 z-[9999] bg-white" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={data.date ? new Date(data.date) : undefined}
+                                                onSelect={(date) => handleChange("date", date ? date.toISOString() : undefined)}
+                                                locale={es}
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Preview Column (Right) */}
+                    <div className={cn(
+                        "print:w-full print:static h-full transition-all duration-300",
+                        viewMode === 'editor' ? "hidden" : "block",
+                        viewMode === 'preview' ? "max-w-[210mm] mx-auto" : ""
+                    )}>
+                        <div className="bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] p-[15mm] print:shadow-none print:p-0 print:border-none border border-gray-100 rounded-lg">
+                            <div className="space-y-6">
+                                {/* Preview Header */}
+                                <div className="border-b-2 border-slate-800 pb-4 mb-8">
+                                    <h1 className="text-3xl font-bold text-slate-900 uppercase tracking-tight">
+                                        {data.title || "Título de la Práctica"}
+                                    </h1>
+                                    <div className="flex justify-between items-end mt-4 text-sm text-slate-600">
+                                        <div className="flex gap-6">
+                                            {data.date && (
+                                                <span className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full">
+                                                    <CalendarDays className="w-4 h-4" />
+                                                    Entrega: {format(new Date(data.date), "PPP", { locale: es })}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Preview Objectives */}
+                                {data.objectives && (data.objectives !== "<p></p>") && (
+                                    <div className="bg-slate-50 p-6 rounded-lg border border-slate-100">
+                                        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                            <Target className="w-4 h-4" />
+                                            Objetivos de Aprendizaje
+                                        </h3>
+                                        <div
+                                            className="prose prose-sm prose-slate max-w-none"
+                                            dangerouslySetInnerHTML={{ __html: data.objectives }}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Preview Content */}
+                                <div className="prose prose-slate max-w-none">
+                                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 border-b pb-2">
+                                        Enunciado
+                                    </h3>
+                                    <div
+                                        dangerouslySetInnerHTML={{ __html: data.description || "<p class='text-gray-400 italic'>Sin descripción...</p>" }}
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Sidebar (1/3) */}
-                <div className="lg:col-span-1 space-y-6">
-                    {/* Objectives Card */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
-                        <div className="flex items-center gap-2 pb-4 border-b border-gray-100 mb-4">
-                            <Target className="w-5 h-5 text-emerald-600" />
-                            <h2 className="font-semibold text-gray-900">Objetivos</h2>
-                        </div>
-                        <div className="min-h-[200px] border rounded-md bg-gray-50/50">
-                            <RichTextEditor
-                                value={data.objectives || ""}
-                                onChange={(html) => handleChange("objectives", html)}
-                                placeholder="Lista los objetivos de aprendizaje..."
-                                className="min-h-[200px]"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Delivery Settings Card */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
-                        <div className="flex items-center gap-2 pb-4 border-b border-gray-100 mb-4">
-                            <CalendarDays className="w-5 h-5 text-purple-600" />
-                            <h2 className="font-semibold text-gray-900">Entrega</h2>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>Fecha Límite</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full pl-3 text-left font-normal",
-                                            !data.date && "text-muted-foreground"
-                                        )}
-                                    >
-                                        {data.date ? (
-                                            format(new Date(data.date), "PPP", { locale: es })
-                                        ) : (
-                                            <span>Seleccionar fecha</span>
-                                        )}
-                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 z-[9999] bg-white" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={data.date ? new Date(data.date) : undefined}
-                                        onSelect={(date) => handleChange("date", date ? date.toISOString() : undefined)}
-                                        locale={es}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </main>
         </div>
     )
 }

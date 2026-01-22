@@ -3,6 +3,7 @@ import { ArrowLeft, BookOpen, Calendar, Clock, ExternalLink, FileText, Pencil, F
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { notFound } from "next/navigation"
+import { PracticeItemActions } from "@/components/modules/subjects/PracticeItemActions"
 
 export default async function SubjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -123,41 +124,7 @@ export default async function SubjectDetailPage({ params }: { params: Promise<{ 
                                 <p className="p-6 text-gray-400 text-center italic">No hay prácticas registradas.</p>
                             ) : (
                                 subject.practices.map((practice) => (
-                                    <div key={practice.id} className="p-4 sm:flex items-start justify-between hover:bg-gray-50 transition-colors space-y-3 sm:space-y-0">
-                                        <div className="space-y-1">
-                                            <h3 className="text-gray-900 font-medium">{practice.title}</h3>
-                                            {practice.deliveryDate && (
-                                                <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 w-fit px-2 py-0.5 rounded-md">
-                                                    <Calendar className="w-3 h-3" />
-                                                    <span>Entrega: {new Date(practice.deliveryDate).toLocaleDateString()}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            {practice.statementLink && (
-                                                <a
-                                                    href={practice.statementLink}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-1.5 text-xs text-gray-600 hover:text-gray-900 border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50"
-                                                >
-                                                    <FileIcon className="w-3 h-3" />
-                                                    Enunciado
-                                                </a>
-                                            )}
-                                            {practice.deliveryFolderLink && (
-                                                <a
-                                                    href={practice.deliveryFolderLink}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-1.5 text-xs text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-md shadow-sm"
-                                                >
-                                                    <FolderOpen className="w-3 h-3" />
-                                                    Entrega
-                                                </a>
-                                            )}
-                                        </div>
-                                    </div>
+                                    <PracticeItemActions key={practice.id} practice={practice} />
                                 ))
                             )}
                         </div>

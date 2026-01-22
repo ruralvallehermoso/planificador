@@ -25,6 +25,7 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
     const [config, setConfig] = useState(report?.config || { gradeColumn: '', nameColumn: '' })
     const [isSaving, setIsSaving] = useState(false)
     const [columns, setColumns] = useState<string[]>(rawData.length > 0 ? Object.keys(rawData[0]) : [])
+    const [filterStatus, setFilterStatus] = useState<'all' | 'passed' | 'failed'>('all')
 
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
@@ -45,6 +46,7 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                 setRawData(data)
                 setColumns(Object.keys(data[0] as object))
                 setCurrentPage(1)
+                setFilterStatus('all') // Reset filter on new upload
                 toast.success(`Importadas ${data.length} filas correctamente`)
             }
         }
@@ -97,13 +99,29 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
 
     const chartData = getChartData()
     const pieData = [
-        { name: 'Aprobados', value: chartData.passed, color: '#16a34a' }, // darker green
-        { name: 'Suspensos', value: chartData.failed, color: '#dc2626' }, // darker red
+        { name: 'Aprobados', value: chartData.passed, color: '#16a34a', type: 'passed' }, // darker green
+        { name: 'Suspensos', value: chartData.failed, color: '#dc2626', type: 'failed' }, // darker red
     ]
 
-    // Pagination logic
-    const totalPages = Math.ceil(rawData.length / itemsPerPage)
-    const paginatedData = rawData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    // Filtering & Pagination logic
+    const filteredData = rawData.filter(row => {
+        if (filterStatus === 'all') return true
+        const grade = config.gradeColumn ? parseFloat(row[config.gradeColumn]) : NaN
+        const status = getGradeStatus(grade)
+        return status === filterStatus
+    })
+
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+    const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+    const handleChartClick = (data: any) => {
+        if (data && data.payload && data.payload.type) {
+            const type = data.payload.type as 'passed' | 'failed'
+            setFilterStatus(prev => prev === type ? 'all' : type) // Toggle
+            setCurrentPage(1)
+            toast.info(`Filtrando por: ${type === 'passed' ? 'Aprobados' : 'Suspensos'}`)
+        }
+    }
 
     return (
         <div className="space-y-6">
@@ -196,7 +214,7 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                 <Card className="z-10 relative">
                     <CardHeader>
                         <CardTitle>Resumen Gráfico</CardTitle>
-                        <CardDescription>Análisis de resultados basado en la columna seleccionada</CardDescription>
+                        <CardDescription>Haz clic en el gráfico para filtrar la tabla</CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center justify-center min-h-[320px] p-2">
                         {config.gradeColumn && chartData.passed + chartData.failed > 0 ? (
@@ -213,18 +231,25 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                                 paddingAngle={2}
                                                 dataKey="value"
                                                 stroke="none"
+                                                onClick={handleChartClick}
+                                                className="cursor-pointer hover:opacity-80 transition-opacity"
                                             >
                                                 {pieData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                    <Cell
+                                                        key={`cell-${index}`}
+                                                        fill={entry.color}
+                                                        opacity={filterStatus === 'all' || filterStatus === entry.type ? 1 : 0.3}
+                                                    />
                                                 ))}
                                             </Pie>
-                                            <Tooltip />
+                                            <Tooltip wrapperStyle={{ zIndex: 100 }} />
                                         </RePieChart>
                                     </ResponsiveContainer>
                                 </div>
 
                                 {/* Stats Overlay inside Donut */}
-                                <div className="z-10 flex flex-col items-center justify-center pointer-events-none p-4 rounded-full bg-white/80 backdrop-blur-sm shadow-sm border w-[120px] h-[120px]">
+                                <div className="z-0 flex flex-col items-center justify-center pointer-events-none p-4 rounded-full bg-white/80 backdrop-blur-sm shadow-sm border w-[120px] h-[120px]">
+                                    {/* z-0 so Tooltip (z-100) covers it */}
                                     <div className="text-center space-y-1">
                                         <div className="flex flex-col">
                                             <span className="text-green-600 font-bold text-lg leading-none">{chartData.passed}</span>
@@ -239,12 +264,18 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                 </div>
 
                                 {/* Bottom percentages absolute */}
-                                <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-6 text-xs font-semibold">
-                                    <div className="text-green-600 flex items-center gap-1">
+                                <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-6 text-xs font-semibold z-20">
+                                    <div
+                                        className={`text-green-600 flex items-center gap-1 cursor-pointer hover:underline ${filterStatus === 'failed' && 'opacity-30'}`}
+                                        onClick={() => setFilterStatus(prev => prev === 'passed' ? 'all' : 'passed')}
+                                    >
                                         <div className="w-2 h-2 rounded-full bg-green-600"></div>
                                         {chartData.passedPct}% Aprobados
                                     </div>
-                                    <div className="text-red-600 flex items-center gap-1">
+                                    <div
+                                        className={`text-red-600 flex items-center gap-1 cursor-pointer hover:underline ${filterStatus === 'passed' && 'opacity-30'}`}
+                                        onClick={() => setFilterStatus(prev => prev === 'failed' ? 'all' : 'failed')}
+                                    >
                                         <div className="w-2 h-2 rounded-full bg-red-600"></div>
                                         {chartData.failedPct}% Suspensos
                                     </div>
@@ -266,9 +297,15 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                         <CardTitle className="flex items-center gap-2">
                             <TableIcon className="w-5 h-5" />
                             Datos Importados
+                            {filterStatus !== 'all' && (
+                                <span className="ml-2 text-sm font-normal text-white bg-blue-600 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    Filtro: {filterStatus === 'passed' ? 'Aprobados' : 'Suspensos'}
+                                    <button onClick={() => setFilterStatus('all')} className="ml-1 hover:text-blue-100">x</button>
+                                </span>
+                            )}
                         </CardTitle>
                         <div className="text-sm text-gray-500">
-                            Página {currentPage} de {totalPages}
+                            Página {currentPage} de {totalPages || 1}
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -283,7 +320,7 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {paginatedData.map((row, idx) => {
+                                        {paginatedData.length > 0 ? paginatedData.map((row, idx) => {
                                             const grade = config.gradeColumn ? parseFloat(row[config.gradeColumn]) : NaN
                                             const status = getGradeStatus(grade)
                                             let rowClass = "hover:bg-gray-50/50 transition-colors"
@@ -303,7 +340,13 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                                     ))}
                                                 </tr>
                                             )
-                                        })}
+                                        }) : (
+                                            <tr>
+                                                <td colSpan={columns.length} className="px-6 py-8 text-center text-gray-500">
+                                                    No hay resultados para el filtro seleccionado.
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -313,7 +356,8 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                         {totalPages > 1 && (
                             <div className="flex items-center justify-between mt-4">
                                 <div className="text-xs text-gray-500">
-                                    Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, rawData.length)} de {rawData.length} filas
+                                    {/* Updated counts */}
+                                    Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredData.length)} de {filteredData.length} filas
                                 </div>
                                 <div className="flex gap-2">
                                     <Button

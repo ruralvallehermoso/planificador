@@ -135,7 +135,15 @@ export function ExamsList({ templates }: ExamsListProps) {
                                     )}
                                     <div className="flex items-center">
                                         <Clock className="mr-2 h-4 w-4 text-gray-400" />
-                                        <span>Actualizado: {new Date(template.updatedAt).toLocaleDateString()}</span>
+                                        <span>Actualizado: {new Date(template.updatedAt).toLocaleString("es-ES", {
+                                            timeZone: "Europe/Madrid",
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: false
+                                        })}</span>
                                     </div>
                                 </div>
                             </CardContent>

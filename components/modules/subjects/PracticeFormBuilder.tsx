@@ -37,6 +37,13 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
         initialData?.formatting ? JSON.parse(initialData.formatting) : DEFAULT_PRACTICE_FORMATTING
     )
 
+    // Migrate old default margin to new standard if detected on load
+    useEffect(() => {
+        if (formatting.marginSize === "p-[15mm]") {
+            setFormatting(prev => ({ ...prev, marginSize: "p-[25mm]" }))
+        }
+    }, [])
+
     const handleChange = (field: keyof PracticeInput, value: any) => {
         setData(prev => ({ ...prev, [field]: value }))
     }
@@ -289,38 +296,31 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                     )}>
                         <div className={cn(
                             "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none border border-gray-100 rounded-lg",
-                            formatting.marginSize || "p-[15mm]"
+                            formatting.marginSize || "p-[25mm]"
                         )}>
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 {/* Preview Header */}
-                                <div className="border-b-2 border-slate-800 pb-4 mb-8">
+                                <div className="border-b-2 border-slate-800 pb-2 mb-4">
                                     <h1 className={titleClasses}>
                                         {data.title || "Título de la Práctica"}
                                     </h1>
                                     <div className="flex justify-between items-end mt-4 text-sm text-slate-600">
-                                        <div className="flex gap-6">
-                                            {data.date && (
-                                                <span className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full">
-                                                    <CalendarDays className="w-4 h-4" />
-                                                    Entrega: {format(new Date(data.date), "PPP", { locale: es })}
-                                                </span>
-                                            )}
-                                        </div>
+                                        {/* Date removed as requested */}
                                     </div>
                                 </div>
 
                                 {/* Preview Objectives */}
                                 {data.objectives && (data.objectives !== "<p></p>") && (
                                     <div className={cn(
-                                        "bg-slate-50 p-6 rounded-lg border border-slate-100 mb-6",
+                                        "bg-slate-50 p-4 rounded-lg border border-slate-100 mb-4", // Reduced padding (p-6 -> p-4) and margin (mb-6 -> mb-4)
                                         contentClasses
                                     )}>
-                                        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                            <Target className="w-4 h-4" />
+                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2"> {/* Reduced text size and margin */}
+                                            <Target className="w-3 h-3" />
                                             Objetivos de Aprendizaje
                                         </h3>
                                         <div
-                                            className="prose prose-sm prose-slate max-w-none"
+                                            className="prose prose-sm prose-slate max-w-none [&>p]:m-0 [&>ul]:m-0 [&>li]:m-0" // Compact prose content
                                             dangerouslySetInnerHTML={{ __html: data.objectives }}
                                         />
                                     </div>

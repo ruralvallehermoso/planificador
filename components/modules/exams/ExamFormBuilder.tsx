@@ -179,9 +179,9 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
 
             if (result.id) {
                 setSelectedTemplateId(result.id)
-                // If it's a new template or ID changed, update URL
+                // If it's a new template or ID changed, update URL to the DETAIL page
                 if (result.id !== urlTemplateId) {
-                    router.push(`/fp-informatica/exams?id=${result.id}`)
+                    router.push(`/fp-informatica/exams/${result.id}`)
                 }
             }
         }

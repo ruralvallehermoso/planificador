@@ -105,10 +105,13 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
         <div className="min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0">
             <style jsx global>{`
                 @media print {
-                    @page { margin: 25mm !important; }
-                    body { margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact; }
-                    html { margin: 0 !important; padding: 0 !important; }
-                    .print-container { padding: 0 !important; }
+                    @page {
+                        margin: 25mm 15mm;
+                    }
+                    body {
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
                 }
             `}</style>
             {/* Header - Fixed position */}
@@ -296,7 +299,7 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                         viewMode === 'preview' ? "max-w-[210mm] mx-auto" : ""
                     )}>
                         <div className={cn(
-                            "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none print:rounded-none border border-gray-100 rounded-lg print-container",
+                            "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none print:rounded-none print:p-0 border border-gray-100 rounded-lg",
                             formatting.marginSize || "p-[25mm]"
                         )}>
                             <div className="space-y-4">

@@ -97,17 +97,19 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         }
     }, [initialData])
 
-    const loadTemplates = async () => {
-        const t = await getExamTemplates()
-        setTemplates(t)
-
-        // Auto-load template from URL if present and templates loaded
-        if (urlTemplateId && t.length > 0 && !initialData) {
-            const template = t.find((tmpl: any) => tmpl.id === urlTemplateId)
+    // Sync validation with URL ID
+    useEffect(() => {
+        if (urlTemplateId && templates.length > 0 && !initialData && !selectedTemplateId) {
+            const template = templates.find((tmpl: any) => tmpl.id === urlTemplateId)
             if (template) {
                 loadTemplateData(template)
             }
         }
+    }, [urlTemplateId, templates, initialData, selectedTemplateId])
+
+    const loadTemplates = async () => {
+        const t = await getExamTemplates()
+        setTemplates(t)
     }
 
     const loadTemplateData = (template: any) => {
@@ -171,12 +173,20 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         const result = await saveExamTemplate(data, idToUpdate)
 
         if (result.success) {
-            await loadTemplates()
-            if (result.id) setSelectedTemplateId(result.id)
+            // Reload list to get updated names/IDs
+            const t = await getExamTemplates()
+            setTemplates(t)
+
+            if (result.id) {
+                setSelectedTemplateId(result.id)
+                // If it's a new template or ID changed, update URL
+                if (result.id !== urlTemplateId) {
+                    router.push(`/fp-informatica/exams?id=${result.id}`)
+                }
+            }
         }
         setIsSaving(false)
         setSaveDialogOpen(false)
-        // Keep name if editing, otherwise clear? Actually better to keep purely for UX
     }
 
     const handlePrint = () => {

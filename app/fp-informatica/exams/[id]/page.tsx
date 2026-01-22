@@ -7,8 +7,12 @@ import { ArrowLeft, Edit, GraduationCap } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-export default async function ExamDetailPage({ params }: { params: { id: string } }) {
-    const { id } = params
+interface PageProps {
+    params: Promise<{ id: string }>
+}
+
+export default async function ExamDetailPage({ params }: PageProps) {
+    const { id } = await params
 
     // As params is a Promise in Next.js 15+, we need to await it if using types correctly, 
     // but in Page props standard behavior for now:

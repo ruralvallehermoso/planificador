@@ -401,7 +401,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     const weights = getWeights()
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0">
             {/* Top Bar */}
             <header className="bg-white border-b z-10 print:hidden relative shadow-sm">
                 <div className="w-full max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">

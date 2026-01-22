@@ -54,7 +54,7 @@ export default async function ExamDetailPage({ params }: PageProps) {
                 </TabsList>
 
                 <TabsContent value="design" className="mt-0">
-                    <div className="bg-white rounded-xl border p-1">
+                    <div className="bg-white rounded-xl border p-1 print:border-none print:p-0">
                         {/* We reuse the builder but verify functionality */}
                         <ExamFormBuilder initialData={exam} />
                     </div>

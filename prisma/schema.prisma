@@ -231,6 +231,7 @@ model SubjectPractice {
   
   description        String?   @db.Text
   objectives         String?   @db.Text
+  formatting         String?   @db.Text
 
   subjectId          String
   createdAt          DateTime  @default(now())

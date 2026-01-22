@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { notFound } from "next/navigation"
 import { PracticeItemActions } from "@/components/modules/subjects/PracticeItemActions"
+import { TopicItemActions } from "@/components/modules/subjects/TopicItemActions"
 
 export default async function SubjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -81,25 +82,7 @@ export default async function SubjectDetailPage({ params }: { params: Promise<{ 
                                 <p className="p-6 text-gray-400 text-center italic">No hay temas registrados.</p>
                             ) : (
                                 subject.topics.map((topic, index) => (
-                                    <div key={topic.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                                        <div className="flex items-center gap-4">
-                                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-semibold text-sm">
-                                                {index + 1}
-                                            </span>
-                                            <span className="text-gray-700 font-medium">{topic.title}</span>
-                                        </div>
-                                        {topic.materialLink && (
-                                            <a
-                                                href={topic.materialLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 hover:underline px-3 py-1.5 bg-blue-50 rounded-full"
-                                            >
-                                                <ExternalLink className="w-3 h-3" />
-                                                Materiales
-                                            </a>
-                                        )}
-                                    </div>
+                                    <TopicItemActions key={topic.id} topic={topic} index={index} />
                                 ))
                             )}
                         </div>

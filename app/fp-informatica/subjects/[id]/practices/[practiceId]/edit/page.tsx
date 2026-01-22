@@ -27,7 +27,8 @@ export default async function EditPracticePage({ params }: { params: Promise<{ i
                     title: practice.title,
                     date: practice.deliveryDate ? practice.deliveryDate.toISOString() : undefined,
                     objectives: practice.objectives || "",
-                    description: practice.description || ""
+                    description: practice.description || "",
+                    formatting: practice.formatting || undefined
                 }}
             />
         </div>

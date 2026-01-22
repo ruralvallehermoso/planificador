@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,6 +14,7 @@ import { CalendarIcon, Save, ArrowLeft, Loader2, FileText, Target, CalendarDays,
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { createSubjectPractice, updateSubjectPractice, PracticeInput } from "@/app/fp-informatica/subjects/actions"
 import { toast } from "sonner"
+import { PracticeFormattingForm, PracticeFormatting, DEFAULT_PRACTICE_FORMATTING } from "./PracticeFormattingForm"
 
 interface PracticeFormBuilderProps {
     subjectId: string
@@ -32,6 +33,10 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
         description: ""
     })
 
+    const [formatting, setFormatting] = useState<PracticeFormatting>(
+        initialData?.formatting ? JSON.parse(initialData.formatting) : DEFAULT_PRACTICE_FORMATTING
+    )
+
     const handleChange = (field: keyof PracticeInput, value: any) => {
         setData(prev => ({ ...prev, [field]: value }))
     }
@@ -44,9 +49,14 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
 
         setIsSaving(true)
         try {
+            const dataToSave = {
+                ...data,
+                formatting: JSON.stringify(formatting)
+            }
+
             const result = data.id
-                ? await updateSubjectPractice(data)
-                : await createSubjectPractice(data)
+                ? await updateSubjectPractice(dataToSave)
+                : await createSubjectPractice(dataToSave)
 
             if (result.success) {
                 toast.success(data.id ? "Práctica actualizada" : "Práctica creada")
@@ -66,6 +76,23 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
     const handlePrint = () => {
         window.print()
     }
+
+    // Dynamic classes based on formatting
+    const contentClasses = cn(
+        formatting.font,
+        formatting.fontSize,
+        formatting.lineHeight,
+        formatting.paragraphSpacing,
+        "text-gray-900"
+    )
+
+    const titleClasses = cn(
+        formatting.font,
+        formatting.titleSize || "text-2xl",
+        "uppercase tracking-tight",
+        formatting.isBoldTitle && "font-bold",
+        "text-slate-900"
+    )
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0">
@@ -183,6 +210,12 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                             </div>
                         </div>
 
+                        {/* Formatting Controls */}
+                        <PracticeFormattingForm
+                            data={formatting}
+                            onChange={setFormatting}
+                        />
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Objectives Card */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
@@ -247,11 +280,14 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                         viewMode === 'editor' ? "hidden" : "block",
                         viewMode === 'preview' ? "max-w-[210mm] mx-auto" : ""
                     )}>
-                        <div className="bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] p-[15mm] print:shadow-none print:p-0 print:border-none border border-gray-100 rounded-lg">
+                        <div className={cn(
+                            "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none border border-gray-100 rounded-lg",
+                            formatting.marginSize || "p-[15mm]"
+                        )}>
                             <div className="space-y-6">
                                 {/* Preview Header */}
                                 <div className="border-b-2 border-slate-800 pb-4 mb-8">
-                                    <h1 className="text-3xl font-bold text-slate-900 uppercase tracking-tight">
+                                    <h1 className={titleClasses}>
                                         {data.title || "Título de la Práctica"}
                                     </h1>
                                     <div className="flex justify-between items-end mt-4 text-sm text-slate-600">
@@ -268,7 +304,10 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
 
                                 {/* Preview Objectives */}
                                 {data.objectives && (data.objectives !== "<p></p>") && (
-                                    <div className="bg-slate-50 p-6 rounded-lg border border-slate-100">
+                                    <div className={cn(
+                                        "bg-slate-50 p-6 rounded-lg border border-slate-100 mb-6",
+                                        contentClasses
+                                    )}>
                                         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                                             <Target className="w-4 h-4" />
                                             Objetivos de Aprendizaje
@@ -281,7 +320,7 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                                 )}
 
                                 {/* Preview Content */}
-                                <div className="prose prose-slate max-w-none">
+                                <div className={cn("prose prose-slate max-w-none", contentClasses)}>
                                     <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 border-b pb-2">
                                         Enunciado
                                     </h3>

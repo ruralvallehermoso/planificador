@@ -57,6 +57,19 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                 p {
                     margin-bottom: 0.75em;
                 }
+                ul {
+                    list-style-type: disc;
+                    padding-left: 1.5em;
+                    margin-bottom: 0.75em;
+                }
+                ol {
+                    list-style-type: decimal;
+                    padding-left: 1.5em;
+                    margin-bottom: 0.75em;
+                }
+                li {
+                    margin-bottom: 0.25em;
+                }
             `}</style>
             {/* Header */}
             <div className="border-b-2 border-gray-800 pb-4 mb-8">
@@ -164,7 +177,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                         )}
 
                         {section.type === 'DEVELOP' && (
-                            <div className="pl-4 prose prose-sm max-w-none">
+                            <div className="pl-4">
                                 {/* Heuristic: If it looks like HTML, render as HTML. Otherwise use legacy formatter. */}
                                 {(section.questions || '').trim().startsWith('<') ? (
                                     <div dangerouslySetInnerHTML={{ __html: processHtmlContent(section.questions || '') }} />

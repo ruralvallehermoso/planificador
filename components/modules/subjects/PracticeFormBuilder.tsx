@@ -105,13 +105,14 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
         <div className="min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0">
             <style jsx global>{`
                 @media print {
-                    @page { margin: 0 !important; size: auto; }
+                    @page { margin: 25mm !important; }
                     body { margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact; }
                     html { margin: 0 !important; padding: 0 !important; }
+                    .print-container { padding: 0 !important; }
                 }
             `}</style>
-            {/* Header */}
-            <header className="bg-white border-b z-50 print:hidden sticky top-0 shadow-sm">
+            {/* Header - Fixed position */}
+            <header className="bg-white border-b z-50 print:hidden fixed top-0 left-0 right-0 shadow-sm">
                 <div className="w-full max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Button
@@ -295,7 +296,7 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                         viewMode === 'preview' ? "max-w-[210mm] mx-auto" : ""
                     )}>
                         <div className={cn(
-                            "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none print:rounded-none border border-gray-100 rounded-lg print:p-[25mm]",
+                            "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none print:rounded-none border border-gray-100 rounded-lg print-container",
                             formatting.marginSize || "p-[25mm]"
                         )}>
                             <div className="space-y-4">

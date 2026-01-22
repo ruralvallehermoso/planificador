@@ -32,7 +32,7 @@ export default async function ExamDetailPage({ params }: PageProps) {
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4 mb-6">
-                <Link href="/fp-informatica/exams" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <Link href="/fp-informatica/exams" className="p-2 hover:bg-gray-100 rounded-full transition-colors print:hidden">
                     <ArrowLeft className="h-5 w-5 text-gray-600" />
                 </Link>
                 <div>
@@ -42,7 +42,7 @@ export default async function ExamDetailPage({ params }: PageProps) {
             </div>
 
             <Tabs defaultValue="grades" className="w-full">
-                <TabsList className="mb-4">
+                <TabsList className="mb-4 print:hidden">
                     <TabsTrigger value="design" className="flex items-center gap-2">
                         <Edit className="w-4 h-4" />
                         Diseño / Contenido

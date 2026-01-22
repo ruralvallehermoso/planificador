@@ -40,8 +40,15 @@ export function PracticeItemActions({ practice }: PracticeItemActionsProps) {
         }
     }
 
+    const handleCardClick = () => {
+        router.push(`/fp-informatica/subjects/${practice.subjectId}/practices/${practice.id}/edit`)
+    }
+
     return (
-        <div className="p-4 sm:flex items-start justify-between hover:bg-gray-50 transition-colors space-y-3 sm:space-y-0 group">
+        <div
+            onClick={handleCardClick}
+            className="p-4 sm:flex items-start justify-between hover:bg-gray-50 transition-colors space-y-3 sm:space-y-0 group cursor-pointer"
+        >
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
                     <h3 className="text-gray-900 font-medium">{practice.title}</h3>
@@ -60,6 +67,7 @@ export function PracticeItemActions({ practice }: PracticeItemActionsProps) {
                         href={practice.statementLink}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-1.5 text-xs text-gray-600 hover:text-gray-900 border border-gray-200 px-3 py-1.5 rounded-md hover:bg-gray-50"
                     >
                         <FileIcon className="w-3 h-3" />
@@ -71,6 +79,7 @@ export function PracticeItemActions({ practice }: PracticeItemActionsProps) {
                         href={practice.deliveryFolderLink}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-1.5 text-xs text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-md shadow-sm"
                     >
                         <FolderOpen className="w-3 h-3" />
@@ -80,13 +89,22 @@ export function PracticeItemActions({ practice }: PracticeItemActionsProps) {
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => e.stopPropagation()}
+                        >
                             <MoreVertical className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                            <Link href={`/fp-informatica/subjects/${practice.subjectId}/practices/${practice.id}/edit`} className="flex items-center gap-2">
+                            <Link
+                                href={`/fp-informatica/subjects/${practice.subjectId}/practices/${practice.id}/edit`}
+                                className="flex items-center gap-2"
+                                onClick={(e) => e.stopPropagation()}
+                            >
                                 <Pencil className="h-4 w-4" />
                                 Editar
                             </Link>

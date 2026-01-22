@@ -543,7 +543,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                 </div>
             </header>
 
-            <main className="w-full max-w-[1800px] mx-auto px-4 py-8">
+            <main className="w-full max-w-[1800px] mx-auto px-4 py-8 print:p-0">
                 <div className={cn(
                     "grid gap-8 print:block print:w-full transition-all duration-300",
                     viewMode === 'split' ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"

@@ -31,7 +31,7 @@ export default async function ExamDetailPage({ params }: PageProps) {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-4 mb-6 print:hidden">
                 <Link href="/fp-informatica/exams" className="p-2 hover:bg-gray-100 rounded-full transition-colors print:hidden">
                     <ArrowLeft className="h-5 w-5 text-gray-600" />
                 </Link>

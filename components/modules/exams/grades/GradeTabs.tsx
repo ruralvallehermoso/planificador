@@ -22,7 +22,7 @@ interface GradeTabsProps {
 export function GradeTabs({ report, examId }: GradeTabsProps) {
     const [notes, setNotes] = useState(report?.notes || '')
     const [rawData, setRawData] = useState<any[]>(report?.rawData || [])
-    const [config, setConfig] = useState(report?.config || { gradeColumn: '', nameColumn: '' })
+    const [config, setConfig] = useState<any>(report?.config || { charts: [] })
     const [isSaving, setIsSaving] = useState(false)
     const [columns, setColumns] = useState<string[]>(rawData.length > 0 ? Object.keys(rawData[0]) : [])
     const [filterStatus, setFilterStatus] = useState<'all' | 'passed' | 'failed'>('all')
@@ -74,14 +74,14 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
         return grade >= 5 ? 'passed' : 'failed'
     }
 
-    const getChartData = () => {
-        if (!config.gradeColumn || rawData.length === 0) return { passed: 0, failed: 0, passedPct: 0, failedPct: 0 }
+    const getChartData = (column: string) => {
+        if (!column || rawData.length === 0) return { passed: 0, failed: 0, passedPct: 0, failedPct: 0 }
 
         let passed = 0
         let failed = 0
 
         rawData.forEach(row => {
-            const grade = parseFloat(row[config.gradeColumn])
+            const grade = parseFloat(row[column])
             if (!isNaN(grade)) {
                 if (grade >= 5) passed++
                 else failed++
@@ -97,16 +97,36 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
         }
     }
 
-    const chartData = getChartData()
-    const pieData = [
-        { name: 'Aprobados', value: chartData.passed, color: '#16a34a', type: 'passed' }, // darker green
-        { name: 'Suspensos', value: chartData.failed, color: '#dc2626', type: 'failed' }, // darker red
-    ]
+    const addChart = (column: string) => {
+        if (!column) return
+        const newCharts = [...(config.charts || [])]
+        // Avoid duplicates? Maybe allowed.
+        newCharts.push({ id: Date.now().toString(), column })
+        setConfig({ ...config, charts: newCharts })
+    }
 
-    // Filtering & Pagination logic
+    const removeChart = (index: number) => {
+        const newCharts = [...(config.charts || [])]
+        newCharts.splice(index, 1)
+        setConfig({ ...config, charts: newCharts })
+    }
+
+    // Use the first chart for filtering context if multiple, or just disable filtering logic for now if complex.
+    // For now, let's keep filtering logic but maybe bind it to the LAST interacted chart or just the first one?
+    // User asked for "create new graphs". The click filtering might become ambiguous with multiple graphs.
+    // Let's assume global filter applies to ALL charts? No, that relies on one column.
+    // Simplifying: Filter probably creates confusion with multiple columns.
+    // Let's keep filter but maybe clear it if charts change?
+    // Actually, rows get colored based on which column? We need a "primary" column for row coloring/filtering?
+    // Or maybe each chart filters independently? That's complex.
+    // Let's assume the "Row Coloring" uses the FIRST chart's column as "Main Grade".
+
+    const mainGradeColumn = config.charts?.[0]?.column
+
+    // Filtering & Pagination logic based on Main Grade Column
     const filteredData = rawData.filter(row => {
-        if (filterStatus === 'all') return true
-        const grade = config.gradeColumn ? parseFloat(row[config.gradeColumn]) : NaN
+        if (filterStatus === 'all' || !mainGradeColumn) return true
+        const grade = parseFloat(row[mainGradeColumn])
         const status = getGradeStatus(grade)
         return status === filterStatus
     })
@@ -114,10 +134,16 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
     const totalPages = Math.ceil(filteredData.length / itemsPerPage)
     const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
-    const handleChartClick = (data: any) => {
+    const handleChartClick = (data: any, column: string) => {
+        // Only allow filtering if clicking on the main grade chart
+        if (column !== mainGradeColumn) {
+            toast.info("El filtrado solo está activo para el primer gráfico (principal)")
+            return
+        }
+
         if (data && data.payload && data.payload.type) {
             const type = data.payload.type as 'passed' | 'failed'
-            setFilterStatus(prev => prev === type ? 'all' : type) // Toggle
+            setFilterStatus(prev => prev === type ? 'all' : type)
             setCurrentPage(1)
             toast.info(`Filtrando por: ${type === 'passed' ? 'Aprobados' : 'Suspensos'}`)
         }
@@ -148,14 +174,15 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                 </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="z-20 relative overflow-visible">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* IMPORT & CONFIG - Smaller (Span 4) */}
+                <Card className="lg:col-span-4 z-20 relative overflow-visible h-fit">
                     <CardHeader>
-                        <CardTitle>Importar Datos</CardTitle>
-                        <CardDescription>Sube un archivo Excel o CSV con las notas</CardDescription>
+                        <CardTitle>Configuración</CardTitle>
+                        <CardDescription>Importa datos y añade gráficos</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors">
+                    <CardContent className="space-y-6">
+                        <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:bg-gray-50 transition-colors">
                             <Input
                                 type="file"
                                 accept=".xlsx,.xls,.csv"
@@ -164,24 +191,20 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                 id="file-upload"
                             />
                             <Label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
-                                <div className="bg-blue-50 p-4 rounded-full mb-3">
-                                    <Upload className="w-6 h-6 text-blue-600" />
+                                <div className="bg-blue-50 p-3 rounded-full mb-2">
+                                    <Upload className="w-5 h-5 text-blue-600" />
                                 </div>
-                                <span className="text-sm font-medium text-gray-900">Haz clic para subir archivo</span>
-                                <span className="text-xs text-gray-500 mt-1">Soporta .xlsx, .xls, .csv</span>
+                                <span className="text-sm font-medium text-gray-900">Subir Archivo (.xlsx)</span>
                             </Label>
                         </div>
 
                         {columns.length > 0 && (
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Columna de Nota *</Label>
-                                    <Select
-                                        value={config.gradeColumn}
-                                        onValueChange={(val) => setConfig({ ...config, gradeColumn: val })}
-                                    >
+                            <div className="space-y-4 pt-4 border-t">
+                                <h4 className="text-sm font-medium text-gray-900">Añadir Gráfico de Notas</h4>
+                                <div className="flex gap-2">
+                                    <Select onValueChange={(val) => addChart(val)}>
                                         <SelectTrigger className="w-full bg-white border shadow-sm">
-                                            <SelectValue placeholder="Seleccionar..." />
+                                            <SelectValue placeholder="Seleccionar columna..." />
                                         </SelectTrigger>
                                         <SelectContent className="bg-white border rounded-lg shadow-lg max-h-[300px] z-[100]">
                                             {columns.map(col => (
@@ -190,105 +213,102 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Columna de Nombre (Opcional)</Label>
-                                    <Select
-                                        value={config.nameColumn}
-                                        onValueChange={(val) => setConfig({ ...config, nameColumn: val })}
-                                    >
-                                        <SelectTrigger className="w-full bg-white border shadow-sm">
-                                            <SelectValue placeholder="Seleccionar..." />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white border rounded-lg shadow-lg max-h-[300px] z-[100]">
-                                            {columns.map(col => (
-                                                <SelectItem key={col} value={col} className="hover:bg-gray-100 cursor-pointer">{col}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                                <p className="text-xs text-gray-500">Selecciona una columna para generar un nuevo gráfico de aprobados/suspensos.</p>
                             </div>
                         )}
                     </CardContent>
                 </Card>
 
-                <Card className="z-10 relative">
-                    <CardHeader>
-                        <CardTitle>Resumen Gráfico</CardTitle>
-                        <CardDescription>Haz clic en el gráfico para filtrar la tabla</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col items-center justify-center min-h-[320px] p-2">
-                        {config.gradeColumn && chartData.passed + chartData.failed > 0 ? (
-                            <div className="w-full h-[280px] relative flex items-center justify-center">
-                                <div className="w-full h-full absolute inset-0 z-0">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <RePieChart>
-                                            <Pie
-                                                data={pieData}
-                                                cx="50%"
-                                                cy="50%"
-                                                innerRadius={65}
-                                                outerRadius={95}
-                                                paddingAngle={2}
-                                                dataKey="value"
-                                                stroke="none"
-                                                onClick={handleChartClick}
-                                                className="cursor-pointer hover:opacity-80 transition-opacity"
-                                            >
-                                                {pieData.map((entry, index) => (
-                                                    <Cell
-                                                        key={`cell-${index}`}
-                                                        fill={entry.color}
-                                                        opacity={filterStatus === 'all' || filterStatus === entry.type ? 1 : 0.3}
-                                                    />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip wrapperStyle={{ zIndex: 100 }} />
-                                        </RePieChart>
-                                    </ResponsiveContainer>
-                                </div>
+                {/* CHARTS - Larger (Span 8) */}
+                <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(config.charts || []).map((chart: any, idx: number) => {
+                        const data = getChartData(chart.column)
+                        const pieData = [
+                            { name: 'Aprobados', value: data.passed, color: '#16a34a', type: 'passed' },
+                            { name: 'Suspensos', value: data.failed, color: '#dc2626', type: 'failed' },
+                        ]
 
-                                {/* Stats Overlay inside Donut */}
-                                <div className="z-0 flex flex-col items-center justify-center pointer-events-none p-4 rounded-full bg-white/80 backdrop-blur-sm shadow-sm border w-[120px] h-[120px]">
-                                    {/* z-0 so Tooltip (z-100) covers it */}
-                                    <div className="text-center space-y-1">
-                                        <div className="flex flex-col">
-                                            <span className="text-green-600 font-bold text-lg leading-none">{chartData.passed}</span>
-                                            <span className="text-[10px] text-gray-500 uppercase">Aprobados</span>
-                                        </div>
-                                        <div className="w-full h-px bg-gray-200 my-1"></div>
-                                        <div className="flex flex-col">
-                                            <span className="text-red-600 font-bold text-lg leading-none">{chartData.failed}</span>
-                                            <span className="text-[10px] text-gray-500 uppercase">Suspensos</span>
-                                        </div>
-                                    </div>
+                        return (
+                            <Card key={idx} className="relative overflow-hidden">
+                                <div className="absolute top-2 right-2 z-10">
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-red-500" onClick={() => removeChart(idx)}>
+                                        <span className="sr-only">Eliminar</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                                            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                        </svg>
+                                    </Button>
                                 </div>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-base truncate" title={chart.column}>{chart.column}</CardTitle>
+                                </CardHeader>
+                                <CardContent className="flex flex-col items-center justify-center p-0 pb-4 h-[300px]">
+                                    {data.passed + data.failed > 0 ? (
+                                        <div className="w-full h-full relative flex items-center justify-center">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <RePieChart>
+                                                    <Pie
+                                                        data={pieData}
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        innerRadius={70}
+                                                        outerRadius={100}
+                                                        paddingAngle={2}
+                                                        dataKey="value"
+                                                        stroke="none"
+                                                        onClick={(d) => handleChartClick(d, chart.column)}
+                                                        className={idx === 0 ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}
+                                                    >
+                                                        {pieData.map((entry, index) => (
+                                                            <Cell
+                                                                key={`cell-${index}`}
+                                                                fill={entry.color}
+                                                                opacity={idx === 0 && (filterStatus === 'all' || filterStatus === entry.type) ? 1 : (idx === 0 ? 0.3 : 1)}
+                                                            />
+                                                        ))}
+                                                    </Pie>
+                                                    <Tooltip wrapperStyle={{ zIndex: 100 }} />
+                                                </RePieChart>
+                                            </ResponsiveContainer>
 
-                                {/* Bottom percentages absolute */}
-                                <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-6 text-xs font-semibold z-20">
-                                    <div
-                                        className={`text-green-600 flex items-center gap-1 cursor-pointer hover:underline ${filterStatus === 'failed' && 'opacity-30'}`}
-                                        onClick={() => setFilterStatus(prev => prev === 'passed' ? 'all' : 'passed')}
-                                    >
-                                        <div className="w-2 h-2 rounded-full bg-green-600"></div>
-                                        {chartData.passedPct}% Aprobados
-                                    </div>
-                                    <div
-                                        className={`text-red-600 flex items-center gap-1 cursor-pointer hover:underline ${filterStatus === 'passed' && 'opacity-30'}`}
-                                        onClick={() => setFilterStatus(prev => prev === 'failed' ? 'all' : 'failed')}
-                                    >
-                                        <div className="w-2 h-2 rounded-full bg-red-600"></div>
-                                        {chartData.failedPct}% Suspensos
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="text-center text-gray-400">
-                                <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                                <p>Sube datos y selecciona la columna de notas para ver el gráfico</p>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
+                                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                <div className="flex flex-col items-center justify-center p-3 rounded-full bg-white/90 backdrop-blur-sm shadow-sm border w-[110px] h-[110px]">
+                                                    <div className="text-center space-y-0.5">
+                                                        <div className="flex flex-col leading-tight">
+                                                            <span className="text-green-600 font-bold text-lg">{data.passed}</span>
+                                                            <span className="text-[9px] text-gray-500 uppercase">Aprobados</span>
+                                                        </div>
+                                                        <div className="w-full h-px bg-gray-200 my-0.5"></div>
+                                                        <div className="flex flex-col leading-tight">
+                                                            <span className="text-red-600 font-bold text-lg">{data.failed}</span>
+                                                            <span className="text-[9px] text-gray-500 uppercase">Suspensos</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-4 text-[10px] font-bold">
+                                                <span className="text-green-600 bg-green-50 px-2 py-0.5 rounded-full">{data.passedPct}% Aprobado</span>
+                                                <span className="text-red-600 bg-red-50 px-2 py-0.5 rounded-full">{data.failedPct}% Suspenso</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center text-gray-400">
+                                            <BarChart3 className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                                            <span className="text-xs">Sin datos numéricos</span>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        )
+                    })}
+
+                    {(config.charts || []).length === 0 && (
+                        <div className="col-span-1 md:col-span-2 flex flex-col items-center justify-center h-[300px] border-2 border-dashed border-gray-200 rounded-xl text-gray-400">
+                            <BarChart3 className="w-12 h-12 mb-2 opacity-50" />
+                            <p>Añade un gráfico desde el panel de configuración</p>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {rawData.length > 0 && (
@@ -321,12 +341,12 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
                                         {paginatedData.length > 0 ? paginatedData.map((row, idx) => {
-                                            const grade = config.gradeColumn ? parseFloat(row[config.gradeColumn]) : NaN
-                                            const status = getGradeStatus(grade)
+                                            // Row styling based on MAIN GRADE column (first chart)
+                                            const mainGrade = mainGradeColumn ? parseFloat(row[mainGradeColumn]) : NaN
+                                            const status = getGradeStatus(mainGrade)
                                             let rowClass = "hover:bg-gray-50/50 transition-colors"
 
-                                            // Apply stronger row coloring for clarity
-                                            if (config.gradeColumn && !isNaN(grade)) {
+                                            if (!isNaN(mainGrade)) {
                                                 if (status === 'passed') rowClass = "bg-green-200 hover:bg-green-300 font-medium text-green-900 border-l-4 border-l-green-600"
                                                 if (status === 'failed') rowClass = "bg-red-200 hover:bg-red-300 font-medium text-red-900 border-l-4 border-l-red-600"
                                             }
@@ -356,7 +376,6 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                         {totalPages > 1 && (
                             <div className="flex items-center justify-between mt-4">
                                 <div className="text-xs text-gray-500">
-                                    {/* Updated counts */}
                                     Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredData.length)} de {filteredData.length} filas
                                 </div>
                                 <div className="flex gap-2">

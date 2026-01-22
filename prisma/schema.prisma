@@ -228,6 +228,10 @@ model SubjectPractice {
   deliveryDate       DateTime?
   statementLink      String?
   deliveryFolderLink String?
+  
+  description        String?   @db.Text
+  objectives         String?   @db.Text
+
   subjectId          String
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt

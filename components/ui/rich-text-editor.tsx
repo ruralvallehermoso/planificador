@@ -12,9 +12,10 @@ interface Props {
     value: string
     onChange: (value: string) => void
     placeholder?: string
+    className?: string
 }
 
-export function RichTextEditor({ value, onChange, placeholder }: Props) {
+export function RichTextEditor({ value, onChange, placeholder, className }: Props) {
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -28,7 +29,7 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
         content: value,
         editorProps: {
             attributes: {
-                class: 'min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
+                class: `min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${className || ''}`,
             },
         },
         onUpdate: ({ editor }) => {

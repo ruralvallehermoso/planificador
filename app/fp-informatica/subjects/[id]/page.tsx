@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import { ArrowLeft, BookOpen, Calendar, Clock, ExternalLink, FileText, Pencil, FolderOpen, FileIcon } from "lucide-react"
+import { ArrowLeft, BookOpen, Calendar, Clock, ExternalLink, FileText, Pencil, FolderOpen, FileIcon, Plus } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { notFound } from "next/navigation"
@@ -111,6 +111,12 @@ export default async function SubjectDetailPage({ params }: { params: Promise<{ 
                                 <FileText className="w-5 h-5 text-gray-500" />
                                 Prácticas y Entregas
                             </h2>
+                            <Link href={`/fp-informatica/subjects/${subject.id}/practices/create`}>
+                                <Button size="sm" variant="ghost" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-8">
+                                    <Plus className="w-4 h-4 mr-1.5" />
+                                    Nueva Práctica
+                                </Button>
+                            </Link>
                         </div>
                         <div className="divide-y divide-gray-100">
                             {subject.practices.length === 0 ? (
@@ -176,6 +182,6 @@ export default async function SubjectDetailPage({ params }: { params: Promise<{ 
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

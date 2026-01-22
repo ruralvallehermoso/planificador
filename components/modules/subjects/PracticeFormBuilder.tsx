@@ -298,10 +298,13 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                         viewMode === 'editor' ? "hidden" : "block",
                         viewMode === 'preview' ? "max-w-[210mm] mx-auto" : ""
                     )}>
-                        <div className={cn(
-                            "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none print:rounded-none print:p-0 border border-gray-100 rounded-lg",
-                            formatting.marginSize || "p-[25mm]"
-                        )}>
+                        <div
+                            className={cn(
+                                "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none print:rounded-none border border-gray-100 rounded-lg",
+                                formatting.marginSize || "p-[25mm]"
+                            )}
+                            style={{ padding: '25mm' }}
+                        >
                             <div className="space-y-4">
                                 {/* Preview Header */}
                                 <div className="border-b-2 border-slate-800 pb-2 mb-2">

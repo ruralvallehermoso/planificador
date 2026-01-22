@@ -182,7 +182,7 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                 </div>
             </header>
 
-            <main className="w-full max-w-[1800px] mx-auto px-4 py-8 print:p-0">
+            <main className="w-full max-w-[1800px] mx-auto px-4 pt-20 pb-8 print:p-0 print:pt-0">
                 <div className={cn(
                     "grid gap-8 print:block print:w-full transition-all duration-300",
                     viewMode === 'split' ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"
@@ -295,7 +295,7 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                         viewMode === 'preview' ? "max-w-[210mm] mx-auto" : ""
                     )}>
                         <div className={cn(
-                            "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none border border-gray-100 rounded-lg",
+                            "bg-white shadow-xl shadow-gray-200/50 min-h-[297mm] print:shadow-none print:border-none print:rounded-none border border-gray-100 rounded-lg print:p-[25mm]",
                             formatting.marginSize || "p-[25mm]"
                         )}>
                             <div className="space-y-4">

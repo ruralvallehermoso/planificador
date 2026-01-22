@@ -96,6 +96,12 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0">
+            <style jsx global>{`
+                @media print {
+                    @page { margin: 0; }
+                    body { -webkit-print-color-adjust: exact; }
+                }
+            `}</style>
             {/* Header */}
             <header className="bg-white border-b z-10 print:hidden sticky top-0 shadow-sm">
                 <div className="w-full max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">

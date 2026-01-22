@@ -21,7 +21,7 @@ export const DEFAULT_PRACTICE_FORMATTING: PracticeFormatting = {
     paragraphSpacing: "space-y-4",
     isBoldTitle: true,
     titleSize: "text-2xl",
-    marginSize: "p-[15mm]"
+    marginSize: "p-[25mm]"
 }
 
 interface Props {
@@ -112,15 +112,15 @@ export function PracticeFormattingForm({ data, onChange }: Props) {
 
                 <div className="space-y-2">
                     <Label>Márgenes Impresión</Label>
-                    <Select value={data.marginSize || "p-[15mm]"} onValueChange={(v) => handleChange('marginSize', v)}>
+                    <Select value={data.marginSize || "p-[25mm]"} onValueChange={(v) => handleChange('marginSize', v)}>
                         <SelectTrigger>
                             <SelectValue placeholder="Margen" />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
-                            <SelectItem value="p-[10mm]">Estrecho (1cm)</SelectItem>
-                            <SelectItem value="p-[15mm]">Medio (1.5cm)</SelectItem>
-                            <SelectItem value="p-[20mm]">Normal (2cm)</SelectItem>
-                            <SelectItem value="p-[25mm]">Ancho (2.5cm)</SelectItem>
+                            <SelectItem value="p-[15mm]">Estrecho (1.5cm)</SelectItem>
+                            <SelectItem value="p-[20mm]">Medio (2cm)</SelectItem>
+                            <SelectItem value="p-[25mm]">Estándar (2.5cm)</SelectItem>
+                            <SelectItem value="p-[30mm]">Ancho (3cm)</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

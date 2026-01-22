@@ -46,7 +46,11 @@ const DEFAULT_GRADING: GradingRules = {
     testMaxScore: 10.0
 }
 
-export function ExamFormBuilder() {
+interface ExamFormBuilderProps {
+    initialData?: any
+}
+
+export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     const [header, setHeader] = useState<ExamHeaderData>(DEFAULT_HEADER)
     const [sections, setSections] = useState<ExamSection[]>([])
     const [formatting, setFormatting] = useState<ExamFormatting>(DEFAULT_FORMATTING)
@@ -86,12 +90,19 @@ export function ExamFormBuilder() {
         loadTemplates()
     }, [])
 
+    // Initialize with initialData if provided
+    useEffect(() => {
+        if (initialData) {
+            loadTemplateData(initialData)
+        }
+    }, [initialData])
+
     const loadTemplates = async () => {
         const t = await getExamTemplates()
         setTemplates(t)
 
         // Auto-load template from URL if present and templates loaded
-        if (urlTemplateId && t.length > 0) {
+        if (urlTemplateId && t.length > 0 && !initialData) {
             const template = t.find((tmpl: any) => tmpl.id === urlTemplateId)
             if (template) {
                 loadTemplateData(template)

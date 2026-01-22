@@ -289,6 +289,24 @@ model ExamTemplate {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  gradeReport     ExamGradeReport?
+
+  @@schema("public")
+}
+
+model ExamGradeReport {
+  id          String       @id @default(cuid())
+  examId      String       @unique
+  notes       String?      @db.Text
+  rawData     Json?        // Stores imported student data [{ name: "...", grade: 10 }, ...]
+  config      Json?        // Stores configuration { gradeColumn: "Nota", nameColumn: "Alumno" }
+  graphs      Json?        // Stores graph snapshots or config if needed
+  
+  examTemplate ExamTemplate @relation(fields: [examId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
   @@schema("public")
 }
 

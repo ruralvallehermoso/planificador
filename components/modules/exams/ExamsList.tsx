@@ -104,9 +104,9 @@ export function ExamsList({ templates }: ExamsListProps) {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuItem asChild>
-                                                <Link href={`/fp-informatica/exams/create?id=${template.id}`}>
+                                                <Link href={`/fp-informatica/exams/${template.id}`}>
                                                     <Edit className="mr-2 h-4 w-4" />
-                                                    Editar
+                                                    Abrir / Detalles
                                                 </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
@@ -141,8 +141,8 @@ export function ExamsList({ templates }: ExamsListProps) {
                             </CardContent>
                             <CardFooter className="pt-0">
                                 <Button asChild variant="secondary" className="w-full">
-                                    <Link href={`/fp-informatica/exams/create?id=${template.id}`}>
-                                        Abrir / Editar
+                                    <Link href={`/fp-informatica/exams/${template.id}`}>
+                                        Abrir / Detalles
                                     </Link>
                                 </Button>
                             </CardFooter>

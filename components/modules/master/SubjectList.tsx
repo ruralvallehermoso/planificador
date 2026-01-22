@@ -92,7 +92,7 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-slate-900 hover:bg-slate-800">
+                        <Button className="bg-slate-900 hover:bg-slate-800 text-white">
                             <Plus className="h-4 w-4 mr-2" />
                             Nueva Asignatura
                         </Button>

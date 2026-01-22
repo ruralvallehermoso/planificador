@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Table } from '@tiptap/extension-table'
@@ -34,6 +35,13 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
             onChange(editor.getHTML())
         },
     })
+
+    // Sync content when value prop changes
+    React.useEffect(() => {
+        if (editor && value !== editor.getHTML()) {
+            editor.commands.setContent(value)
+        }
+    }, [value, editor])
 
     if (!editor) {
         return null

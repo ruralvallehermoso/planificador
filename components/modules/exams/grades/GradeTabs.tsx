@@ -26,6 +26,9 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
     const [isSaving, setIsSaving] = useState(false)
     const [columns, setColumns] = useState<string[]>(rawData.length > 0 ? Object.keys(rawData[0]) : [])
 
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 10
+
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -41,6 +44,7 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
             if (data.length > 0) {
                 setRawData(data)
                 setColumns(Object.keys(data[0] as object))
+                setCurrentPage(1)
                 toast.success(`Importadas ${data.length} filas correctamente`)
             }
         }
@@ -61,6 +65,11 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
             toast.error("Error al guardar")
         }
         setIsSaving(false)
+    }
+
+    const getGradeStatus = (grade: number) => {
+        if (isNaN(grade)) return 'neutral'
+        return grade >= 5 ? 'passed' : 'failed'
     }
 
     const getChartData = () => {
@@ -92,6 +101,10 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
         { name: 'Suspensos', value: chartData.failed, color: '#ef4444' },
     ]
 
+    // Pagination logic
+    const totalPages = Math.ceil(rawData.length / itemsPerPage)
+    const paginatedData = rawData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -118,7 +131,7 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
+                <Card className="z-20 relative">
                     <CardHeader>
                         <CardTitle>Importar Datos</CardTitle>
                         <CardDescription>Sube un archivo Excel o CSV con las notas</CardDescription>
@@ -149,10 +162,10 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                         value={config.gradeColumn}
                                         onValueChange={(val) => setConfig({ ...config, gradeColumn: val })}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full bg-white z-50">
                                             <SelectValue placeholder="Seleccionar..." />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent className="z-[100] max-h-[300px]">
                                             {columns.map(col => (
                                                 <SelectItem key={col} value={col}>{col}</SelectItem>
                                             ))}
@@ -165,10 +178,10 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                         value={config.nameColumn}
                                         onValueChange={(val) => setConfig({ ...config, nameColumn: val })}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full bg-white z-50">
                                             <SelectValue placeholder="Seleccionar..." />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent className="z-[100] max-h-[300px]">
                                             {columns.map(col => (
                                                 <SelectItem key={col} value={col}>{col}</SelectItem>
                                             ))}
@@ -180,14 +193,14 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="z-10 relative">
                     <CardHeader>
                         <CardTitle>Resumen Gráfico</CardTitle>
                         <CardDescription>Análisis de resultados basado en la columna seleccionada</CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center justify-center min-h-[300px]">
                         {config.gradeColumn && chartData.passed + chartData.failed > 0 ? (
-                            <div className="w-full h-[300px]">
+                            <div className="w-full h-[300px] relative">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <RePieChart>
                                         <Pie
@@ -204,17 +217,27 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                             ))}
                                         </Pie>
                                         <Tooltip />
-                                        <Legend verticalAlign="bottom" height={36} />
                                     </RePieChart>
                                 </ResponsiveContainer>
-                                <div className="grid grid-cols-2 gap-4 mt-4 text-center">
-                                    <div className="p-3 bg-green-50 rounded-lg">
-                                        <div className="text-2xl font-bold text-green-700">{chartData.passed} ({chartData.passedPct}%)</div>
-                                        <div className="text-xs text-green-600 font-medium uppercase">Aprobados</div>
+
+                                {/* Centered stats inside pie chart */}
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <div className="text-center">
+                                        <span className="text-3xl font-bold text-gray-900">{chartData.passed + chartData.failed}</span>
+                                        <p className="text-xs text-gray-500 uppercase font-medium">Total</p>
                                     </div>
-                                    <div className="p-3 bg-red-50 rounded-lg">
-                                        <div className="text-2xl font-bold text-red-700">{chartData.failed} ({chartData.failedPct}%)</div>
-                                        <div className="text-xs text-red-600 font-medium uppercase">Suspensos</div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 mt-2 mb-2 text-center">
+                                    <div className="flex flex-col items-center justify-center p-3 bg-green-50 rounded-xl border border-green-100">
+                                        <div className="text-2xl font-bold text-green-700">{chartData.passed}</div>
+                                        <div className="text-sm font-medium text-green-600">{chartData.passedPct}%</div>
+                                        <div className="text-xs text-green-600 font-medium uppercase mt-1">Aprobados</div>
+                                    </div>
+                                    <div className="flex flex-col items-center justify-center p-3 bg-red-50 rounded-xl border border-red-100">
+                                        <div className="text-2xl font-bold text-red-700">{chartData.failed}</div>
+                                        <div className="text-sm font-medium text-red-600">{chartData.failedPct}%</div>
+                                        <div className="text-xs text-red-600 font-medium uppercase mt-1">Suspensos</div>
                                     </div>
                                 </div>
                             </div>
@@ -229,37 +252,80 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
             </div>
 
             {rawData.length > 0 && (
-                <Card>
-                    <CardHeader>
+                <Card className="z-0 relative">
+                    <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle className="flex items-center gap-2">
                             <TableIcon className="w-5 h-5" />
                             Datos Importados
                         </CardTitle>
+                        <div className="text-sm text-gray-500">
+                            Página {currentPage} de {totalPages}
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="overflow-x-auto border rounded-lg">
-                            <table className="w-full text-sm text-left">
-                                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                                    <tr>
-                                        {columns.map(col => (
-                                            <th key={col} className="px-6 py-3 border-b">{col}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {rawData.slice(0, 10).map((row, idx) => (
-                                        <tr key={idx} className="bg-white border-b hover:bg-gray-50">
+                        <div className="rounded-lg border overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left">
+                                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                                        <tr>
                                             {columns.map(col => (
-                                                <td key={`${idx}-${col}`} className="px-6 py-4 truncate max-w-[200px]" title={String(row[col])}>
-                                                    {row[col]}
-                                                </td>
+                                                <th key={col} className="px-6 py-3 font-semibold whitespace-nowrap bg-gray-50 z-10">{col}</th>
                                             ))}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {paginatedData.map((row, idx) => {
+                                            const grade = config.gradeColumn ? parseFloat(row[config.gradeColumn]) : NaN
+                                            const status = getGradeStatus(grade)
+                                            let rowClass = "hover:bg-gray-50/50 transition-colors"
+
+                                            // Apply row coloring only if grade column is selected and valid
+                                            if (config.gradeColumn && !isNaN(grade)) {
+                                                if (status === 'passed') rowClass = "bg-green-50/60 hover:bg-green-100/60"
+                                                if (status === 'failed') rowClass = "bg-red-50/60 hover:bg-red-100/60"
+                                            }
+
+                                            return (
+                                                <tr key={idx} className={rowClass}>
+                                                    {columns.map(col => (
+                                                        <td key={`${idx}-${col}`} className="px-6 py-4 truncate max-w-[200px]" title={String(row[col])}>
+                                                            {String(row[col])}
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2 text-right">Mostrando las primeras 10 filas de {rawData.length}</p>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between mt-4">
+                                <div className="text-xs text-gray-500">
+                                    Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, rawData.length)} de {rawData.length} filas
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                        disabled={currentPage === 1}
+                                    >
+                                        Anterior
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                        disabled={currentPage === totalPages}
+                                    >
+                                        Siguiente
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             )}

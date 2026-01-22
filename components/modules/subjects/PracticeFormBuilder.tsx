@@ -67,7 +67,7 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
 
             if (result.success) {
                 toast.success(data.id ? "Práctica actualizada" : "Práctica creada")
-                router.push(`/fp-informatica/subjects/${subjectId}`)
+                // router.push(`/fp-informatica/subjects/${subjectId}`)
                 router.refresh()
             } else {
                 toast.error("Error al guardar la práctica")
@@ -300,27 +300,24 @@ export function PracticeFormBuilder({ subjectId, initialData }: PracticeFormBuil
                         )}>
                             <div className="space-y-4">
                                 {/* Preview Header */}
-                                <div className="border-b-2 border-slate-800 pb-2 mb-4">
+                                <div className="border-b-2 border-slate-800 pb-2 mb-2">
                                     <h1 className={titleClasses}>
                                         {data.title || "Título de la Práctica"}
                                     </h1>
-                                    <div className="flex justify-between items-end mt-4 text-sm text-slate-600">
-                                        {/* Date removed as requested */}
-                                    </div>
                                 </div>
 
                                 {/* Preview Objectives */}
                                 {data.objectives && (data.objectives !== "<p></p>") && (
                                     <div className={cn(
-                                        "bg-slate-50 p-4 rounded-lg border border-slate-100 mb-4", // Reduced padding (p-6 -> p-4) and margin (mb-6 -> mb-4)
+                                        "bg-slate-50 p-2 rounded-lg border border-slate-100 mb-2",
                                         contentClasses
                                     )}>
-                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2"> {/* Reduced text size and margin */}
+                                        <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
                                             <Target className="w-3 h-3" />
                                             Objetivos de Aprendizaje
                                         </h3>
                                         <div
-                                            className="prose prose-sm prose-slate max-w-none [&>p]:m-0 [&>ul]:m-0 [&>li]:m-0" // Compact prose content
+                                            className="prose prose-sm prose-slate max-w-none [&>p]:m-0 [&>ul]:m-0 [&>li]:m-0"
                                             dangerouslySetInnerHTML={{ __html: data.objectives }}
                                         />
                                     </div>

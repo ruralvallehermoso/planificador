@@ -181,11 +181,13 @@ function SortableSectionItem({
                 )}
                 {section.type === 'DEVELOP' && (
                     <div className="space-y-2">
-                        <Label>Preguntas a Desarrollar (Admite tablas)</Label>
-                        <RichTextEditor
-                            value={section.questions ?? ''}
-                            onChange={(val) => onUpdate(section.id, 'questions', val)}
-                            placeholder="Escribe las preguntas a desarrollar o pega una tabla..."
+                        <Label>Preguntas a Desarrollar</Label>
+                        <Textarea
+                            value={section.questions || ''}
+                            onChange={(e) => onUpdate(section.id, 'questions', e.target.value)}
+                            placeholder="Escribe las preguntas a desarrollar..."
+                            rows={15}
+                            className="min-h-[150px]"
                         />
                     </div>
                 )}

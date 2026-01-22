@@ -97,8 +97,8 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
 
     const chartData = getChartData()
     const pieData = [
-        { name: 'Aprobados', value: chartData.passed, color: '#22c55e' },
-        { name: 'Suspensos', value: chartData.failed, color: '#ef4444' },
+        { name: 'Aprobados', value: chartData.passed, color: '#16a34a' }, // darker green
+        { name: 'Suspensos', value: chartData.failed, color: '#dc2626' }, // darker red
     ]
 
     // Pagination logic
@@ -131,7 +131,7 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="z-20 relative">
+                <Card className="z-20 relative overflow-visible">
                     <CardHeader>
                         <CardTitle>Importar Datos</CardTitle>
                         <CardDescription>Sube un archivo Excel o CSV con las notas</CardDescription>
@@ -162,12 +162,12 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                         value={config.gradeColumn}
                                         onValueChange={(val) => setConfig({ ...config, gradeColumn: val })}
                                     >
-                                        <SelectTrigger className="w-full bg-white z-50">
+                                        <SelectTrigger className="w-full bg-white border shadow-sm">
                                             <SelectValue placeholder="Seleccionar..." />
                                         </SelectTrigger>
-                                        <SelectContent className="z-[100] max-h-[300px]">
+                                        <SelectContent className="bg-white border rounded-lg shadow-lg max-h-[300px] z-[100]">
                                             {columns.map(col => (
-                                                <SelectItem key={col} value={col}>{col}</SelectItem>
+                                                <SelectItem key={col} value={col} className="hover:bg-gray-100 cursor-pointer">{col}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -178,12 +178,12 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                         value={config.nameColumn}
                                         onValueChange={(val) => setConfig({ ...config, nameColumn: val })}
                                     >
-                                        <SelectTrigger className="w-full bg-white z-50">
+                                        <SelectTrigger className="w-full bg-white border shadow-sm">
                                             <SelectValue placeholder="Seleccionar..." />
                                         </SelectTrigger>
-                                        <SelectContent className="z-[100] max-h-[300px]">
+                                        <SelectContent className="bg-white border rounded-lg shadow-lg max-h-[300px] z-[100]">
                                             {columns.map(col => (
-                                                <SelectItem key={col} value={col}>{col}</SelectItem>
+                                                <SelectItem key={col} value={col} className="hover:bg-gray-100 cursor-pointer">{col}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -198,46 +198,55 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                         <CardTitle>Resumen Gráfico</CardTitle>
                         <CardDescription>Análisis de resultados basado en la columna seleccionada</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex flex-col items-center justify-center min-h-[300px]">
+                    <CardContent className="flex flex-col items-center justify-center min-h-[320px] p-2">
                         {config.gradeColumn && chartData.passed + chartData.failed > 0 ? (
-                            <div className="w-full h-[300px] relative">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <RePieChart>
-                                        <Pie
-                                            data={pieData}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
-                                            paddingAngle={5}
-                                            dataKey="value"
-                                        >
-                                            {pieData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                    </RePieChart>
-                                </ResponsiveContainer>
+                            <div className="w-full h-[280px] relative flex items-center justify-center">
+                                <div className="w-full h-full absolute inset-0 z-0">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <RePieChart>
+                                            <Pie
+                                                data={pieData}
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={65}
+                                                outerRadius={95}
+                                                paddingAngle={2}
+                                                dataKey="value"
+                                                stroke="none"
+                                            >
+                                                {pieData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                        </RePieChart>
+                                    </ResponsiveContainer>
+                                </div>
 
-                                {/* Centered stats inside pie chart */}
-                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <div className="text-center">
-                                        <span className="text-3xl font-bold text-gray-900">{chartData.passed + chartData.failed}</span>
-                                        <p className="text-xs text-gray-500 uppercase font-medium">Total</p>
+                                {/* Stats Overlay inside Donut */}
+                                <div className="z-10 flex flex-col items-center justify-center pointer-events-none p-4 rounded-full bg-white/80 backdrop-blur-sm shadow-sm border w-[120px] h-[120px]">
+                                    <div className="text-center space-y-1">
+                                        <div className="flex flex-col">
+                                            <span className="text-green-600 font-bold text-lg leading-none">{chartData.passed}</span>
+                                            <span className="text-[10px] text-gray-500 uppercase">Aprobados</span>
+                                        </div>
+                                        <div className="w-full h-px bg-gray-200 my-1"></div>
+                                        <div className="flex flex-col">
+                                            <span className="text-red-600 font-bold text-lg leading-none">{chartData.failed}</span>
+                                            <span className="text-[10px] text-gray-500 uppercase">Suspensos</span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 mt-2 mb-2 text-center">
-                                    <div className="flex flex-col items-center justify-center p-3 bg-green-50 rounded-xl border border-green-100">
-                                        <div className="text-2xl font-bold text-green-700">{chartData.passed}</div>
-                                        <div className="text-sm font-medium text-green-600">{chartData.passedPct}%</div>
-                                        <div className="text-xs text-green-600 font-medium uppercase mt-1">Aprobados</div>
+                                {/* Bottom percentages absolute */}
+                                <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-6 text-xs font-semibold">
+                                    <div className="text-green-600 flex items-center gap-1">
+                                        <div className="w-2 h-2 rounded-full bg-green-600"></div>
+                                        {chartData.passedPct}% Aprobados
                                     </div>
-                                    <div className="flex flex-col items-center justify-center p-3 bg-red-50 rounded-xl border border-red-100">
-                                        <div className="text-2xl font-bold text-red-700">{chartData.failed}</div>
-                                        <div className="text-sm font-medium text-red-600">{chartData.failedPct}%</div>
-                                        <div className="text-xs text-red-600 font-medium uppercase mt-1">Suspensos</div>
+                                    <div className="text-red-600 flex items-center gap-1">
+                                        <div className="w-2 h-2 rounded-full bg-red-600"></div>
+                                        {chartData.failedPct}% Suspensos
                                     </div>
                                 </div>
                             </div>
@@ -279,10 +288,10 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                             const status = getGradeStatus(grade)
                                             let rowClass = "hover:bg-gray-50/50 transition-colors"
 
-                                            // Apply row coloring only if grade column is selected and valid
+                                            // Apply stronger row coloring for clarity
                                             if (config.gradeColumn && !isNaN(grade)) {
-                                                if (status === 'passed') rowClass = "bg-green-50/60 hover:bg-green-100/60"
-                                                if (status === 'failed') rowClass = "bg-red-50/60 hover:bg-red-100/60"
+                                                if (status === 'passed') rowClass = "bg-green-200 hover:bg-green-300 font-medium text-green-900 border-l-4 border-l-green-600"
+                                                if (status === 'failed') rowClass = "bg-red-200 hover:bg-red-300 font-medium text-red-900 border-l-4 border-l-red-600"
                                             }
 
                                             return (

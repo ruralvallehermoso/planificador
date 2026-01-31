@@ -367,9 +367,8 @@
             { id: 'ing', name: 'Liquidez ING', ticker: 'EUR', cat: 'Cash', plat: 'ING', qty: 1, price: 15000, manual: true, img: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON\u0026fallback_opts=TYPE,SIZE,URL\u0026url=http://ing.es\u0026size=64' },
         ];
 
-        // Configuración del Proxy de Indexa (Usa el rewrite de Planificador -> Backend Real)
-        // En producción, /apps/portfolio reescribe a process.env.NEXT_PUBLIC_PORTFOLIO_URL
-        const INDEXA_PROXY_URL = '/apps/portfolio';
+        // Configuración del Proxy de Indexa
+        const INDEXA_PROXY_URL = 'http://localhost:8000';
         let indexaConnected = false;
 
         // Lógica de Tema

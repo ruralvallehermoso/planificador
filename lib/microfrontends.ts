@@ -31,10 +31,7 @@ export const microfrontends: Record<string, MicrofrontendConfig> = {
         id: 'portfolio-master',
         name: 'Portfolio Master',
         description: 'Dashboard de inversiones y cartera financiera',
-        // Forzamos el uso local para asegurar que se ven los cambios recientes (15k ING)
-        // usamos el rewrite /apps/portfolio para conectar con el backend real
-        // url: process.env.NEXT_PUBLIC_PORTFOLIO_URL || '/static/finanzas.html',
-        url: '/static/finanzas.html',
+        url: process.env.NEXT_PUBLIC_PORTFOLIO_URL || '/static/finanzas.html',
         icon: 'TrendingUp',
         color: '#10B981',
         get available() { return this.url !== ''; },
@@ -43,8 +40,7 @@ export const microfrontends: Record<string, MicrofrontendConfig> = {
         id: 'dashboard-financiero',
         name: 'Simulador Financiero',
         description: 'Simulador financiero y análisis de hipoteca',
-        // url: (process.env.NEXT_PUBLIC_PORTFOLIO_URL || '/static/finanzas.html') + (process.env.NEXT_PUBLIC_PORTFOLIO_URL ? '/?view=simulator' : '#simulator'),
-        url: '/static/finanzas.html#simulator',
+        url: (process.env.NEXT_PUBLIC_PORTFOLIO_URL || '/static/finanzas.html') + (process.env.NEXT_PUBLIC_PORTFOLIO_URL ? '/?view=simulator' : '#simulator'),
         icon: 'BarChart3',
         color: '#6366F1',
         get available() { return this.url !== ''; },

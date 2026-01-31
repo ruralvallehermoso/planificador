@@ -52,29 +52,26 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
     async function uploadFile(file: File) {
         if (!file.type.startsWith('image/')) return toast.error("Solo se permiten imágenes")
 
+        // 50MB is limit in next.config, but let's be safe with 10MB per image, Base64 adds 33% overhead
+        if (file.size > 10 * 1024 * 1024) return toast.error("Imagen demasiado grande (máx 10MB)")
+
         setIsUploading(true)
-        const formData = new FormData()
-        formData.append('file', file)
 
         try {
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            })
-
-            if (!res.ok) throw new Error("Error upload")
-
-            const data = await res.json()
-            if (data.success) {
-                setNewImageUrls(prev => [...prev, data.url])
-                toast.success("Imagen subida")
-            } else {
-                toast.error("Error al subir imagen")
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                const base64 = reader.result as string
+                setNewImageUrls(prev => [...prev, base64])
+                toast.success("Imagen procesada")
+                setIsUploading(false)
             }
+            reader.onerror = () => {
+                toast.error("Error al leer imagen")
+                setIsUploading(false)
+            }
+            reader.readAsDataURL(file)
         } catch (error) {
             console.error(error)
-            toast.error("Error de conexión")
-        } finally {
             setIsUploading(false)
         }
     }

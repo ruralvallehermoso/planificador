@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { BookOpen, GraduationCap, CheckCircle, Clock, ChevronRight } from 'lucide-react';
+import { BookOpen, GraduationCap, Clock, ArrowRight, LayoutDashboard, Calendar, FileText, CheckCircle2 } from 'lucide-react';
 import { getMasterTasks } from './actions';
 import { MasterTaskList } from '@/components/master/MasterTaskList';
 
@@ -19,9 +19,7 @@ export default async function MasterDashboardPage() {
 
     // Stats calculation
     const totalSubjects = subjects.length;
-    const passedSubjects = subjects.filter(s => s.status === 'PASSED').length;
     const enrolledSubjects = subjects.filter(s => s.status === 'ENROLLED' || s.status === 'IN_PROGRESS').length;
-
     const totalCredits = subjects.reduce((acc, s) => acc + s.credits, 0);
     const completedCredits = subjects
         .filter(s => s.status === 'PASSED')
@@ -30,106 +28,166 @@ export default async function MasterDashboardPage() {
     const progressPercentage = totalCredits > 0 ? (completedCredits / totalCredits) * 100 : 0;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8 pb-10">
+            {/* Header Section */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 p-8 text-white shadow-xl">
+                <div className="relative z-10">
+                    <h1 className="text-3xl font-bold tracking-tight mb-2">Master UNIE</h1>
+                    <p className="text-slate-300 max-w-xl">
+                        Gestión académica, seguimiento de asignaturas y control de tareas para tu máster.
+                    </p>
+                </div>
+                <div className="absolute top-0 right-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl" />
+                <div className="absolute bottom-0 left-0 -mb-10 -ml-10 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
+            </div>
+
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-xl border shadow-sm flex items-center space-x-4">
-                    <div className="p-3 bg-blue-100 text-blue-600 rounded-lg">
-                        <BookOpen className="h-6 w-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                            <BookOpen className="h-5 w-5" />
+                        </div>
+                        <span className="text-xs font-medium px-2 py-1 bg-slate-100 text-slate-600 rounded-full">Actual</span>
                     </div>
-                    <div>
-                        <p className="text-sm font-medium text-slate-500">Asignaturas Activas</p>
+                    <div className="space-y-1">
                         <h3 className="text-2xl font-bold text-slate-900">{enrolledSubjects}</h3>
+                        <p className="text-sm text-slate-500">Asignaturas Activas</p>
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-xl border shadow-sm flex items-center space-x-4">
-                    <div className="p-3 bg-green-100 text-green-600 rounded-lg">
-                        <CheckCircle className="h-6 w-6" />
+
+                <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                            <CheckCircle2 className="h-5 w-5" />
+                        </div>
+                        <span className="text-xs font-medium px-2 py-1 bg-slate-100 text-slate-600 rounded-full">Total</span>
                     </div>
-                    <div>
-                        <p className="text-sm font-medium text-slate-500">Créditos Completados</p>
-                        <h3 className="text-2xl font-bold text-slate-900">{completedCredits} / {totalCredits}</h3>
+                    <div className="space-y-1">
+                        <h3 className="text-2xl font-bold text-slate-900">{completedCredits} <span className="text-sm font-normal text-slate-400">/ {totalCredits}</span></h3>
+                        <p className="text-sm text-slate-500">Créditos ECTS</p>
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-xl border shadow-sm flex items-center space-x-4">
-                    <div className="p-3 bg-purple-100 text-purple-600 rounded-lg">
-                        <GraduationCap className="h-6 w-6" />
+
+                <div className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                            <GraduationCap className="h-5 w-5" />
+                        </div>
                     </div>
-                    <div>
-                        <p className="text-sm font-medium text-slate-500">Progreso</p>
+                    <div className="space-y-1">
                         <h3 className="text-2xl font-bold text-slate-900">{Math.round(progressPercentage)}%</h3>
+                        <p className="text-sm text-slate-500">Progreso Global</p>
                     </div>
+                    <div className="w-full bg-slate-100 rounded-full h-1.5 mt-3">
+                        <div className="bg-purple-600 h-1.5 rounded-full transition-all duration-1000" style={{ width: `${progressPercentage}%` }}></div>
+                    </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-5 rounded-xl text-white shadow-md relative overflow-hidden group cursor-pointer hover:shadow-lg transition-all">
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+                        <div className="flex justify-between items-start">
+                            <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                                <FileText className="h-5 w-5 text-white" />
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold mb-1">TFM</h3>
+                            <Link href="/master-unie/tfm" className="text-indigo-100 text-sm hover:text-white flex items-center gap-1">
+                                Ir al Trabajo Fin de Máster <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+                    </div>
+                    <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-colors" />
                 </div>
             </div>
 
-            {/* Main Content Area */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Active Subjects List */}
-                <div className="lg:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col">
-                    <div className="px-6 py-4 border-b bg-slate-50 flex justify-between items-center">
-                        <h3 className="font-semibold text-slate-900">Asignaturas</h3>
-                        <Link href="/master-unie/asignaturas" className="text-sm text-blue-600 hover:text-blue-700 font-medium">Ver todas</Link>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                {/* Main Content - Subjects */}
+                <div className="xl:col-span-2 space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-bold text-slate-900">Mis Asignaturas</h2>
+                        <Link href="/master-unie/asignaturas" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                            Ver todas <ArrowRight className="h-4 w-4" />
+                        </Link>
                     </div>
-                    <div className="divide-y flex-1">
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {subjects.length === 0 ? (
-                            <div className="p-8 text-center text-slate-500">
-                                <p>No hay asignaturas registradas.</p>
-                                <p className="text-xs mt-2">Usa el script de seed para cargar datos de ejemplo.</p>
+                            <div className="col-span-2 p-12 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                                <BookOpen className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+                                <p className="text-slate-500 font-medium">No hay asignaturas registradas</p>
                             </div>
                         ) : (
-                            subjects.filter(s => s.status !== 'PASSED').slice(0, 5).map(subject => (
-                                <Link key={subject.id} href={`/master-unie/asignaturas/${subject.id}`} className="block p-4 hover:bg-slate-50 transition-colors group">
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <p className="font-medium text-slate-900 group-hover:text-blue-600 transition-colors">
-                                                {subject.name}
-                                            </p>
-                                            <p className="text-xs text-slate-500">
-                                                {subject.professor || 'Sin profesor'} • {subject.credits} ECTS • Semestre {subject.semester}
-                                            </p>
+                            subjects.filter(s => s.status !== 'PASSED').slice(0, 6).map(subject => (
+                                <Link
+                                    key={subject.id}
+                                    href={`/master-unie/asignaturas/${subject.id}`}
+                                    className="group bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-200"
+                                >
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className={`px-2 py-1 rounded text-xs font-semibold
+                                            ${subject.status === 'ENROLLED' ? 'bg-blue-50 text-blue-700' :
+                                                subject.status === 'IN_PROGRESS' ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>
+                                            {subject.status === 'ENROLLED' ? 'Matriculada' :
+                                                subject.status === 'IN_PROGRESS' ? 'En Curso' : subject.status}
                                         </div>
-                                        <div className="flex items-center space-x-3">
-                                            <div className="px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700">
-                                                {subject.status}
-                                            </div>
-                                            <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500" />
+                                        <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-indigo-500 transition-colors" />
+                                    </div>
+                                    <h3 className="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors line-clamp-2 min-h-[3rem]">
+                                        {subject.name}
+                                    </h3>
+                                    <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between text-xs text-slate-500">
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-medium text-slate-700">{subject.credits} ECTS</span>
+                                            <span>•</span>
+                                            <span>Semestre {subject.semester}</span>
                                         </div>
                                     </div>
                                 </Link>
                             ))
                         )}
-                        {subjects.length > 0 && subjects.filter(s => s.status !== 'PASSED').length === 0 && (
-                            <div className="p-8 text-center text-slate-500">
-                                <p>¡Todo completado! No tienes asignaturas activas.</p>
-                            </div>
-                        )}
                     </div>
                 </div>
 
-                {/* Upcoming Deadlines / Sidebar */}
-                <div className="space-y-6">
-                    <MasterTaskList tasks={tasks} />
-                    <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                        <div className="px-6 py-4 border-b bg-slate-50">
-                            <h3 className="font-semibold text-slate-900">Próximas Entregas</h3>
+                {/* Sidebar - Tasks & Activity */}
+                <div className="space-y-8">
+                    {/* Tasks Widget */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                                <Clock className="h-5 w-5 text-indigo-500" />
+                                Próximas Entregas
+                            </h3>
+                            <Link href="/master-unie/tareas" className="text-xs font-medium text-slate-500 hover:text-indigo-600">
+                                Ver todo
+                            </Link>
                         </div>
-                        <div className="p-6 text-center text-slate-500">
-                            <Clock className="h-8 w-8 mx-auto mb-2 text-slate-300" />
-                            <p>No hay entregas pendientes.</p>
-                            <Link href="/master-unie/evaluaciones" className="text-xs text-blue-600 mt-2 block hover:underline">Gestionar evaluacines</Link>
+                        <div className="max-h-[400px] overflow-y-auto">
+                            <MasterTaskList tasks={tasks} />
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-md p-6 text-white">
-                        <h3 className="font-bold text-lg mb-2">TFM</h3>
-                        <p className="text-indigo-100 text-sm mb-4">Trabajo Fin de Máster</p>
-                        <div className="w-full bg-white/20 rounded-full h-2 mb-4">
-                            <div className="bg-white rounded-full h-2 w-[10%]"></div>
+                    {/* Quick Links Card */}
+                    <div className="bg-slate-900 rounded-xl shadow-lg p-6 text-white overflow-hidden relative">
+                        <div className="relative z-10">
+                            <h3 className="font-bold mb-4">Accesos Rápidos</h3>
+                            <div className="space-y-3">
+                                <Link href="/master-unie/evaluaciones" className="flex items-center justify-between p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
+                                    <span className="text-sm font-medium">Evaluaciones</span>
+                                    <ArrowRight className="h-4 w-4 opacity-70" />
+                                </Link>
+                                <Link href="/master-unie/calendario" className="flex items-center justify-between p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
+                                    <span className="text-sm font-medium">Calendario Académico</span>
+                                    <Calendar className="h-4 w-4 opacity-70" />
+                                </Link>
+                                <Link href="/master-unie/recursos" className="flex items-center justify-between p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
+                                    <span className="text-sm font-medium">Recursos y Documentos</span>
+                                    <FileText className="h-4 w-4 opacity-70" />
+                                </Link>
+                            </div>
                         </div>
-                        <p className="text-xs text-indigo-100 mb-4">Fase: Selección de tema</p>
-                        <Link href="/master-unie/tfm" className="block w-full text-center py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors">
-                            Ir al TFM
-                        </Link>
+                        <div className="absolute top-0 right-0 -mt-10 -mr-10 h-40 w-40 bg-indigo-500/30 rounded-full blur-2xl" />
                     </div>
                 </div>
             </div>

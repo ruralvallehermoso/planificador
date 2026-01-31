@@ -290,8 +290,27 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                                 <RichTextEditor
                                     value={editContent}
                                     onChange={setEditContent}
-                                    className="min-h-[150px]"
+                                    className="min-h-[300px]"
                                 />
+
+                                {note.images.length > 0 && (
+                                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                                        <p className="text-xs font-medium text-slate-500 mb-2">Imágenes adjuntas (Solo lectura en edición)</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {note.images.map(img => (
+                                                <div key={img.id} className="relative group">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img
+                                                        src={img.url}
+                                                        alt="Adjunto"
+                                                        className="h-20 w-auto rounded border border-slate-200"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="flex justify-end gap-2">
                                     <Button variant="ghost" size="sm" onClick={() => setEditingNoteId(null)}>Cancelar</Button>
                                     <Button size="sm" onClick={() => handleUpdate(note.id)} disabled={isSaving}>
@@ -331,7 +350,7 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                                                 src={img.url}
                                                 alt="Adjunto"
                                                 className="h-40 w-auto rounded-lg border border-slate-100 shadow-sm transition-transform hover:scale-105 cursor-pointer"
-                                                onClick={() => window.open(img.url, '_blank')}
+                                                onClick={() => window.open(img.url, '_blank', 'noopener,noreferrer')}
                                             />
                                         ))}
                                     </div>

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from "react"
-import { Plus, Trash2, BookOpen, GraduationCap, Calendar, User } from "lucide-react"
-import { createSubject, deleteSubject } from "@/lib/actions/master-subjects"
+import { Plus, Trash2, BookOpen, GraduationCap, Calendar, User, Pencil, ChevronRight } from "lucide-react"
+import { createSubject, deleteSubject, updateSubject } from "@/lib/actions/master-subjects"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -23,6 +23,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 interface Subject {
     id: string
@@ -43,6 +44,8 @@ interface SubjectListProps {
 export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [editingSubject, setEditingSubject] = useState<Subject | null>(null)
+    const router = useRouter()
 
     async function handleSubmit(formData: FormData) {
         setIsLoading(true)
@@ -55,13 +58,20 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
                 semester: Number(formData.get('semester')),
             }
 
-            const result = await createSubject(data, categoryId)
+            let result;
+
+            if (editingSubject) {
+                result = await updateSubject(editingSubject.id, data)
+            } else {
+                result = await createSubject(data, categoryId)
+            }
 
             if (result.success) {
-                toast.success("Asignatura creada correctamente")
+                toast.success(editingSubject ? "Asignatura actualizada" : "Asignatura creada")
                 setIsDialogOpen(false)
+                setEditingSubject(null)
             } else {
-                toast.error("Error al crear", { description: result.error })
+                toast.error("Error", { description: result.error })
             }
         } catch (error) {
             console.error(error)
@@ -71,7 +81,8 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
         }
     }
 
-    async function handleDelete(id: string) {
+    async function handleDelete(e: React.MouseEvent, id: string) {
+        e.stopPropagation()
         if (!confirm("¿Estás seguro de que quieres eliminar esta asignatura?")) return
 
         const result = await deleteSubject(id)
@@ -82,6 +93,21 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
         }
     }
 
+    const openNewDialog = () => {
+        setEditingSubject(null)
+        setIsDialogOpen(true)
+    }
+
+    const openEditDialog = (e: React.MouseEvent, subject: Subject) => {
+        e.stopPropagation()
+        setEditingSubject(subject)
+        setIsDialogOpen(true)
+    }
+
+    const navigateToDetail = (id: string) => {
+        router.push(`/master-unie/asignaturas/${id}`)
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -90,18 +116,19 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
                     <p className="text-slate-500 text-sm">Gestiona tu plan de estudios</p>
                 </div>
 
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button className="bg-slate-900 hover:bg-slate-800 text-white">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Nueva Asignatura
-                        </Button>
-                    </DialogTrigger>
+                <Dialog open={isDialogOpen} onOpenChange={(open) => {
+                    setIsDialogOpen(open)
+                    if (!open) setEditingSubject(null)
+                }}>
+                    <Button onClick={openNewDialog} className="bg-slate-900 hover:bg-slate-800 text-white">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Nueva Asignatura
+                    </Button>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                            <DialogTitle>Nueva Asignatura</DialogTitle>
+                            <DialogTitle>{editingSubject ? 'Editar Asignatura' : 'Nueva Asignatura'}</DialogTitle>
                             <DialogDescription>
-                                Añade los detalles de la asignatura del Máster.
+                                {editingSubject ? 'Modifica los detalles de la asignatura.' : 'Añade los detalles de la asignatura del Máster.'}
                             </DialogDescription>
                         </DialogHeader>
                         <form action={handleSubmit} className="grid gap-4 py-4">
@@ -109,31 +136,56 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
                                 <Label htmlFor="name" className="text-right">
                                     Nombre
                                 </Label>
-                                <Input id="name" name="name" className="col-span-3" required />
+                                <Input
+                                    id="name"
+                                    name="name"
+                                    className="col-span-3"
+                                    required
+                                    defaultValue={editingSubject?.name}
+                                />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="code" className="text-right">
                                     Código
                                 </Label>
-                                <Input id="code" name="code" className="col-span-3" placeholder="Ej: ASIG-01" />
+                                <Input
+                                    id="code"
+                                    name="code"
+                                    className="col-span-3"
+                                    placeholder="Ej: ASIG-01"
+                                    defaultValue={editingSubject?.code || ''}
+                                />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="professor" className="text-right">
                                     Profesor
                                 </Label>
-                                <Input id="professor" name="professor" className="col-span-3" />
+                                <Input
+                                    id="professor"
+                                    name="professor"
+                                    className="col-span-3"
+                                    defaultValue={editingSubject?.professor || ''}
+                                />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="credits" className="text-right">
                                     Créditos
                                 </Label>
-                                <Input id="credits" name="credits" type="number" step="0.5" defaultValue="6" className="col-span-3" required />
+                                <Input
+                                    id="credits"
+                                    name="credits"
+                                    type="number"
+                                    step="0.5"
+                                    defaultValue={editingSubject?.credits || 6}
+                                    className="col-span-3"
+                                    required
+                                />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="semester" className="text-right">
                                     Semestre
                                 </Label>
-                                <Select name="semester" defaultValue="1">
+                                <Select name="semester" defaultValue={editingSubject?.semester.toString() || "1"}>
                                     <SelectTrigger className="col-span-3">
                                         <SelectValue placeholder="Semestre" />
                                     </SelectTrigger>
@@ -145,7 +197,7 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
                             </div>
                             <DialogFooter>
                                 <Button type="submit" disabled={isLoading}>
-                                    {isLoading ? "Guardando..." : "Guardar Asignatura"}
+                                    {isLoading ? "Guardando..." : (editingSubject ? "Actualizar" : "Guardar")}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -162,16 +214,29 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
                     </div>
                 ) : (
                     initialSubjects.map(subject => (
-                        <div key={subject.id} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group relative">
-                            <button
-                                onClick={() => handleDelete(subject.id)}
-                                className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-slate-50 rounded-full"
-                                title="Eliminar asignatura"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </button>
+                        <div
+                            key={subject.id}
+                            onClick={() => navigateToDetail(subject.id)}
+                            className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group relative cursor-pointer"
+                        >
+                            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                    onClick={(e) => openEditDialog(e, subject)}
+                                    className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
+                                    title="Editar asignatura"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </button>
+                                <button
+                                    onClick={(e) => handleDelete(e, subject.id)}
+                                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                    title="Eliminar asignatura"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            </div>
 
-                            <div className="flex items-start justify-between mb-4 pr-8">
+                            <div className="flex items-start justify-between mb-4 pr-16">
                                 <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
                                     <BookOpen className="h-6 w-6" />
                                 </div>
@@ -184,7 +249,7 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
                                 </span>
                             </div>
 
-                            <h3 className="font-semibold text-lg text-slate-900 mb-1">{subject.name}</h3>
+                            <h3 className="font-semibold text-lg text-slate-900 mb-1 pr-8">{subject.name}</h3>
                             <p className="text-sm text-slate-500 mb-4">{subject.code || 'Sin código'}</p>
 
                             <div className="space-y-2 text-sm text-slate-600">
@@ -201,6 +266,10 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
                                     Semestre {subject.semester}
                                 </div>
                             </div>
+
+                            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center text-blue-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                Ver detalles <ChevronRight className="h-4 w-4 ml-1" />
+                            </div>
                         </div>
                     ))
                 )}
@@ -208,3 +277,4 @@ export function SubjectList({ initialSubjects, categoryId }: SubjectListProps) {
         </div>
     )
 }
+

@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Users, Plus, Pencil, Trash2, X, Check, Shield, Eye, EyeOff } from 'lucide-react'
 
-type Role = 'ADMIN' | 'OWNER' | 'TEACHER' | 'FAMILY' | 'CASA_RURAL' | 'EMPLEADO' | 'GUEST'
+type Role = 'ADMIN' | 'OWNER' | 'TEACHER' | 'FAMILY' | 'CASA_RURAL' | 'EMPLEADO' | 'GUEST' | 'MASTER'
 
 interface User {
     id: string
@@ -36,6 +36,7 @@ const ROLES: { value: Role; label: string; color: string }[] = [
     { value: 'ADMIN', label: 'Administrador', color: 'bg-red-100 text-red-700' },
     { value: 'OWNER', label: 'Propietario', color: 'bg-purple-100 text-purple-700' },
     { value: 'TEACHER', label: 'Profesor', color: 'bg-blue-100 text-blue-700' },
+    { value: 'MASTER', label: 'Master UNIE', color: 'bg-cyan-100 text-cyan-700' },
     { value: 'FAMILY', label: 'Familia', color: 'bg-green-100 text-green-700' },
     { value: 'CASA_RURAL', label: 'Casa Rural', color: 'bg-emerald-100 text-emerald-700' },
     { value: 'EMPLEADO', label: 'Empleado Casa Rural', color: 'bg-teal-100 text-teal-700' },

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { getSubject } from "@/lib/actions/master-subjects"
-import { SubjectNotes } from "@/components/modules/master/SubjectNotes"
+import { SubjectNotesList } from "@/components/modules/master/SubjectNotesList"
 import { SubjectTasks } from "@/components/modules/master/SubjectTasks"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, GraduationCap, User, Calendar, BookOpen } from "lucide-react"
@@ -87,7 +87,11 @@ export default async function SubjectDetailPage({ params }: PageProps) {
                 <div className="lg:col-span-2 space-y-8">
                     {/* Notes Section */}
                     <section className="bg-white rounded-xl border border-slate-200 p-6">
-                        <SubjectNotes subjectId={subject.id} initialNotes={subject.notes} />
+                        <SubjectNotesList
+                            subjectId={subject.id}
+                            initialNotes={subject.notesList || []}
+                            legacyNotes={subject.notes}
+                        />
                     </section>
                 </div>
 

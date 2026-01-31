@@ -199,11 +199,35 @@ model Subject {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   description String?
-  notes       String?      @db.Text
+  notes       String?      @db.Text // Legacy, to be migrated
+  notesList   SubjectNote[]
   tasks       ActionItem[]
   assessments Assessment[]
   topics      SubjectTopic[]
   practices   SubjectPractice[]
+
+  @@schema("public")
+}
+
+model SubjectNote {
+  id        String      @id @default(cuid())
+  content   String      @db.Text
+  date      DateTime    @default(now())
+  subjectId String
+  subject   Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  images    NoteImage[]
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@schema("public")
+}
+
+model NoteImage {
+  id        String      @id @default(cuid())
+  url       String      @db.Text
+  noteId    String
+  note      SubjectNote @relation(fields: [noteId], references: [id], onDelete: Cascade)
 
   @@schema("public")
 }

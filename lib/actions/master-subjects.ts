@@ -12,6 +12,82 @@ const subjectSchema = z.object({
     semester: z.number().min(1).default(1),
 })
 
+export async function getSubjectNotes(subjectId: string) {
+    try {
+        const notes = await prisma.subjectNote.findMany({
+            where: { subjectId },
+            orderBy: { date: 'desc' },
+            include: { images: true }
+        })
+        return { success: true, notes }
+    } catch (error) {
+        console.error("Error fetching notes:", error)
+        return { success: false, error: "Error al cargar notas" }
+    }
+}
+
+export async function createSubjectNote(subjectId: string, content: string, date: Date, imageUrls: string[] = []) {
+    try {
+        const note = await prisma.subjectNote.create({
+            data: {
+                subjectId,
+                content,
+                date,
+                images: {
+                    create: imageUrls.map(url => ({ url }))
+                }
+            }
+        })
+        revalidatePath(`/master-unie/asignaturas/${subjectId}`)
+        return { success: true, note }
+    } catch (error) {
+        console.error("Error creating note:", error)
+        return { success: false, error: "Error al crear nota" }
+    }
+}
+
+export async function updateSubjectNote(noteId: string, content: string, date: Date, imageUrls: string[]) {
+    try {
+        // Update content and date
+        const note = await prisma.subjectNote.update({
+            where: { id: noteId },
+            data: { content, date }
+        })
+
+        // Handle images: delete specific ones if needed? 
+        // For simplicity: We will keep adding new ones or just assume 'imageUrls' is the new state?
+        // Implementing full sync logic is complex. 
+        // Let's assume we just ADD for now, or replace all if we want full sync.
+        // Full sync approach:
+        await prisma.noteImage.deleteMany({ where: { noteId } })
+        if (imageUrls.length > 0) {
+            await prisma.noteImage.createMany({
+                data: imageUrls.map(url => ({ noteId, url }))
+            })
+        }
+
+        revalidatePath(`/master-unie/asignaturas/${note.subjectId}`) // We need subjectId but note return has it? Yes.
+        // Actually revalidatePath might not work perfectly without exact path, but we usually know it.
+        // Let's fetch subjectId if we lose it or just rely on note.subjectId if update returns it.
+
+        return { success: true }
+    } catch (error) {
+        console.error("Error updating note:", error)
+        return { success: false, error: "Error al actualizar nota" }
+    }
+}
+
+export async function deleteSubjectNote(noteId: string, subjectId: string) {
+    try {
+        await prisma.subjectNote.delete({ where: { id: noteId } })
+        revalidatePath(`/master-unie/asignaturas/${subjectId}`)
+        return { success: true }
+    } catch (error) {
+        console.error("Error deleting note:", error)
+        return { success: false, error: "Error al borrar nota" }
+    }
+}
+
 export async function getSubjects(categoryId: string) {
     try {
         const subjects = await prisma.subject.findMany({
@@ -105,10 +181,14 @@ export async function getSubject(id: string) {
             where: { id },
             include: {
                 tasks: {
-                    orderBy: { dueDate: 'asc' } // O la ordenación que prefieras
+                    orderBy: { dueDate: 'asc' }
                 },
                 assessments: {
                     orderBy: { createdAt: 'desc' }
+                },
+                notesList: {
+                    include: { images: true },
+                    orderBy: { date: 'desc' }
                 }
             }
         })

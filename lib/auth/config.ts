@@ -19,6 +19,7 @@ export const ROLE_PERMISSIONS: Record<Role, ModuleName[]> = {
     FAMILY: [MODULES.HOGAR],
     CASA_RURAL: [MODULES.CASA_RURAL],
     EMPLEADO: [MODULES.CASA_RURAL], // Limited to SES Hospedajes + Actividades only
+    MASTER: [MODULES.MASTER_UNIE],
     GUEST: [],
 }
 

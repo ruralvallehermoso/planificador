@@ -6,12 +6,12 @@ import { es } from "date-fns/locale"
 import { Calendar as CalendarIcon, Image as ImageIcon, Trash2, Edit2, Check, X, Plus, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { createSubjectNote, updateSubjectNote, deleteSubjectNote } from "@/lib/actions/master-subjects"
 import { toast } from "sonner"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 
 interface NoteImage {
     id: string
@@ -97,7 +97,9 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
     }
 
     async function handleCreate() {
-        if (!newNoteContent.trim()) return
+        // Simple check for empty content, handling HTML empty tags
+        if (!newNoteContent.replace(/<[^>]*>/g, '').trim() && newImageUrls.length === 0) return
+
         setIsSaving(true)
 
         try {
@@ -120,7 +122,7 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
     }
 
     async function handleUpdate(noteId: string) {
-        if (!editContent.trim()) return
+        if (!editContent.replace(/<[^>]*>/g, '').trim()) return
         setIsSaving(true)
 
         try {
@@ -184,61 +186,67 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
             {isCreating && (
                 <div
                     className={cn(
-                        "bg-slate-50 p-4 rounded-xl border-2 border-slate-200 space-y-4 animate-in fade-in slide-in-from-top-2 transition-colors",
+                        "bg-slate-50 p-6 rounded-xl border-2 border-slate-200 space-y-4 animate-in fade-in slide-in-from-top-2 transition-colors",
                         isDragging && "border-blue-500 bg-blue-50"
                     )}
                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={handleDrop}
                 >
-                    <div className="flex gap-4">
-                        <div className="flex-1 relative">
+                    <div className="flex flex-col gap-4">
+                        <div className="relative">
                             {isDragging && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 z-10 rounded-md backdrop-blur-sm">
-                                    <p className="text-blue-600 font-medium">Suelta la imagen aquí</p>
+                                    <p className="text-blue-600 font-medium">Suelta la imagen allí</p>
                                 </div>
                             )}
-                            <Textarea
-                                placeholder="Escribe tu nota aquí... (Puedes pegar imágenes o arrastrarlas)"
+                            <RichTextEditor
+                                placeholder="Escribe tu nota aquí... (Puedes usar formato rico)"
                                 value={newNoteContent}
-                                onChange={e => setNewNoteContent(e.target.value)}
-                                onPaste={handlePaste}
-                                className="min-h-[100px] bg-white resize-y"
-                                disabled={isUploading}
+                                onChange={setNewNoteContent}
+                                className="min-h-[200px] bg-white"
                             />
                         </div>
-                        <div className="w-48 space-y-2">
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {newNoteDate ? format(newNoteDate, "P", { locale: es }) : <span>Fecha</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar mode="single" selected={newNoteDate} onSelect={(d) => d && setNewNoteDate(d)} initialFocus />
-                                </PopoverContent>
-                            </Popover>
 
-                            <div className="flex gap-2">
-                                <Input
-                                    placeholder="URL imagen..."
-                                    value={newImageUrl}
-                                    onChange={e => setNewImageUrl(e.target.value)}
-                                    className="bg-white text-xs h-9"
-                                />
-                                <Button size="icon" variant="outline" onClick={addImageUrl} className="shrink-0 h-9 w-9 bg-white">
-                                    <Plus className="h-4 w-4" />
-                                </Button>
+                        <div className="flex items-end justify-between gap-4 border-t border-slate-200 pt-4">
+                            <div className="flex gap-4 items-center">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="w-[240px] justify-start text-left font-normal bg-white">
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {newNoteDate ? format(newNoteDate, "PPP", { locale: es }) : <span>Fecha</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <Calendar mode="single" selected={newNoteDate} onSelect={(d) => d && setNewNoteDate(d)} initialFocus />
+                                    </PopoverContent>
+                                </Popover>
+
+                                <div className="flex gap-2">
+                                    <Input
+                                        placeholder="Pegar URL imagen..."
+                                        value={newImageUrl}
+                                        onChange={e => setNewImageUrl(e.target.value)}
+                                        className="bg-white max-w-[300px]"
+                                    />
+                                    <Button size="icon" variant="outline" onClick={addImageUrl} className="shrink-0 bg-white">
+                                        <Plus className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </div>
+
+                            <Button onClick={handleCreate} disabled={!newNoteContent.trim() && newImageUrls.length === 0 || isSaving} className="min-w-[150px]">
+                                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {isSaving ? "Guardando..." : "Guardar Nota"}
+                            </Button>
                         </div>
                     </div>
 
                     {/* Image Preview */}
                     {newImageUrls.length > 0 && (
-                        <div className="flex gap-2 overflow-x-auto pb-2">
+                        <div className="flex gap-4 overflow-x-auto pb-2 pt-2">
                             {newImageUrls.map((url, i) => (
-                                <div key={i} className="relative h-20 w-20 shrink-0 rounded-md overflow-hidden border border-slate-200 group">
+                                <div key={i} className="relative h-24 w-24 shrink-0 rounded-lg overflow-hidden border border-slate-200 group bg-white shadow-sm">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img src={url} alt="" className="h-full w-full object-cover" />
                                     <button
@@ -251,17 +259,10 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                             ))}
                         </div>
                     )}
-
-                    <div className="flex justify-end">
-                        <Button onClick={handleCreate} disabled={!newNoteContent.trim() || isSaving}>
-                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isSaving ? "Guardando..." : "Guardar Nota"}
-                        </Button>
-                    </div>
                 </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-6">
                 {legacyNotes && notes.length === 0 && (
                     <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
                         <strong>Nota Antigua Recuperada:</strong>
@@ -270,7 +271,7 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                 )}
 
                 {notes.map(note => (
-                    <div key={note.id} className="bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-colors group">
+                    <div key={note.id} className="bg-white border border-slate-200 rounded-xl p-6 hover:border-slate-300 transition-colors group shadow-sm">
                         {editingNoteId === note.id ? (
                             <div className="space-y-4">
                                 <div className="flex gap-2 mb-2">
@@ -286,10 +287,10 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                                         </PopoverContent>
                                     </Popover>
                                 </div>
-                                <Textarea
+                                <RichTextEditor
                                     value={editContent}
-                                    onChange={e => setEditContent(e.target.value)}
-                                    className="min-h-[100px]"
+                                    onChange={setEditContent}
+                                    className="min-h-[150px]"
                                 />
                                 <div className="flex justify-end gap-2">
                                     <Button variant="ghost" size="sm" onClick={() => setEditingNoteId(null)}>Cancelar</Button>
@@ -300,10 +301,10 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                             </div>
                         ) : (
                             <>
-                                <div className="flex justify-between items-start mb-2">
+                                <div className="flex justify-between items-start mb-4 border-b border-slate-100 pb-4">
                                     <div className="flex items-center gap-2 text-sm text-slate-500">
                                         <CalendarIcon className="h-4 w-4" />
-                                        <span>{format(new Date(note.date), "d 'de' MMMM, yyyy", { locale: es })}</span>
+                                        <span className="font-medium text-slate-700">{format(new Date(note.date), "d 'de' MMMM, yyyy", { locale: es })}</span>
                                     </div>
                                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                                         <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => {
@@ -319,19 +320,18 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                                     </div>
                                 </div>
 
-                                <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap">
-                                    {note.content}
-                                </div>
+                                <div className="prose prose-sm max-w-none text-slate-700" dangerouslySetInnerHTML={{ __html: note.content }} />
 
                                 {note.images.length > 0 && (
-                                    <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+                                    <div className="mt-6 flex flex-wrap gap-4 pt-4 border-t border-slate-50">
                                         {note.images.map(img => (
                                             // eslint-disable-next-line @next/next/no-img-element
                                             <img
                                                 key={img.id}
                                                 src={img.url}
                                                 alt="Adjunto"
-                                                className="h-32 w-auto rounded-lg border border-slate-100 shadow-sm"
+                                                className="h-40 w-auto rounded-lg border border-slate-100 shadow-sm transition-transform hover:scale-105 cursor-pointer"
+                                                onClick={() => window.open(img.url, '_blank')}
                                             />
                                         ))}
                                     </div>
@@ -342,9 +342,10 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                 ))}
 
                 {notes.length === 0 && !legacyNotes && (
-                    <div className="text-center py-10 text-slate-400 border-2 border-dashed border-slate-100 rounded-xl">
-                        <CalendarIcon className="h-10 w-10 mx-auto mb-2 opacity-20" />
-                        <p>No hay notas registradas</p>
+                    <div className="text-center py-12 text-slate-400 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                        <CalendarIcon className="h-10 w-10 mx-auto mb-3 opacity-20" />
+                        <p className="font-medium">No hay entradas en la bitácora</p>
+                        <p className="text-sm opacity-70">Crea una nueva nota para empezar a registrar el progreso</p>
                     </div>
                 )}
             </div>

@@ -668,6 +668,7 @@ enum Role {
   GUEST
   CASA_RURAL
   EMPLEADO
+  MASTER
 
   @@schema("public")
 }

@@ -36,7 +36,8 @@ export async function createSubjectNote(subjectId: string, content: string, date
                 images: {
                     create: imageUrls.map(url => ({ url }))
                 }
-            }
+            },
+            include: { images: true }
         })
         revalidatePath(`/master-unie/asignaturas/${subjectId}`)
         return { success: true, note }

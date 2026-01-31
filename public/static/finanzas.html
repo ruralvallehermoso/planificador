@@ -368,7 +368,8 @@
         ];
 
         // Configuración del Proxy de Indexa
-        const INDEXA_PROXY_URL = 'http://localhost:8000';
+        // Usamos el rewrite de Planificador para contactar con el backend real (definido en env var NEXT_PUBLIC_PORTFOLIO_URL)
+        const INDEXA_PROXY_URL = '/apps/portfolio';
         let indexaConnected = false;
 
         // Lógica de Tema

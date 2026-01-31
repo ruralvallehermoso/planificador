@@ -35,6 +35,9 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
     const [notes, setNotes] = useState(initialNotes)
     const [isCreating, setIsCreating] = useState(false)
 
+    const [isDragging, setIsDragging] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
+
     // New Note State
     const [newNoteContent, setNewNoteContent] = useState("")
     const [newNoteDate, setNewNoteDate] = useState<Date>(new Date())
@@ -45,6 +48,55 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
     const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
     const [editContent, setEditContent] = useState("")
     const [editDate, setEditDate] = useState<Date>(new Date())
+
+    async function uploadFile(file: File) {
+        if (!file.type.startsWith('image/')) return toast.error("Solo se permiten imágenes")
+
+        setIsUploading(true)
+        const formData = new FormData()
+        formData.append('file', file)
+
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+
+            if (!res.ok) throw new Error("Error upload")
+
+            const data = await res.json()
+            if (data.success) {
+                setNewImageUrls(prev => [...prev, data.url])
+                toast.success("Imagen subida")
+            } else {
+                toast.error("Error al subir imagen")
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Error de conexión")
+        } finally {
+            setIsUploading(false)
+        }
+    }
+
+    const handlePaste = (e: React.ClipboardEvent) => {
+        const items = e.clipboardData.items
+        for (const item of items) {
+            if (item.type.indexOf('image') !== -1) {
+                const file = item.getAsFile()
+                if (file) uploadFile(file)
+            }
+        }
+    }
+
+    const handleDrop = async (e: React.DragEvent) => {
+        e.preventDefault()
+        setIsDragging(false)
+        const files = e.dataTransfer.files
+        if (files && files.length > 0) {
+            uploadFile(files[0])
+        }
+    }
 
     async function handleCreate() {
         if (!newNoteContent.trim()) return
@@ -126,14 +178,29 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
             </div>
 
             {isCreating && (
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4 animate-in fade-in slide-in-from-top-2">
+                <div
+                    className={cn(
+                        "bg-slate-50 p-4 rounded-xl border-2 border-slate-200 space-y-4 animate-in fade-in slide-in-from-top-2 transition-colors",
+                        isDragging && "border-blue-500 bg-blue-50"
+                    )}
+                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={handleDrop}
+                >
                     <div className="flex gap-4">
-                        <div className="flex-1">
+                        <div className="flex-1 relative">
+                            {isDragging && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 z-10 rounded-md backdrop-blur-sm">
+                                    <p className="text-blue-600 font-medium">Suelta la imagen aquí</p>
+                                </div>
+                            )}
                             <Textarea
-                                placeholder="Escribe tu nota aquí..."
+                                placeholder="Escribe tu nota aquí... (Puedes pegar imágenes o arrastrarlas)"
                                 value={newNoteContent}
                                 onChange={e => setNewNoteContent(e.target.value)}
-                                className="min-h-[100px] bg-white"
+                                onPaste={handlePaste}
+                                className="min-h-[100px] bg-white resize-y"
+                                disabled={isUploading}
                             />
                         </div>
                         <div className="w-48 space-y-2">

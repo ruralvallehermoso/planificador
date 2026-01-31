@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { Calendar as CalendarIcon, Image as ImageIcon, Trash2, Edit2, Check, X, Plus } from "lucide-react"
+import { Calendar as CalendarIcon, Image as ImageIcon, Trash2, Edit2, Check, X, Plus, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -37,6 +37,7 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
 
     const [isDragging, setIsDragging] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
 
     // New Note State
     const [newNoteContent, setNewNoteContent] = useState("")
@@ -97,6 +98,7 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
 
     async function handleCreate() {
         if (!newNoteContent.trim()) return
+        setIsSaving(true)
 
         try {
             const result = await createSubjectNote(subjectId, newNoteContent, newNoteDate, newImageUrls)
@@ -112,11 +114,14 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
         } catch (error) {
             console.error(error)
             toast.error("Error inesperado")
+        } finally {
+            setIsSaving(false)
         }
     }
 
     async function handleUpdate(noteId: string) {
         if (!editContent.trim()) return
+        setIsSaving(true)
 
         try {
             // For editing, we are not handling image editing in UI yet to keep it simple as implemented in Server Action
@@ -140,6 +145,8 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
             }
         } catch (error) {
             console.error(error)
+        } finally {
+            setIsSaving(false)
         }
     }
 
@@ -246,7 +253,10 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                     )}
 
                     <div className="flex justify-end">
-                        <Button onClick={handleCreate} disabled={!newNoteContent.trim()}>Guardar Nota</Button>
+                        <Button onClick={handleCreate} disabled={!newNoteContent.trim() || isSaving}>
+                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isSaving ? "Guardando..." : "Guardar Nota"}
+                        </Button>
                     </div>
                 </div>
             )}
@@ -283,7 +293,9 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                                 />
                                 <div className="flex justify-end gap-2">
                                     <Button variant="ghost" size="sm" onClick={() => setEditingNoteId(null)}>Cancelar</Button>
-                                    <Button size="sm" onClick={() => handleUpdate(note.id)}>Guardar Cambios</Button>
+                                    <Button size="sm" onClick={() => handleUpdate(note.id)} disabled={isSaving}>
+                                        {isSaving ? "Guardando..." : "Guardar Cambios"}
+                                    </Button>
                                 </div>
                             </div>
                         ) : (

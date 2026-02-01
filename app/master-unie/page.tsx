@@ -102,9 +102,11 @@ export default async function MasterDashboardPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* Main Content - Subjects */}
-                <div className="xl:col-span-2 space-y-6">
+            {/* Main Content Areas */}
+            <div className="space-y-12">
+
+                {/* Subjects Section */}
+                <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold text-slate-900">Mis Asignaturas</h2>
                         <Link href="/master-unie/asignaturas" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
@@ -112,9 +114,9 @@ export default async function MasterDashboardPage() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {subjects.length === 0 ? (
-                            <div className="col-span-2 p-12 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                            <div className="col-span-full p-12 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
                                 <BookOpen className="h-10 w-10 mx-auto text-slate-300 mb-3" />
                                 <p className="text-slate-500 font-medium">No hay asignaturas registradas</p>
                             </div>
@@ -150,46 +152,27 @@ export default async function MasterDashboardPage() {
                     </div>
                 </div>
 
-                {/* Sidebar - Tasks & Activity */}
-                <div className="space-y-8">
-                    {/* Tasks Widget */}
-                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                            <h3 className="font-bold text-slate-900 flex items-center gap-2">
-                                <Clock className="h-5 w-5 text-indigo-500" />
-                                Próximas Entregas
-                            </h3>
-                            <Link href="/master-unie/tareas" className="text-xs font-medium text-slate-500 hover:text-indigo-600">
-                                Ver todo
-                            </Link>
-                        </div>
-                        <div className="max-h-[400px] overflow-y-auto">
+                {/* Tasks Widget - Full Width */}
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                            <Clock className="h-5 w-5 text-indigo-500" />
+                            Próximas Entregas
+                        </h3>
+                        <Link href="/master-unie/tareas" className="text-xs font-medium text-slate-500 hover:text-indigo-600">
+                            Ver todo
+                        </Link>
+                    </div>
+                    <div>
+                        {/* Remove fixed height so it expands naturally, or keep max-height? 
+                            User said "occupy full width", usually implies importance. 
+                            I'll keep a reasonable max-height but make it wider. */}
+                        <div className="max-h-[500px] overflow-y-auto">
                             <MasterTaskList tasks={tasks} />
                         </div>
                     </div>
-
-                    {/* Quick Links Card */}
-                    <div className="bg-slate-900 rounded-xl shadow-lg p-6 text-white overflow-hidden relative">
-                        <div className="relative z-10">
-                            <h3 className="font-bold mb-4">Accesos Rápidos</h3>
-                            <div className="space-y-3">
-                                <Link href="/master-unie/evaluaciones" className="flex items-center justify-between p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
-                                    <span className="text-sm font-medium">Evaluaciones</span>
-                                    <ArrowRight className="h-4 w-4 opacity-70" />
-                                </Link>
-                                <Link href="/master-unie/calendario" className="flex items-center justify-between p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
-                                    <span className="text-sm font-medium">Calendario Académico</span>
-                                    <Calendar className="h-4 w-4 opacity-70" />
-                                </Link>
-                                <Link href="/master-unie/recursos" className="flex items-center justify-between p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
-                                    <span className="text-sm font-medium">Recursos y Documentos</span>
-                                    <FileText className="h-4 w-4 opacity-70" />
-                                </Link>
-                            </div>
-                        </div>
-                        <div className="absolute top-0 right-0 -mt-10 -mr-10 h-40 w-40 bg-indigo-500/30 rounded-full blur-2xl" />
-                    </div>
                 </div>
+
             </div>
         </div>
     );

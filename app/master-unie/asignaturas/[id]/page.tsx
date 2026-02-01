@@ -52,8 +52,8 @@ export default async function SubjectDetailPage({ params }: PageProps) {
             </div>
 
             {/* Info Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4">
+            <div className="flex overflow-x-auto pb-4 gap-4 md:grid md:grid-cols-3 md:gap-4 md:pb-0 snap-x no-scrollbar">
+                <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 min-w-[70vw] md:min-w-0 flex-shrink-0 snap-center">
                     <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
                         <User className="h-6 w-6" />
                     </div>
@@ -62,7 +62,7 @@ export default async function SubjectDetailPage({ params }: PageProps) {
                         <p className="font-medium text-slate-900">{subject.professor || "No asignado"}</p>
                     </div>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4">
+                <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 min-w-[70vw] md:min-w-0 flex-shrink-0 snap-center">
                     <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
                         <GraduationCap className="h-6 w-6" />
                     </div>
@@ -71,7 +71,7 @@ export default async function SubjectDetailPage({ params }: PageProps) {
                         <p className="font-medium text-slate-900">{subject.credits} ECTS</p>
                     </div>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4">
+                <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 min-w-[70vw] md:min-w-0 flex-shrink-0 snap-center">
                     <div className="p-3 bg-amber-50 text-amber-600 rounded-lg">
                         <Calendar className="h-6 w-6" />
                     </div>

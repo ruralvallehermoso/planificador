@@ -145,7 +145,7 @@ export function MasterTaskList({ tasks = [] }: MasterTaskListProps) {
                                                 {task.title}
                                             </label>
                                         </div>
-                                        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex items-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"

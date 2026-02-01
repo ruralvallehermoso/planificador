@@ -114,9 +114,9 @@ export default async function MasterDashboardPage() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="flex overflow-x-auto pb-4 gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 snap-x no-scrollbar md:gap-4 md:pb-0">
                         {subjects.length === 0 ? (
-                            <div className="col-span-full p-12 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                            <div className="col-span-full min-w-full p-12 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
                                 <BookOpen className="h-10 w-10 mx-auto text-slate-300 mb-3" />
                                 <p className="text-slate-500 font-medium">No hay asignaturas registradas</p>
                             </div>
@@ -125,7 +125,8 @@ export default async function MasterDashboardPage() {
                                 <Link
                                     key={subject.id}
                                     href={`/master-unie/asignaturas/${subject.id}`}
-                                    className="group bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-200"
+                                    className="group bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-200
+                                             min-w-[85vw] md:min-w-0 flex-shrink-0 snap-center"
                                 >
                                     <div className="flex justify-between items-start mb-3">
                                         <div className={`px-2 py-1 rounded text-xs font-semibold

@@ -117,7 +117,7 @@ export function SubjectTasks({ tasks, subjectId, categoryId }: SubjectTasksProps
                             </span>
                             <button
                                 onClick={() => handleDelete(task.id)}
-                                className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-400 transition-all"
+                                className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 text-slate-300 hover:text-red-400 transition-all"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </button>

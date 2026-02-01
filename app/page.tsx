@@ -20,6 +20,8 @@ const MODULES_CONFIG: Record<string, { module: ModuleName; icon: any; color: str
 
 /* Server Component */
 export default async function Home() {
+  console.log("Planificador Deployment User Triggered Verify v1");
+
   const session = await auth();
   const user = session?.user;
 

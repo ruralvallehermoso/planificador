@@ -12,6 +12,7 @@ declare module "next-auth" {
             canAccessFpInformatica: boolean
             canAccessHogar: boolean
             canAccessMasterUnie: boolean
+            defaultDashboard: string | null
         } & DefaultSession["user"]
     }
 
@@ -22,6 +23,7 @@ declare module "next-auth" {
         canAccessFpInformatica?: boolean
         canAccessHogar?: boolean
         canAccessMasterUnie?: boolean
+        defaultDashboard?: string | null
     }
 }
 
@@ -34,5 +36,6 @@ declare module "next-auth/jwt" {
         canAccessFpInformatica?: boolean
         canAccessHogar?: boolean
         canAccessMasterUnie?: boolean
+        defaultDashboard?: string | null
     }
 }

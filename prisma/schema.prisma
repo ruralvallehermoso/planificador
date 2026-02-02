@@ -22,6 +22,7 @@ model User {
   canAccessFpInformatica Boolean             @default(false)
   canAccessHogar         Boolean             @default(false)
   canAccessMasterUnie    Boolean             @default(false)
+  defaultDashboard       String?
   createdAt              DateTime            @default(now())
   updatedAt              DateTime            @updatedAt
   accounts               Account[]

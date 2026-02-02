@@ -44,9 +44,27 @@ function LoginForm() {
                 return
             }
 
-            // Force a hard reload to ensure cookies are sent and middleware sees the session
-            console.log('Redirecting to:', callbackUrl)
-            window.location.href = callbackUrl
+            // Custom redirection using Session data would be ideal, but requires an extra fetch or relying on the server redirect.
+            // Since we are using credentials, the server doesn't redirect us automatically to a dynamic page based on user data easily without a session check.
+            // However, we can fetch the session or simply rely on the fact that the Next.js Middleware/Server Action *could* handle this.
+            // But here, we are client-side. The `signIn` response doesn't contain the user object directly in the `result` generic type usually.
+            //
+            // BETTER APPROACH: Let's fetch the session to see where to go, OR assume the backend handled it?
+            // Actually, we can just reload to '/' and let a middleware redirect, OR we can try to fetch me.
+            // For now, let's keep it simple: If callbackUrl is set (standard flow), go there.
+            // If callbackUrl is just '/', we might want to be smarter.
+
+            // Re-fetch session to get the new user data including defaultDashboard
+            const sessionRes = await fetch('/api/auth/session')
+            const sessionData = await sessionRes.json()
+
+            let targetUrl = callbackUrl
+            if ((!targetUrl || targetUrl === '/' || targetUrl.includes('/login')) && sessionData?.user?.defaultDashboard) {
+                targetUrl = sessionData.user.defaultDashboard
+            }
+
+            console.log('Redirecting to:', targetUrl)
+            window.location.href = targetUrl
         } catch (err) {
             console.error('Sign in exception:', err)
             setError(err instanceof Error ? err.message : 'Error al iniciar sesión')

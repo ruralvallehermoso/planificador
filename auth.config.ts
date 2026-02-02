@@ -50,6 +50,7 @@ export const authConfig = {
                 token.canAccessFpInformatica = (user as any).canAccessFpInformatica ?? false
                 token.canAccessHogar = (user as any).canAccessHogar ?? false
                 token.canAccessMasterUnie = (user as any).canAccessMasterUnie ?? false
+                token.defaultDashboard = (user as any).defaultDashboard || null
             }
 
             console.log('[AUTH DEBUG] JWT callback - token after:', JSON.stringify(token));
@@ -66,6 +67,7 @@ export const authConfig = {
                 session.user.canAccessFpInformatica = (token.canAccessFpInformatica as boolean) ?? false
                 session.user.canAccessHogar = (token.canAccessHogar as boolean) ?? false
                 session.user.canAccessMasterUnie = (token.canAccessMasterUnie as boolean) ?? false
+                session.user.defaultDashboard = (token.defaultDashboard as string) || null
             }
 
             console.log('[AUTH DEBUG] Session callback - session.user:', JSON.stringify(session.user));

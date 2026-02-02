@@ -84,6 +84,7 @@ export async function PUT(
             canAccessFpInformatica: canAccessFpInformatica ?? existingUser.canAccessFpInformatica,
             canAccessHogar: canAccessHogar ?? existingUser.canAccessHogar,
             canAccessMasterUnie: canAccessMasterUnie ?? existingUser.canAccessMasterUnie,
+            defaultDashboard: body.defaultDashboard !== undefined ? body.defaultDashboard : existingUser.defaultDashboard,
         }
 
         // Only update password if provided

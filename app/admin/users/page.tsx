@@ -17,6 +17,7 @@ interface User {
     canAccessFpInformatica: boolean
     canAccessHogar: boolean
     canAccessMasterUnie: boolean
+    defaultDashboard: string | null
     createdAt: string
 }
 
@@ -30,6 +31,7 @@ interface UserFormData {
     canAccessFpInformatica: boolean
     canAccessHogar: boolean
     canAccessMasterUnie: boolean
+    defaultDashboard: string
 }
 
 const ROLES: { value: Role; label: string; color: string }[] = [
@@ -51,6 +53,16 @@ const MODULES = [
     { key: 'canAccessMasterUnie', label: 'Master UNIE' },
 ]
 
+const DASHBOARDS = [
+    { value: '', label: 'Por defecto (según rol)' },
+    { value: '/', label: 'Inicio General' },
+    { value: '/master-unie', label: 'Master UNIE' },
+    { value: '/casa-rural', label: 'Casa Rural' },
+    { value: '/finanzas', label: 'Finanzas' },
+    { value: '/hogar', label: 'Hogar' },
+    { value: '/fp-informatica', label: 'FP Informática' },
+]
+
 const emptyFormData: UserFormData = {
     email: '',
     password: '',
@@ -61,6 +73,7 @@ const emptyFormData: UserFormData = {
     canAccessFpInformatica: false,
     canAccessHogar: false,
     canAccessMasterUnie: false,
+    defaultDashboard: '',
 }
 
 export default function AdminUsersPage() {
@@ -122,6 +135,7 @@ export default function AdminUsersPage() {
             canAccessFpInformatica: user.canAccessFpInformatica,
             canAccessHogar: user.canAccessHogar,
             canAccessMasterUnie: user.canAccessMasterUnie,
+            defaultDashboard: user.defaultDashboard || '',
         })
         setShowModal(true)
         setShowPassword(false)
@@ -408,6 +422,23 @@ export default function AdminUsersPage() {
                                         <option key={role.value} value={role.value}>{role.label}</option>
                                     ))}
                                 </select>
+                            </div>
+
+                            {/* Default Dashboard Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Dashboard por Defecto</label>
+                                <select
+                                    value={formData.defaultDashboard}
+                                    onChange={e => setFormData({ ...formData, defaultDashboard: e.target.value })}
+                                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                >
+                                    {DASHBOARDS.map(dash => (
+                                        <option key={dash.value} value={dash.value}>{dash.label}</option>
+                                    ))}
+                                </select>
+                                <p className="text-xs text-slate-500 mt-1">
+                                    Página a la que será redirigido el usuario al iniciar sesión.
+                                </p>
                             </div>
 
                             {/* Module permissions */}

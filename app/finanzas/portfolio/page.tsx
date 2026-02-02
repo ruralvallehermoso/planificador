@@ -29,11 +29,6 @@ export default function PortfolioPage() {
 
     return (
         <div className="space-y-4">
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
-                <p className="font-bold">Debug Info (v2.1 Check)</p>
-                <p>Loading URL: <code className="bg-yellow-200 px-1 rounded">{portfolio.url}</code></p>
-                <p>Date: {new Date().toISOString()}</p>
-            </div>
             <div className="flex justify-end px-4">
                 <PortfolioRefreshButton />
             </div>

@@ -325,15 +325,15 @@ export function SubjectNotesList({ subjectId, initialNotes = [], legacyNotes }: 
                                         <CalendarIcon className="h-4 w-4" />
                                         <span className="font-medium text-slate-700">{format(new Date(note.date), "d 'de' MMMM, yyyy", { locale: es })}</span>
                                     </div>
-                                    <div className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity flex gap-1">
-                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => {
+                                    <div className="flex gap-1">
+                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-blue-600 hover:bg-blue-50" onClick={() => {
                                             setEditingNoteId(note.id)
                                             setEditContent(note.content)
                                             setEditDate(new Date(note.date))
                                         }}>
                                             <Edit2 className="h-4 w-4" />
                                         </Button>
-                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => handleDelete(note.id)}>
+                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 hover:text-red-500 hover:bg-red-50" onClick={() => handleDelete(note.id)}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>

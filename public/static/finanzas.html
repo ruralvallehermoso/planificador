@@ -189,7 +189,7 @@
                 </div>
                 <div>
                     <h1 class="text-slate-900 dark:text-white font-bold leading-tight tracking-tight text-lg">Master
-                        Portfolio</h1>
+                        Portfolio <span class="text-[9px] text-slate-400 font-normal">v2.1</span></h1>
                     <div class="flex items-center gap-2 text-[10px] font-bold tracking-wider mt-0.5 cursor-pointer hover:text-indigo-600 dark:hover:text-white group"
                         onclick="updateMarkets()" id="status-area">
                         <span class="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500" id="status-dot"></span>
@@ -363,7 +363,7 @@
             { id: 'idx_1', name: 'Indexa Capital', ticker: 'IDX', cat: 'Fondos', plat: 'Indexa', qty: 1, price: 0, indexa_api: true, img: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://indexacapital.com&size=64' },
 
             { id: 'myinv', name: 'Fondo MyInvestor', ticker: 'MYINV', cat: 'Fondos', plat: 'MyInv', qty: 2009, price: 0, yahoo: '0P0001CLDK.F', img: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://myinvestor.es&size=64' },
-            { id: 'gold', name: 'Oro / Gold', ticker: 'XAU', cat: 'Fondos', plat: 'MyInv', qty: 80, price: 0, yahoo: 'EGLN.L', img: 'https://img.icons8.com/color/96/gold-bars.png' },
+            { id: 'gold', name: 'Oro / Gold', ticker: 'XAU', cat: 'Fondos', plat: 'MyInv', qty: 80, price: 0, yahoo: 'EGLN.L', currency: 'USD', img: 'https://img.icons8.com/color/96/gold-bars.png' },
             { id: 'ing', name: 'Liquidez ING', ticker: 'EUR', cat: 'Cash', plat: 'ING', qty: 1, price: 15000, manual: true, img: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON\u0026fallback_opts=TYPE,SIZE,URL\u0026url=http://ing.es\u0026size=64' },
         ];
 
@@ -488,21 +488,42 @@
             const timeStamp = `&_=${new Date().getTime()}`;
 
             try {
-                // 1. Obtener Ratio USD/EUR
+                // 1. Obtener Ratio USD/EUR desde USDC (CoinGecko) para consistencia
+                // Yahoo daba ~0.847 mientras el mercado crypto operaba a ~0.89-0.91, causando discrepancias.
                 try {
-                    const url = proxyBase + encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/EUR=X?interval=1d&range=1d") + timeStamp;
-                    const res = await fetch(url);
-                    if (res.ok) {
-                        const data = await res.json();
-                        const rate = data.chart.result[0].meta.regularMarketPrice;
-                        if (rate) {
-                            usdToEur = rate;
-                            document.getElementById('usd-rate').innerText = `USD: ${usdToEur.toFixed(4)}`;
-                        }
+                    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=eur${timeStamp}`);
+                    const d = await res.json();
+                    if (d['usd-coin'] && d['usd-coin'].eur) {
+                        usdToEur = d['usd-coin'].eur;
+                        const el = document.getElementById('usd-rate');
+                        el.innerText = `USD (C): ${usdToEur.toFixed(4)}`; // (C) = Crypto/CoinGecko
+                        el.classList.add('text-emerald-500'); // Green for good sync
+                        console.log("Flux Rate (USDC):", usdToEur);
+                    } else {
+                        throw new Error("No USDC data");
                     }
-                } catch (e) { console.error("Error USD/EUR:", e); }
+                } catch (e) {
+                    console.error("Error USD/EUR (USDC), probando Yahoo:", e);
+                    // Fallback a Yahoo si CoinGecko falla
+                    try {
+                        const url = proxyBase + encodeURIComponent("https://query1.finance.yahoo.com/v8/finance/chart/EUR=X?interval=1d&range=1d") + timeStamp;
+                        const res = await fetch(url);
+                        if (res.ok) {
+                            const data = await res.json();
+                            const rate = data.chart.result[0].meta.regularMarketPrice;
+                            if (rate) {
+                                usdToEur = rate;
+                                const el = document.getElementById('usd-rate');
+                                el.innerText = `USD (Y): ${usdToEur.toFixed(4)}`; // (Y) = Yahoo Fallback
+                                el.classList.remove('text-emerald-500');
+                                el.classList.add('text-orange-500'); // Orange for mismatch risk
+                            }
+                        }
+                    } catch (e2) { console.error("Error USD/EUR (Yahoo):", e2); }
+                }
 
                 // 2. Obtener Acciones (Yahoo Finance)
+                // Usamos el usdToEur calculado arriba para conversiones consistentes
                 const stockPromises = db.filter(i => i.yahoo && !i.manual).map(async (item) => {
                     try {
                         const url = proxyBase + encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${item.yahoo}?interval=1d&range=1d`) + timeStamp;
@@ -518,6 +539,7 @@
                 await Promise.all(stockPromises);
 
                 // 3. Obtener Criptos (CoinGecko)
+                // Pedimos EUR directamente. Al usar el rate USDC arriba, la conversión implícita es consistente.
                 const ids = db.filter(i => i.api_id && !i.manual).map(i => i.api_id).join(',');
                 if (ids) {
                     try {

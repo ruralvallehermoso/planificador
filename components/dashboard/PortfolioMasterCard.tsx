@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, Loader2 } from "lucide-react";
 import { clsx } from "clsx";
 
 interface HistoryPoint {
@@ -20,6 +20,7 @@ export function PortfolioMasterCard() {
     const [performance, setPerformance] = useState<Performance | null>(null);
     const [history, setHistory] = useState<HistoryPoint[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isNavigating, setIsNavigating] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -79,8 +80,14 @@ export function PortfolioMasterCard() {
     return (
         <Link
             href="/finanzas/portfolio"
+            onClick={() => setIsNavigating(true)}
             className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:ring-indigo-300"
         >
+            {isNavigating && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/50 backdrop-blur-[1px]">
+                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                </div>
+            )}
             <div className="flex items-center justify-between">
                 <div
                     className={clsx(

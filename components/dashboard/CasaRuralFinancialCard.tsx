@@ -3,13 +3,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Home as HomeIcon, TrendingUp, TrendingDown, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
+import { Home as HomeIcon, TrendingUp, TrendingDown, ArrowRight, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { clsx } from "clsx";
 import { getCasaRuralYearlyBalance } from "@/app/actions/casa-rural-finances";
 
 export function CasaRuralFinancialCard() {
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [isNavigating, setIsNavigating] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -51,6 +52,7 @@ export function CasaRuralFinancialCard() {
     return (
         <Link
             href="/casa-rural/contabilidad"
+            onClick={() => setIsNavigating(true)}
             className={clsx(
                 "group relative overflow-hidden rounded-2xl p-6 text-white shadow-lg transition-all hover:shadow-xl hover:scale-[1.01] h-[180px] flex flex-col justify-between",
                 isHealthy
@@ -58,6 +60,11 @@ export function CasaRuralFinancialCard() {
                     : "bg-gradient-to-br from-orange-500 to-amber-600"
             )}
         >
+            {isNavigating && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/10 backdrop-blur-[1px]">
+                    <Loader2 className="h-8 w-8 animate-spin text-white" />
+                </div>
+            )}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
 

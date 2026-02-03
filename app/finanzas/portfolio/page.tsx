@@ -1,7 +1,6 @@
 import { MicrofrontendFrame } from '@/components/microfrontend/MicrofrontendFrame';
 import { getMicrofrontend } from '@/lib/microfrontends';
 import { AlertCircle } from 'lucide-react';
-import { PortfolioRefreshButton } from '@/components/dashboard/PortfolioRefreshButton';
 
 
 export default function PortfolioPage() {
@@ -28,10 +27,7 @@ export default function PortfolioPage() {
     }
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-end px-4">
-                <PortfolioRefreshButton />
-            </div>
+        <div className="h-full">
             <MicrofrontendFrame
                 src={portfolio.url}
                 title={portfolio.name}

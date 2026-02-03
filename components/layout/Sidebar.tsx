@@ -8,7 +8,7 @@ import {
     Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, TrendingDown, BarChart3,
     ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield, X,
     LogOut, Wallet, Wrench, Users, PiggyBank, Settings, Target, Utensils, Calendar, Package,
-    CheckSquare, Clock, CreditCard, DollarSign, FileText, User, Briefcase, Library
+    CheckSquare, Clock, CreditCard, DollarSign, FileText, User, Briefcase, Library, Loader2
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useState, useEffect, useMemo, useRef } from 'react'
@@ -152,6 +152,7 @@ export function Sidebar({ isMobileOpen = false, onMobileClose }: SidebarProps) {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+    const [navigatingTo, setNavigatingTo] = useState<string | null>(null)
     const userMenuRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -170,7 +171,15 @@ export function Sidebar({ isMobileOpen = false, onMobileClose }: SidebarProps) {
                 }
             }
         })
-    }, [pathname, navigation])
+        // Reset loading state on path change
+        setNavigatingTo(null)
+    }, [pathname, navigation, searchParams])
+
+    const handleNavigation = (href: string) => {
+        if (pathname !== href) {
+            setNavigatingTo(href)
+        }
+    }
 
     // Close user menu when clicking outside
     useEffect(() => {
@@ -336,23 +345,34 @@ export function Sidebar({ isMobileOpen = false, onMobileClose }: SidebarProps) {
                                 ) : (
                                     <Link
                                         href={hasChildren && isCollapsed ? item.children![0].href : item.href}
+                                        onClick={() => handleNavigation(hasChildren && isCollapsed ? item.children![0].href : item.href)}
                                         className={clsx(
-                                            'group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
+                                            'group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all relative',
                                             isActive
                                                 ? 'bg-blue-50 text-blue-700 border-l-[3px] border-blue-600 -ml-[3px] pl-[15px]'
                                                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                                            isCollapsed && 'justify-center px-2'
+                                            isCollapsed && 'justify-center px-2',
+                                            navigatingTo === (hasChildren && isCollapsed ? item.children![0].href : item.href) && "bg-blue-50/50 animate-pulse"
                                         )}
                                         title={isCollapsed ? item.name : undefined}
                                     >
-                                        <item.icon
-                                            className={clsx(
-                                                'h-5 w-5 flex-shrink-0 transition-colors',
-                                                isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500',
-                                                !isCollapsed && 'mr-3'
-                                            )}
-                                            aria-hidden="true"
-                                        />
+                                        {navigatingTo === (hasChildren && isCollapsed ? item.children![0].href : item.href) ? (
+                                            <Loader2
+                                                className={clsx(
+                                                    'h-5 w-5 flex-shrink-0 animate-spin text-blue-600',
+                                                    !isCollapsed && 'mr-3'
+                                                )}
+                                            />
+                                        ) : (
+                                            <item.icon
+                                                className={clsx(
+                                                    'h-5 w-5 flex-shrink-0 transition-colors',
+                                                    isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500',
+                                                    !isCollapsed && 'mr-3'
+                                                )}
+                                                aria-hidden="true"
+                                            />
+                                        )}
                                         {!isCollapsed && item.name}
                                     </Link>
                                 )}
@@ -366,20 +386,28 @@ export function Sidebar({ isMobileOpen = false, onMobileClose }: SidebarProps) {
                                                 <Link
                                                     key={child.name}
                                                     href={child.href}
+                                                    onClick={() => handleNavigation(child.href)}
                                                     className={clsx(
-                                                        'group flex items-center rounded-lg px-3 py-2 text-sm transition-all',
+                                                        'group flex items-center rounded-lg px-3 py-2 text-sm transition-all relative',
                                                         isChildActive
                                                             ? 'bg-blue-50 text-blue-700 font-medium'
-                                                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                                                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700',
+                                                        navigatingTo === child.href && "bg-blue-50/50 animate-pulse"
                                                     )}
                                                 >
-                                                    <child.icon
-                                                        className={clsx(
-                                                            'mr-2.5 h-4 w-4 flex-shrink-0 transition-colors',
-                                                            isChildActive ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
-                                                        )}
-                                                        aria-hidden="true"
-                                                    />
+                                                    {navigatingTo === child.href ? (
+                                                        <Loader2
+                                                            className="mr-2.5 h-4 w-4 flex-shrink-0 animate-spin text-blue-500"
+                                                        />
+                                                    ) : (
+                                                        <child.icon
+                                                            className={clsx(
+                                                                'mr-2.5 h-4 w-4 flex-shrink-0 transition-colors',
+                                                                isChildActive ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
+                                                            )}
+                                                            aria-hidden="true"
+                                                        />
+                                                    )}
                                                     {child.name}
                                                 </Link>
                                             )

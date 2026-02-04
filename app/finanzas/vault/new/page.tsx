@@ -17,12 +17,19 @@ const PLATFORM_TYPES = [
     { value: 'OTHER', label: 'Otro', icon: MoreHorizontal, color: '#6b7280' },
 ];
 
+type PlatformType = 'BANK' | 'BROKER' | 'CRYPTO' | 'FUND' | 'OTHER';
+
 export default function NewPlatformPage() {
     const router = useRouter();
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        name: string;
+        type: PlatformType;
+        website: string;
+        notes: string;
+    }>({
         name: '',
         type: 'BANK',
         website: '',
@@ -84,8 +91,8 @@ export default function NewPlatformPage() {
                                 type="button"
                                 onClick={() => setFormData({ ...formData, type: value })}
                                 className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${formData.type === value
-                                        ? 'border-indigo-500 bg-indigo-50'
-                                        : 'border-gray-200 hover:border-gray-300'
+                                    ? 'border-indigo-500 bg-indigo-50'
+                                    : 'border-gray-200 hover:border-gray-300'
                                     }`}
                             >
                                 <div

@@ -15,7 +15,7 @@ const PLATFORM_TYPES = [
     { value: 'CRYPTO', label: 'Crypto', icon: Bitcoin, color: '#f59e0b' },
     { value: 'FUND', label: 'Fondo', icon: Landmark, color: '#8b5cf6' },
     { value: 'OTHER', label: 'Otro', icon: MoreHorizontal, color: '#6b7280' },
-];
+] as const;
 
 type PlatformType = 'BANK' | 'BROKER' | 'CRYPTO' | 'FUND' | 'OTHER';
 

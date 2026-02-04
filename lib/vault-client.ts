@@ -56,6 +56,7 @@ export interface VaultHealth {
     status: string;
     vault_path: string;
     is_unlocked: boolean;
+    is_setup: boolean;
     platform_count: number;
 }
 

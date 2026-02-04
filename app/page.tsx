@@ -121,7 +121,7 @@ export default async function Home() {
                 "group relative rounded-2xl p-5 transition-all duration-200 hover:scale-[1.02]",
                 hasPending
                   ? "bg-gradient-to-br from-white to-gray-50 shadow-sm ring-1 ring-gray-200 hover:shadow-lg hover:ring-2"
-                  : "bg-gray-50/50 ring-1 ring-gray-100 hover:bg-white hover:shadow-sm"
+                  : "bg-white shadow-sm ring-1 ring-gray-200 hover:shadow-md"
               )}
               style={hasPending ? { '--ring-color': color } as any : {}}
             >

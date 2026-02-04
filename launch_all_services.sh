@@ -33,4 +33,8 @@ launch_service "/Users/ct/PERSONAL/Proyectos/Finanzas/frontend/dashboard" "npm r
 # 6. Dashboard Financiero (Port 8501)
 launch_service "/Users/ct/PERSONAL/Proyectos/DashboardFinancieroReal" "streamlit run dashboard_financiero_real.py" "Dashboard Financiero"
 
+# 7. Vault API - Secure Credentials (Port 5001)
+# Requires VAULT_MASTER_KEY environment variable
+launch_service "/Users/ct/PERSONAL/Proyectos/Finanzas/vault" "source ../.venv/bin/activate && VAULT_MASTER_KEY=\$VAULT_MASTER_KEY python main.py" "Vault API"
+
 echo "✅ All start commands issued."

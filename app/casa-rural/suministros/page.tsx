@@ -80,10 +80,26 @@ export default async function SuministrosPage() {
 
                                 <div className="flex items-center gap-4 text-xs text-gray-500 mt-3">
                                     {suministro.website && (
-                                        <span className="flex items-center gap-1">
+                                        <a
+                                            href={suministro.website.startsWith('http') ? suministro.website : `https://${suministro.website}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
+                                        >
                                             <ExternalLink className="h-3 w-3" />
                                             Web
-                                        </span>
+                                        </a>
+                                    )}
+                                    {suministro.contactPhone && (
+                                        <a
+                                            href={`tel:${suministro.contactPhone}`}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="flex items-center gap-1 text-emerald-600 hover:text-emerald-800 hover:underline"
+                                        >
+                                            <Phone className="h-3 w-3" />
+                                            {suministro.contactPhone}
+                                        </a>
                                     )}
                                     <span className="flex items-center gap-1">
                                         <FileText className="h-3 w-3" />

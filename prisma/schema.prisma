@@ -643,6 +643,37 @@ model SesReport {
   @@schema("casarural")
 }
 
+model Suministro {
+  id           Int      @id @default(autoincrement())
+  name         String
+  type         String   // LUZ, AGUA, GAS, INTERNET, TELEFONO, OTRO
+  website      String?
+  logoUrl      String?
+  contactPhone String?
+  contactEmail String?
+  contractRef  String?
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  invoices     SuministroInvoice[]
+
+  @@schema("casarural")
+}
+
+model SuministroInvoice {
+  id            Int         @id @default(autoincrement())
+  suministroId  Int
+  invoiceNumber String?
+  date          DateTime
+  amount        Decimal
+  pdfUrl        String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  suministro    Suministro  @relation(fields: [suministroId], references: [id], onDelete: Cascade)
+
+  @@schema("casarural")
+}
+
 model public_Expense {
   id          String          @id
   provider    String

@@ -8,7 +8,7 @@ import {
     Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, TrendingDown, BarChart3,
     ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield, X,
     LogOut, Wallet, Wrench, Users, PiggyBank, Settings, Target, Utensils, Calendar, Package,
-    CheckSquare, Clock, CreditCard, DollarSign, FileText, User, Briefcase, Library, Loader2
+    CheckSquare, Clock, CreditCard, DollarSign, FileText, User, Briefcase, Library, Loader2, Zap
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useState, useEffect, useMemo, useRef } from 'react'
@@ -83,6 +83,7 @@ const allNavigation: NavItem[] = [
             { name: 'Empleados', href: '/casa-rural/contabilidad/employees', icon: Users },
             { name: 'SES Hospedajes', href: '/casa-rural/ses-hospedajes', icon: ClipboardList },
             { name: 'Fiscalidad', href: '/casa-rural/contabilidad/fiscality', icon: PiggyBank },
+            { name: 'Suministros', href: '/casa-rural/suministros', icon: Zap },
             { name: 'Configuración', href: '/casa-rural/contabilidad/config', icon: Settings },
             { name: 'Tareas', href: '/casa-rural/tareas', icon: ClipboardList },
             { name: 'Actividades', href: '/casa-rural/actividades', icon: ClipboardList },

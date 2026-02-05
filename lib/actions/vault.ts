@@ -23,6 +23,7 @@ export async function createVaultItem(data: {
     category: string
     encryptedDek: string
     encryptedData: string
+    sectionId?: string
 }) {
     try {
         if (!await verifyAdmin(data.userId)) {
@@ -36,6 +37,7 @@ export async function createVaultItem(data: {
                 category: data.category,
                 encryptedDek: data.encryptedDek,
                 encryptedData: data.encryptedData,
+                sectionId: data.sectionId
             }
         })
         revalidatePath('/finanzas/vault')
@@ -61,6 +63,7 @@ export async function getVaultItems(userId: string) {
                 category: true,
                 encryptedDek: true,
                 encryptedData: true,
+                sectionId: true,
                 createdAt: true
             }
         })
@@ -148,6 +151,69 @@ export async function checkVaultSetup(userId: string) {
     } catch (error) {
         return { success: false, error: 'Failed to check setup' }
     }
+
+    // --- SECITONS MANAGEMENT ---
+
+    export async function createVaultSection(userId: string, title: string) {
+        try {
+            if (!await verifyAdmin(userId)) return { success: false, error: 'Unauthorized' }
+
+            const section = await prisma.vaultSection.create({
+                data: { userId, title }
+            })
+            revalidatePath('/finanzas/vault')
+            return { success: true, data: section }
+        } catch (e) {
+            console.error(e)
+            return { success: false, error: 'Failed to create section' }
+        }
+    }
+
+    export async function getVaultSections(userId: string) {
+        try {
+            if (!await verifyAdmin(userId)) return { success: false, error: 'Unauthorized' }
+
+            const sections = await prisma.vaultSection.findMany({
+                where: { userId },
+                orderBy: { order: 'asc' }, // or createdAt
+                include: { items: { select: { id: true } } } // count or lightweight
+            })
+            return { success: true, data: sections }
+        } catch (e) {
+            return { success: false, error: 'Failed' }
+        }
+    }
+
+    export async function deleteVaultSection(id: string, userId: string) {
+        try {
+            if (!await verifyAdmin(userId)) return { success: false, error: 'Unauthorized' }
+
+            // Delete section (cascade deletes items? NO. We kept cascade for user delete, 
+            // but for section delete we might want to just unassign items or delete them?
+            // User implied "containers". Usually deleting a folder deletes content or moves it.
+            // Let's assume for now we just delete the section and items become "Uncategorized" (active null)
+            // OR we cascade delete.
+            // Prisma schema says: items VaultItem[]. We didn't set onDelete Cascade on the relation items-section
+            // checking schema... section VaultSection? @relation...
+            // If we didn't specify onDelete, it defaults to SetNull (if optional) or Restrict.
+            // For now let's manually SetNull to be safe
+
+            await prisma.vaultItem.updateMany({
+                where: { sectionId: id },
+                data: { sectionId: null }
+            })
+
+            await prisma.vaultSection.delete({
+                where: { id, userId }
+            })
+
+            revalidatePath('/finanzas/vault')
+            return { success: true }
+        } catch (e) {
+            return { success: false, error: 'Failed' }
+        }
+    }
+}
 }
 
 export async function setupVault(userId: string, validatorHash: string) {

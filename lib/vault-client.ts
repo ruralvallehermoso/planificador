@@ -43,6 +43,16 @@ export class VaultClient {
     }
 
     /**
+     * Genera un hash de validación (SHA-256) de la clave maestra
+     * Esto permite al servidor verificar si la clave es correcta sin conocer la clave real.
+     */
+    static async deriveValidator(masterKeyHex: string): Promise<string> {
+        const keyBuffer = this.hexToArrayBuffer(masterKeyHex);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', keyBuffer);
+        return this.arrayBufferToHex(hashBuffer);
+    }
+
+    /**
      * Encripta datos usando AES-256-GCM
      */
     static async encrypt(data: string, keyHex: string): Promise<{ active: string, iv: string }> {

@@ -48,3 +48,47 @@ export async function getVaultItems(userId: string) {
         return { success: false, error: 'Failed to fetch items' }
     }
 }
+
+// --- Validator / Setup Utils ---
+
+export async function checkVaultSetup(userId: string) {
+    try {
+        const config = await prisma.vaultConfig.findUnique({
+            where: { userId }
+        })
+        return { success: true, isSetup: !!config }
+    } catch (error) {
+        return { success: false, error: 'Failed to check setup' }
+    }
+}
+
+export async function setupVault(userId: string, validatorHash: string) {
+    try {
+        // Create config
+        await prisma.vaultConfig.create({
+            data: {
+                userId,
+                validator: validatorHash
+            }
+        })
+        return { success: true }
+    } catch (error) {
+        console.error("Setup failed", error)
+        return { success: false, error: 'Failed to setup vault' }
+    }
+}
+
+export async function verifyVaultKey(userId: string, validatorHash: string) {
+    try {
+        const config = await prisma.vaultConfig.findUnique({
+            where: { userId }
+        })
+
+        if (!config) return { success: false, error: 'Not setup' }
+
+        const isValid = config.validator === validatorHash
+        return { success: true, isValid }
+    } catch (error) {
+        return { success: false, error: 'Verification failed' }
+    }
+}

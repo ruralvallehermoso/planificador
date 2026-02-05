@@ -36,6 +36,7 @@ model User {
   vaultItems             VaultItem[]
   assets                 Asset[]
   portfolioSnapshots     PortfolioSnapshot[]
+  vaultConfig            VaultConfig?
 
   @@schema("public")
 }
@@ -780,6 +781,17 @@ model VaultItem {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@schema("public")
+}
+
+model VaultConfig {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validator String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@schema("public")
 }
 

@@ -48,6 +48,61 @@ export async function getVaultItems(userId: string) {
         return { success: false, error: 'Failed to fetch items' }
     }
 }
+}
+
+export async function updateVaultItem(id: string, userId: string, data: {
+    title: string
+    category: string
+    encryptedData: string
+}) {
+    try {
+        // Verify ownership
+        const existing = await prisma.vaultItem.findUnique({
+            where: { id },
+            select: { userId: true }
+        })
+
+        if (!existing || existing.userId !== userId) {
+            return { success: false, error: 'Unauthorized or not found' }
+        }
+
+        const item = await prisma.vaultItem.update({
+            where: { id },
+            data: {
+                title: data.title,
+                category: data.category,
+                encryptedData: data.encryptedData,
+            }
+        })
+        revalidatePath('/finanzas/vault')
+        return { success: true, data: item }
+    } catch (error) {
+        console.error('Failed to update vault item:', error)
+        return { success: false, error: 'Failed to update item' }
+    }
+}
+
+export async function deleteVaultItem(id: string, userId: string) {
+    try {
+        // Verify ownership implicit by deleteMany with userId or findFirst
+        const count = await prisma.vaultItem.deleteMany({
+            where: {
+                id,
+                userId
+            }
+        })
+
+        if (count.count === 0) {
+            return { success: false, error: 'Item not found or unauthorized' }
+        }
+
+        revalidatePath('/finanzas/vault')
+        return { success: true }
+    } catch (error) {
+        console.error('Failed to delete vault item:', error)
+        return { success: false, error: 'Failed to delete item' }
+    }
+}
 
 // --- Validator / Setup Utils ---
 

@@ -37,6 +37,7 @@ model User {
   assets                 Asset[]
   portfolioSnapshots     PortfolioSnapshot[]
   vaultConfig            VaultConfig?
+  vaultSections          VaultSection[]
 
   @@schema("public")
 }

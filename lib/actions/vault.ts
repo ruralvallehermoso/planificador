@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { createVaultItemSchema, updateVaultItemSchema, setupVaultSchema } from '@/lib/schemas/vault'
 
 // Mocking auth check for server actions since we assume the client protects mostly
 // But we should verify user role. 
@@ -28,6 +29,11 @@ export async function createVaultItem(data: {
     try {
         if (!await verifyAdmin(data.userId)) {
             return { success: false, error: 'Unauthorized: Admin access required' }
+        }
+
+        const validation = createVaultItemSchema.safeParse(data)
+        if (!validation.success) {
+            return { success: false, error: 'Invalid input: ' + JSON.stringify(validation.error.format()) }
         }
 
         const item = await prisma.vaultItem.create({
@@ -83,6 +89,11 @@ export async function updateVaultItem(id: string, userId: string, data: {
     try {
         if (!await verifyAdmin(userId)) {
             return { success: false, error: 'Unauthorized: Admin access required' }
+        }
+
+        const validation = updateVaultItemSchema.safeParse(data)
+        if (!validation.success) {
+            return { success: false, error: 'Invalid input: ' + JSON.stringify(validation.error.format()) }
         }
 
         // Verify ownership
@@ -221,6 +232,11 @@ export async function setupVault(userId: string, validatorHash: string) {
     try {
         if (!await verifyAdmin(userId)) {
             return { success: false, error: 'Unauthorized: Admin access required' }
+        }
+
+        const validation = setupVaultSchema.safeParse({ validatorHash })
+        if (!validation.success) {
+            return { success: false, error: 'Invalid validator format' }
         }
 
         // Create config

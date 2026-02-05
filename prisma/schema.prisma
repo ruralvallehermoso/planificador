@@ -35,6 +35,7 @@ model User {
   tfmItems               TFMItem[]
   tfmConfig              TFMConfig?
   tfmResources           TFMResource[]
+  vaultItems             VaultItem[]
 
   @@schema("public")
 }
@@ -806,5 +807,29 @@ model RecipeFilterAssignment {
   filter    RecipeFilter @relation(fields: [filterId], references: [id], onDelete: Cascade)
   
   @@id([recipeId, filterId])
+  @@schema("public")
+}
+model VaultItem {
+  id        String   @id @default(cuid())
+  userId    String
+  
+  // Metadatos visibles (para listas rápidas sin desencriptar)
+  title     String
+  category  String   // Enum: LOGIN, CARD, NOTE, FINANCIAL, OTHER
+  
+  // SEGURIDAD: Encriptación AES-256-GCM
+  // 1. La "llave de la caja" (DEK) encriptada con la Master Key
+  encryptedDek   String  @db.Text 
+  
+  // 2. El contenido real (User, Pass, Notes) encriptado con la DEK
+  encryptedData  String  @db.Text
+  
+  // Auditoría
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
   @@schema("public")
 }

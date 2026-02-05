@@ -78,6 +78,7 @@ export async function updateVaultItem(id: string, userId: string, data: {
     title: string
     category: string
     encryptedData: string
+    sectionId?: string
 }) {
     try {
         if (!await verifyAdmin(userId)) {
@@ -100,6 +101,7 @@ export async function updateVaultItem(id: string, userId: string, data: {
                 title: data.title,
                 category: data.category,
                 encryptedData: data.encryptedData,
+                sectionId: data.sectionId
             }
         })
         revalidatePath('/finanzas/vault')

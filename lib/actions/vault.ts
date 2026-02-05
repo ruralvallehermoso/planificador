@@ -48,7 +48,6 @@ export async function getVaultItems(userId: string) {
         return { success: false, error: 'Failed to fetch items' }
     }
 }
-}
 
 export async function updateVaultItem(id: string, userId: string, data: {
     title: string

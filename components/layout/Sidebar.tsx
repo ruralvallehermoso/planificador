@@ -21,7 +21,7 @@ interface NavItem {
     icon: React.ElementType
     module?: ModuleName
     adminOnly?: boolean
-    children?: { name: string; href: string; icon: React.ElementType }[]
+    children?: { name: string; href: string; icon: React.ElementType; adminOnly?: boolean }[]
 }
 
 interface SidebarProps {

@@ -248,6 +248,20 @@ export default function VaultPage() {
 
     // --- RENDERS ---
 
+    if (session?.user?.role !== 'ADMIN') {
+        return (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4 animate-in fade-in">
+                <div className="bg-red-100 p-4 rounded-full">
+                    <Lock className="w-12 h-12 text-red-600" />
+                </div>
+                <h1 className="text-2xl font-bold text-slate-900">Acceso Restringido</h1>
+                <p className="text-slate-500 max-w-md text-center">
+                    Esta sección es exclusiva para administradores.
+                </p>
+            </div>
+        )
+    }
+
     if (!initialCheckDone) {
         return <div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-slate-400 w-8 h-8" /></div>
     }

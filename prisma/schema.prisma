@@ -22,20 +22,20 @@ model User {
   canAccessFpInformatica Boolean             @default(false)
   canAccessHogar         Boolean             @default(false)
   canAccessMasterUnie    Boolean             @default(false)
-  defaultDashboard       String?
   createdAt              DateTime            @default(now())
   updatedAt              DateTime            @updatedAt
+  defaultDashboard       String?
   accounts               Account[]
   activities             EmployeeActivity[]
   internship             Internship?
   masterTasks            MasterTask[]
   sessions               Session[]
-  assets                 Asset[]
-  portfolioSnapshots     PortfolioSnapshot[]
-  tfmItems               TFMItem[]
   tfmConfig              TFMConfig?
+  tfmItems               TFMItem[]
   tfmResources           TFMResource[]
   vaultItems             VaultItem[]
+  assets                 Asset[]
+  portfolioSnapshots     PortfolioSnapshot[]
 
   @@schema("public")
 }
@@ -121,19 +121,19 @@ model ActionItem {
 }
 
 model ClassSession {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   title       String
   description String?
   date        DateTime
   startTime   String?
   endTime     String?
-  content     String?   @db.Text
-  driveLink   String?
   categoryId  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  category    Category    @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  content     String?
+  driveLink   String?
   links       ClassLink[]
+  category    Category    @relation(fields: [categoryId], references: [id])
 
   @@schema("public")
 }
@@ -150,18 +150,18 @@ model ClassLink {
 }
 
 model Project {
-  id          String         @id @default(cuid())
-  title       String
-  description   String?        @db.Text
-  technologies  String?
-  coverImage    String?        @db.Text
-  status        String         @default("PLANNING")
-  categoryId  String
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  category    Category       @relation(fields: [categoryId], references: [id])
-  images      ProjectImage[]
-  links       ProjectLink[]
+  id           String         @id @default(cuid())
+  title        String
+  description  String?
+  status       String         @default("PLANNING")
+  categoryId   String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  technologies String?
+  coverImage   String?
+  category     Category       @relation(fields: [categoryId], references: [id])
+  images       ProjectImage[]
+  links        ProjectLink[]
 
   @@schema("public")
 }
@@ -188,48 +188,47 @@ model ProjectLink {
 }
 
 model Subject {
-  id          String       @id @default(cuid())
+  id          String            @id @default(cuid())
   name        String
   code        String?
   professor   String?
-  credits     Float        @default(6.0)
-  semester    Int          @default(1)
-  status      String       @default("ENROLLED")
+  credits     Float             @default(6.0)
+  semester    Int               @default(1)
+  status      String            @default("ENROLLED")
   finalGrade  Float?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
   categoryId  String?
-  category    Category?    @relation(fields: [categoryId], references: [id])
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
   description String?
-  notes       String?      @db.Text // Legacy, to be migrated
-  notesList   SubjectNote[]
+  notes       String?
   tasks       ActionItem[]
   assessments Assessment[]
-  topics      SubjectTopic[]
+  category    Category?         @relation(fields: [categoryId], references: [id])
+  notesList   SubjectNote[]
   practices   SubjectPractice[]
+  topics      SubjectTopic[]
 
   @@schema("public")
 }
 
 model SubjectNote {
   id        String      @id @default(cuid())
-  content   String      @db.Text
+  content   String
   date      DateTime    @default(now())
   subjectId String
-  subject   Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  images    NoteImage[]
-
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  images    NoteImage[]
+  subject   Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
   @@schema("public")
 }
 
 model NoteImage {
-  id        String      @id @default(cuid())
-  url       String      @db.Text
-  noteId    String
-  note      SubjectNote @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  id     String      @id @default(cuid())
+  url    String
+  noteId String
+  note   SubjectNote @relation(fields: [noteId], references: [id], onDelete: Cascade)
 
   @@schema("public")
 }
@@ -254,14 +253,12 @@ model SubjectPractice {
   deliveryDate       DateTime?
   statementLink      String?
   deliveryFolderLink String?
-  
-  description        String?   @db.Text
-  objectives         String?   @db.Text
-  formatting         String?   @db.Text
-
   subjectId          String
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+  description        String?
+  objectives         String?
+  formatting         String?
   subject            Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
   @@schema("public")
@@ -295,48 +292,42 @@ model EmployeeActivity {
 }
 
 model ExamTemplate {
-  id              String   @id @default(cuid())
-  name            String
-  logoUrl         String?
-  cycle           String?
-  course          String?
-  evaluation      String?
-  duration        String?
-  date            String?
-  subject         String?
-  raEvaluated     String?
-  description     String?
-  part1Percentage String?
-  part2Percentage String?
-  sections        String
-  formatting      String   @db.Text
-  manualSolution  String?  @db.Text
-  
-  // Grading Rules
-  testPointsPerQuestion Float @default(1.0)
-  testPenaltyPerError   Float @default(0.33)
-  testMaxScore          Float @default(10.0)
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  gradeReport     ExamGradeReport?
+  id                    String           @id @default(cuid())
+  name                  String
+  logoUrl               String?
+  cycle                 String?
+  course                String?
+  evaluation            String?
+  duration              String?
+  date                  String?
+  subject               String?
+  raEvaluated           String?
+  description           String?
+  part1Percentage       String?
+  part2Percentage       String?
+  sections              String
+  formatting            String
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  testPointsPerQuestion Float            @default(1.0)
+  testPenaltyPerError   Float            @default(0.33)
+  testMaxScore          Float            @default(10.0)
+  manualSolution        String?
+  gradeReport           ExamGradeReport?
 
   @@schema("public")
 }
 
 model ExamGradeReport {
-  id          String       @id @default(cuid())
-  examId      String       @unique
-  notes       String?      @db.Text
-  rawData     Json?        // Stores imported student data [{ name: "...", grade: 10 }, ...]
-  config      Json?        // Stores configuration { gradeColumn: "Nota", nameColumn: "Alumno" }
-  graphs      Json?        // Stores graph snapshots or config if needed
-  
+  id           String       @id @default(cuid())
+  examId       String       @unique
+  notes        String?
+  rawData      Json?
+  config       Json?
+  graphs       Json?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   examTemplate ExamTemplate @relation(fields: [examId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
 
   @@schema("public")
 }
@@ -402,11 +393,11 @@ model Internship {
   endDate       DateTime?
   realStartDate DateTime?
   totalHours    Int               @default(120)
-  hoursPerDay   Float             @default(5)
   schedule      String?
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
   workingDays   String            @default("1,2,3,4,5")
+  hoursPerDay   Float             @default(5)
   user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   center        InternshipCenter?
   logs          InternshipLog[]
@@ -645,32 +636,32 @@ model SesReport {
 }
 
 model Suministro {
-  id           Int      @id @default(autoincrement())
+  id           Int                 @id @default(autoincrement())
   name         String
-  type         String   // LUZ, AGUA, GAS, INTERNET, TELEFONO, OTRO
+  type         String
   website      String?
   logoUrl      String?
   contactPhone String?
   contactEmail String?
   contractRef  String?
-  notes        String?  @db.Text
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  notes        String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
   invoices     SuministroInvoice[]
 
   @@schema("casarural")
 }
 
 model SuministroInvoice {
-  id            Int         @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   suministroId  Int
   invoiceNumber String?
   date          DateTime
   amount        Decimal
   pdfUrl        String?
   notes         String?
-  createdAt     DateTime    @default(now())
-  suministro    Suministro  @relation(fields: [suministroId], references: [id], onDelete: Cascade)
+  createdAt     DateTime   @default(now())
+  suministro    Suministro @relation(fields: [suministroId], references: [id], onDelete: Cascade)
 
   @@schema("casarural")
 }
@@ -690,6 +681,105 @@ model public_Expense {
   createdAt   DateTime        @default(now())
 
   @@map("Expense")
+  @@schema("public")
+}
+
+model TFMItem {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime?
+  status      String    @default("PENDING")
+  order       Int       @default(0)
+  userId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@schema("public")
+}
+
+model TFMConfig {
+  id            String   @id @default(cuid())
+  title         String?
+  tutor         String?
+  tutorInitials String?
+  researchLine  String?
+  convocatoria  String?
+  userId        String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model TFMResource {
+  id        String   @id @default(cuid())
+  title     String
+  url       String?
+  order     Int      @default(0)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@schema("public")
+}
+
+model Recipe {
+  id          String                   @id @default(cuid())
+  name        String
+  emoji       String?
+  time        String?
+  difficulty  String?
+  servings    Int?
+  imageUrl    String?
+  recipeUrl   String?
+  youtubeUrl  String?
+  ingredients String?
+  steps       String?
+  notes       String?
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+  filters     RecipeFilterAssignment[]
+
+  @@schema("public")
+}
+
+model RecipeFilter {
+  id      String                   @id @default(cuid())
+  name    String                   @unique
+  color   String                   @default("#f97316")
+  recipes RecipeFilterAssignment[]
+
+  @@schema("public")
+}
+
+model RecipeFilterAssignment {
+  recipeId String
+  filterId String
+  filter   RecipeFilter @relation(fields: [filterId], references: [id], onDelete: Cascade)
+  recipe   Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@id([recipeId, filterId])
+  @@schema("public")
+}
+
+model VaultItem {
+  id            String   @id @default(cuid())
+  userId        String
+  title         String
+  category      String
+  encryptedDek  String
+  encryptedData String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
   @@schema("public")
 }
 
@@ -714,122 +804,5 @@ enum ExpenseCategory {
   IBI
   OTROS
 
-  @@schema("public")
-}
-
-model TFMItem {
-  id          String   @id @default(cuid())
-  title       String
-  description String?  @db.Text
-  date        DateTime?
-  status      String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
-  order       Int      @default(0)
-  
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([userId])
-  @@schema("public")
-}
-
-model TFMConfig {
-  id             String   @id @default(cuid())
-  title          String?
-  tutor          String?
-  tutorInitials  String?
-  researchLine   String?
-  convocatoria   String?
-  
-  userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  @@schema("public")
-}
-
-model TFMResource {
-  id          String   @id @default(cuid())
-  title       String
-  url         String?
-  order       Int      @default(0)
-  
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([userId])
-  @@schema("public")
-}
-
-model Recipe {
-  id          String   @id @default(cuid())
-  name        String
-  emoji       String?
-  time        String?
-  difficulty  String?
-  servings    Int?
-  imageUrl    String?
-  recipeUrl   String?
-  youtubeUrl  String?
-  ingredients String?  @db.Text
-  steps       String?  @db.Text
-  notes       String?  @db.Text
-  
-  filters     RecipeFilterAssignment[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@schema("public")
-}
-
-model RecipeFilter {
-  id      String @id @default(cuid())
-  name    String @unique
-  color   String @default("#f97316")
-  
-  recipes RecipeFilterAssignment[]
-
-  @@schema("public")
-}
-
-model RecipeFilterAssignment {
-  recipeId  String
-  filterId  String
-  recipe    Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  filter    RecipeFilter @relation(fields: [filterId], references: [id], onDelete: Cascade)
-  
-  @@id([recipeId, filterId])
-  @@schema("public")
-}
-model VaultItem {
-  id        String   @id @default(cuid())
-  userId    String
-  
-  // Metadatos visibles (para listas rápidas sin desencriptar)
-  title     String
-  category  String   // Enum: LOGIN, CARD, NOTE, FINANCIAL, OTHER
-  
-  // SEGURIDAD: Encriptación AES-256-GCM
-  // 1. La "llave de la caja" (DEK) encriptada con la Master Key
-  encryptedDek   String  @db.Text 
-  
-  // 2. El contenido real (User, Pass, Notes) encriptado con la DEK
-  encryptedData  String  @db.Text
-  
-  // Auditoría
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
   @@schema("public")
 }

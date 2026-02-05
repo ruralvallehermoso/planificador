@@ -38,6 +38,7 @@ const allNavigation: NavItem[] = [
         module: MODULES.FINANZAS,
         children: [
             { name: 'Portfolio Master', href: '/finanzas/portfolio', icon: TrendingUp },
+            { name: 'Vault (Seguridad)', href: '/finanzas/vault', icon: Shield },
             { name: 'Simulador Financiero', href: '/finanzas/simulador', icon: BarChart3 },
         ]
     },

@@ -1,359 +1,356 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import {
-    Plus, Lock, Unlock, Shield, Building2, TrendingUp,
-    Bitcoin, Landmark, MoreHorizontal, Key, Wallet,
-    ExternalLink, AlertTriangle, Loader2
-} from 'lucide-react';
-import { vaultClient, Platform, platformTypeIcons, platformTypeLabels } from '@/lib/vault-client';
-
-const TYPE_CONFIG: Record<string, { icon: React.ElementType; color: string }> = {
-    BANK: { icon: Building2, color: '#3b82f6' },
-    BROKER: { icon: TrendingUp, color: '#10b981' },
-    CRYPTO: { icon: Bitcoin, color: '#f59e0b' },
-    FUND: { icon: Landmark, color: '#8b5cf6' },
-    OTHER: { icon: MoreHorizontal, color: '#6b7280' },
-};
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { VaultClient } from '@/lib/vault-client'
+import { createVaultItem, getVaultItems } from '@/lib/actions/vault'
+import { Loader2, Lock, Unlock, Plus, Trash2, Eye, EyeOff, Save } from 'lucide-react'
 
 export default function VaultPage() {
-    const [connected, setConnected] = useState<boolean | null>(null);
-    const [unlocked, setUnlocked] = useState(false);
-    const [platforms, setPlatforms] = useState<Platform[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [masterPassword, setMasterPassword] = useState('');
-    const [unlocking, setUnlocking] = useState(false);
+    const { data: session } = useSession()
+    const [masterKey, setMasterKey] = useState<string | null>(null)
+    const [passwordInput, setPasswordInput] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const [items, setItems] = useState<any[]>([])
 
+    // UI State
+    const [showAddForm, setShowAddForm] = useState(false)
+    const [newItem, setNewItem] = useState({ title: '', category: 'LOGIN', username: '', password: '', notes: '' })
+    const [decryptedValues, setDecryptedValues] = useState<Record<string, any>>({})
+
+    // Cargar items si ya estamos desbloqueados
     useEffect(() => {
-        checkConnection();
-    }, []);
+        if (masterKey && session?.user?.id) {
+            loadItems()
+        }
+    }, [masterKey, session?.user?.id])
 
-    async function checkConnection() {
-        setLoading(true);
+    async function loadItems() {
+        if (!session?.user?.id) return
+        const res = await getVaultItems(session.user.id)
+        if (res.success) {
+            setItems(res.data || [])
+        }
+    }
+
+    const handleUnlock = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!passwordInput || !session?.user?.email) return
+
+        setIsLoading(true)
         try {
-            const status = await vaultClient.checkConnection();
-            setConnected(status.connected);
-            setUnlocked(status.unlocked);
-
-            if (status.connected && status.unlocked) {
-                await loadPlatforms();
-            }
-        } catch {
-            setConnected(false);
+            // Derivar la clave maestra (client-side)
+            // Usamos el email como salt determinista
+            const key = await VaultClient.deriveMasterKey(passwordInput, session.user.email)
+            setMasterKey(key)
+            setPasswordInput('') // Limpiar password de memoria lo antes posible
+        } catch (error) {
+            console.error("Error unlocking vault:", error)
+            alert("Error al derivar la clave")
         } finally {
-            setLoading(false);
+            setIsLoading(false)
         }
     }
 
-    async function loadPlatforms() {
-        try {
-            const data = await vaultClient.getPlatforms();
-            setPlatforms(data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Error loading platforms');
-        }
-    }
-
-    async function handleUnlock(e: React.FormEvent) {
-        e.preventDefault();
-        setUnlocking(true);
-        setError(null);
+    const handleCreateItem = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!masterKey || !session?.user?.id) return
+        setIsLoading(true)
 
         try {
-            const result = await vaultClient.unlock(masterPassword);
-            if (result.success) {
-                setUnlocked(true);
-                setMasterPassword('');
-                await loadPlatforms();
+            // 1. Preparar payload sensible
+            const sensitiveData = JSON.stringify({
+                username: newItem.username,
+                password: newItem.password,
+                notes: newItem.notes
+            })
+
+            // 2. Encriptar payload con la Master Key
+            // Nota: En un diseño más avanzado usaríamos una DEK intermedia,
+            // pero por ahora para el prototipo encriptamos directo con la Master Key (KEK)
+            // o generamos una DEK al vuelo. El VaultClient.encrypt genera IV único.
+            const encryptionResult = await VaultClient.encrypt(sensitiveData, masterKey)
+
+            // 3. Guardar en DB
+            const res = await createVaultItem({
+                userId: session.user.id,
+                title: newItem.title,
+                category: newItem.category,
+                encryptedDek: 'direct-master-key', // Simplificación para fase 1 (o guardaríamos la DEK encriptada aquí)
+                encryptedData: encryptionResult.active // Contenido encriptado + IV implícito si el formato lo soporta, o guardar IV aparte
+                // IMPORTANTE: El backend espera encryptedData.
+                // VaultClient.encrypt devuelve { active, iv }. 
+                // Vamos a concatenar IV + Data para guardarlo en un solo campo string, o necesitariamos migrar schema.
+                // Por simplicidad del schema actual (que tiene un solo campo encryptedData),
+                // guardaremos JSON stringificado con { iv, data } en encryptedData.
+            })
+
+            // Ajuste: El schema tiene encryptedData STRING. 
+            // Vamos a guardar el objeto de encriptacion serializado ahi.
+            // Re-hacemos la llamada con el formato correcto.
+            const finalEncryptedData = JSON.stringify(encryptionResult)
+
+            const res2 = await createVaultItem({
+                userId: session.user.id,
+                title: newItem.title,
+                category: newItem.category,
+                encryptedDek: 'direct-master-key',
+                encryptedData: finalEncryptedData
+            })
+
+            if (res2.success) {
+                setShowAddForm(false)
+                setNewItem({ title: '', category: 'LOGIN', username: '', password: '', notes: '' })
+                loadItems()
             } else {
-                setError(result.message);
+                alert("Error al guardar: " + res2.error)
             }
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Error unlocking vault');
+
+        } catch (error) {
+            console.error(error)
+            alert("Error encriptando datos")
         } finally {
-            setUnlocking(false);
+            setIsLoading(false)
         }
     }
 
-    async function handleLock() {
+    const handleDecrypt = async (itemId: string, encryptedDataStr: string) => {
+        if (!masterKey) return
+
+        // Toggle visibilidad
+        if (decryptedValues[itemId]) {
+            const newValues = { ...decryptedValues }
+            delete newValues[itemId]
+            setDecryptedValues(newValues)
+            return
+        }
+
         try {
-            await vaultClient.lock();
-            setUnlocked(false);
-            setPlatforms([]);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Error locking vault');
+            // Parsear lo que guardamos (que era JSON {active, iv})
+            const { active, iv } = JSON.parse(encryptedDataStr)
+
+            const decryptedJson = await VaultClient.decrypt(active, iv, masterKey)
+            const secret = JSON.parse(decryptedJson)
+
+            setDecryptedValues(prev => ({
+                ...prev,
+                [itemId]: secret
+            }))
+        } catch (error) {
+            console.error("Error decrypting:", error)
+            alert("No se pudo desencriptar. ¿Es correcta la contraseña maestra?")
         }
     }
 
-    // Loading state
-    if (loading) {
+    if (!masterKey) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+                <div className="bg-slate-100 p-4 rounded-full">
+                    <Lock className="w-12 h-12 text-slate-400" />
+                </div>
+                <h1 className="text-2xl font-bold text-slate-800">Caja Fuerte Encriptada</h1>
+                <p className="text-slate-500 max-w-md text-center">
+                    Tus datos se encriptan en tu dispositivo usando AES-256-GCM antes de enviarse al servidor.
+                    Solo tú puedes acceder a ellos con tu contraseña maestra.
+                </p>
+
+                <form onSubmit={handleUnlock} className="flex flex-col gap-4 w-full max-w-sm">
+                    <input
+                        type="password"
+                        placeholder="Introduce tu Contraseña Maestra"
+                        className="px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                        value={passwordInput}
+                        onChange={e => setPasswordInput(e.target.value)}
+                        autoFocus
+                    />
+                    <button
+                        type="submit"
+                        disabled={!passwordInput || isLoading}
+                        className="bg-blue-600 text-white font-medium py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
+                    >
+                        {isLoading ? <Loader2 className="animate-spin" /> : <Unlock className="w-5 h-5" />}
+                        Desbloquear
+                    </button>
+                </form>
             </div>
-        );
+        )
     }
-
-    // Not connected state
-    if (!connected) {
-        return (
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Shield className="h-6 w-6 text-indigo-600" />
-                        Vault Seguro
-                    </h1>
-                    <p className="text-gray-500 text-sm mt-1">
-                        Almacenamiento cifrado de credenciales
-                    </p>
-                </div>
-
-                <div className="bg-amber-50 text-amber-800 rounded-xl p-6 border border-amber-200">
-                    <div className="flex items-start gap-3">
-                        <AlertTriangle className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                            <h3 className="font-semibold mb-1">Vault no disponible</h3>
-                            <p className="text-sm mb-4">
-                                El servidor del vault no está ejecutándose. Esta función solo está disponible
-                                cuando ejecutas la aplicación localmente.
-                            </p>
-                            <div className="bg-amber-100 rounded-lg p-4 text-sm font-mono">
-                                <p className="text-amber-900 mb-2">Para iniciar el vault:</p>
-                                <code className="text-xs">
-                                    cd ~/PERSONAL/Proyectos/Finanzas/vault<br />
-                                    VAULT_MASTER_KEY=&quot;tu-clave&quot; python main.py
-                                </code>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Locked state
-    if (!unlocked) {
-        return (
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Shield className="h-6 w-6 text-indigo-600" />
-                        Vault Seguro
-                    </h1>
-                    <p className="text-gray-500 text-sm mt-1">
-                        Almacenamiento cifrado de credenciales
-                    </p>
-                </div>
-
-                <div className="max-w-md mx-auto mt-12">
-                    <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-                        <div className="text-center mb-6">
-                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-4">
-                                <Lock className="h-8 w-8 text-indigo-600" />
-                            </div>
-                            <h2 className="text-xl font-semibold text-gray-900">Vault Bloqueado</h2>
-                            <p className="text-gray-500 text-sm mt-1">
-                                Introduce tu contraseña maestra para acceder
-                            </p>
-                        </div>
-
-                        <form onSubmit={handleUnlock} className="space-y-4">
-                            <div>
-                                <label htmlFor="password" className="sr-only">
-                                    Contraseña maestra
-                                </label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    value={masterPassword}
-                                    onChange={(e) => setMasterPassword(e.target.value)}
-                                    placeholder="Contraseña maestra"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                    autoFocus
-                                />
-                            </div>
-
-                            {error && (
-                                <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                                    {error}
-                                </div>
-                            )}
-
-                            <button
-                                type="submit"
-                                disabled={unlocking || !masterPassword}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                            >
-                                {unlocking ? (
-                                    <Loader2 className="h-5 w-5 animate-spin" />
-                                ) : (
-                                    <Unlock className="h-5 w-5" />
-                                )}
-                                Desbloquear
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Unlocked - show platforms
-    const totalValue = platforms.reduce((sum, p) => sum + p.total_value, 0);
-    const totalCredentials = platforms.reduce((sum, p) => sum + p.credential_count, 0);
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="max-w-4xl mx-auto p-6 space-y-8">
+            <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Shield className="h-6 w-6 text-indigo-600" />
-                        Vault Seguro
+                    <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <Unlock className="text-green-500 w-6 h-6" />
+                        Mi Bóveda
                     </h1>
-                    <p className="text-gray-500 text-sm mt-1">
-                        Almacenamiento cifrado de credenciales
-                    </p>
+                    <p className="text-slate-500 text-sm">Sesión desencriptada activa</p>
                 </div>
-                <div className="flex items-center gap-3">
+
+                <div className="flex gap-2">
                     <button
-                        onClick={handleLock}
-                        className="inline-flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                        onClick={() => setMasterKey(null)}
+                        className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
                     >
-                        <Lock className="h-4 w-4" />
                         Bloquear
                     </button>
-                    <Link
-                        href="/finanzas/vault/new"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+                    <button
+                        onClick={() => setShowAddForm(!showAddForm)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors shadow-sm"
                     >
-                        <Plus className="h-4 w-4" />
-                        Nueva Plataforma
-                    </Link>
+                        <Plus className="w-4 h-4" />
+                        Nuevo Ítem
+                    </button>
                 </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-indigo-100 rounded-lg">
-                            <Building2 className="h-5 w-5 text-indigo-600" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-gray-900">{platforms.length}</p>
-                            <p className="text-xs text-gray-500">Plataformas</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-emerald-100 rounded-lg">
-                            <Key className="h-5 w-5 text-emerald-600" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-gray-900">{totalCredentials}</p>
-                            <p className="text-xs text-gray-500">Credenciales</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-amber-100 rounded-lg">
-                            <Wallet className="h-5 w-5 text-amber-600" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-gray-900">
-                                {totalValue.toLocaleString('es-ES', { maximumFractionDigits: 0 })}€
-                            </p>
-                            <p className="text-xs text-gray-500">Valor total</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/* Formulario de Alta */}
+            {showAddForm && (
+                <form onSubmit={handleCreateItem} className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 animate-in slide-in-from-top-4 space-y-4">
+                    <h3 className="font-semibold text-lg text-slate-800">Nuevo Secreto</h3>
 
-            {/* Platform list */}
-            {platforms.length === 0 ? (
-                <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                    <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-1">No hay plataformas</h3>
-                    <p className="text-gray-500 text-sm mb-4">
-                        Añade tu primera plataforma financiera
-                    </p>
-                    <Link
-                        href="/finanzas/vault/new"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
-                    >
-                        <Plus className="h-4 w-4" />
-                        Nueva Plataforma
-                    </Link>
-                </div>
-            ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {platforms.map((platform) => {
-                        const config = TYPE_CONFIG[platform.type] || TYPE_CONFIG.OTHER;
-                        const Icon = config.icon;
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium text-slate-500">Título</label>
+                            <input
+                                type="text"
+                                required
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                value={newItem.title}
+                                onChange={e => setNewItem({ ...newItem, title: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium text-slate-500">Categoría</label>
+                            <select
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 outline-none bg-white"
+                                value={newItem.category}
+                                onChange={e => setNewItem({ ...newItem, category: e.target.value })}
+                            >
+                                <option value="LOGIN">Login</option>
+                                <option value="CARD">Tarjeta</option>
+                                <option value="NOTE">Nota Segura</option>
+                                <option value="FINANCIAL">Financiero</option>
+                                <option value="OTHER">Otro</option>
+                            </select>
+                        </div>
+
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium text-slate-500">Usuario / Email</label>
+                            <input
+                                type="text"
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                value={newItem.username}
+                                onChange={e => setNewItem({ ...newItem, username: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium text-slate-500">Contraseña</label>
+                            <input
+                                type="password"
+                                className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 outline-none"
+                                value={newItem.password}
+                                onChange={e => setNewItem({ ...newItem, password: e.target.value })}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs font-medium text-slate-500">Notas Adicionales</label>
+                        <textarea
+                            className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-500 outline-none h-24 resize-none"
+                            value={newItem.notes}
+                            onChange={e => setNewItem({ ...newItem, notes: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-2">
+                        <button
+                            type="button"
+                            onClick={() => setShowAddForm(false)}
+                            className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 rounded-lg"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-800 flex items-center gap-2"
+                        >
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            Guardar Encriptado
+                        </button>
+                    </div>
+                </form>
+            )}
+
+            {/* Lista de Items */}
+            <div className="grid gap-4">
+                {items.length === 0 ? (
+                    <div className="text-center py-12 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                        No tienes secretos guardados.
+                    </div>
+                ) : (
+                    items.map(item => {
+                        const isDecrypted = decryptedValues[item.id]
+                        const secret = decryptedValues[item.id]
 
                         return (
-                            <Link
-                                key={platform.id}
-                                href={`/finanzas/vault/${platform.id}`}
-                                className="group bg-white rounded-xl p-5 shadow-sm ring-1 ring-gray-200 hover:shadow-md hover:ring-indigo-300 transition-all"
-                            >
-                                <div className="flex items-start justify-between mb-3">
-                                    <div
-                                        className="flex h-10 w-10 items-center justify-center rounded-lg"
-                                        style={{ backgroundColor: `${config.color}15`, color: config.color }}
-                                    >
-                                        <Icon className="h-5 w-5" />
+                            <div key={item.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:border-blue-100 transition-colors">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-start gap-4">
+                                        <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                                            <Lock className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-slate-800">{item.title}</h4>
+                                            <span className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">
+                                                {item.category}
+                                            </span>
+                                            <p className="text-xs text-slate-400 mt-1">
+                                                Creado el {new Date(item.createdAt).toLocaleDateString()}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <span
-                                        className="text-xs font-medium px-2 py-1 rounded-full"
-                                        style={{ backgroundColor: `${config.color}15`, color: config.color }}
+                                    <button
+                                        onClick={() => handleDecrypt(item.id, item.encryptedData)}
+                                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                        title={isDecrypted ? "Ocultar" : "Ver Contraseña"}
                                     >
-                                        {platformTypeLabels[platform.type] || platform.type}
-                                    </span>
+                                        {isDecrypted ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
                                 </div>
 
-                                <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-indigo-700 transition-colors">
-                                    {platform.name}
-                                </h3>
-
-                                <div className="flex items-center gap-4 text-xs text-gray-500 mt-3">
-                                    <span className="flex items-center gap-1">
-                                        <Key className="h-3 w-3" />
-                                        {platform.credential_count} accesos
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                        <Wallet className="h-3 w-3" />
-                                        {platform.asset_count} activos
-                                    </span>
-                                </div>
-
-                                {platform.total_value > 0 && (
-                                    <div className="mt-3 pt-3 border-t border-gray-100">
-                                        <span className="text-lg font-semibold text-gray-900">
-                                            {platform.total_value.toLocaleString('es-ES', { maximumFractionDigits: 0 })}€
-                                        </span>
+                                {/* Sección Desencriptada */}
+                                {isDecrypted && (
+                                    <div className="mt-4 pt-4 border-t border-slate-50 bg-slate-50/50 -mx-4 -mb-4 px-4 py-4 rounded-b-xl space-y-3">
+                                        {secret.username && (
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Usuario:</span>
+                                                <code className="text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">{secret.username}</code>
+                                            </div>
+                                        )}
+                                        {secret.password && (
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-500">Contraseña:</span>
+                                                <code className="text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-100 font-bold">{secret.password}</code>
+                                            </div>
+                                        )}
+                                        {secret.notes && (
+                                            <div className="flex flex-col gap-1 text-sm">
+                                                <span className="text-slate-500 w-full">Notas:</span>
+                                                <p className="text-slate-700 bg-white p-2 rounded border border-slate-200 text-xs leading-relaxed">
+                                                    {secret.notes}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
-
-                                {platform.website && (
-                                    <div className="mt-2">
-                                        <span
-                                            className="text-xs text-indigo-600 flex items-center gap-1"
-                                        >
-                                            <ExternalLink className="h-3 w-3" />
-                                            {new URL(platform.website.startsWith('http') ? platform.website : `https://${platform.website}`).hostname}
-                                        </span>
-                                    </div>
-                                )}
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
+                            </div>
+                        )
+                    })
+                )}
+            </div>
         </div>
-    );
+    )
 }

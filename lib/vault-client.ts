@@ -1,212 +1,120 @@
-/**
- * Vault API Client
- * Connects to the local vault API running on localhost:5001
- */
+import { argon2id } from 'hash-wasm';
 
-const VAULT_API_URL = 'http://localhost:5001';
+export class VaultClient {
+    private static readonly SALT_LENGTH = 16;
+    private static readonly IV_LENGTH = 12; // AES-GCM standard
+    private static readonly KEY_LENGTH = 32; // AES-256
 
-export interface Platform {
-    id: string;
-    name: string;
-    type: 'BANK' | 'BROKER' | 'CRYPTO' | 'FUND' | 'OTHER';
-    website?: string;
-    logo_url?: string;
-    notes?: string;
-    is_active: boolean;
-    created_at: string;
-    updated_at: string;
-    credential_count: number;
-    asset_count: number;
-    total_value: number;
-}
+    // Configuración Argon2id recomendada por OWASP
+    private static readonly ARGON_CONFIG = {
+        parallelism: 1,
+        memorySize: 64 * 1024, // 64 MB
+        iterations: 3,
+        hashLength: 32, // 256 bits
+        outputType: 'encoded' as const,
+    };
 
-export interface Credential {
-    id: string;
-    platform_id: string;
-    label: string;
-    username?: string;
-    password?: string;
-    pin?: string;
-    extra?: string;
-    notes?: string;
-    last_updated: string;
-    created_at: string;
-}
+    /**
+     * Genera una clave maestra a partir del password del usuario usando Argon2id
+     */
+    static async deriveMasterKey(password: string, email: string): Promise<string> {
+        // Usamos el email como "pepper" o contexto adicional, 
+        // pero el salt real debe ser aleatorio y guardado (para el login) 
+        // o determinista si no guardamos nada (para el vault).
+        // Para el Vault, necesitamos regenerar la MISMA clave siempre.
+        // Usaremos un salt determinista basado en el email para poder regenerar la clave.
+        // NOTA: En un sistema ideal, el salt se guarda en DB, pero aquí simplificamos 
+        // para no depender de DB para derivar la clave antes de desencriptar la DB.
 
-export interface PlatformAsset {
-    id: string;
-    platform_id: string;
-    name: string;
-    asset_type?: string;
-    current_value?: number;
-    currency: string;
-    finanzas_asset_id?: string;
-    account_number?: string;
-    notes?: string;
-    last_updated: string;
-    created_at: string;
-}
+        // Salt determinista de 16 bytes a partir del email
+        const salt = new TextEncoder().encode(email.padEnd(16, '0').slice(0, 16));
 
-export interface PlatformDetail extends Platform {
-    credentials: Credential[];
-    assets: PlatformAsset[];
-}
+        const key = await argon2id({
+            password,
+            salt,
+            parallelism: 1,
+            memorySize: 64 * 1024,
+            iterations: 3,
+            hashLength: 32,
+            outputType: 'hex',
+        });
 
-export interface VaultHealth {
-    status: string;
-    vault_path: string;
-    is_unlocked: boolean;
-    is_setup: boolean;
-    platform_count: number;
-}
-
-class VaultClient {
-    private baseUrl: string;
-
-    constructor(baseUrl: string = VAULT_API_URL) {
-        this.baseUrl = baseUrl;
+        return key;
     }
 
-    private async fetch<T>(path: string, options?: RequestInit): Promise<T> {
-        const response = await fetch(`${this.baseUrl}${path}`, {
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options?.headers,
+    /**
+     * Encripta datos usando AES-256-GCM
+     */
+    static async encrypt(data: string, keyHex: string): Promise<{ active: string, iv: string }> {
+        const key = await this.importKey(keyHex);
+        // Generamos un IV aleatorio para cada encriptación
+        const iv = crypto.getRandomValues(new Uint8Array(this.IV_LENGTH));
+        const encodedData = new TextEncoder().encode(data);
+
+        const encryptedContent = await crypto.subtle.encrypt(
+            {
+                name: 'AES-GCM',
+                iv: iv,
             },
-        });
+            key,
+            encodedData
+        );
 
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-            throw new Error(error.detail || `HTTP ${response.status}`);
-        }
-
-        return response.json();
+        return {
+            active: this.arrayBufferToHex(encryptedContent),
+            iv: this.arrayBufferToHex(iv.buffer as ArrayBuffer)
+        };
     }
 
     /**
-     * Check if vault is available and unlocked
+     * Desencripta datos usando AES-256-GCM
      */
-    async checkConnection(): Promise<{ connected: boolean; unlocked: boolean }> {
+    static async decrypt(encryptedHex: string, ivHex: string, keyHex: string): Promise<string> {
         try {
-            const health = await this.fetch<VaultHealth>('/health');
-            return { connected: true, unlocked: health.is_unlocked };
-        } catch {
-            return { connected: false, unlocked: false };
+            const key = await this.importKey(keyHex);
+            const iv = this.hexToArrayBuffer(ivHex);
+            const encryptedData = this.hexToArrayBuffer(encryptedHex);
+
+            const decryptedContent = await crypto.subtle.decrypt(
+                {
+                    name: 'AES-GCM',
+                    iv: iv,
+                },
+                key,
+                encryptedData
+            );
+
+            return new TextDecoder().decode(decryptedContent);
+        } catch (e) {
+            console.error("Decryption failed", e);
+            throw new Error("Failed to decrypt data. Invalid key or corrupted data.");
         }
     }
 
-    /**
-     * Get vault health status
-     */
-    async getHealth(): Promise<VaultHealth> {
-        return this.fetch<VaultHealth>('/health');
+    // --- Helpers ---
+
+    private static async importKey(keyHex: string): Promise<CryptoKey> {
+        const keyBuffer = this.hexToArrayBuffer(keyHex);
+        return await crypto.subtle.importKey(
+            'raw',
+            keyBuffer,
+            'AES-GCM',
+            false, // no exportable
+            ['encrypt', 'decrypt']
+        );
     }
 
-    /**
-     * Unlock the vault with master password
-     */
-    async unlock(masterPassword: string): Promise<{ success: boolean; message: string }> {
-        return this.fetch('/unlock', {
-            method: 'POST',
-            body: JSON.stringify({ master_password: masterPassword }),
-        });
+    private static arrayBufferToHex(buffer: ArrayBuffer): string {
+        return Array.from(new Uint8Array(buffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
     }
 
-    /**
-     * Lock the vault
-     */
-    async lock(): Promise<{ success: boolean; message: string }> {
-        return this.fetch('/lock', { method: 'POST' });
-    }
-
-    // ============= Platforms =============
-
-    async getPlatforms(type?: string): Promise<Platform[]> {
-        const params = type ? `?type=${type}` : '';
-        return this.fetch<Platform[]>(`/platforms${params}`);
-    }
-
-    async getPlatform(id: string, showSecrets = false): Promise<PlatformDetail> {
-        return this.fetch<PlatformDetail>(`/platforms/${id}?show_secrets=${showSecrets}`);
-    }
-
-    async createPlatform(data: Partial<Platform>): Promise<Platform> {
-        return this.fetch<Platform>('/platforms', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
-    }
-
-    async updatePlatform(id: string, data: Partial<Platform>): Promise<Platform> {
-        return this.fetch<Platform>(`/platforms/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(data),
-        });
-    }
-
-    async deletePlatform(id: string): Promise<void> {
-        await this.fetch(`/platforms/${id}`, { method: 'DELETE' });
-    }
-
-    // ============= Credentials =============
-
-    async createCredential(platformId: string, data: Partial<Credential>): Promise<Credential> {
-        return this.fetch<Credential>(`/platforms/${platformId}/credentials`, {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
-    }
-
-    async updateCredential(credentialId: string, data: Partial<Credential>): Promise<Credential> {
-        return this.fetch<Credential>(`/credentials/${credentialId}`, {
-            method: 'PUT',
-            body: JSON.stringify(data),
-        });
-    }
-
-    async deleteCredential(credentialId: string): Promise<void> {
-        await this.fetch(`/credentials/${credentialId}`, { method: 'DELETE' });
-    }
-
-    // ============= Assets =============
-
-    async createAsset(platformId: string, data: Partial<PlatformAsset>): Promise<PlatformAsset> {
-        return this.fetch<PlatformAsset>(`/platforms/${platformId}/assets`, {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
-    }
-
-    async updateAsset(assetId: string, data: Partial<PlatformAsset>): Promise<PlatformAsset> {
-        return this.fetch<PlatformAsset>(`/assets/${assetId}`, {
-            method: 'PUT',
-            body: JSON.stringify(data),
-        });
-    }
-
-    async deleteAsset(assetId: string): Promise<void> {
-        await this.fetch(`/assets/${assetId}`, { method: 'DELETE' });
+    private static hexToArrayBuffer(hex: string): ArrayBuffer {
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+            bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+        }
+        return bytes.buffer;
     }
 }
-
-// Singleton instance
-export const vaultClient = new VaultClient();
-
-// Helper for platform type icons
-export const platformTypeIcons: Record<string, string> = {
-    BANK: '🏦',
-    BROKER: '📈',
-    CRYPTO: '₿',
-    FUND: '💰',
-    OTHER: '🔐',
-};
-
-// Helper for platform type labels
-export const platformTypeLabels: Record<string, string> = {
-    BANK: 'Banco',
-    BROKER: 'Broker',
-    CRYPTO: 'Crypto',
-    FUND: 'Fondo',
-    OTHER: 'Otro',
-};

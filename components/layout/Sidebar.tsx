@@ -39,6 +39,7 @@ const allNavigation: NavItem[] = [
         children: [
             { name: 'Portfolio Master', href: '/finanzas/portfolio', icon: TrendingUp },
             { name: 'Simulador Financiero', href: '/finanzas/simulador', icon: BarChart3 },
+            { name: 'Vault Seguro', href: '/finanzas/vault', icon: Shield },
         ]
     },
     {

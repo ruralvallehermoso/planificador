@@ -552,6 +552,7 @@ model Income {
   nights        Int         @default(1)
   invoiceNumber String?     @unique
   invoiceDate   DateTime?
+  source        String? // Directa, Booking, Airbnb, Vrbo
   createdAt     DateTime    @default(now())
   Guest         Guest[]
   SesReport     SesReport[]

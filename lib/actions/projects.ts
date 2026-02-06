@@ -16,7 +16,14 @@ export async function getProjects(categoryId: string) {
     })
 }
 
+import { auth } from "@/auth"
+
 export async function createProject(formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') {
+        return { success: false, error: "Unauthorized" }
+    }
+
     const title = formData.get('title') as string
     const description = formData.get('description') as string
     const categorySlug = formData.get('categorySlug') as string
@@ -48,6 +55,10 @@ export async function createProject(formData: FormData) {
 }
 
 export async function updateProject(projectId: string, formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') {
+        return { success: false, error: "Unauthorized" }
+    }
     const title = formData.get('title') as string
     const description = formData.get('description') as string
     const categorySlug = formData.get('categorySlug') as string
@@ -74,6 +85,10 @@ export async function updateProject(projectId: string, formData: FormData) {
 }
 
 export async function deleteProject(projectId: string, categorySlug: string) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') {
+        return { success: false, error: "Unauthorized" }
+    }
     try {
         // Find project to get images and delete from disk if necessary
         const project = await prisma.project.findUnique({

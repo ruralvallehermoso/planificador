@@ -15,7 +15,13 @@ const classSchema = z.object({
     categoryId: z.string(),
 })
 
+import { auth } from "@/auth"
+
 export async function createClass(formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') { // Or specific permission 'canAccessFpInformatica'
+        return { error: "Unauthorized" }
+    }
     const rawData = {
         title: formData.get('title'),
         description: formData.get('description'),
@@ -109,6 +115,10 @@ export async function updateClass(id: string, formData: FormData) {
 
 
 export async function deleteClass(id: string) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') {
+        return { error: "Unauthorized" }
+    }
     try {
         await prisma.classSession.delete({
             where: { id }

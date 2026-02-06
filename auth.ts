@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
-import bcrypt from 'bcryptjs'
+import { verifyPassword, hashPassword } from './lib/auth/password'
 import { prisma } from './lib/prisma'
 import { authConfig } from './auth.config'
 import type { Adapter } from 'next-auth/adapters'
@@ -29,14 +29,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     where: { email: credentials.email as string },
                 })
 
-                if (!user || !user.passwordHash) {
-                    return null
-                }
-
-                import { verifyPassword, hashPassword } from './lib/auth/password'
-                // ... imports
-
-                // ... inside authorize
                 if (!user || !user.passwordHash) {
                     return null
                 }

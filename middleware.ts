@@ -34,14 +34,7 @@ export default auth((req) => {
             })
         }
 
-        // Skip auth for api/tasks
-        if (path.startsWith('/api/tasks')) {
-            const response = NextResponse.next()
-            response.headers.set('Access-Control-Allow-Origin', origin || '*')
-            response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
-            response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
-            return response
-        }
+        // Bypass removed for /api/tasks to enforce authentication
     }
 
     // Skip auth check for login and API routes (auth) and webhooks

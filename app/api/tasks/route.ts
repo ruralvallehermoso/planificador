@@ -1,9 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
 
 // GET /api/tasks?category=hogar - Get all tasks for a category
 export async function GET(request: NextRequest) {
     try {
+        const session = await auth();
+        if (!session?.user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const searchParams = request.nextUrl.searchParams;
         const categorySlug = searchParams.get('category');
 
@@ -37,6 +43,10 @@ export async function GET(request: NextRequest) {
 // POST /api/tasks - Create a new task
 export async function POST(request: NextRequest) {
     try {
+        const session = await auth();
+        if (!session?.user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
         const body = await request.json();
         const { title, description, priority, categorySlug, dueDate, status } = body;
 

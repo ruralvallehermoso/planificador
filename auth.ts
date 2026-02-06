@@ -33,13 +33,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     return null
                 }
 
-                const isValidPassword = await bcrypt.compare(
+                import { verifyPassword, hashPassword } from './lib/auth/password'
+                // ... imports
+
+                // ... inside authorize
+                if (!user || !user.passwordHash) {
+                    return null
+                }
+
+                const isValidPassword = await verifyPassword(
                     credentials.password as string,
                     user.passwordHash
                 )
 
                 if (!isValidPassword) {
                     return null
+                }
+
+                // Auto-migrate legacy bcrypt hashes to Argon2id
+                if (user.passwordHash.startsWith('$2')) {
+                    console.log(`[AUTH] Migrating user ${user.email} from Bcrypt to Argon2id...`)
+                    const newHash = await hashPassword(credentials.password as string)
+                    await prisma.user.update({
+                        where: { id: user.id },
+                        data: { passwordHash: newHash }
+                    })
+                    console.log(`[AUTH] Migration successful for ${user.email}`)
                 }
 
                 return {

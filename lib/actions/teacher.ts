@@ -20,7 +20,13 @@ export async function getClassSessions(start: Date, end: Date) {
     }
 }
 
+import { auth } from "@/auth"
+
 export async function createClassSession(data: { title: string, date: Date, categoryId: string }) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') {
+        return { success: false, error: "Unauthorized" }
+    }
     try {
         const session = await prisma.classSession.create({
             data: {
@@ -37,6 +43,10 @@ export async function createClassSession(data: { title: string, date: Date, cate
 }
 
 export async function updateClassSessionDate(sessionId: string, newDate: Date) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') {
+        return { success: false, error: "Unauthorized" }
+    }
     try {
         const session = await prisma.classSession.update({
             where: { id: sessionId },

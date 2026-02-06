@@ -50,7 +50,13 @@ export type ExamTemplateData = {
     manualSolution?: string
 }
 
+import { auth } from "@/auth"
+
 export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') {
+        return { success: false, error: "Unauthorized" }
+    }
     try {
         const { name, header, sections, formatting } = data
 
@@ -108,6 +114,10 @@ export async function getExamTemplates() {
 }
 
 export async function deleteTemplate(id: string) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') {
+        return { success: false, error: "Unauthorized" }
+    }
     try {
         await prisma.examTemplate.delete({ where: { id } })
         revalidatePath("/fp-informatica/exams/create")
@@ -118,6 +128,10 @@ export async function deleteTemplate(id: string) {
 }
 
 export async function generateExamSolution(data: ExamTemplateData) {
+    const session = await auth()
+    if (session?.user?.role !== 'ADMIN') {
+        return { success: false, error: "Unauthorized" }
+    }
     try {
         const { GoogleGenerativeAI } = await import("@google/generative-ai");
         const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;

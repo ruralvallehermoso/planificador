@@ -485,7 +485,18 @@ model BusinessConfig {
   city       String?
   postalCode String?
   logo       String?
-  updatedAt  DateTime
+  updatedAt      DateTime @updatedAt
+  expenseVatRate Decimal  @default(21)
+  bookingCommission Decimal @default(15.0)
+  bookingFee        Decimal @default(1.3)
+  commissionVat     Decimal @default(21.0)
+  airbnbCommission  Decimal @default(3.0)
+
+  // Amortización Inmueble
+  propertyPurchaseValue   Decimal @default(0)
+  propertyCadastralValue  Decimal @default(0)
+  propertyConstructionValue Decimal @default(0)
+  acquisitionDate         DateTime?
 
   @@schema("casarural")
 }

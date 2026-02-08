@@ -1,8 +1,8 @@
 const nextConfig: NextConfig = {
   // Use basePath for standard microfrontend routing
   basePath: '/apps/hogar',
-  // Enable trailing slashes for consistent path matching on Vercel
-  trailingSlash: true,
+  // Disable trailing slashes to avoid redirect loops with rewrites
+  trailingSlash: false,
   async headers() {
     return [
       {

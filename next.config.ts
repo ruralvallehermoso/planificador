@@ -47,8 +47,8 @@ const nextConfig: NextConfig = {
     if (hogarUrl) {
       rewrites.push({
         source: '/apps/hogar/:path*',
-        // Ensure trailing slashes match the microfrontend config
-        destination: `${hogarUrl}/apps/hogar/:path*/`,
+        // Rewrite to microfrontend basePath without trailing slash
+        destination: `${hogarUrl}/apps/hogar/:path*`,
       });
     }
 

@@ -2,54 +2,93 @@
 
 import { prisma } from "@/lib/prisma";
 
+// Helper to separate Base and VAT
+function calculateBase(amount: number, hasIva: boolean, rate: number = 0.21) {
+    if (!hasIva) return amount;
+    return amount / (1 + rate);
+}
+
 export async function getCasaRuralYearlyBalance() {
     try {
         const now = new Date();
         const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth(); // 0-11
-
-        // Calculate end of current month for filtering
-        const endOfCurrentMonth = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59);
         const startOfYear = new Date(currentYear, 0, 1);
+        const endOfYear = new Date(currentYear, 11, 31, 23, 59, 59);
 
-        // 1. Income Year-To-Date (up to end of current month)
-        const incomeResult = await prisma.$queryRawUnsafe<any[]>(
-            `SELECT SUM(amount)::float as total FROM casarural."Income" WHERE date >= $1 AND date <= $2`,
-            startOfYear, endOfCurrentMonth
-        );
+        // Fetch Incomes
+        const incomes = await prisma.income.findMany({
+            where: {
+                date: {
+                    gte: startOfYear,
+                    lte: endOfYear
+                }
+            }
+        });
 
-        // 2. Monthly Expenses Year-To-Date (up to end of current month)
-        const monthlyExpenseResult = await prisma.$queryRawUnsafe<any[]>(
-            `SELECT SUM(amount)::float as total FROM casarural."Expense" 
-       WHERE type = 'MONTHLY' AND date >= $1 AND date <= $2`,
-            startOfYear, endOfCurrentMonth
-        );
+        // Fetch Expenses (Monthly + Maintenance)
+        const monthlyExpenses = await prisma.expense.findMany({
+            where: {
+                date: {
+                    gte: startOfYear,
+                    lte: endOfYear
+                },
+                type: { in: ['MONTHLY', 'MAINTENANCE', 'IMPROVEMENT'] }
+            }
+        });
 
-        // 3. Annual Expenses (Amortized portion)
-        // We take all annual expenses applicable to this year and prorate them by elapsed months
-        const annualExpensesResult = await prisma.$queryRawUnsafe<any[]>(
-            `SELECT SUM(amount)::float as total FROM casarural."Expense" 
-       WHERE type = 'ANNUAL' AND "applicableYear" = $1`,
-            currentYear
-        );
+        // Fetch Annual Expenses
+        const annualExpenses = await prisma.expense.findMany({
+            where: {
+                type: 'ANNUAL',
+                applicableYear: currentYear
+            }
+        });
 
-        const totalIncome = incomeResult[0]?.total || 0;
-        const totalMonthlyExpenses = monthlyExpenseResult[0]?.total || 0;
-        const totalAnnualExpenses = annualExpensesResult[0]?.total || 0;
+        // --- CALCULATE NET (FISCAL) METRICS ---
+        // 1. Net Income (Base Imponible)
+        // Assuming 10% VAT for incomes as per business rule
+        const INCOME_VAT_RATE = 0.10;
+        const totalNetIncome = incomes.reduce((acc, curr) => {
+            const amount = Number(curr.amount);
+            const base = curr.hasIva ? amount / (1 + INCOME_VAT_RATE) : amount;
+            return acc + base;
+        }, 0);
 
-        // Amortization logic: (Total Annual / 12) * months elapsed so far (including current)
+        // 2. Net Expenses (Base Imponible)
+        // Assuming 21% VAT for general expenses
+        const EXPENSE_VAT_RATE = 0.21;
+
+        // Monthly + Maintenance Net
+        const totalNetMonthlyExpenses = monthlyExpenses.reduce((acc, curr) => {
+            const amount = Number(curr.amount);
+            const base = curr.hasIva ? amount / (1 + EXPENSE_VAT_RATE) : amount;
+            return acc + base;
+        }, 0);
+
+        // Annual Net (Amortized)
+        // Logic: Calculate total annual net, then prorate by active months
+        const totalNetAnnualExpenses = annualExpenses.reduce((acc, curr) => {
+            const amount = Number(curr.amount);
+            const base = curr.hasIva ? amount / (1 + EXPENSE_VAT_RATE) : amount;
+            return acc + base;
+        }, 0);
+
+        // Proration Logic (Simple for now: if current year, prorate by month. If past, 100%)
+        // Actually, the main app uses a config date. Here we'll use a simple approximation for the dashboard card:
+        // If current year -> prorate by months elapsed. 
+        const currentMonth = now.getMonth(); // 0-11
         const monthsElapsed = currentMonth + 1;
-        const amortizedAnnualPortion = (totalAnnualExpenses / 12) * monthsElapsed;
+        const amortizedAnnualNet = (totalNetAnnualExpenses / 12) * monthsElapsed;
 
-        const totalExpenses = totalMonthlyExpenses + amortizedAnnualPortion;
-        const balance = totalIncome - totalExpenses;
+        const totalNetExpenses = totalNetMonthlyExpenses + amortizedAnnualNet;
+        const netBalance = totalNetIncome - totalNetExpenses;
 
         return {
             year: currentYear,
-            income: totalIncome,
-            expenses: totalExpenses,
-            balance: balance,
-            isHealthy: balance >= 0,
+            income: totalNetIncome,
+            expenses: totalNetExpenses,
+            balance: netBalance,
+            isHealthy: netBalance >= 0,
             success: true
         };
     } catch (error) {

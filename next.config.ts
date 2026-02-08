@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
     }
 
     // Hogar
-    const hogarUrl = process.env.NEXT_PUBLIC_HOGAR_URL || (isDev ? 'http://localhost:3003' : '');
+    const hogarUrl = process.env.NEXT_PUBLIC_HOGAR_URL || (isDev ? 'http://localhost:3003' : 'https://hogar-web.vercel.app');
     if (hogarUrl) {
       rewrites.push({
         source: '/apps/hogar/:path*',
@@ -64,7 +64,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'DENY',
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',

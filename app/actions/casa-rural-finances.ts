@@ -25,16 +25,18 @@ export async function getCasaRuralYearlyBalance() {
             }
         });
 
-        // Fetch Expenses (Monthly + Maintenance)
+        // Fetch Expenses (Monthly + Maintenance) - EXCLUDE IMPROVEMENT
         const monthlyExpenses = await prisma.expense.findMany({
             where: {
                 date: {
                     gte: startOfYear,
                     lte: endOfYear
                 },
-                type: { in: ['MONTHLY', 'MAINTENANCE', 'IMPROVEMENT'] }
+                type: 'MONTHLY' // Only monthly recurring expenses, matching Casa Rural default view which excludes Maintenance/Improvements
             }
         });
+
+
 
         // Fetch Annual Expenses
         const annualExpenses = await prisma.expense.findMany({
@@ -73,11 +75,13 @@ export async function getCasaRuralYearlyBalance() {
             return acc + base;
         }, 0);
 
-        // Proration Logic (Simple for now: if current year, prorate by month. If past, 100%)
-        // Actually, the main app uses a config date. Here we'll use a simple approximation for the dashboard card:
-        // If current year -> prorate by months elapsed. 
+
+
+        // Proration Logic
         const currentMonth = now.getMonth(); // 0-11
         const monthsElapsed = currentMonth + 1;
+
+        // Annual expenses are prorated by months elapsed in the current year
         const amortizedAnnualNet = (totalNetAnnualExpenses / 12) * monthsElapsed;
 
         const totalNetExpenses = totalNetMonthlyExpenses + amortizedAnnualNet;

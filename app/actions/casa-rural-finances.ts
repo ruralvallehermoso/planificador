@@ -50,8 +50,7 @@ export async function getCasaRuralYearlyBalance() {
         const INCOME_VAT_RATE = 0.10;
         const totalNetIncome = incomes.reduce((acc, curr) => {
             const amount = Number(curr.amount);
-            const hasIva = (curr as any).hasIva;
-            const base = hasIva ? amount / (1 + INCOME_VAT_RATE) : amount;
+            const base = curr.hasIva ? amount / (1 + INCOME_VAT_RATE) : amount;
             return acc + base;
         }, 0);
 
@@ -62,8 +61,7 @@ export async function getCasaRuralYearlyBalance() {
         // Monthly + Maintenance Net
         const totalNetMonthlyExpenses = monthlyExpenses.reduce((acc, curr) => {
             const amount = Number(curr.amount);
-            const hasIva = (curr as any).hasIva;
-            const base = hasIva ? amount / (1 + EXPENSE_VAT_RATE) : amount;
+            const base = curr.hasIva ? amount / (1 + EXPENSE_VAT_RATE) : amount;
             return acc + base;
         }, 0);
 
@@ -71,8 +69,7 @@ export async function getCasaRuralYearlyBalance() {
         // Logic: Calculate total annual net, then prorate by active months
         const totalNetAnnualExpenses = annualExpenses.reduce((acc, curr) => {
             const amount = Number(curr.amount);
-            const hasIva = (curr as any).hasIva;
-            const base = hasIva ? amount / (1 + EXPENSE_VAT_RATE) : amount;
+            const base = curr.hasIva ? amount / (1 + EXPENSE_VAT_RATE) : amount;
             return acc + base;
         }, 0);
 

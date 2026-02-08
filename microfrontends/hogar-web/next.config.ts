@@ -3,15 +3,21 @@ import type { NextConfig } from "next";
 const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig: NextConfig = {
-  // Usamos basePath para que la app espere ser servida bajo /apps/hogar
-  // Esto arregla tanto el routing como la carga de assets
-  basePath: isProd ? '/apps/hogar' : undefined,
+  // Enforce paths to always be /apps/hogar
+  basePath: '/apps/hogar',
   async headers() {
     return [
       {
         source: "/_next/:path*",
         headers: [
           { key: "Access-Control-Allow-Origin", value: "*" },
+        ],
+      },
+      {
+        source: "/api/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Credentials", value: "true" },
         ],
       },
     ];

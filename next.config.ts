@@ -50,6 +50,10 @@ const nextConfig: NextConfig = {
         source: '/:path*',
         headers: [
           {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow, noarchive, nosnippet, noimageindex',
+          },
+          {
             key: 'X-Frame-Options',
             value: 'DENY',
           },
@@ -59,11 +63,15 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
+            value: 'no-referrer',
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
+            value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
           }
         ],
       },

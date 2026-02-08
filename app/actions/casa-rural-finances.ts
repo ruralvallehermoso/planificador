@@ -61,7 +61,8 @@ export async function getCasaRuralYearlyBalance() {
         // Monthly + Maintenance Net
         const totalNetMonthlyExpenses = monthlyExpenses.reduce((acc, curr) => {
             const amount = Number(curr.amount);
-            const base = curr.hasIva ? amount / (1 + EXPENSE_VAT_RATE) : amount;
+            const hasIva = (curr as any).hasIva;
+            const base = hasIva ? amount / (1 + EXPENSE_VAT_RATE) : amount;
             return acc + base;
         }, 0);
 

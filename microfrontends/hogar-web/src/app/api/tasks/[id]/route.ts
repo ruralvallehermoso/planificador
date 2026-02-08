@@ -14,10 +14,13 @@ export async function PATCH(
         const url = `${PLANIFICADOR_URL}/api/tasks/${id}`;
         console.log(`Proxying PATCH to: ${url}`);
 
+        const cookie = request.headers.get('cookie') || '';
+
         const res = await fetch(url, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
+                'Cookie': cookie
             },
             body: JSON.stringify(body)
         });
@@ -53,10 +56,13 @@ export async function DELETE(
         const url = `${PLANIFICADOR_URL}/api/tasks/${id}`;
         console.log(`Proxying DELETE to: ${url}`);
 
+        const cookie = request.headers.get('cookie') || '';
+
         const res = await fetch(url, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'Cookie': cookie
             },
         });
 

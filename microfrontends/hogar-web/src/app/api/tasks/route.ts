@@ -11,9 +11,12 @@ export async function GET(request: NextRequest) {
         const url = `${PLANIFICADOR_URL}/api/tasks${queryString ? `?${queryString}` : ''}`;
         console.log(`Proxying GET to: ${url}`);
 
+        const cookie = request.headers.get('cookie') || '';
+
         const res = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',
+                'Cookie': cookie
             },
             cache: 'no-store'
         });
@@ -47,10 +50,13 @@ export async function POST(request: NextRequest) {
         const url = `${PLANIFICADOR_URL}/api/tasks`;
         console.log(`Proxying POST to: ${url}`);
 
+        const cookie = request.headers.get('cookie') || '';
+
         const res = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Cookie': cookie
             },
             body: JSON.stringify(body)
         });

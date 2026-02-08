@@ -1,8 +1,7 @@
 const nextConfig: NextConfig = {
-  // Use basePath for standard microfrontend routing
-  basePath: '/apps/hogar',
-  // Disable trailing slashes to avoid redirect loops with rewrites
-  trailingSlash: false,
+  // We remove basePath to simplify routing and avoid rewrite conflicts
+  // We use assetPrefix to ensure styles load correctly through the main app proxy
+  assetPrefix: '/apps/hogar',
   async headers() {
     return [
       {

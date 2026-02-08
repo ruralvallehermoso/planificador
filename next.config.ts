@@ -46,9 +46,12 @@ const nextConfig: NextConfig = {
     const hogarUrl = process.env.NEXT_PUBLIC_HOGAR_URL || (isDev ? 'http://localhost:3003' : 'https://hogar-web.vercel.app');
     if (hogarUrl) {
       rewrites.push({
+        source: '/apps/hogar/_next/:path*',
+        destination: `${hogarUrl}/_next/:path*`,
+      });
+      rewrites.push({
         source: '/apps/hogar/:path*',
-        // Rewrite to microfrontend basePath without trailing slash
-        destination: `${hogarUrl}/apps/hogar/:path*`,
+        destination: `${hogarUrl}/:path*`,
       });
     }
 

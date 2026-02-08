@@ -1,26 +1,23 @@
-import type { NextConfig } from "next";
-
-const isProd = process.env.NODE_ENV === 'production';
-
 const nextConfig: NextConfig = {
-  // basePath removed to allow rewrite stripping
-  // Explicitly set assetPrefix to match the Main App rewrite path for assets
-  assetPrefix: '/apps/hogar',
-  // Use trailing slashes to avoid redirection loops/issues in rewrites
-  trailingSlash: true,
+  // Use basePath for standard microfrontend routing
+  basePath: '/apps/hogar',
+  // Disable trailing slashes to keep URLs clean and avoid extra redirects
+  trailingSlash: false,
   async headers() {
     return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          // Explicitly allow framing from same origin and the main planificador domain
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self' https://planificador-chi.vercel.app http://localhost:3000" },
+        ],
+      },
       {
         source: "/_next/:path*",
         headers: [
           { key: "Access-Control-Allow-Origin", value: "*" },
-        ],
-      },
-      {
-        source: "/api/:path*",
-        headers: [
-          { key: "Access-Control-Allow-Origin", value: "*" },
-          { key: "Access-Control-Allow-Credentials", value: "true" },
         ],
       },
     ];

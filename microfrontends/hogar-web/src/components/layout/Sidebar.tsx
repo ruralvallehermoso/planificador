@@ -11,11 +11,11 @@ interface SidebarProps {
 }
 
 const NAVIGATION = [
-    { name: 'Inicio', href: '/apps/hogar', icon: Home },
-    { name: 'Tareas', href: '/apps/hogar/tareas', icon: Target },
-    { name: 'Comidas', href: '/apps/hogar/comidas', icon: Utensils },
-    { name: 'Calendario', href: '/apps/hogar/calendario', icon: Calendar },
-    { name: 'Lista Compra', href: '/apps/hogar/lista-compra', icon: Package },
+    { name: 'Inicio', href: '/', icon: Home },
+    { name: 'Tareas', href: '/tareas', icon: Target },
+    { name: 'Comidas', href: '/comidas', icon: Utensils },
+    { name: 'Calendario', href: '/calendario', icon: Calendar },
+    { name: 'Lista Compra', href: '/lista-compra', icon: Package },
 ];
 
 export function Sidebar({ isMobileOpen = false, onMobileClose }: SidebarProps) {

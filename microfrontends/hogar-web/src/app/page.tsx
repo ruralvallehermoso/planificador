@@ -19,7 +19,7 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Tareas Card */}
-        <Link href="/apps/hogar/tareas" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+        <Link href="/tareas" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
           <div className="flex items-start justify-between mb-4">
             <div className="p-3 bg-indigo-50 rounded-xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
               <CheckCircle2 className="w-6 h-6" />
@@ -33,7 +33,7 @@ export default function Home() {
         </Link>
 
         {/* Comidas Card */}
-        <Link href="/apps/hogar/comidas" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+        <Link href="/comidas" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
           <div className="flex items-start justify-between mb-4">
             <div className="p-3 bg-orange-50 rounded-xl text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
               <Utensils className="w-6 h-6" />
@@ -44,7 +44,7 @@ export default function Home() {
         </Link>
 
         {/* Calendario Card */}
-        <Link href="/apps/hogar/calendario" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+        <Link href="/calendario" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
           <div className="flex items-start justify-between mb-4">
             <div className="p-3 bg-pink-50 rounded-xl text-pink-600 group-hover:bg-pink-600 group-hover:text-white transition-colors">
               <CalendarIcon className="w-6 h-6" />
@@ -55,7 +55,7 @@ export default function Home() {
         </Link>
 
         {/* Lista Compra Card */}
-        <Link href="/apps/hogar/lista-compra" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+        <Link href="/lista-compra" className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
           <div className="flex items-start justify-between mb-4">
             <div className="p-3 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
               <Package className="w-6 h-6" />

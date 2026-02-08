@@ -25,7 +25,7 @@ export default function HogarTareasPage() {
 
     return (
         <MicrofrontendFrame
-            src={`${hogarConfig.url}/tareas`}
+            src={`${hogarConfig.url}/tareas/`}
             title="Hogar - Tareas"
             fallbackMessage="La aplicación de Hogar no está disponible."
         />

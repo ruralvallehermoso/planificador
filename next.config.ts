@@ -47,7 +47,8 @@ const nextConfig: NextConfig = {
     if (hogarUrl) {
       rewrites.push({
         source: '/apps/hogar/:path*',
-        destination: `${hogarUrl}/:path*`,
+        // Al usar basePath en el microfrontend, la URL destino debe incluir ese base path
+        destination: `${hogarUrl}${isDev ? '' : '/apps/hogar'}/:path*`,
       });
     }
 

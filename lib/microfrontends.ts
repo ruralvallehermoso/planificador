@@ -58,7 +58,8 @@ export const microfrontends: Record<string, MicrofrontendConfig> = {
         id: 'hogar',
         name: 'Hogar',
         description: 'Organización familiar y tareas',
-        url: process.env.NEXT_PUBLIC_HOGAR_URL || (process.env.NODE_ENV === 'production' ? 'https://hogar-web.vercel.app' : 'http://localhost:3003'),
+        // Use rewrite path /apps/hogar to ensure cookies are shared (same-origin)
+        url: '/apps/hogar',
         icon: 'LayoutGrid',
         color: '#8B5CF6',
         get available() { return this.url !== ''; },

@@ -42,6 +42,15 @@ const nextConfig: NextConfig = {
       });
     }
 
+    // Hogar
+    const hogarUrl = process.env.NEXT_PUBLIC_HOGAR_URL || (isDev ? 'http://localhost:3003' : '');
+    if (hogarUrl) {
+      rewrites.push({
+        source: '/apps/hogar/:path*',
+        destination: `${hogarUrl}/:path*`,
+      });
+    }
+
     return rewrites;
   },
   async headers() {

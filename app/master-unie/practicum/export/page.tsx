@@ -39,7 +39,7 @@ export default async function ExportPage() {
             <div className="mb-8 p-4 bg-slate-50 rounded-lg border text-sm">
                 <div className="flex justify-between items-center">
                     <div>
-                        <span className="font-semibold">Periodo:</span> {internship.realStartDate ? new Date(internship.realStartDate).toLocaleDateString() : '-'} a {internship.endDate ? new Date(internship.endDate).toLocaleDateString() : '-'}
+                        <span className="font-semibold">Periodo:</span> {internship.realStartDate ? new Date(internship.realStartDate).toLocaleDateString('es-ES') : '-'} a {internship.endDate ? new Date(internship.endDate).toLocaleDateString('es-ES') : '-'}
                     </div>
                     <div>
                         <span className="font-semibold">Total Horas Registradas:</span> {internship.logs.reduce((acc, log) => acc + log.hours, 0)} h
@@ -61,7 +61,7 @@ export default async function ExportPage() {
                     {internship.logs.map((log) => (
                         <tr key={log.id}>
                             <td className="px-4 py-3 border whitespace-nowrap">
-                                {new Date(log.date).toLocaleDateString()}
+                                {new Date(log.date).toLocaleDateString('es-ES')}
                             </td>
                             <td className="px-4 py-3 border text-center font-medium">
                                 {log.hours}

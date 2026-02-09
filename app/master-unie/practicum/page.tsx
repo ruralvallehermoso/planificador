@@ -64,7 +64,7 @@ export default async function PracticumPage() {
                                 </div>
                                 {internship.startDate && internship.endDate && (
                                     <div className="mt-2 text-xs text-slate-400">
-                                        Periodo: {new Date(internship.startDate).toLocaleDateString()} - {new Date(internship.endDate).toLocaleDateString()}
+                                        Periodo: {new Date(internship.startDate).toLocaleDateString('es-ES')} - {new Date(internship.endDate).toLocaleDateString('es-ES')}
                                     </div>
                                 )}
                             </>
@@ -137,7 +137,7 @@ export default async function PracticumPage() {
                             internship.logs.map((log) => (
                                 <tr key={log.id} className="hover:bg-slate-50">
                                     <td className="px-4 py-3 border whitespace-nowrap text-sm text-slate-600">
-                                        {new Date(log.date).toLocaleDateString()}
+                                        {new Date(log.date).toLocaleDateString('es-ES')}
                                     </td>
                                     <td className="px-4 py-3 border text-center font-medium text-slate-900">
                                         {log.hours}

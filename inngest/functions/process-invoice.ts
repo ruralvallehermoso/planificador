@@ -103,6 +103,7 @@ export const processInvoice = inngest.createFunction(
             // Upload PDF to Vercel Blob
             let uploadedPdfUrl = null;
             if (finalPdfBase64) {
+                console.log(`[Inngest] Starting Vercel Blob upload. PDF Base64 length: ${finalPdfBase64.length}`);
                 try {
                     const { put } = await import('@vercel/blob');
                     const buffer = Buffer.from(finalPdfBase64, 'base64');
@@ -129,9 +130,12 @@ export const processInvoice = inngest.createFunction(
                     uploadedPdfUrl = blob.url;
                     console.log(`[Inngest] PDF Uploaded successfully: ${uploadedPdfUrl}`);
                 } catch (uploadError) {
-                    console.error('[Inngest] Failed to upload PDF to Blob:', uploadError);
+                    console.error('[Inngest] CRITICAL ERROR: Failed to upload PDF to Blob:', uploadError);
+                    console.log('[Inngest] Checking BLOB_READ_WRITE_TOKEN:', !!process.env.BLOB_READ_WRITE_TOKEN);
                     // We continue even if upload fails, but log it
                 }
+            } else {
+                console.warn('[Inngest] WARNING: finalPdfBase64 is null or empty. Skipping Blob upload.');
             }
 
             // Create Expense in Prisma (mapped to casarural schema)

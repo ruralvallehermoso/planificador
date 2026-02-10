@@ -74,7 +74,7 @@ export function TaxAlert() {
                             El plazo finaliza el {deadlineDate?.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}.
                         </p>
                         <p className="mt-2">
-                            Recuerda revisar y descargar tus facturas en la sección de <Link href="/casa-rural/contabilidad/fiscality" className="font-bold underline hover:text-amber-900">Fiscalidad</Link>.
+                            Recuerda revisar y descargar tus facturas en la sección de <Link href="/casa-rural/contabilidad/facturas" className="font-bold underline hover:text-amber-900">Gestión Facturas</Link>.
                         </p>
                     </div>
                 </div>

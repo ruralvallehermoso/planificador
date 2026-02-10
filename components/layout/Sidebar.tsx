@@ -84,6 +84,7 @@ const allNavigation: NavItem[] = [
             { name: 'Empleados', href: '/casa-rural/contabilidad/employees', icon: Users },
             { name: 'SES Hospedajes', href: '/casa-rural/ses-hospedajes', icon: ClipboardList },
             { name: 'Fiscalidad', href: '/casa-rural/contabilidad/fiscality', icon: PiggyBank },
+            { name: 'Gestión Facturas', href: '/casa-rural/contabilidad/facturas', icon: FileText },
             { name: 'Suministros', href: '/casa-rural/suministros', icon: Zap },
             { name: 'Configuración', href: '/casa-rural/contabilidad/config', icon: Settings },
             { name: 'Tareas', href: '/casa-rural/tareas', icon: ClipboardList },

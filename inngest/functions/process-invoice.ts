@@ -47,8 +47,8 @@ export const processInvoice = inngest.createFunction(
             - total: Importe total (number)
             - base: Base imponible (number)
             - iva: Cuota IVA (number)
-            - category: Categoría del gasto (TEXTO LIBRE, ej: "Suministros", "Mantenimiento", "Impuestos", etc.)
-            - type: "MONTHLY" (gastos recurrentes como luz, agua) o "ANNUAL" (seguros, IBI, basuras). Por defecto MONTHLY.
+            - category: Categoría del gasto (TEXTO LIBRE, ej: "Suministros", "Mantenimiento", "Impuestos", "Otros")
+            - type: "MONTHLY" (gastos recurrentes como luz, agua, internet, basuras) o "ANNUAL" (seguros, IBI, grandes reparaciones). Por defecto MONTHLY.
 
             Responde con este JSON estricto:
             {
@@ -57,6 +57,7 @@ export const processInvoice = inngest.createFunction(
                 "total": number,
                 "base": number,
                 "iva": number,
+                "hasIva": boolean,
                 "category": string,
                 "type": "MONTHLY" | "ANNUAL"
             }
@@ -97,15 +98,19 @@ export const processInvoice = inngest.createFunction(
             // Construct Description
             const description = `${data.provider} (Base: ${data.base}€, IVA: ${data.iva}€)`;
 
+            // Logic for hasIva: if Gemini says so or if iva > 0
+            const hasIva = data.hasIva || (data.iva > 0);
+
             // Create Expense in Prisma (mapped to casarural schema)
             const expense = await prisma.expense.create({
                 data: {
                     date: new Date(data.date),
                     amount: new Prisma.Decimal(data.total),
                     type: data.type || "MONTHLY",
-                    category: data.category || "OTROS",
+                    category: data.category?.toUpperCase() || "OTROS",
                     description: description,
                     applicableYear: new Date(data.date).getFullYear(),
+                    hasIva: hasIva,
                 }
             });
 

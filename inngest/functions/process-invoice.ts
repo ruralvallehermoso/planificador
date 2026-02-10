@@ -86,7 +86,6 @@ export const processInvoice = inngest.createFunction(
             }
         });
 
-        // 3. Validate and Save to Database
         const savedExpense = await step.run("save-to-database", async () => {
             let data;
             try {
@@ -101,6 +100,40 @@ export const processInvoice = inngest.createFunction(
             // Logic for hasIva: if Gemini says so or if iva > 0
             const hasIva = data.hasIva || (data.iva > 0);
 
+            // Upload PDF to Vercel Blob
+            let uploadedPdfUrl = null;
+            if (finalPdfBase64) {
+                try {
+                    const { put } = await import('@vercel/blob');
+                    const buffer = Buffer.from(finalPdfBase64, 'base64');
+
+                    // Logic for Quarter folder (YYYT)
+                    // We use data.date if valid, otherwise fallback to now
+                    const invoiceDate = new Date(data.date);
+                    const year = invoiceDate.getFullYear();
+                    const month = invoiceDate.getMonth() + 1; // 1-12
+                    const quarter = Math.ceil(month / 3);
+                    const folderName = `${year}-${quarter}T`;
+
+                    // Clean filename or use random
+                    const cleanFileName = fileName ? fileName.replace(/[^a-zA-Z0-9.-]/g, '_') : `invoice_${Date.now()}.pdf`;
+                    const blobPath = `Facturas/${folderName}/${cleanFileName}`;
+
+                    console.log(`[Inngest] Uploading PDF to Vercel Blob: ${blobPath}`);
+
+                    const blob = await put(blobPath, buffer, {
+                        access: 'public',
+                        addRandomSuffix: false // We control the path
+                    });
+
+                    uploadedPdfUrl = blob.url;
+                    console.log(`[Inngest] PDF Uploaded successfully: ${uploadedPdfUrl}`);
+                } catch (uploadError) {
+                    console.error('[Inngest] Failed to upload PDF to Blob:', uploadError);
+                    // We continue even if upload fails, but log it
+                }
+            }
+
             // Create Expense in Prisma (mapped to casarural schema)
             const expense = await prisma.expense.create({
                 data: {
@@ -111,6 +144,7 @@ export const processInvoice = inngest.createFunction(
                     description: description,
                     applicableYear: new Date(data.date).getFullYear(),
                     hasIva: hasIva,
+                    pdfUrl: uploadedPdfUrl,
                 }
             });
 

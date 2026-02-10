@@ -39,11 +39,13 @@ export default function InvoicesPage() {
 
             // Download each PDF and add to ZIP
             const promises = invoices.map(async (inv: any) => {
-                if (!inv.pdfUrl) return;
+                // Usamos el proxy seguro en lugar de la URL directa
+                // Esto evita exponer la URL pública de Vercel Blob
+                const secureUrl = `/api/invoices/${inv.id}`;
 
                 try {
-                    const response = await fetch(inv.pdfUrl);
-                    if (!response.ok) throw new Error(`Failed to fetch ${inv.pdfUrl}`);
+                    const response = await fetch(secureUrl);
+                    if (!response.ok) throw new Error(`Failed to fetch invoice ${inv.id}: ${response.statusText}`);
                     const blob = await response.blob();
 
                     // Clean filename: YYYY-MM-DD_Provider.pdf

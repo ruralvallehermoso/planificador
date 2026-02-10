@@ -1,10 +1,15 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { del } from '@vercel/blob';
+import { revalidatePath } from 'next/cache';
+import { auth } from '@/auth';
+import { canAccessModule } from '@/lib/auth/permissions';
+import { MODULES } from '@/lib/auth/config';
 
 export type QuarterlyInvoice = {
     id: number;
-    date: Date;
+    date: Date; // Keep as Date object
     pdfUrl: string | null;
     provider: string | null; // Usamos descripción si no hay provider explícito, o supplierName
     amount: number;
@@ -79,10 +84,13 @@ export async function getFiscalityData(): Promise<FiscalYearData[]> {
             const quarters = Object.keys(quartersObj)
                 .map(Number)
                 .sort((a, b) => b - a) // Trimestres más recientes primero
-                .map(quarter => ({
-                    quarter,
-                    invoices: quartersObj[quarter]
-                }));
+                .map(quarter => {
+                    const invoices = quartersObj[quarter];
+                    return {
+                        quarter,
+                        invoices: invoices
+                    };
+                });
 
             return {
                 year,
@@ -91,4 +99,38 @@ export async function getFiscalityData(): Promise<FiscalYearData[]> {
         });
 
     return result;
+}
+
+export async function deleteInvoicePdf(expenseId: number) {
+    const session = await auth();
+    if (!session?.user || !canAccessModule(session.user, MODULES.CASA_RURAL)) {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        const expense = await prisma.expense.findUnique({
+            where: { id: expenseId },
+            select: { pdfUrl: true }
+        });
+
+        if (!expense || !expense.pdfUrl) {
+            return { success: false, error: 'PDF not found' };
+        }
+
+        // 1. Delete from Vercel Blob
+        await del(expense.pdfUrl);
+
+        // 2. Update database
+        await prisma.expense.update({
+            where: { id: expenseId },
+            data: { pdfUrl: null }
+        });
+
+        revalidatePath('/casa-rural/contabilidad/facturas');
+        return { success: true };
+
+    } catch (error) {
+        console.error('Error deleting invoice PDF:', error);
+        return { success: false, error: 'Failed to delete PDF' };
+    }
 }

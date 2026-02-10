@@ -47,7 +47,7 @@ export const processInvoice = inngest.createFunction(
             - total: Importe total (number)
             - base: Base imponible (number)
             - iva: Cuota IVA (number)
-            - category: Categoría del gasto (TEXTO LIBRE, ej: "Suministros", "Mantenimiento", "Impuestos", "Otros")
+            - category: Categoría del gasto. DEBE SER UNA DE LAS SIGUIENTES (ESTRICTO): "LUZ", "AGUA", "GAS", "INTERNET", "TELEFONO", "MANTENIMIENTO", "IMPUESTOS", "SEGUROS", "GESTION", "COMISIONES", "LIMPIEZA", "OTROS".
             - type: "MONTHLY" (gastos recurrentes como luz, agua, internet, basuras) o "ANNUAL" (seguros, IBI, grandes reparaciones). Por defecto MONTHLY.
 
             Responde con este JSON estricto:
@@ -58,7 +58,7 @@ export const processInvoice = inngest.createFunction(
                 "base": number,
                 "iva": number,
                 "hasIva": boolean,
-                "category": string,
+                "category": "LUZ" | "AGUA" | "GAS" | "INTERNET" | "TELEFONO" | "MANTENIMIENTO" | "IMPUESTOS" | "SEGUROS" | "GESTION" | "COMISIONES" | "LIMPIEZA" | "OTROS",
                 "type": "MONTHLY" | "ANNUAL"
             }
             `;

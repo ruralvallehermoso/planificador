@@ -1,17 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, FileText, Loader2, Trash2 } from 'lucide-react';
+import { Download, FileText, Loader2 } from 'lucide-react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { getFiscalityData, deleteExpense, type FiscalYearData } from '@/app/actions/fiscality';
+import { getFiscalityData, type FiscalYearData } from '@/app/actions/fiscality';
 import { toast } from 'sonner';
 
 export default function InvoicesPage() {
     const [data, setData] = useState<FiscalYearData[]>([]);
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState<string | null>(null);
-    const [deleting, setDeleting] = useState<number | null>(null);
 
     useEffect(() => {
         loadData();
@@ -25,29 +24,6 @@ export default function InvoicesPage() {
             console.error('Error loading fiscality data:', error);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleDeleteExpense = async (expenseId: number) => {
-        if (!confirm('¿ATENCIÓN: Estás a punto de borrar este gasto de la contabilidad y su factura PDF. Esta acción no se puede deshacer. ¿Continuar?')) {
-            return;
-        }
-
-        setDeleting(expenseId);
-        try {
-            const result = await deleteExpense(expenseId);
-            if (result.success) {
-                toast.success('Gasto eliminado correctamente');
-                // Recargar datos para actualizar la vista
-                loadData();
-            } else {
-                toast.error('Error al eliminar gasto: ' + result.error);
-            }
-        } catch (error) {
-            console.error('Error deleting expense:', error);
-            toast.error('Error inesperado al eliminar gasto');
-        } finally {
-            setDeleting(null);
         }
     };
 
@@ -157,18 +133,6 @@ export default function InvoicesPage() {
                                                                     <span className="font-medium">
                                                                         {inv.amount.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })}
                                                                     </span>
-                                                                    <button
-                                                                        onClick={() => handleDeleteExpense(inv.id)}
-                                                                        disabled={deleting === inv.id}
-                                                                        className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                                                                        title="Eliminar Gasto y PDF (Irreversible)"
-                                                                    >
-                                                                        {deleting === inv.id ? (
-                                                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                                                        ) : (
-                                                                            <Trash2 className="w-3 h-3" />
-                                                                        )}
-                                                                    </button>
                                                                 </div>
                                                             </div>
                                                         ))}

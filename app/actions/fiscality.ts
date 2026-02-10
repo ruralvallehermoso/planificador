@@ -101,41 +101,4 @@ export async function getFiscalityData(): Promise<FiscalYearData[]> {
     return result;
 }
 
-export async function deleteExpense(expenseId: number) {
-    const session = await auth();
-    if (!session?.user || !canAccessModule(session.user, MODULES.CASA_RURAL)) {
-        return { success: false, error: 'Unauthorized' };
-    }
 
-    try {
-        const expense = await prisma.expense.findUnique({
-            where: { id: expenseId },
-            select: { pdfUrl: true }
-        });
-
-        if (!expense) {
-            return { success: false, error: 'Expense not found' };
-        }
-
-        // 1. Delete from Vercel Blob (if exists)
-        if (expense.pdfUrl) {
-            try {
-                await del(expense.pdfUrl);
-            } catch (err) {
-                console.error('Error deleting blob (continuing with expense deletion):', err);
-            }
-        }
-
-        // 2. Delete Expense from DB
-        await prisma.expense.delete({
-            where: { id: expenseId }
-        });
-
-        revalidatePath('/casa-rural/contabilidad/facturas');
-        return { success: true };
-
-    } catch (error) {
-        console.error('Error deleting expense:', error);
-        return { success: false, error: 'Failed to delete expense' };
-    }
-}

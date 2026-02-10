@@ -1,7 +1,41 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { del } from '@vercel/blob';
+import { list, del } from '@vercel/blob';
+
+export async function getOrphanedBlobs() {
+    const session = await auth();
+    if (!session?.user || !canAccessModule(session.user, MODULES.CASA_RURAL)) {
+        return [];
+    }
+
+    try {
+        // 1. Get all blobs
+        const { blobs } = await list();
+
+        // 2. Get all expense PDF URLs
+        const expenses = await prisma.expense.findMany({
+            where: { pdfUrl: { not: null } },
+            select: { pdfUrl: true }
+        });
+
+        const validUrls = new Set(expenses.map(e => e.pdfUrl));
+
+        // 3. Filter orphans
+        const orphans = blobs.filter(blob => !validUrls.has(blob.url));
+
+        return orphans.map(blob => ({
+            url: blob.url,
+            pathname: blob.pathname,
+            size: blob.size,
+            uploadedAt: blob.uploadedAt
+        }));
+
+    } catch (error) {
+        console.error('Error fetching orphaned blobs:', error);
+        return [];
+    }
+}
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { canAccessModule } from '@/lib/auth/permissions';
@@ -99,6 +133,22 @@ export async function getFiscalityData(): Promise<FiscalYearData[]> {
         });
 
     return result;
+}
+
+export async function deleteOrphanedBlob(url: string) {
+    const session = await auth();
+    if (!session?.user || !canAccessModule(session.user, MODULES.CASA_RURAL)) {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        await del(url);
+        revalidatePath('/casa-rural/contabilidad/facturas');
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting orphaned blob:', error);
+        return { success: false, error: 'Failed to delete blob' };
+    }
 }
 
 

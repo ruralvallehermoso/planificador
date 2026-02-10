@@ -1,16 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, FileText, Loader2 } from 'lucide-react';
+import { Download, FileText, Loader2, Trash2 } from 'lucide-react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { getFiscalityData, type FiscalYearData } from '@/app/actions/fiscality';
+import { getFiscalityData, getOrphanedBlobs, deleteOrphanedBlob, type FiscalYearData } from '@/app/actions/fiscality';
 import { toast } from 'sonner';
 
 export default function InvoicesPage() {
     const [data, setData] = useState<FiscalYearData[]>([]);
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState<string | null>(null);
+    const [orphans, setOrphans] = useState<any[]>([]);
 
     useEffect(() => {
         loadData();
@@ -18,12 +19,34 @@ export default function InvoicesPage() {
 
     const loadData = async () => {
         try {
-            const result = await getFiscalityData();
-            setData(result);
+            const [fiscalData, orphanedBlobs] = await Promise.all([
+                getFiscalityData(),
+                getOrphanedBlobs()
+            ]);
+            setData(fiscalData);
+            setOrphans(orphanedBlobs || []);
         } catch (error) {
-            console.error('Error loading fiscality data:', error);
+            console.error('Error loading data:', error);
+            toast.error('Error cargando datos');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteOrphan = async (url: string) => {
+        if (!confirm('¿Seguro que quieres eliminar este archivo huérfano? Esta acción es irreversible.')) return;
+
+        try {
+            const res = await deleteOrphanedBlob(url);
+            if (res.success) {
+                toast.success('Archivo eliminado');
+                setOrphans(prev => prev.filter(o => o.url !== url));
+            } else {
+                toast.error('Error al eliminar');
+            }
+        } catch (error) {
+            console.error('Error deleting orphan:', error);
+            toast.error('Error eliminando archivo');
         }
     };
 

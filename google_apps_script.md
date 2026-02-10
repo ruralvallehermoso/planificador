@@ -9,7 +9,7 @@
 
 const PUBLIC_KEY = "PON_AQUI_TU_PUBLIC_KEY"; 
 const SECRET_KEY = "PON_AQUI_TU_SECRET_KEY"; 
-const CLOUDMAILIN_ADDRESS = "f7360bbf8c3dab326297@cloudmailin.net";
+const _ADDRESS = "f7360bbf8c3dab326297@.net";
 const LABEL_NAME = "Invoices";
 const PROCESSED_LABEL = "Invoices/Processed";
 
@@ -56,7 +56,7 @@ function processInbox() {
     // OPCIÓN A: Procesar SOLO el último mensaje del hilo (evita duplicados en conversaciones)
     const message = messages[messages.length - 1]; 
     
-    if (message.isInTrash()) continue;
+    // if (message.isInTrash()) continue; // Comentado para asegurar que se procesa aunque haya borradores
     
     const attachments = message.getAttachments();
     for (const attachment of attachments) {
@@ -74,8 +74,24 @@ function processInbox() {
       }
     }
     
-    thread.removeLabel(label);
-    thread.addLabel(processedLabel);
+    // --- FINALIZAR PROCESAMIENTO DEL HILO ---
+    // Re-obtenemos el hilo para evitar problemas de sincronización tras operaciones largas
+    try {
+      const freshThread = GmailApp.getThreadById(thread.getId());
+      
+      Logger.log("Intentando mover hilo (ID: " + freshThread.getId() + ") a Processed...");
+      
+      freshThread.removeLabel(label);
+      freshThread.addLabel(processedLabel);
+      
+      // Opcional: Archivar para limpiar inbox
+      // freshThread.moveToArchive();
+      
+      Logger.log("✅ Hilo movido y etiqueta 'Invoices' eliminada.");
+      
+    } catch (e) {
+      Logger.log("❌ ERROR CRÍTICO al mover etiquetas: " + e.toString());
+    }
   }
 }
 
@@ -154,10 +170,26 @@ function compressPdf(fileBlob, token) {
 
 function sendToCloudMailin(blob, filename, msg) {
   Logger.log("   Enviando email a CloudMailin...");
+  
+  // Enviamos el correo (esto crea un mensaje en Sent)
   GmailApp.sendEmail(CLOUDMAILIN_ADDRESS, "Fwd: " + msg.getSubject(), "Compressed Invoice", {
     attachments: [blob],
     name: "Automator"
   });
+  
+  // TRUCO: Buscar el mensaje enviado para borrarlo/archivarlo y que no moleste
+  // Esperamos un momento para asegurar que Gmail lo ha indexado
+  Utilities.sleep(2000); 
+  const sentThreads = GmailApp.search("to:" + CLOUDMAILIN_ADDRESS + " subject:\"Fwd: " + msg.getSubject() + "\"", 0, 1);
+  
+  if (sentThreads.length > 0) {
+     Logger.log("   Eliminando copia del correo enviado a CloudMailin...");
+     // Opción A: Mover a la papelera (recomendado para que no salga en búsquedas)
+     sentThreads[0].moveToTrash();
+     
+     // Opción B: Archivar (sigue saliendo si buscas)
+     // sentThreads[0].moveToArchive();
+  }
 }
 
 function getAuthToken() {

@@ -9,6 +9,8 @@ import { CasaRuralFinancialCard } from "@/components/dashboard/CasaRuralFinancia
 import { PortfolioCard } from "@/components/dashboard/PortfolioCard";
 import { SimulatorCard } from "@/components/dashboard/SimulatorCard";
 
+import { TaxAlert } from "@/components/dashboard/TaxAlert";
+
 // Map category slugs to module names and icons
 const MODULES_CONFIG: Record<string, { module: ModuleName; icon: any; color: string; tasksPath: string }> = {
   'casa-rural': { module: MODULES.CASA_RURAL, icon: HomeIcon, color: '#10b981', tasksPath: '/casa-rural/contabilidad' },
@@ -92,6 +94,9 @@ export default async function Home() {
 
   return (
     <div className="space-y-8">
+      {/* Alert Section */}
+      <TaxAlert />
+
       {/* Header with summary */}
       <div className="flex items-center justify-between">
         <div>

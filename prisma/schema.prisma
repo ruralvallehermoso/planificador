@@ -33,11 +33,11 @@ model User {
   tfmConfig              TFMConfig?
   tfmItems               TFMItem[]
   tfmResources           TFMResource[]
+  vaultConfig            VaultConfig?
   vaultItems             VaultItem[]
+  vaultSections          VaultSection[]
   assets                 Asset[]
   portfolioSnapshots     PortfolioSnapshot[]
-  vaultConfig            VaultConfig?
-  vaultSections          VaultSection[]
 
   @@schema("public")
 }
@@ -468,36 +468,39 @@ model Expense {
   category       String
   description    String?
   applicableYear Int?
-  hasIva         Boolean  @default(false)
-  pdfUrl         String?
   createdAt      DateTime @default(now())
+  hasIva         Boolean  @default(false)
+  invoiceNumber  String?
+  supplierName   String?
+  supplierNif    String?
+  incomeId       Int?
+  pdfUrl         String?
+  Income         Income?  @relation(fields: [incomeId], references: [id])
 
   @@schema("casarural")
 }
 
 model BusinessConfig {
-  id         Int      @id @default(autoincrement())
-  name       String
-  nif        String
-  address    String
-  phone      String
-  email      String
-  vatRate    Decimal  @default(10)
-  city       String?
-  postalCode String?
-  logo       String?
-  updatedAt      DateTime @updatedAt
-  expenseVatRate Decimal  @default(21)
-  bookingCommission Decimal @default(15.0)
-  bookingFee        Decimal @default(1.3)
-  commissionVat     Decimal @default(21.0)
-  airbnbCommission  Decimal @default(3.0)
-
-  // Amortización Inmueble
-  propertyPurchaseValue   Decimal @default(0)
-  propertyCadastralValue  Decimal @default(0)
-  propertyConstructionValue Decimal @default(0)
-  acquisitionDate         DateTime?
+  id                        Int       @id @default(autoincrement())
+  name                      String
+  nif                       String
+  address                   String
+  phone                     String
+  email                     String
+  vatRate                   Decimal   @default(10)
+  city                      String?
+  postalCode                String?
+  logo                      String?
+  updatedAt                 DateTime  @updatedAt
+  expenseVatRate            Decimal   @default(21)
+  airbnbCommission          Decimal   @default(3.0)
+  bookingCommission         Decimal   @default(15.0)
+  bookingFee                Decimal   @default(1.3)
+  commissionVat             Decimal   @default(21.0)
+  acquisitionDate           DateTime?
+  propertyCadastralValue    Decimal   @default(0)
+  propertyConstructionValue Decimal   @default(0)
+  propertyPurchaseValue     Decimal   @default(0)
 
   @@schema("casarural")
 }
@@ -549,6 +552,7 @@ model Guest {
   kinship          String?
   incomeId         Int?
   sesReportId      Int?
+  isPayer          Boolean    @default(false)
   Income           Income?    @relation(fields: [incomeId], references: [id], onDelete: Cascade)
   SesReport        SesReport? @relation(fields: [sesReportId], references: [id])
 
@@ -556,20 +560,22 @@ model Guest {
 }
 
 model Income {
-  id            Int         @id @default(autoincrement())
-  date          DateTime
-  checkOut      DateTime?
-  amount        Decimal
-  description   String?
-  propertyType  String      @default("BOTH")
-  nights        Int         @default(1)
-  invoiceNumber String?     @unique
-  invoiceDate   DateTime?
-  source        String? // Directa, Booking, Airbnb, Vrbo
-  hasIva        Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  Guest         Guest[]
-  SesReport     SesReport[]
+  id             Int         @id @default(autoincrement())
+  date           DateTime
+  checkOut       DateTime?
+  amount         Decimal
+  description    String?
+  propertyType   String      @default("BOTH")
+  nights         Int         @default(1)
+  invoiceNumber  String?     @unique
+  invoiceDate    DateTime?
+  createdAt      DateTime    @default(now())
+  source         String?
+  hasIva         Boolean     @default(false)
+  commissionRate Decimal?
+  Expense        Expense[]
+  Guest          Guest[]
+  SesReport      SesReport[]
 
   @@schema("casarural")
 }
@@ -786,17 +792,17 @@ model RecipeFilterAssignment {
 }
 
 model VaultItem {
-  id            String   @id @default(cuid())
+  id            String        @id @default(cuid())
   userId        String
   title         String
   category      String
   encryptedDek  String
   encryptedData String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   sectionId     String?
   section       VaultSection? @relation(fields: [sectionId], references: [id])
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([sectionId])
@@ -810,8 +816,8 @@ model VaultSection {
   order     Int         @default(0)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     VaultItem[]
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@schema("public")
@@ -820,10 +826,10 @@ model VaultSection {
 model VaultConfig {
   id        String   @id @default(cuid())
   userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   validator String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@schema("public")
 }

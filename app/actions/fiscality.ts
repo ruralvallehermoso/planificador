@@ -101,7 +101,7 @@ export async function getFiscalityData(): Promise<FiscalYearData[]> {
     return result;
 }
 
-export async function deleteInvoicePdf(expenseId: number) {
+export async function deleteExpense(expenseId: number) {
     const session = await auth();
     if (!session?.user || !canAccessModule(session.user, MODULES.CASA_RURAL)) {
         return { success: false, error: 'Unauthorized' };
@@ -113,24 +113,29 @@ export async function deleteInvoicePdf(expenseId: number) {
             select: { pdfUrl: true }
         });
 
-        if (!expense || !expense.pdfUrl) {
-            return { success: false, error: 'PDF not found' };
+        if (!expense) {
+            return { success: false, error: 'Expense not found' };
         }
 
-        // 1. Delete from Vercel Blob
-        await del(expense.pdfUrl);
+        // 1. Delete from Vercel Blob (if exists)
+        if (expense.pdfUrl) {
+            try {
+                await del(expense.pdfUrl);
+            } catch (err) {
+                console.error('Error deleting blob (continuing with expense deletion):', err);
+            }
+        }
 
-        // 2. Update database
-        await prisma.expense.update({
-            where: { id: expenseId },
-            data: { pdfUrl: null }
+        // 2. Delete Expense from DB
+        await prisma.expense.delete({
+            where: { id: expenseId }
         });
 
         revalidatePath('/casa-rural/contabilidad/facturas');
         return { success: true };
 
     } catch (error) {
-        console.error('Error deleting invoice PDF:', error);
-        return { success: false, error: 'Failed to delete PDF' };
+        console.error('Error deleting expense:', error);
+        return { success: false, error: 'Failed to delete expense' };
     }
 }

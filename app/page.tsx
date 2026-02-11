@@ -110,6 +110,13 @@ export default async function Home() {
         </div>
       </div>
 
+      {/* Financial Cards */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {canAccessModule(user || null, MODULES.CASA_RURAL) && <CasaRuralFinancialCard />}
+        {showFinances && <PortfolioCard />}
+        {showFinances && <SimulatorCard />}
+      </div>
+
       {/* Pending Tasks Overview - Main Section */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {categoriesWithMaster.map((category) => {
@@ -184,13 +191,6 @@ export default async function Home() {
             </Link>
           );
         })}
-      </div>
-
-      {/* Financial Cards */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {showFinances && <PortfolioCard />}
-        {showFinances && <SimulatorCard />}
-        {canAccessModule(user || null, MODULES.CASA_RURAL) && <CasaRuralFinancialCard />}
       </div>
     </div>
   );

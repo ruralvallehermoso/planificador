@@ -3,7 +3,6 @@
 import { prisma } from "@/lib/prisma";
 
 // Helper to separate Base and VAT
-// Helper to separate Base and VAT
 function calculateBase(amount: number, hasIva: boolean, rate: number = 0.21) {
     if (!hasIva) return amount;
     return amount / (1 + rate);
@@ -46,14 +45,7 @@ export async function getCasaRuralYearlyBalance() {
             }
         });
 
-        // Fetch ALL Expenses (Monthly, Maintenance, Improvement)
-        // Note: Casa Rural dashboard logic for "Real Cash" includes everything relevant to cash flow?
-        // Actually, the "Real Cash" logic in Casa Rural dashboard:
-        // Cash Profit = Gross Income - (Monthly Expenses + Maintenance + Amortized Annual?)
-        // WAIT: In the reference file `src/app/casa-rural/page.tsx`:
-        // Total Estimated Real Cash = (Gross Profit - IVA Balance) - IRPF Provision
-        // Gross Profit = Total Income - Total Expenses (where Total Expenses = Monthly + Maintenance + Amortized Annual)
-
+        // Fetch Expenses (Monthly only) - EXCLUDE IMPROVEMENT/MAINTENANCE to match dashboard default
         const expenseWhere: any = {
             date: { gte: startOfYear, lte: endOfYear },
             type: 'MONTHLY'
@@ -80,23 +72,24 @@ export async function getCasaRuralYearlyBalance() {
         // Monthly + Maintenance + Improvement (Sum of amounts)
         const totalOtherExpenses = otherExpenses.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
-        // Annual Expenses (Amortized for Profit Calculation)
-        const totalAnnualExpensesFull = annualExpenses.reduce((acc, curr) => acc + Number(curr.amount), 0);
+        // Annual Expenses Logic (YTD)
         const prorationFactor = getAnnualExpenseProrationFactor(currentYear);
-        const activeMonths = getActiveMonthsInYear(currentYear);
+        const activeMonths = getActiveMonthsInYear(currentYear); // e.g. 12 for 2026
 
-        // Amortized Annual Expense (This is what counts as "Expense" in the P&L for Real Cash estimation)
-        const amortizedAnnualExpense = activeMonths > 0 ? (totalAnnualExpensesFull * prorationFactor) / activeMonths * activeMonths : 0;
-        // Wait, if we are looking at the WHOLE YEAR, we typically take the whole prorated amount for the year?
-        // In `getDashboardData` (monthly), it amortizes per month.
-        // In `getYearlyData` (annual view), `monthlyAmortization` is calculated.
-        // `activeMonths` in 2026 is 12. Proration is 1. So it's full amount.
-        // `activeMonths` in 2025 is ~0.6 months (20 days).
+        let monthsToCount = activeMonths;
+        if (currentYear === now.getFullYear()) {
+            // Current year: count months elapsed (e.g. Feb = 2)
+            monthsToCount = now.getMonth() + 1;
+        } else if (currentYear > now.getFullYear()) {
+            monthsToCount = 0;
+        }
 
-        // Let's stick to the logic: `activeMonths > 0 ? (totalAnnualExpenses * prorationFactor) / activeMonths : 0` is MONTHLY amortization.
-        // For the YEARLY totals, we need `monthlyAmortization * activeMonthsInThatYear`? Or just `totalAnnualExpenses * prorationFactor`?
-        // `totalAnnualExpenses * prorationFactor` seems correct for the "Expense attributable to this year".
-        const totalAmortizedAnnualExpense = totalAnnualExpensesFull * prorationFactor;
+        const annualRatio = activeMonths > 0 ? (monthsToCount / activeMonths) : 0;
+
+        const totalAnnualExpensesFull = annualExpenses.reduce((acc, curr) => acc + Number(curr.amount), 0);
+
+        // Amortized Annual Expense (YTD) = (Full Year Amortized) * (YTD Ratio)
+        const totalAmortizedAnnualExpense = (totalAnnualExpensesFull * prorationFactor) * annualRatio;
 
         // Total Gross Expenses
         const totalGrossExpenses = totalOtherExpenses + totalAmortizedAnnualExpense;
@@ -109,57 +102,34 @@ export async function getCasaRuralYearlyBalance() {
         const ivaRepercutido = totalIncome - (totalIncome / 1.10);
 
         // IVA Soportado
-        // Identify deducible expenses with IVA from ALL fetched expenses
-        const allExpenses = [...otherExpenses, ...annualExpenses];
+        // Consistency: Dashboard sums IVA from Monthly expenses. 
+        // We should primarily rely on Monthly expenses for IVA Soportado in the "Real Cash" flow view 
+        const otherExpensesWithIva = otherExpenses.filter(e => e.hasIva && e.deducible !== false);
+        const ivaSoportado = otherExpensesWithIva.reduce((acc, curr) => acc + (Number(curr.amount) - (Number(curr.amount) / 1.21)), 0);
 
-        const deducibleExpensesWithIva = allExpenses.filter(e => e.hasIva && e.deducible !== false);
-        const expensesWithIvaTotal = deducibleExpensesWithIva.reduce((acc, curr) => acc + Number(curr.amount), 0);
-
-        // If it's an annual expense, do we take the full IVA or prorated?
-        // Usually IVA is deductible when the invoice is received (full amount).
-        // The dashboard logic `getYearlyData` does:
-        // `monthExpensesWithIva` includes monthly/maintenance.
-        // What about Annual? Logic in dashboard is complex.
-        // Let's simplify: Real Cash = Money in Pocket.
-        // But the user specific formula is: (GrossProfit - IvaBalance) - IRPF.
-
-        // IvaBalance = Repercutido - Soportado.
-        const ivaSoportado = expensesWithIvaTotal - (expensesWithIvaTotal / 1.21);
         const ivaBalance = ivaRepercutido - ivaSoportado;
 
         // Base Gastos (For IRPF)
-        // Sum of Deducible Bases
-        const baseGastos = allExpenses.reduce((acc, curr) => {
+        // Base from Monthly
+        const baseGastosMonthly = otherExpenses.reduce((acc, curr) => {
             if (curr.deducible === false) return acc;
-
-            // For Annual expenses, should we use the AMORTIZED amount for base calculation?
-            // Yes, IRPF is based on amortized expense.
-            // But we have `allExpenses` mixed.
-
-            let amount = Number(curr.amount);
-            if (curr.type === 'ANNUAL') {
-                // Use prorated amount for the expense base
-                amount = amount * prorationFactor;
-            }
-
-            if (curr.hasIva) {
-                return acc + (amount / 1.21);
-            } else {
-                return acc + amount;
-            }
+            if (curr.hasIva) return acc + (Number(curr.amount) / 1.21);
+            return acc + Number(curr.amount);
         }, 0);
 
+        // Base from Annual (Amortized YTD)
+        // Dashboard logic assumes Annual Expenses are gross and divides by 1.21 for tax base.
+        const baseGastosAnnualAmortized = totalAmortizedAnnualExpense / 1.21;
+
+        const baseGastosTotal = baseGastosMonthly + baseGastosAnnualAmortized;
+
         const netIncome = totalIncome / 1.10;
-        const fiscalProfit = netIncome - baseGastos;
+        const fiscalProfit = netIncome - baseGastosTotal;
 
         // IRPF Provision (20% of positive fiscal profit)
         const irpfProvision = fiscalProfit > 0 ? fiscalProfit * 0.20 : 0;
 
         // 5. Estimated Real Cash
-        // (GrossProfit - PositiveIVABalance) - IRPF
-        // Note: If IVA Balance is negative (we are owed money), it doesn't reduce our cash now (we wait for refund), 
-        // but often we just count "payment to taxman".
-        // Dashboard logic: `(netProfit - (ivaBalance > 0 ? ivaBalance : 0)) - ...`
         const finalIVAPayment = ivaBalance > 0 ? ivaBalance : 0;
 
         const estimatedRealCash = grossProfit - finalIVAPayment - irpfProvision;

@@ -475,6 +475,7 @@ model Expense {
   supplierNif    String?
   incomeId       Int?
   pdfUrl         String?
+  deducible      Boolean  @default(true)
   Income         Income?  @relation(fields: [incomeId], references: [id])
 
   @@schema("casarural")

@@ -11,7 +11,6 @@ export default function InvoicesPage() {
     const [data, setData] = useState<FiscalYearData[]>([]);
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState<string | null>(null);
-    const [orphans, setOrphans] = useState<any[]>([]);
 
     useEffect(() => {
         loadData();
@@ -19,34 +18,13 @@ export default function InvoicesPage() {
 
     const loadData = async () => {
         try {
-            const [fiscalData, orphanedBlobs] = await Promise.all([
-                getFiscalityData(),
-                getOrphanedBlobs()
-            ]);
+            const fiscalData = await getFiscalityData();
             setData(fiscalData);
-            setOrphans(orphanedBlobs || []);
         } catch (error) {
             console.error('Error loading data:', error);
             toast.error('Error cargando datos');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleDeleteOrphan = async (url: string) => {
-        if (!confirm('¿Seguro que quieres eliminar este archivo huérfano? Esta acción es irreversible.')) return;
-
-        try {
-            const res = await deleteOrphanedBlob(url);
-            if (res.success) {
-                toast.success('Archivo eliminado');
-                setOrphans(prev => prev.filter(o => o.url !== url));
-            } else {
-                toast.error('Error al eliminar');
-            }
-        } catch (error) {
-            console.error('Error deleting orphan:', error);
-            toast.error('Error eliminando archivo');
         }
     };
 
@@ -62,25 +40,32 @@ export default function InvoicesPage() {
             if (!folder) throw new Error('Failed to create zip folder');
 
             // Download each PDF and add to ZIP
+            // Download each PDF and add to ZIP
             const promises = invoices.map(async (inv: any) => {
-                // Usamos el proxy seguro en lugar de la URL directa
-                // Esto evita exponer la URL pública de Vercel Blob
-                const secureUrl = `/api/invoices/${inv.id}`;
+                let urlToFetch = '';
+
+                if (inv.id < 0 && inv.pdfUrl) {
+                    // Manual blob: id is negative. Use public URL directly.
+                    urlToFetch = inv.pdfUrl;
+                } else {
+                    // DB Invoice: Use secure proxy
+                    urlToFetch = `/api/invoices/${inv.id}`;
+                }
 
                 try {
-                    const response = await fetch(secureUrl);
+                    const response = await fetch(urlToFetch);
                     if (!response.ok) throw new Error(`Failed to fetch invoice ${inv.id}: ${response.statusText}`);
                     const blob = await response.blob();
 
                     // Clean filename: YYYY-MM-DD_Provider.pdf
                     const dateStr = new Date(inv.date).toISOString().split('T')[0];
                     const safeProvider = (inv.provider || 'unknown').replace(/[^a-zA-Z0-9]/g, '_');
-                    const filename = `${dateStr}_${safeProvider}_${inv.id}.pdf`;
+                    const filename = `${dateStr}_${safeProvider}_${Math.abs(inv.id)}.pdf`;
 
                     folder.file(filename, blob);
                 } catch (err) {
                     console.error(`Error downloading invoice ${inv.id}:`, err);
-                    folder.file(`ERROR_${inv.id}.txt`, `Failed to download: ${inv.pdfUrl}\n${err}`);
+                    folder.file(`ERROR_${Math.abs(inv.id)}.txt`, `Failed to download: ${inv.pdfUrl}\n${err}`);
                 }
             });
 

@@ -59,15 +59,10 @@ export type FiscalYearData = {
 };
 
 export async function getFiscalityData(): Promise<FiscalYearData[]> {
-    // 1. Obtener todos los gastos que tengan PDF (o que sean relevantes)
-    // Ordenados por fecha descendente
+    // 1. Get all DB expenses with PDF
     const expenses = await prisma.expense.findMany({
         where: {
-            pdfUrl: {
-                not: null
-            },
-            // Opcional: filtrar por esquema casarural si fuera necesario, 
-            // pero prisma.expense ya apunta al modelo correcto.
+            pdfUrl: { not: null },
         },
         orderBy: {
             date: 'desc',
@@ -83,11 +78,43 @@ export async function getFiscalityData(): Promise<FiscalYearData[]> {
         }
     });
 
-    // 2. Agrupar por Año y Trimestre
+    // 2. Get all blobs to find "manual" uploads (orphans)
+    let orphans: any[] = [];
+    try {
+        const { blobs } = await list();
+        const validUrls = new Set(expenses.map(e => e.pdfUrl));
+        orphans = blobs.filter(blob => !validUrls.has(blob.url));
+    } catch (err) {
+        console.error("Error fetching blobs for orphans:", err);
+    }
+
+    // 3. Combine Data
+    // Map orphans to "QuarterlyInvoice" shape
+    const manualInvoices: QuarterlyInvoice[] = orphans.map((blob, index) => ({
+        id: -1 * (index + 1), // Negative ID for manual
+        date: blob.uploadedAt,
+        pdfUrl: blob.url,
+        provider: 'Archivo Manual (Blob)',
+        amount: 0,
+        category: 'MANUAL'
+    }));
+
+    const dbInvoices: QuarterlyInvoice[] = expenses.map(e => ({
+        id: e.id,
+        date: e.date,
+        pdfUrl: e.pdfUrl,
+        provider: e.supplierName || e.description || 'Sin proveedor',
+        amount: Number(e.amount),
+        category: e.category,
+    }));
+
+    const allInvoices = [...dbInvoices, ...manualInvoices];
+
+    // 4. Group by Year and Quarter
     const groupedData: Record<number, Record<number, QuarterlyInvoice[]>> = {};
 
-    for (const expense of expenses) {
-        const date = new Date(expense.date);
+    for (const inv of allInvoices) {
+        const date = new Date(inv.date);
         const year = date.getFullYear();
         const month = date.getMonth() + 1; // 1-12
         const quarter = Math.ceil(month / 3);
@@ -99,27 +126,23 @@ export async function getFiscalityData(): Promise<FiscalYearData[]> {
             groupedData[year][quarter] = [];
         }
 
-        groupedData[year][quarter].push({
-            id: expense.id,
-            date: expense.date,
-            pdfUrl: expense.pdfUrl,
-            provider: expense.supplierName || expense.description || 'Sin proveedor',
-            amount: Number(expense.amount),
-            category: expense.category,
-        });
+        groupedData[year][quarter].push(inv);
     }
 
-    // 3. Convertir a array ordenado para el frontend
+    // 5. Convert to sorted array
     const result: FiscalYearData[] = Object.keys(groupedData)
         .map(Number)
-        .sort((a, b) => b - a) // Años más recientes primero
+        .sort((a, b) => b - a) // Years desc
         .map(year => {
             const quartersObj = groupedData[year];
             const quarters = Object.keys(quartersObj)
                 .map(Number)
-                .sort((a, b) => b - a) // Trimestres más recientes primero
+                .sort((a, b) => b - a) // Quarters desc
                 .map(quarter => {
                     const invoices = quartersObj[quarter];
+                    // Sort invoices within quarter by date desc
+                    invoices.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
                     return {
                         quarter,
                         invoices: invoices

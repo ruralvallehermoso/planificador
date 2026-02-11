@@ -56,11 +56,7 @@ export async function getCasaRuralYearlyBalance() {
 
         const expenseWhere: any = {
             date: { gte: startOfYear, lte: endOfYear },
-            OR: [
-                { type: 'MONTHLY' },
-                { type: 'MAINTENANCE' },
-                { type: 'IMPROVEMENT' }
-            ]
+            type: 'MONTHLY'
         };
 
         const otherExpenses = await prisma.expense.findMany({

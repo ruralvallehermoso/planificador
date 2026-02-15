@@ -22,7 +22,19 @@ export function PortfolioCard() {
         setError(false);
         try {
             const finanzasBackendUrl = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
-            // Use Client-side fetch
+
+            // 1. Trigger market price update to ensure DB has fresh prices
+            try {
+                await fetch(`${finanzasBackendUrl}/api/update_markets`, {
+                    method: 'POST',
+                    cache: 'no-store'
+                });
+            } catch (updateErr) {
+                // Non-blocking: if market update fails, we still try to fetch performance
+                console.warn("Market update failed, using cached prices:", updateErr);
+            }
+
+            // 2. Fetch performance with fresh prices
             const res = await fetch(`${finanzasBackendUrl}/api/portfolio/performance?period=24h`, {
                 cache: 'no-store'
             });

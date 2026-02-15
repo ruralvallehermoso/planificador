@@ -210,12 +210,26 @@ function processHtmlContent(html: string) {
 }
 
 function formatTestQuestions(text: string, boldQuestions: boolean) {
-    if (!boldQuestions) return <div className="whitespace-pre-wrap">{text}</div>
+    // Renumber questions in the raw text for the non-bold path
+    if (!boldQuestions) {
+        let counter = 1
+        const renumbered = text.split('\n').map(line => {
+            const trimmed = line.trim()
+            if (/^\d+[\.\)]/.test(trimmed)) {
+                return trimmed.replace(/^\d+[\.\)]\s*/, `${counter++}. `)
+            }
+            return line
+        }).join('\n')
+        return <div className="whitespace-pre-wrap">{renumbered}</div>
+    }
 
     const lines = text.split('\n')
     const blocks: { question: string | null, options: string[] }[] = []
 
     let currentBlock: { question: string | null, options: string[] } | null = null
+
+    // Heuristic: line is an answer option if it starts with a letter followed by ) or .
+    const isOptionLine = (trimmed: string) => /^[a-eA-E][\.\)]/.test(trimmed)
 
     lines.forEach(line => {
         const trimmed = line.trim()
@@ -229,16 +243,19 @@ function formatTestQuestions(text: string, boldQuestions: boolean) {
                 blocks.push(currentBlock)
             }
             currentBlock = { question: line, options: [] }
-        } else {
-            // It's an option or continuation
+        } else if (isOptionLine(trimmed)) {
+            // It's an answer option
             if (currentBlock) {
                 currentBlock.options.push(line)
             } else {
-                // Orphaned line before any question? Create a block with just this line or treat as question?
-                // Let's treat as a separate block without special styling or attach to previous if possible.
-                // For simplicity, just render it as a text block.
                 blocks.push({ question: null, options: [line] })
             }
+        } else {
+            // Text that is not numbered and not an option — treat as a new question (unnumbered)
+            if (currentBlock) {
+                blocks.push(currentBlock)
+            }
+            currentBlock = { question: line, options: [] }
         }
     })
 
@@ -246,16 +263,29 @@ function formatTestQuestions(text: string, boldQuestions: boolean) {
         blocks.push(currentBlock)
     }
 
-    return blocks.map((block, i) => (
-        <div key={i} className="mb-4 break-inside-avoid">
-            {block.question && (
-                <div className="font-bold">{block.question}</div>
-            )}
-            {block.options.map((opt, j) => (
-                <div key={j} className="font-normal ml-4">{opt}</div>
-            ))}
-        </div>
-    ))
+    // Renumber questions sequentially
+    let questionCounter = 1
+    return blocks.map((block, i) => {
+        let displayQuestion = block.question
+        if (displayQuestion) {
+            const trimmed = displayQuestion.trim()
+            // Strip existing number prefix if present, then add correct sequential number
+            const withoutNumber = trimmed.replace(/^\d+[\.\)]\s*/, '')
+            displayQuestion = `${questionCounter}. ${withoutNumber}`
+            questionCounter++
+        }
+
+        return (
+            <div key={i} className="mb-4 break-inside-avoid">
+                {displayQuestion && (
+                    <div className="font-bold">{displayQuestion}</div>
+                )}
+                {block.options.map((opt, j) => (
+                    <div key={j} className="font-normal ml-4">{opt}</div>
+                ))}
+            </div>
+        )
+    })
 }
 
 function formatDevelopQuestions(text: string, boldQuestions: boolean) {

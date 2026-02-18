@@ -43,17 +43,31 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
             const wsname = wb.SheetNames[0]
             const ws = wb.Sheets[wsname]
 
-            // Get header row preserving exact Excel column order
-            const headerRow = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1 })[0] || []
-            const headers = headerRow.map(h => String(h).trim()).filter(h => h.length > 0)
+            // Use raw array mode to get all rows as arrays — avoids any key/column mismatch
+            const allRows = XLSX.utils.sheet_to_json<any[]>(ws, { header: 1, defval: "" })
+            if (allRows.length < 2) return
 
-            // Parse data using defval to ensure empty cells are included (prevents column shift)
-            const data = XLSX.utils.sheet_to_json(ws, { defval: "" })
+            // Row 0 = headers, rest = data
+            const rawHeaders = allRows[0] as any[]
+            const headers: string[] = rawHeaders.map(h => String(h ?? "").trim())
 
-            if (data.length > 0 && headers.length > 0) {
+            // Build objects manually: position i in data row → headers[i]
+            const data = allRows.slice(1)
+                .filter(row => row.some((cell: any) => cell !== "")) // skip fully empty rows
+                .map(row => {
+                    const obj: Record<string, any> = {}
+                    headers.forEach((h, i) => {
+                        if (h) obj[h] = row[i] ?? ""
+                    })
+                    return obj
+                })
+
+            const validHeaders = headers.filter(h => h.length > 0)
+
+            if (data.length > 0 && validHeaders.length > 0) {
                 setRawData(data)
-                setColumns(headers)
-                setConfig((prev: any) => ({ ...prev, columns: headers }))
+                setColumns(validHeaders)
+                setConfig((prev: any) => ({ ...prev, columns: validHeaders }))
                 setCurrentPage(1)
                 setFilterStatus('all')
                 toast.success(`Importadas ${data.length} filas correctamente`)

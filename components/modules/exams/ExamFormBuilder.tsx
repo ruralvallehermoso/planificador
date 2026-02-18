@@ -414,142 +414,146 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         <div className="min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0">
             {/* Top Bar */}
             <header className="bg-white border-b z-10 print:hidden relative shadow-sm">
-                <div className="w-full max-w-[1800px] mx-auto px-4 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Link href="/fp-informatica/exams" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                {/* Row 1: Navigation + Title + View Mode */}
+                <div className="w-full max-w-[1800px] mx-auto px-4 h-14 flex items-center justify-between">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <Link href="/fp-informatica/exams" className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0">
                             <ArrowLeft className="h-5 w-5 text-gray-600" />
                         </Link>
-                        <h1 className="text-xl font-bold text-gray-900 hidden md:block">Generador de Exámenes</h1>
-
-                        {/* View Mode Toggles */}
-                        <div className="flex items-center bg-gray-100 p-1 rounded-lg border ml-4">
-                            <Button
-                                variant="ghost" size="sm"
-                                onClick={() => setViewMode('editor')}
-                                className={cn("h-7 px-2", viewMode === 'editor' && "bg-white shadow text-blue-600")}
-                                title="Solo Editor"
-                            >
-                                <PanelLeft className="w-4 h-4" />
-                            </Button>
-                            <Button
-                                variant="ghost" size="sm"
-                                onClick={() => setViewMode('split')}
-                                className={cn("h-7 px-2", viewMode === 'split' && "bg-white shadow text-blue-600")}
-                                title="Dividido"
-                            >
-                                <Columns className="w-4 h-4" />
-                            </Button>
-                            <Button
-                                variant="ghost" size="sm"
-                                onClick={() => setViewMode('preview')}
-                                className={cn("h-7 px-2", viewMode === 'preview' && "bg-white shadow text-blue-600")}
-                                title="Solo Vista Previa"
-                            >
-                                <PanelRight className="w-4 h-4" />
-                            </Button>
-                        </div>
+                        <h1 className="text-lg font-bold text-gray-900 truncate">Generador de Exámenes</h1>
 
                         {selectedTemplateId && (
-                            <span className="hidden xl:inline-block ml-4 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium truncate max-w-[200px]">
+                            <span className="hidden lg:inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium truncate max-w-[200px]">
                                 {templates.find(t => t.id === selectedTemplateId)?.name}
                             </span>
                         )}
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        {/* ... existing buttons ... */}
-                        <Select onValueChange={handleLoadTemplate} key={templates.length}>
-                            <SelectTrigger className="w-[180px] border-slate-300 hidden md:flex">
-                                <SelectValue placeholder="Cargar plantilla..." />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                                {templates.map(t => (
-                                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-
-                        {selectedTemplateId && (
-                            <Button
-                                variant="destructive"
-                                size="icon"
-                                onClick={handleDeleteTemplate}
-                                disabled={isDeleting}
-                                className="h-9 w-9 hidden md:flex"
-                                title="Eliminar plantilla seleccionada"
-                            >
-                                {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                            </Button>
-                        )}
-
-                        <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-                            <DialogTrigger asChild>
-                                <Button variant="outline" className="hidden sm:flex">
-                                    <Save className="h-4 w-4 mr-2" />
-                                    {selectedTemplateId ? 'Guardar' : 'Guardar'}
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>
-                                        {selectedTemplateId ? 'Guardar Cambios' : 'Guardar nueva plantilla'}
-                                    </DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-4 py-4">
-                                    {selectedTemplateId && (
-                                        <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-4">
-                                            Estás editando la plantilla: <strong>{templates.find(t => t.id === selectedTemplateId)?.name}</strong>
-                                        </div>
-                                    )}
-                                    <div className="space-y-2">
-                                        <Label>Nombre de la plantilla</Label>
-                                        <Input
-                                            value={newTemplateName}
-                                            onChange={(e) => setNewTemplateName(e.target.value)}
-                                            placeholder="Ej: Examen Final Diciembre"
-                                        />
-                                    </div>
-                                </div>
-                                <DialogFooter className="flex-col gap-2 sm:flex-row">
-                                    {selectedTemplateId && (
-                                        <Button
-                                            onClick={() => handleSaveTemplate(true)}
-                                            variant="outline"
-                                            disabled={!newTemplateName || isSaving}
-                                        >
-                                            Guardar como nueva
-                                        </Button>
-                                    )}
-                                    <Button
-                                        onClick={() => handleSaveTemplate(false)}
-                                        disabled={!newTemplateName || isSaving}
-                                    >
-                                        {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        {selectedTemplateId ? 'Sobrescribir' : 'Guardar'}
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
-
-                        <Button onClick={handleExportDoc} variant="secondary" className="bg-green-600 hover:bg-green-700 text-white hidden sm:flex">
-                            <Download className="h-4 w-4 mr-2" />
-                            <span className="hidden lg:inline">Exportar</span>
-                        </Button>
-
+                    {/* View Mode Toggles */}
+                    <div className="flex items-center bg-gray-100 p-1 rounded-lg border shrink-0">
                         <Button
-                            onClick={handleGenerateSolution}
-                            disabled={isGeneratingSolution || sections.length === 0}
-                            className="bg-purple-600 hover:bg-purple-700 text-white hidden sm:flex"
+                            variant="ghost" size="sm"
+                            onClick={() => setViewMode('editor')}
+                            className={cn("h-7 px-2", viewMode === 'editor' && "bg-white shadow text-blue-600")}
+                            title="Solo Editor"
                         >
-                            {isGeneratingSolution ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
-                            <span className="hidden lg:inline">IA</span>
+                            <PanelLeft className="w-4 h-4" />
                         </Button>
-
-                        <Button onClick={handlePrint} className="bg-blue-600 hover:bg-blue-700 text-white">
-                            <Printer className="h-4 w-4 mr-2" />
-                            <span className="hidden lg:inline">Imprimir</span>
+                        <Button
+                            variant="ghost" size="sm"
+                            onClick={() => setViewMode('split')}
+                            className={cn("h-7 px-2", viewMode === 'split' && "bg-white shadow text-blue-600")}
+                            title="Dividido"
+                        >
+                            <Columns className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            variant="ghost" size="sm"
+                            onClick={() => setViewMode('preview')}
+                            className={cn("h-7 px-2", viewMode === 'preview' && "bg-white shadow text-blue-600")}
+                            title="Solo Vista Previa"
+                        >
+                            <PanelRight className="w-4 h-4" />
                         </Button>
                     </div>
+                </div>
+
+                {/* Row 2: Actions */}
+                <div className="w-full max-w-[1800px] mx-auto px-4 pb-2 flex flex-wrap items-center gap-2">
+                    <Select onValueChange={handleLoadTemplate} key={templates.length}>
+                        <SelectTrigger className="w-[160px] h-8 text-xs border-slate-300">
+                            <SelectValue placeholder="Cargar plantilla..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                            {templates.map(t => (
+                                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    {selectedTemplateId && (
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={handleDeleteTemplate}
+                            disabled={isDeleting}
+                            className="h-8 w-8 p-0"
+                            title="Eliminar plantilla seleccionada"
+                        >
+                            {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                        </Button>
+                    )}
+
+                    <div className="w-px h-5 bg-gray-200 hidden sm:block" />
+
+                    <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8">
+                                <Save className="h-3.5 w-3.5 mr-1.5" />
+                                Guardar
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>
+                                    {selectedTemplateId ? 'Guardar Cambios' : 'Guardar nueva plantilla'}
+                                </DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-4 py-4">
+                                {selectedTemplateId && (
+                                    <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-4">
+                                        Estás editando la plantilla: <strong>{templates.find(t => t.id === selectedTemplateId)?.name}</strong>
+                                    </div>
+                                )}
+                                <div className="space-y-2">
+                                    <Label>Nombre de la plantilla</Label>
+                                    <Input
+                                        value={newTemplateName}
+                                        onChange={(e) => setNewTemplateName(e.target.value)}
+                                        placeholder="Ej: Examen Final Diciembre"
+                                    />
+                                </div>
+                            </div>
+                            <DialogFooter className="flex-col gap-2 sm:flex-row">
+                                {selectedTemplateId && (
+                                    <Button
+                                        onClick={() => handleSaveTemplate(true)}
+                                        variant="outline"
+                                        disabled={!newTemplateName || isSaving}
+                                    >
+                                        Guardar como nueva
+                                    </Button>
+                                )}
+                                <Button
+                                    onClick={() => handleSaveTemplate(false)}
+                                    disabled={!newTemplateName || isSaving}
+                                >
+                                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {selectedTemplateId ? 'Sobrescribir' : 'Guardar'}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Button onClick={handleExportDoc} size="sm" className="h-8 bg-green-600 hover:bg-green-700 text-white">
+                        <Download className="h-3.5 w-3.5 mr-1.5" />
+                        Exportar
+                    </Button>
+
+                    <Button
+                        onClick={handleGenerateSolution}
+                        disabled={isGeneratingSolution || sections.length === 0}
+                        size="sm"
+                        className="h-8 bg-purple-600 hover:bg-purple-700 text-white"
+                    >
+                        {isGeneratingSolution ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
+                        IA
+                    </Button>
+
+                    <Button onClick={handlePrint} size="sm" className="h-8 bg-blue-600 hover:bg-blue-700 text-white">
+                        <Printer className="h-3.5 w-3.5 mr-1.5" />
+                        Imprimir
+                    </Button>
                 </div>
             </header>
 

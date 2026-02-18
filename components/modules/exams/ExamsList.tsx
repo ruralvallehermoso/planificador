@@ -31,11 +31,9 @@ interface ExamsListProps {
 
 const ACCENT_COLORS = [
     { bar: "bg-blue-500", ring: "text-blue-500", evalBg: "bg-blue-50", evalText: "text-blue-700", evalBorder: "border-blue-200" },
-    { bar: "bg-indigo-500", ring: "text-indigo-500", evalBg: "bg-indigo-50", evalText: "text-indigo-700", evalBorder: "border-indigo-200" },
-    { bar: "bg-teal-500", ring: "text-teal-500", evalBg: "bg-teal-50", evalText: "text-teal-700", evalBorder: "border-teal-200" },
+    { bar: "bg-emerald-500", ring: "text-emerald-500", evalBg: "bg-emerald-50", evalText: "text-emerald-700", evalBorder: "border-emerald-200" },
     { bar: "bg-violet-500", ring: "text-violet-500", evalBg: "bg-violet-50", evalText: "text-violet-700", evalBorder: "border-violet-200" },
-    { bar: "bg-slate-500", ring: "text-slate-500", evalBg: "bg-slate-50", evalText: "text-slate-700", evalBorder: "border-slate-200" },
-    { bar: "bg-sky-500", ring: "text-sky-500", evalBg: "bg-sky-50", evalText: "text-sky-700", evalBorder: "border-sky-200" },
+    { bar: "bg-cyan-500", ring: "text-cyan-500", evalBg: "bg-cyan-50", evalText: "text-cyan-700", evalBorder: "border-cyan-200" },
 ]
 
 function getSubjectColor(subject: string | null | undefined) {

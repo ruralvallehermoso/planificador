@@ -41,7 +41,7 @@ export default async function ExamDetailPage({ params }: PageProps) {
                 </div>
             </div>
 
-            <Tabs defaultValue="grades" className="w-full">
+            <Tabs defaultValue="design" className="w-full">
                 <TabsList className="mb-4 print:hidden">
                     <TabsTrigger value="design" className="flex items-center gap-2">
                         <Edit className="w-4 h-4" />

@@ -24,7 +24,9 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
     const [rawData, setRawData] = useState<any[]>(report?.rawData || [])
     const [config, setConfig] = useState<any>(report?.config || { charts: [] })
     const [isSaving, setIsSaving] = useState(false)
-    const [columns, setColumns] = useState<string[]>(rawData.length > 0 ? Object.keys(rawData[0]) : [])
+    const [columns, setColumns] = useState<string[]>(
+        report?.config?.columns || (rawData.length > 0 ? Object.keys(rawData[0]) : [])
+    )
     const [filterStatus, setFilterStatus] = useState<'all' | 'passed' | 'failed'>('all')
 
     const [currentPage, setCurrentPage] = useState(1)
@@ -40,13 +42,20 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
             const wb = XLSX.read(bstr, { type: 'binary' })
             const wsname = wb.SheetNames[0]
             const ws = wb.Sheets[wsname]
-            const data = XLSX.utils.sheet_to_json(ws)
 
-            if (data.length > 0) {
+            // Get header row preserving exact Excel column order
+            const headerRow = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1 })[0] || []
+            const headers = headerRow.map(h => String(h).trim()).filter(h => h.length > 0)
+
+            // Parse data using defval to ensure empty cells are included (prevents column shift)
+            const data = XLSX.utils.sheet_to_json(ws, { defval: "" })
+
+            if (data.length > 0 && headers.length > 0) {
                 setRawData(data)
-                setColumns(Object.keys(data[0] as object))
+                setColumns(headers)
+                setConfig((prev: any) => ({ ...prev, columns: headers }))
                 setCurrentPage(1)
-                setFilterStatus('all') // Reset filter on new upload
+                setFilterStatus('all')
                 toast.success(`Importadas ${data.length} filas correctamente`)
             }
         }

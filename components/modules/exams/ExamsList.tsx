@@ -61,7 +61,7 @@ function ProgressBar({ label, percentage, color }: { label: string; percentage: 
         <div className="space-y-1">
             <div className="flex justify-between items-center text-xs">
                 <span className="text-gray-500 font-medium">{label}</span>
-                <span className="text-gray-700 font-semibold">{percentage}%</span>
+                <span className="text-gray-700 font-semibold">{percentage}{percentage.includes('%') ? '' : '%'}</span>
             </div>
             <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <div
@@ -199,7 +199,7 @@ export function ExamsList({ templates }: ExamsListProps) {
                                     {template.date && (
                                         <div className="flex items-center text-sm text-gray-500">
                                             <Calendar className="mr-2 h-3.5 w-3.5 text-gray-400 shrink-0" />
-                                            <span>{template.date}</span>
+                                            <span>{new Date(template.date).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric", timeZone: "Europe/Madrid" })}</span>
                                         </div>
                                     )}
                                     {template.duration && (

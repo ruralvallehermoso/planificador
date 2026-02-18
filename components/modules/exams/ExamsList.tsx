@@ -31,11 +31,11 @@ interface ExamsListProps {
 
 const ACCENT_COLORS = [
     { bar: "bg-blue-500", ring: "text-blue-500", evalBg: "bg-blue-50", evalText: "text-blue-700", evalBorder: "border-blue-200" },
-    { bar: "bg-purple-500", ring: "text-purple-500", evalBg: "bg-purple-50", evalText: "text-purple-700", evalBorder: "border-purple-200" },
-    { bar: "bg-emerald-500", ring: "text-emerald-500", evalBg: "bg-emerald-50", evalText: "text-emerald-700", evalBorder: "border-emerald-200" },
-    { bar: "bg-amber-500", ring: "text-amber-500", evalBg: "bg-amber-50", evalText: "text-amber-700", evalBorder: "border-amber-200" },
-    { bar: "bg-rose-500", ring: "text-rose-500", evalBg: "bg-rose-50", evalText: "text-rose-700", evalBorder: "border-rose-200" },
-    { bar: "bg-cyan-500", ring: "text-cyan-500", evalBg: "bg-cyan-50", evalText: "text-cyan-700", evalBorder: "border-cyan-200" },
+    { bar: "bg-indigo-500", ring: "text-indigo-500", evalBg: "bg-indigo-50", evalText: "text-indigo-700", evalBorder: "border-indigo-200" },
+    { bar: "bg-teal-500", ring: "text-teal-500", evalBg: "bg-teal-50", evalText: "text-teal-700", evalBorder: "border-teal-200" },
+    { bar: "bg-violet-500", ring: "text-violet-500", evalBg: "bg-violet-50", evalText: "text-violet-700", evalBorder: "border-violet-200" },
+    { bar: "bg-slate-500", ring: "text-slate-500", evalBg: "bg-slate-50", evalText: "text-slate-700", evalBorder: "border-slate-200" },
+    { bar: "bg-sky-500", ring: "text-sky-500", evalBg: "bg-sky-50", evalText: "text-sky-700", evalBorder: "border-sky-200" },
 ]
 
 function getSubjectColor(subject: string | null | undefined) {
@@ -165,98 +165,105 @@ export function ExamsList({ templates }: ExamsListProps) {
                                 href={`/fp-informatica/exams/${template.id}`}
                                 className="group block"
                             >
-                                <div className="relative bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200 overflow-hidden flex">
-                                    {/* Left accent bar */}
-                                    <div className={`w-1.5 shrink-0 ${colors.bar}`} />
+                                <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200 overflow-hidden flex flex-col">
+                                    <div className="flex">
+                                        {/* Left accent bar */}
+                                        <div className={`w-1.5 shrink-0 ${colors.bar}`} />
 
-                                    {/* Content area */}
-                                    <div className="flex-1 min-w-0 p-5 flex flex-col sm:flex-row gap-4">
-                                        {/* Left: Title + subject info */}
-                                        <div className="flex-1 min-w-0 space-y-2">
-                                            <div className="flex items-start gap-3">
-                                                <div className="flex-1 min-w-0">
-                                                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2">
-                                                        {template.name}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-500 mt-1 line-clamp-1">
-                                                        {[
-                                                            template.subject && `Asignatura: ${template.subject}`,
-                                                            template.course && template.course,
-                                                        ].filter(Boolean).join(" | ")}
-                                                    </p>
+                                        {/* Content area */}
+                                        <div className="flex-1 min-w-0 p-5 flex flex-col sm:flex-row gap-4">
+                                            {/* Left: Title + subject info */}
+                                            <div className="flex-1 min-w-0 space-y-2">
+                                                <div className="flex items-start gap-3">
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2">
+                                                            {template.name}
+                                                        </h3>
+                                                        <p className="text-sm text-gray-500 mt-1 line-clamp-1">
+                                                            {[
+                                                                template.subject && `Asignatura: ${template.subject}`,
+                                                                template.course && template.course,
+                                                            ].filter(Boolean).join(" | ")}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Evaluation badge */}
+                                                    {template.evaluation && (
+                                                        <span className={`shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${colors.evalBg} ${colors.evalText} ${colors.evalBorder}`}>
+                                                            {template.evaluation}
+                                                        </span>
+                                                    )}
                                                 </div>
+                                            </div>
 
-                                                {/* Evaluation badge */}
-                                                {template.evaluation && (
-                                                    <span className={`shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${colors.evalBg} ${colors.evalText} ${colors.evalBorder}`}>
-                                                        {template.evaluation}
-                                                    </span>
+                                            {/* Center: Metadata */}
+                                            <div className="flex sm:flex-col gap-3 sm:gap-1.5 sm:min-w-[150px] sm:border-l sm:border-gray-100 sm:pl-4 text-sm text-gray-500 flex-wrap">
+                                                {template.date && (
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Calendar className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+                                                        <span>{new Date(template.date).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric", timeZone: "Europe/Madrid" })}</span>
+                                                    </div>
+                                                )}
+                                                {template.duration && (
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Timer className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+                                                        <span>{template.duration}</span>
+                                                    </div>
+                                                )}
+                                                {template.raEvaluated && (
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Tag className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+                                                        <span className="line-clamp-1">{template.raEvaluated}</span>
+                                                    </div>
                                                 )}
                                             </div>
-                                        </div>
 
-                                        {/* Center: Metadata */}
-                                        <div className="flex sm:flex-col gap-3 sm:gap-1.5 sm:min-w-[150px] sm:border-l sm:border-gray-100 sm:pl-4 text-sm text-gray-500 flex-wrap">
-                                            {template.date && (
-                                                <div className="flex items-center gap-1.5">
-                                                    <Calendar className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                                                    <span>{new Date(template.date).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric", timeZone: "Europe/Madrid" })}</span>
-                                                </div>
-                                            )}
-                                            {template.duration && (
-                                                <div className="flex items-center gap-1.5">
-                                                    <Timer className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                                                    <span>{template.duration}</span>
-                                                </div>
-                                            )}
-                                            {template.raEvaluated && (
-                                                <div className="flex items-center gap-1.5">
-                                                    <Tag className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                                                    <span className="line-clamp-1">{template.raEvaluated}</span>
+                                            {/* Right: Donut charts */}
+                                            {hasParts && (
+                                                <div className="flex items-center gap-4 sm:border-l sm:border-gray-100 sm:pl-4 shrink-0">
+                                                    {p1 > 0 && <DonutChart value={p1} color={colors.ring} label="Parte 1" />}
+                                                    {p2 > 0 && <DonutChart value={p2} color="text-indigo-500" label="Parte 2" />}
                                                 </div>
                                             )}
                                         </div>
 
-                                        {/* Right: Donut charts */}
-                                        {hasParts && (
-                                            <div className="flex items-center gap-4 sm:border-l sm:border-gray-100 sm:pl-4 shrink-0">
-                                                {p1 > 0 && <DonutChart value={p1} color={colors.ring} label="Parte 1" />}
-                                                {p2 > 0 && <DonutChart value={p2} color="text-purple-500" label="Parte 2" />}
-                                            </div>
-                                        )}
+                                        {/* Menu (top right) */}
+                                        <div className="pt-3 pr-3 shrink-0">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+                                                    <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <MoreVertical className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={`/fp-informatica/exams/${template.id}`}>
+                                                            <Edit className="mr-2 h-4 w-4" />
+                                                            Abrir / Editar
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="text-red-600 focus:text-red-600"
+                                                        onClick={(e) => {
+                                                            e.preventDefault()
+                                                            handleDelete(template.id)
+                                                        }}
+                                                        disabled={isDeleting === template.id}
+                                                    >
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Eliminar
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                     </div>
 
-                                    {/* Menu + timestamp (top right) */}
-                                    <div className="absolute top-3 right-3 flex items-center gap-2">
-                                        <span className="text-[11px] text-gray-400 hidden sm:inline">
+                                    {/* Footer: timestamp */}
+                                    <div className="px-5 py-2 border-t border-gray-100 flex justify-end">
+                                        <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                                            <Clock className="h-3 w-3" />
                                             Actualizado: {formatTimeAgo(template.updatedAt)}
                                         </span>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                                                <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <MoreVertical className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem asChild>
-                                                    <Link href={`/fp-informatica/exams/${template.id}`}>
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Abrir / Editar
-                                                    </Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    className="text-red-600 focus:text-red-600"
-                                                    onClick={(e) => {
-                                                        e.preventDefault()
-                                                        handleDelete(template.id)
-                                                    }}
-                                                    disabled={isDeleting === template.id}
-                                                >
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Eliminar
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
                                     </div>
                                 </div>
                             </Link>

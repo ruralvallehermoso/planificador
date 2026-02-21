@@ -412,29 +412,31 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
 
     const quickAnswers = (() => {
         if (!manualSolution) return []
-        // More robust parsing: look for lines starting with a number and containing a single letter A-E
-        const answers: { q: string, a: string }[] = []
-        const lines = manualSolution.split('\n')
+        const answersMap = new Map<number, string>()
 
+        // Method 1: Line by line (preferred for structured lists)
+        const lines = manualSolution.split('\n')
         lines.forEach(line => {
             const trimmed = line.trim()
-            // Pattern: "1. A" or "1) B" or "1. **C**" or "- 1. D" or "1. Respuesta: E"
             const match = trimmed.match(/^(?:[-*]\s*)?(\d+)[\.\)]\s*(?:Respuesta[:\s]+|Opción[:\s]+|.*?\s+)?(?:\*\*|__)?([a-eA-E])(?:\*\*|__)?(?:\s|$|\.)/i)
             if (match) {
-                answers.push({ q: match[1], a: match[2].toUpperCase() })
+                answersMap.set(parseInt(match[1]), match[2].toUpperCase())
             }
         })
 
-        // If no matches found with line-by-line, try a global regex as fallback
-        if (answers.length === 0) {
-            const globalRegex = /(?:^|\n|\s)(\d+)[\.\)]\s*(?:\*\*|__)?([a-eA-E])(?:\*\*|__)?(?:\s|[\.\)]|$)/gi
-            let m
-            while ((m = globalRegex.exec(manualSolution)) !== null) {
-                answers.push({ q: m[1], a: m[2].toUpperCase() })
+        // Method 2: Global fallback (catches mid-line or multi-column answers)
+        const globalRegex = /(?:^|\n|\s)(\d+)[\.\)]\s*(?:Respuesta[:\s]+|Opción[:\s]+|.*?\s+)?(?:\*\*|__)?([a-eA-E])(?:\*\*|__)?(?:\s|[\.\)]|$)/gi
+        let m
+        while ((m = globalRegex.exec(manualSolution)) !== null) {
+            const qNum = parseInt(m[1])
+            if (!answersMap.has(qNum)) {
+                answersMap.set(qNum, m[2].toUpperCase())
             }
         }
 
-        return answers
+        return Array.from(answersMap.entries())
+            .map(([q, a]) => ({ q: String(q), a }))
+            .sort((a, b) => parseInt(a.q) - parseInt(b.q))
     })()
 
     return (

@@ -410,6 +410,18 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
 
     const weights = getWeights()
 
+    const quickAnswers = (() => {
+        if (!manualSolution) return []
+        const regex = /(?:^|\n|\s)(\d+)[\.\)]\s*([a-eA-E])(?:\s|[\.\)]|$)/g
+        const answers: { q: string, a: string }[] = []
+        let match
+        const text = manualSolution
+        while ((match = regex.exec(text)) !== null) {
+            answers.push({ q: match[1], a: match[2].toUpperCase() })
+        }
+        return answers
+    })()
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 pb-20 print:bg-white print:pb-0">
             {/* Top Bar - Glassmorphism style */}
@@ -704,6 +716,24 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                                         <Sparkles className="h-4 w-4" />
                                                         Vista Previa Formateada
                                                     </div>
+
+                                                    {quickAnswers.length > 0 && (
+                                                        <div className="p-6 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
+                                                            <div className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                                <Check className="h-3 w-3" />
+                                                                Soluciones Rápidas (Test)
+                                                            </div>
+                                                            <div className="flex flex-wrap gap-x-6 gap-y-3">
+                                                                {quickAnswers.map((ans, i) => (
+                                                                    <div key={i} className="flex items-baseline gap-1.5">
+                                                                        <span className="text-orange-400 font-medium text-sm">{ans.q}.</span>
+                                                                        <span className="text-3xl font-black text-orange-950 font-mono">{ans.a}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
                                                     <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-inner prose prose-sm max-w-none prose-orange">
                                                         <ReactMarkdown
                                                             remarkPlugins={[remarkGfm, remarkMath]}

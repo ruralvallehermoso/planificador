@@ -414,22 +414,14 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         if (!manualSolution) return []
         const answersMap = new Map<number, string>()
 
-        // Method 1: Line by line (preferred for structured lists)
-        const lines = manualSolution.split('\n')
-        lines.forEach(line => {
-            const trimmed = line.trim()
-            const match = trimmed.match(/^(?:[-*]\s*)?(\d+)[\.\)]\s*(?:Respuesta[:\s]+|Opción[:\s]+|.*?\s+)?(?:\*\*|__)?([a-eA-E])(?:\*\*|__)?(?:\s|$|\.)/i)
-            if (match) {
-                answersMap.set(parseInt(match[1]), match[2].toUpperCase())
-            }
-        })
+        // Ultra-resilient regex: handles almost any format (1.A, 1:B, 1-C, 1) D, etc.)
+        // It looks for a number, a delimiter (or space), and a single letter A-E
+        const globalRegex = /(?:^|\n|\s|[^\d])(\d+)(?:\s*[\.\)\]\-\:]+\s*|\s+)(?:\*\*|__)?([a-eA-E])(?:\*\*|__)?(?:\s|$|\.|\,)/gi
 
-        // Method 2: Global fallback (catches mid-line or multi-column answers)
-        const globalRegex = /(?:^|\n|\s)(\d+)[\.\)]\s*(?:Respuesta[:\s]+|Opción[:\s]+|.*?\s+)?(?:\*\*|__)?([a-eA-E])(?:\*\*|__)?(?:\s|[\.\)]|$)/gi
         let m
         while ((m = globalRegex.exec(manualSolution)) !== null) {
             const qNum = parseInt(m[1])
-            if (!answersMap.has(qNum)) {
+            if (!answersMap.has(qNum) && qNum < 100) { // Limit to reasonable question numbers
                 answersMap.set(qNum, m[2].toUpperCase())
             }
         }
@@ -740,11 +732,11 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                                                 <Check className="h-3 w-3" />
                                                                 Soluciones Rápidas (Test)
                                                             </div>
-                                                            <div className="flex flex-wrap gap-x-6 gap-y-3">
+                                                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 lg:grid-cols-10 gap-3">
                                                                 {quickAnswers.map((ans, i) => (
-                                                                    <div key={i} className="flex items-baseline gap-1.5">
-                                                                        <span className="text-orange-400 font-medium text-sm">{ans.q}.</span>
-                                                                        <span className="text-3xl font-black text-orange-950 font-mono">{ans.a}</span>
+                                                                    <div key={i} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-orange-100 shadow-sm transition-transform hover:scale-105">
+                                                                        <span className="text-[10px] font-bold text-orange-400 uppercase leading-none mb-1">{ans.q}</span>
+                                                                        <span className="text-3xl font-black text-orange-950 font-mono leading-none">{ans.a}</span>
                                                                     </div>
                                                                 ))}
                                                             </div>

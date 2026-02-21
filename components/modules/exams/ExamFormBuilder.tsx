@@ -413,18 +413,34 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     const quickAnswers = (() => {
         if (!manualSolution) return []
         const answersMap = new Map<number, string>()
+        let currentQ = -1
 
-        // Ultra-resilient regex: handles almost any format (1.A, 1:B, 1-C, 1) D, etc.)
-        // It looks for a number, a delimiter (or space), and a single letter A-E
-        const globalRegex = /(?:^|\n|\s|[^\d])(\d+)(?:\s*[\.\)\]\-\:]+\s*|\s+)(?:\*\*|__)?([a-eA-E])(?:\*\*|__)?(?:\s|$|\.|\,)/gi
+        const lines = manualSolution.split('\n')
+        lines.forEach(line => {
+            const trimmed = line.trim()
 
-        let m
-        while ((m = globalRegex.exec(manualSolution)) !== null) {
-            const qNum = parseInt(m[1])
-            if (!answersMap.has(qNum) && qNum < 100) { // Limit to reasonable question numbers
-                answersMap.set(qNum, m[2].toUpperCase())
+            // Check if line starts a new question: "1. **..."
+            const qMatch = trimmed.match(/^(\d+)[\.\)]\s+/)
+            if (qMatch) {
+                currentQ = parseInt(qMatch[1])
             }
-        }
+
+            // If we are tracking a question, look for its answer
+            if (currentQ !== -1 && currentQ < 100) {
+                // Regex to find the letter: matches "**b)**", "Respuesta: A", etc.
+                const aMatch = trimmed.match(/\*\*([a-eA-E])\s*[\)\.]\*\*/i) ||
+                    trimmed.match(/[Rr]espuesta:?\s+\*\*?([a-eA-E])[\)\.]/i) ||
+                    trimmed.match(/^[*]\s+\*\*Respuesta:\*\*\s+\*\*([a-eA-E])\)/i)
+
+                if (aMatch) {
+                    const letter = aMatch[1] // The captured group
+                    if (letter) {
+                        answersMap.set(currentQ, letter.toUpperCase())
+                        currentQ = -1 // Found it, reset for next question
+                    }
+                }
+            }
+        })
 
         return Array.from(answersMap.entries())
             .map(([q, a]) => ({ q: String(q), a }))

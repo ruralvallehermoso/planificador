@@ -412,13 +412,28 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
 
     const quickAnswers = (() => {
         if (!manualSolution) return []
-        const regex = /(?:^|\n|\s)(\d+)[\.\)]\s*([a-eA-E])(?:\s|[\.\)]|$)/g
+        // More robust parsing: look for lines starting with a number and containing a single letter A-E
         const answers: { q: string, a: string }[] = []
-        let match
-        const text = manualSolution
-        while ((match = regex.exec(text)) !== null) {
-            answers.push({ q: match[1], a: match[2].toUpperCase() })
+        const lines = manualSolution.split('\n')
+
+        lines.forEach(line => {
+            const trimmed = line.trim()
+            // Pattern: "1. A" or "1) B" or "1. **C**" or "- 1. D" or "1. Respuesta: E"
+            const match = trimmed.match(/^(?:[-*]\s*)?(\d+)[\.\)]\s*(?:Respuesta[:\s]+|Opción[:\s]+|.*?\s+)?(?:\*\*|__)?([a-eA-E])(?:\*\*|__)?(?:\s|$|\.)/i)
+            if (match) {
+                answers.push({ q: match[1], a: match[2].toUpperCase() })
+            }
+        })
+
+        // If no matches found with line-by-line, try a global regex as fallback
+        if (answers.length === 0) {
+            const globalRegex = /(?:^|\n|\s)(\d+)[\.\)]\s*(?:\*\*|__)?([a-eA-E])(?:\*\*|__)?(?:\s|[\.\)]|$)/gi
+            let m
+            while ((m = globalRegex.exec(manualSolution)) !== null) {
+                answers.push({ q: m[1], a: m[2].toUpperCase() })
+            }
         }
+
         return answers
     })()
 

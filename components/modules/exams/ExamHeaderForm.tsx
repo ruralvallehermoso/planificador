@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ExamHeaderData } from "@/lib/actions/exams"
-import { CalendarIcon, Sparkles } from "lucide-react"
+import { CalendarIcon, Sparkles, FileText, Settings, BadgeInfo } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
@@ -39,8 +39,18 @@ export function ExamHeaderForm({ data, grading, onChange, onGradingChange }: Exa
     }
 
     return (
-        <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900 border-b pb-2">Cabecera del Examen</h2>
+        <div className="space-y-6 bg-white p-8 rounded-2xl shadow-md border-l-4 border-l-indigo-400 hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between border-b pb-4 mb-2">
+                <div className="flex items-center gap-2">
+                    <div className="p-2 bg-indigo-50 rounded-lg">
+                        <FileText className="h-5 w-5 text-indigo-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-800">Cabecera del Examen</h2>
+                </div>
+                <div className="bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider border border-indigo-100">
+                    Configuración
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -162,8 +172,11 @@ export function ExamHeaderForm({ data, grading, onChange, onGradingChange }: Exa
             </div>
 
             <div className="pt-4 border-t">
-                <Label className="text-purple-700 font-semibold mb-3 block">Reglas de Calificación (Test)</Label>
-                <div className="grid grid-cols-3 gap-4 bg-purple-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-3">
+                    <Settings className="w-4 h-4 text-purple-600" />
+                    <Label className="text-purple-700 font-bold">Reglas de Calificación (Test)</Label>
+                </div>
+                <div className="grid grid-cols-3 gap-4 bg-purple-50/50 p-6 rounded-2xl border border-purple-100">
                     <div className="space-y-2">
                         <Label className="text-xs">Puntos por Acierto</Label>
                         <Input

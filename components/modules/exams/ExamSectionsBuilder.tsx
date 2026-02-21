@@ -12,7 +12,7 @@ const RichTextEditor = dynamic(
 )
 
 import { ExamSection } from "@/lib/actions/exams"
-import { Plus, Trash2, GripVertical } from "lucide-react"
+import { Plus, Trash2, GripVertical, TestTube, Code2, Type, Layout, Grip } from "lucide-react"
 import {
     DndContext,
     closestCenter,
@@ -77,10 +77,19 @@ export function ExamSectionsBuilder({ sections, onChange }: Props) {
         <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm border">
             <h2 className="text-xl font-semibold border-b pb-2">2. Secciones del Examen</h2>
 
-            <div className="flex gap-2 mb-4">
-                <Button onClick={() => handleAddSection('TEST')} size="sm" variant="outline">+ Test</Button>
-                <Button onClick={() => handleAddSection('DEVELOP')} size="sm" variant="outline">+ Desarrollar</Button>
-                <Button onClick={() => handleAddSection('STANDARD')} size="sm" variant="outline">+ Texto Libre</Button>
+            <div className="flex flex-wrap gap-2 mb-6">
+                <Button onClick={() => handleAddSection('TEST')} size="sm" variant="outline" className="rounded-full border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border-blue-300">
+                    <TestTube className="w-3.5 h-3.5 mr-1.5" />
+                    + Test
+                </Button>
+                <Button onClick={() => handleAddSection('DEVELOP')} size="sm" variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300">
+                    <Code2 className="w-3.5 h-3.5 mr-1.5" />
+                    + Desarrollar
+                </Button>
+                <Button onClick={() => handleAddSection('STANDARD')} size="sm" variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:border-amber-300">
+                    <Type className="w-3.5 h-3.5 mr-1.5" />
+                    + Texto Libre
+                </Button>
             </div>
 
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -99,9 +108,13 @@ export function ExamSectionsBuilder({ sections, onChange }: Props) {
             </DndContext>
 
             {sections.length === 0 && (
-                <p className="text-center text-gray-400 py-8 border-2 border-dashed rounded-lg">
-                    Añade secciones para construir el examen
-                </p>
+                <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+                    <div className="p-4 bg-white rounded-2xl shadow-sm mb-4">
+                        <Plus className="w-8 h-8 text-slate-300" />
+                    </div>
+                    <p className="text-slate-400 font-medium">Añade secciones para construir el examen</p>
+                    <p className="text-slate-300 text-sm mt-1">Selecciona el tipo de contenido arriba</p>
+                </div>
             )}
         </div>
     )
@@ -142,26 +155,76 @@ function SortableSectionItem({
         onUpdate(section.id, 'questions', formatted)
     }
 
+    const getSectionStyles = (type: string) => {
+        switch (type) {
+            case 'TEST':
+                return {
+                    borderLeft: 'border-l-blue-400',
+                    badge: 'bg-blue-50 text-blue-700 border-blue-100',
+                    label: 'Test',
+                    icon: <TestTube className="w-3.5 h-3.5" />
+                }
+            case 'DEVELOP':
+                return {
+                    borderLeft: 'border-l-emerald-400',
+                    badge: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                    label: 'Desarrollo',
+                    icon: <Code2 className="w-3.5 h-3.5" />
+                }
+            case 'STANDARD':
+            default:
+                return {
+                    borderLeft: 'border-l-amber-400',
+                    badge: 'bg-amber-50 text-amber-700 border-amber-100',
+                    label: 'Libre',
+                    icon: <Type className="w-3.5 h-3.5" />
+                }
+        }
+    }
+
+    const { borderLeft, badge, label, icon } = getSectionStyles(section.type)
+
     return (
-        <div ref={setNodeRef} style={style} className="border rounded-md p-4 bg-gray-50 relative group">
-            <div className="flex items-center gap-3 mb-3">
-                <div {...attributes} {...listeners} className="cursor-move p-1 text-gray-400 hover:text-gray-600">
-                    <GripVertical className="h-5 w-5" />
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={cn(
+                "border rounded-2xl p-6 bg-white relative group transition-all duration-300 shadow-md hover:shadow-lg border-l-4",
+                borderLeft,
+                "hover:scale-[1.01]"
+            )}
+        >
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+                <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border", badge)}>
+                    {icon}
+                    {label}
+                </div>
+            </div>
+
+            <div className="flex items-center gap-4 mb-4">
+                <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1.5 text-slate-300 hover:text-slate-500 hover:bg-slate-50 rounded-md transition-colors">
+                    <Grip className="h-5 w-5" strokeWidth={2.5} />
                 </div>
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
                         value={section.title}
                         onChange={(e) => onUpdate(section.id, 'title', e.target.value)}
-                        className="font-medium"
+                        className="font-bold text-slate-800 border-slate-200 focus:border-indigo-400 focus:ring-indigo-100 rounded-xl"
                         placeholder="Título de la sección"
                     />
                     <Input
                         value={section.ra ? section.ra.join(', ') : ''}
                         onChange={(e) => onUpdate(section.id, 'ra', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                        placeholder="RAs evaluados en esta sección"
+                        placeholder="RAs evaluados (RA1, RA2...)"
+                        className="border-slate-200 focus:border-indigo-400 focus:ring-indigo-100 rounded-xl"
                     />
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => onRemove(section.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRemove(section.id)}
+                    className="text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-full shrink-0"
+                >
                     <Trash2 className="h-4 w-4" />
                 </Button>
             </div>

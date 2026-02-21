@@ -411,9 +411,9 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     const weights = getWeights()
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0">
-            {/* Top Bar */}
-            <header className="bg-white border-b z-10 print:hidden relative shadow-sm">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 pb-20 print:bg-white print:pb-0">
+            {/* Top Bar - Glassmorphism style */}
+            <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b z-30 print:hidden shadow-sm">
                 {/* Row 1: Navigation + Title + View Mode */}
                 <div className="w-full max-w-[1800px] mx-auto px-4 h-14 flex items-center justify-between">
                     <div className="flex items-center gap-3 min-w-0">
@@ -488,8 +488,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
 
                     <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8">
-                                <Save className="h-3.5 w-3.5 mr-1.5" />
+                            <Button variant="outline" size="sm" className="h-8 rounded-full border-slate-300 hover:bg-slate-50">
+                                <Save className="h-3.5 w-3.5 mr-1.5 text-slate-600" />
                                 Guardar
                             </Button>
                         </DialogTrigger>
@@ -535,7 +535,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                         </DialogContent>
                     </Dialog>
 
-                    <Button onClick={handleExportDoc} size="sm" className="h-8 bg-green-600 hover:bg-green-700 text-white">
+                    <Button onClick={handleExportDoc} size="sm" className="h-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full transition-all hover:shadow-md active:scale-95">
                         <Download className="h-3.5 w-3.5 mr-1.5" />
                         Exportar
                     </Button>
@@ -544,13 +544,13 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                         onClick={handleGenerateSolution}
                         disabled={isGeneratingSolution || sections.length === 0}
                         size="sm"
-                        className="h-8 bg-purple-600 hover:bg-purple-700 text-white"
+                        className="h-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full transition-all hover:shadow-md active:scale-95 px-4"
                     >
                         {isGeneratingSolution ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
                         IA
                     </Button>
 
-                    <Button onClick={handlePrint} size="sm" className="h-8 bg-blue-600 hover:bg-blue-700 text-white">
+                    <Button onClick={handlePrint} size="sm" className="h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all hover:shadow-md active:scale-95 px-4">
                         <Printer className="h-3.5 w-3.5 mr-1.5" />
                         Imprimir
                     </Button>

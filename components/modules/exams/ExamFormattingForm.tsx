@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { ExamFormatting } from "@/lib/actions/exams"
+import { Palette, Layout, Type } from "lucide-react"
 
 interface Props {
     data: ExamFormatting
@@ -17,8 +18,18 @@ export function ExamFormattingForm({ data, onChange }: Props) {
     }
 
     return (
-        <div className="space-y-6 bg-white p-6 rounded-lg shadow-sm border">
-            <h2 className="text-xl font-semibold border-b pb-2">3. Formato del Documento</h2>
+        <div className="space-y-6 bg-white p-8 rounded-2xl shadow-md border-l-4 border-l-slate-400 hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center justify-between border-b pb-4 mb-2">
+                <div className="flex items-center gap-2">
+                    <div className="p-2 bg-slate-50 rounded-lg">
+                        <Palette className="h-5 w-5 text-slate-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-800">Formato del Documento</h2>
+                </div>
+                <div className="bg-slate-50 text-slate-700 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider border border-slate-100">
+                    Estilo
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -60,22 +71,23 @@ export function ExamFormattingForm({ data, onChange }: Props) {
                     </Select>
                 </div>
 
-                <div className="flex items-center justify-between p-3 border rounded-md">
-                    <Label htmlFor="bold-titles" className="cursor-pointer">Títulos en Negrita</Label>
+                <div className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-xl transition-colors hover:bg-slate-50">
+                    <Label htmlFor="bold-titles" className="cursor-pointer font-medium text-slate-700">Títulos en Negrita</Label>
                     <Switch
                         id="bold-titles"
                         checked={data.isBoldTitle}
                         onCheckedChange={(checked) => handleChange('isBoldTitle', checked)}
+                        className="data-[state=checked]:bg-indigo-600"
                     />
                 </div>
 
-                <div className="flex items-center justify-between p-3 border rounded-md">
-                    <Label htmlFor="bold-questions" className="cursor-pointer">Preguntas en Negrita (Defecto)</Label>
+                <div className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-xl transition-colors hover:bg-slate-50">
+                    <Label htmlFor="bold-questions" className="cursor-pointer font-medium text-slate-700">Preguntas en Negrita (Defecto)</Label>
                     <Switch
                         id="bold-questions"
                         checked={data.questionsBold ?? true}
                         onCheckedChange={(checked) => handleChange('questionsBold', checked)}
-                        className="data-[state=checked]:bg-blue-600"
+                        className="data-[state=checked]:bg-indigo-600"
                     />
                 </div>
 

@@ -7,7 +7,7 @@ import { getAssets, getIndexaConnected } from '../data/assets.js';
 import { renderSparkline } from './SparklineChart.js';
 import { fetchPortfolioHistory } from '../services/history.js';
 
-import { BACKEND_URL } from '../config.js';
+
 
 /**
  * Create Indexa card container HTML
@@ -32,19 +32,12 @@ export function createIndexaCard() {
 }
 
 /**
- * Fetch 24h changes for Indexa accounts from backend
+ * Get 24h changes for Indexa accounts from already-loaded asset data.
+ * Uses the change24h field populated from /api/assets (change_24h_pct).
  */
-async function fetchIndexa24hChanges() {
-    try {
-        const res = await fetch(`${BACKEND_URL}/api/assets/changes?min_value=0`);
-        if (!res.ok) throw new Error('Failed to fetch changes');
-        const data = await res.json();
-        // Filter only Indexa accounts
-        return data.filter(a => a.id.startsWith('idx_'));
-    } catch (e) {
-        console.error('Error fetching Indexa 24h changes:', e);
-        return [];
-    }
+function getIndexa24hChanges() {
+    const indexaAssets = getAssets('Fondos').filter(a => a.id && a.id.startsWith('idx_'));
+    return indexaAssets.map(a => ({ id: a.id, change_24h_pct: a.change24h || 0 }));
 }
 
 /**
@@ -59,8 +52,8 @@ export async function renderIndexaCard() {
     const connected = getIndexaConnected();
     const indexaAssets = getAssets('Fondos').filter(a => a.id && a.id.startsWith('idx_'));
 
-    // Fetch 24h changes from backend
-    const changes24h = await fetchIndexa24hChanges();
+    // Get 24h changes from already-loaded asset data
+    const changes24h = getIndexa24hChanges();
     const changesMap = {};
     changes24h.forEach(c => { changesMap[c.id] = c.change_24h_pct; });
 

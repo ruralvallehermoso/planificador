@@ -12,6 +12,7 @@ const RichTextEditor = dynamic(
 )
 
 import { ExamSection } from "@/lib/actions/exams"
+import { cn } from "@/lib/utils"
 import { Plus, Trash2, GripVertical, TestTube, Code2, Type, Layout, Grip } from "lucide-react"
 import {
     DndContext,

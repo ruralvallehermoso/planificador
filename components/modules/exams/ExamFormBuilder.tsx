@@ -451,150 +451,74 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 pb-20 print:bg-white print:pb-0">
             {/* Top Bar - Glassmorphism style */}
             <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b z-30 print:hidden shadow-sm">
-                {/* Row 1: Navigation + Title + View Mode */}
-                <div className="w-full max-w-[1800px] mx-auto px-4 h-14 flex items-center justify-between">
+                <div className="w-full max-w-[1800px] mx-auto px-4 h-14 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 min-w-0">
                         <Link href="/fp-informatica/exams" className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0">
                             <ArrowLeft className="h-5 w-5 text-gray-600" />
                         </Link>
-                        <h1 className="text-lg font-bold text-gray-900 truncate">Generador de Exámenes</h1>
-
-                        {selectedTemplateId && (
-                            <span className="hidden lg:inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium truncate max-w-[200px]">
-                                {templates.find(t => t.id === selectedTemplateId)?.name}
-                            </span>
-                        )}
+                        <h1 className="text-lg font-bold text-gray-900 truncate hidden sm:block">Generador de Exámenes</h1>
                     </div>
 
-                    {/* View Mode Toggles */}
-                    <div className="flex items-center bg-gray-100 p-1 rounded-lg border shrink-0">
-                        <Button
-                            variant="ghost" size="sm"
-                            onClick={() => setViewMode('editor')}
-                            className={cn("h-7 px-2", viewMode === 'editor' && "bg-white shadow text-blue-600")}
-                            title="Solo Editor"
-                        >
-                            <PanelLeft className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            variant="ghost" size="sm"
-                            onClick={() => setViewMode('split')}
-                            className={cn("h-7 px-2", viewMode === 'split' && "bg-white shadow text-blue-600")}
-                            title="Dividido"
-                        >
-                            <Columns className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            variant="ghost" size="sm"
-                            onClick={() => setViewMode('preview')}
-                            className={cn("h-7 px-2", viewMode === 'preview' && "bg-white shadow text-blue-600")}
-                            title="Solo Vista Previa"
-                        >
-                            <PanelRight className="w-4 h-4" />
-                        </Button>
-                    </div>
-                </div>
+                    <div className="flex items-center gap-2 flex-1 md:flex-none justify-end">
+                        <div className="flex items-center gap-1">
+                            <Select onValueChange={handleLoadTemplate} key={templates.length}>
+                                <SelectTrigger className="w-[140px] sm:w-[180px] h-8 text-xs bg-transparent border-slate-200 hover:bg-slate-50 transition-colors">
+                                    <SelectValue placeholder="Plantillas..." />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                    {templates.map(t => (
+                                        <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
-                {/* Row 2: Actions */}
-                <div className="w-full max-w-[1800px] mx-auto px-4 pb-2 flex flex-wrap items-center gap-2">
-                    <Select onValueChange={handleLoadTemplate} key={templates.length}>
-                        <SelectTrigger className="w-[160px] h-8 text-xs border-slate-300">
-                            <SelectValue placeholder="Cargar plantilla..." />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                            {templates.map(t => (
-                                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-
-                    {selectedTemplateId && (
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={handleDeleteTemplate}
-                            disabled={isDeleting}
-                            className="h-8 w-8 p-0"
-                            title="Eliminar plantilla seleccionada"
-                        >
-                            {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-                        </Button>
-                    )}
-
-                    <div className="w-px h-5 bg-gray-200 hidden sm:block" />
-
-                    <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 rounded-full border-slate-300 hover:bg-slate-50">
-                                <Save className="h-3.5 w-3.5 mr-1.5 text-slate-600" />
-                                Guardar
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>
-                                    {selectedTemplateId ? 'Guardar Cambios' : 'Guardar nueva plantilla'}
-                                </DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4 py-4">
-                                {selectedTemplateId && (
-                                    <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-4">
-                                        Estás editando la plantilla: <strong>{templates.find(t => t.id === selectedTemplateId)?.name}</strong>
-                                    </div>
-                                )}
-                                <div className="space-y-2">
-                                    <Label>Nombre de la plantilla</Label>
-                                    <Input
-                                        value={newTemplateName}
-                                        onChange={(e) => setNewTemplateName(e.target.value)}
-                                        placeholder="Ej: Examen Final Diciembre"
-                                    />
-                                </div>
-                            </div>
-                            <DialogFooter className="flex-col gap-2 sm:flex-row">
-                                {selectedTemplateId && (
-                                    <Button
-                                        onClick={() => handleSaveTemplate(true)}
-                                        variant="outline"
-                                        disabled={!newTemplateName || isSaving}
-                                    >
-                                        Guardar como nueva
-                                    </Button>
-                                )}
+                            {selectedTemplateId && (
                                 <Button
-                                    onClick={() => handleSaveTemplate(false)}
-                                    disabled={!newTemplateName || isSaving}
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={handleDeleteTemplate}
+                                    disabled={isDeleting}
+                                    className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full"
+                                    title="Eliminar plantilla seleccionada"
                                 >
-                                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    {selectedTemplateId ? 'Sobrescribir' : 'Guardar'}
+                                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                 </Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
+                            )}
+                        </div>
 
-                    <Button onClick={handleExportDoc} size="sm" className="h-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full transition-all hover:shadow-md active:scale-95">
-                        <Download className="h-3.5 w-3.5 mr-1.5" />
-                        Exportar
-                    </Button>
+                        <div className="w-px h-5 bg-gray-200 mx-1 hidden sm:block" />
 
-                    <Button
-                        onClick={handleGenerateSolution}
-                        disabled={isGeneratingSolution || sections.length === 0}
-                        size="sm"
-                        className="h-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full transition-all hover:shadow-md active:scale-95 px-4"
-                    >
-                        {isGeneratingSolution ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5 mr-1.5" />}
-                        IA
-                    </Button>
-
-                    <Button onClick={handlePrint} size="sm" className="h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all hover:shadow-md active:scale-95 px-4">
-                        <Printer className="h-3.5 w-3.5 mr-1.5" />
-                        Imprimir
-                    </Button>
+                        <div className="hidden sm:flex items-center bg-gray-100/80 p-1 rounded-lg border border-gray-200/60 shrink-0">
+                            <Button
+                                variant="ghost" size="sm"
+                                onClick={() => setViewMode('editor')}
+                                className={cn("h-7 px-2.5 rounded-md transition-all", viewMode === 'editor' && "bg-white shadow-sm text-blue-600")}
+                                title="Solo Editor"
+                            >
+                                <PanelLeft className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                variant="ghost" size="sm"
+                                onClick={() => setViewMode('split')}
+                                className={cn("h-7 px-2.5 rounded-md transition-all", viewMode === 'split' && "bg-white shadow-sm text-blue-600")}
+                                title="Dividido"
+                            >
+                                <Columns className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                variant="ghost" size="sm"
+                                onClick={() => setViewMode('preview')}
+                                className={cn("h-7 px-2.5 rounded-md transition-all", viewMode === 'preview' && "bg-white shadow-sm text-blue-600")}
+                                title="Solo Vista Previa"
+                            >
+                                <PanelRight className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </header>
 
-            <main className="w-full max-w-[1800px] mx-auto px-4 py-8 print:p-0">
+            <main className="w-full max-w-[1800px] mx-auto px-4 py-8 pb-32 print:p-0">
                 <div className={cn(
                     "grid gap-8 print:block print:w-full transition-all duration-300",
                     viewMode === 'split' ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"
@@ -622,30 +546,6 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                         viewMode === 'preview' ? ((showNotebook || showGrading) ? "max-w-[95vw] mx-auto" : "max-w-[210mm] mx-auto") : ""
                     )}>
                         <div className="print:static sticky top-6 space-y-4">
-
-                            {/* Tools Toolbar */}
-                            <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm flex items-center gap-2 mb-4 print:hidden">
-                                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-2 mr-2">Herramientas:</span>
-                                <Button
-                                    variant={showGrading ? "secondary" : "ghost"}
-                                    size="sm"
-                                    onClick={() => setShowGrading(!showGrading)}
-                                    className={cn("gap-2", showGrading && "bg-emerald-100 text-emerald-800 hover:bg-emerald-200")}
-                                >
-                                    <Calculator className="h-4 w-4" />
-                                    Calculadora
-                                </Button>
-                                <Button
-                                    variant={showNotebook ? "secondary" : "ghost"}
-                                    size="sm"
-                                    onClick={() => setShowNotebook(!showNotebook)}
-                                    className={cn("gap-2", showNotebook && "bg-orange-100 text-orange-800 hover:bg-orange-200")}
-                                >
-                                    <BookOpen className="h-4 w-4" />
-                                    Manual / NotebookLM
-                                </Button>
-                            </div>
-
                             <div className={cn(
                                 "grid gap-6 transition-all duration-300",
                                 (showGrading && showNotebook) ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"
@@ -858,6 +758,127 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                     </div>
                 </div>
             </main >
+
+            {/* Floating Action Dock */}
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 print:hidden transition-transform duration-300 w-full max-w-[90vw] sm:w-auto">
+                <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 p-2 sm:p-2.5 sm:rounded-full rounded-2xl shadow-2xl flex flex-col sm:flex-row items-center gap-2 sm:gap-1.5 overflow-x-auto">
+
+                    {/* Secondary Tools */}
+                    <div className="flex items-center gap-1.5 w-full sm:w-auto justify-center">
+                        <Button
+                            variant="ghost" size="sm"
+                            onClick={() => setShowGrading(!showGrading)}
+                            className={cn(
+                                "h-9 px-3 sm:px-4 rounded-full text-slate-300 hover:bg-slate-800 hover:text-white transition-all font-medium",
+                                showGrading && "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 hover:text-emerald-200"
+                            )}
+                        >
+                            <Calculator className="h-4 w-4 mr-0 sm:mr-2" />
+                            <span className="hidden sm:inline">Calculadora</span>
+                        </Button>
+                        <Button
+                            variant="ghost" size="sm"
+                            onClick={() => setShowNotebook(!showNotebook)}
+                            className={cn(
+                                "h-9 px-3 sm:px-4 rounded-full text-slate-300 hover:bg-slate-800 hover:text-white transition-all font-medium",
+                                showNotebook && "bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 hover:text-orange-200"
+                            )}
+                        >
+                            <BookOpen className="h-4 w-4 mr-0 sm:mr-2" />
+                            <span className="hidden sm:inline">NotebookLM</span>
+                        </Button>
+                    </div>
+
+                    <div className="w-full h-px sm:w-px sm:h-6 bg-slate-700/50 mx-2" />
+
+                    {/* Primary Actions */}
+                    <div className="flex items-center gap-1.5 w-full sm:w-auto justify-center">
+                        <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button size="sm" className="h-9 px-3 sm:px-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-md shadow-blue-900/20 transition-all active:scale-95">
+                                    <Save className="h-4 w-4 mr-0 sm:mr-2" />
+                                    <span className="hidden sm:inline">Guardar</span>
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        {selectedTemplateId ? 'Guardar Cambios' : 'Guardar nueva plantilla'}
+                                    </DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 py-4">
+                                    {selectedTemplateId && (
+                                        <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-4">
+                                            Estás editando la plantilla: <strong>{templates.find(t => t.id === selectedTemplateId)?.name}</strong>
+                                        </div>
+                                    )}
+                                    <div className="space-y-2">
+                                        <Label>Nombre de la plantilla</Label>
+                                        <Input
+                                            value={newTemplateName}
+                                            onChange={(e) => setNewTemplateName(e.target.value)}
+                                            placeholder="Ej: Examen Final Diciembre"
+                                        />
+                                    </div>
+                                </div>
+                                <DialogFooter className="flex-col gap-2 sm:flex-row">
+                                    {selectedTemplateId && (
+                                        <Button
+                                            onClick={() => handleSaveTemplate(true)}
+                                            variant="outline"
+                                            disabled={!newTemplateName || isSaving}
+                                        >
+                                            Guardar como nueva
+                                        </Button>
+                                    )}
+                                    <Button
+                                        onClick={() => handleSaveTemplate(false)}
+                                        disabled={!newTemplateName || isSaving}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                                    >
+                                        {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        {selectedTemplateId ? 'Sobrescribir' : 'Guardar'}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+
+                        <Button
+                            onClick={handleExportDoc}
+                            size="sm"
+                            variant="secondary"
+                            className="h-9 px-3 sm:px-4 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition-all active:scale-95"
+                            title="Exportar a Word"
+                        >
+                            <Download className="h-4 w-4 mr-0 sm:mr-2" />
+                            <span className="hidden sm:inline">Word</span>
+                        </Button>
+
+                        <Button
+                            onClick={handlePrint}
+                            size="sm"
+                            variant="secondary"
+                            className="h-9 px-3 sm:px-4 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition-all active:scale-95"
+                            title="Imprimir"
+                        >
+                            <Printer className="h-4 w-4 mr-0 sm:mr-2" />
+                            <span className="hidden sm:inline">Imprimir</span>
+                        </Button>
+
+                        <Button
+                            onClick={handleGenerateSolution}
+                            disabled={isGeneratingSolution || sections.length === 0}
+                            size="sm"
+                            className="h-9 px-3 sm:px-4 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-900/30 transition-all active:scale-95 ml-1"
+                            title="Generar Solucionario con IA"
+                        >
+                            {isGeneratingSolution ? <Loader2 className="h-4 w-4 mr-0 sm:mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-0 sm:mr-2 text-indigo-200" />}
+                            <span className="hidden sm:inline">Resuelve IA</span>
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
         </div >
     )
 }

@@ -11,13 +11,14 @@ import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2, Sparkles, Check, Copy, AlertCircle, Calculator, PanelLeft, PanelRight, Columns, BookOpen } from "lucide-react"
+import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2, Sparkles, Check, Copy, AlertCircle, Calculator, PanelLeft, PanelRight, Columns, BookOpen, ChevronDown } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu"
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
@@ -514,6 +515,104 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                 <PanelRight className="w-4 h-4" />
                             </Button>
                         </div>
+
+                        <div className="w-px h-5 bg-gray-200 mx-1 hidden sm:block" />
+
+                        <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button size="sm" className="h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all active:scale-95 hidden sm:flex">
+                                    <Save className="h-3.5 w-3.5 mr-1.5" />
+                                    Guardar
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        {selectedTemplateId ? 'Guardar Cambios' : 'Guardar nueva plantilla'}
+                                    </DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 py-4">
+                                    {selectedTemplateId && (
+                                        <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-4">
+                                            Estás editando la plantilla: <strong>{templates.find(t => t.id === selectedTemplateId)?.name}</strong>
+                                        </div>
+                                    )}
+                                    <div className="space-y-2">
+                                        <Label>Nombre de la plantilla</Label>
+                                        <Input
+                                            value={newTemplateName}
+                                            onChange={(e) => setNewTemplateName(e.target.value)}
+                                            placeholder="Ej: Examen Final Diciembre"
+                                        />
+                                    </div>
+                                </div>
+                                <DialogFooter className="flex-col gap-2 sm:flex-row">
+                                    {selectedTemplateId && (
+                                        <Button
+                                            onClick={() => handleSaveTemplate(true)}
+                                            variant="outline"
+                                            disabled={!newTemplateName || isSaving}
+                                        >
+                                            Guardar como nueva
+                                        </Button>
+                                    )}
+                                    <Button
+                                        onClick={() => handleSaveTemplate(false)}
+                                        disabled={!newTemplateName || isSaving}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                                    >
+                                        {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        {selectedTemplateId ? 'Sobrescribir' : 'Guardar'}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="outline" className="h-8 rounded-full text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-800 transition-all font-medium">
+                                    <Sparkles className="h-3.5 w-3.5 sm:mr-1.5" />
+                                    <span className="hidden sm:inline">IA y Herramientas</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-52 bg-white">
+                                <DropdownMenuLabel className="text-xs text-gray-500 font-semibold px-2">ASISTENTE IA</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={handleGenerateSolution} disabled={isGeneratingSolution || sections.length === 0} className="text-indigo-700 focus:bg-indigo-50 cursor-pointer text-sm py-2">
+                                    {isGeneratingSolution ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+                                    Resolver Test con IA
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowNotebook(!showNotebook); setShowGrading(false) }} className="cursor-pointer text-sm py-2 text-orange-700 focus:bg-orange-50 focus:text-orange-800">
+                                    <BookOpen className="h-4 w-4 mr-2" />
+                                    Pegar NotebookLM
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuLabel className="text-xs text-gray-500 font-semibold px-2">UTILIDADES</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowGrading(!showGrading); setShowNotebook(false) }} className="cursor-pointer text-sm py-2 text-emerald-700 focus:text-emerald-800 focus:bg-emerald-50">
+                                    <Calculator className="h-4 w-4 mr-2" />
+                                    Calculadora Notas
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="outline" className="h-8 rounded-full border-slate-200 hover:bg-slate-50 text-slate-700 font-medium ml-1">
+                                    <Download className="h-3.5 w-3.5 sm:mr-1.5" />
+                                    <span className="hidden sm:inline">Exportar</span>
+                                    <ChevronDown className="h-3.5 w-3.5 ml-1 hidden sm:inline" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40 bg-white">
+                                <DropdownMenuItem onClick={handleExportDoc} className="cursor-pointer text-sm py-2 focus:bg-slate-50">
+                                    <Download className="h-4 w-4 mr-2 text-slate-500" />
+                                    Ms Word (.doc)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={handlePrint} className="cursor-pointer text-sm py-2 focus:bg-slate-50">
+                                    <Printer className="h-4 w-4 mr-2 text-slate-500" />
+                                    Imprimir PDF
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
             </header>
@@ -758,126 +857,6 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                     </div>
                 </div>
             </main >
-
-            {/* Floating Action Dock */}
-            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 print:hidden transition-transform duration-300 w-full max-w-[90vw] sm:w-auto">
-                <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 p-2 sm:p-2.5 sm:rounded-full rounded-2xl shadow-2xl flex flex-col sm:flex-row items-center gap-2 sm:gap-1.5 overflow-x-auto">
-
-                    {/* Secondary Tools */}
-                    <div className="flex items-center gap-1.5 w-full sm:w-auto justify-center">
-                        <Button
-                            variant="ghost" size="sm"
-                            onClick={() => setShowGrading(!showGrading)}
-                            className={cn(
-                                "h-9 px-3 sm:px-4 rounded-full text-slate-300 hover:bg-slate-800 hover:text-white transition-all font-medium",
-                                showGrading && "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 hover:text-emerald-200"
-                            )}
-                        >
-                            <Calculator className="h-4 w-4 mr-0 sm:mr-2" />
-                            <span className="hidden sm:inline">Calculadora</span>
-                        </Button>
-                        <Button
-                            variant="ghost" size="sm"
-                            onClick={() => setShowNotebook(!showNotebook)}
-                            className={cn(
-                                "h-9 px-3 sm:px-4 rounded-full text-slate-300 hover:bg-slate-800 hover:text-white transition-all font-medium",
-                                showNotebook && "bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 hover:text-orange-200"
-                            )}
-                        >
-                            <BookOpen className="h-4 w-4 mr-0 sm:mr-2" />
-                            <span className="hidden sm:inline">NotebookLM</span>
-                        </Button>
-                    </div>
-
-                    <div className="w-full h-px sm:w-px sm:h-6 bg-slate-700/50 mx-2" />
-
-                    {/* Primary Actions */}
-                    <div className="flex items-center gap-1.5 w-full sm:w-auto justify-center">
-                        <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-                            <DialogTrigger asChild>
-                                <Button size="sm" className="h-9 px-3 sm:px-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-md shadow-blue-900/20 transition-all active:scale-95">
-                                    <Save className="h-4 w-4 mr-0 sm:mr-2" />
-                                    <span className="hidden sm:inline">Guardar</span>
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>
-                                        {selectedTemplateId ? 'Guardar Cambios' : 'Guardar nueva plantilla'}
-                                    </DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-4 py-4">
-                                    {selectedTemplateId && (
-                                        <div className="bg-blue-50 text-blue-800 p-3 rounded-md text-sm mb-4">
-                                            Estás editando la plantilla: <strong>{templates.find(t => t.id === selectedTemplateId)?.name}</strong>
-                                        </div>
-                                    )}
-                                    <div className="space-y-2">
-                                        <Label>Nombre de la plantilla</Label>
-                                        <Input
-                                            value={newTemplateName}
-                                            onChange={(e) => setNewTemplateName(e.target.value)}
-                                            placeholder="Ej: Examen Final Diciembre"
-                                        />
-                                    </div>
-                                </div>
-                                <DialogFooter className="flex-col gap-2 sm:flex-row">
-                                    {selectedTemplateId && (
-                                        <Button
-                                            onClick={() => handleSaveTemplate(true)}
-                                            variant="outline"
-                                            disabled={!newTemplateName || isSaving}
-                                        >
-                                            Guardar como nueva
-                                        </Button>
-                                    )}
-                                    <Button
-                                        onClick={() => handleSaveTemplate(false)}
-                                        disabled={!newTemplateName || isSaving}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                                    >
-                                        {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        {selectedTemplateId ? 'Sobrescribir' : 'Guardar'}
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
-
-                        <Button
-                            onClick={handleExportDoc}
-                            size="sm"
-                            variant="secondary"
-                            className="h-9 px-3 sm:px-4 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition-all active:scale-95"
-                            title="Exportar a Word"
-                        >
-                            <Download className="h-4 w-4 mr-0 sm:mr-2" />
-                            <span className="hidden sm:inline">Word</span>
-                        </Button>
-
-                        <Button
-                            onClick={handlePrint}
-                            size="sm"
-                            variant="secondary"
-                            className="h-9 px-3 sm:px-4 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition-all active:scale-95"
-                            title="Imprimir"
-                        >
-                            <Printer className="h-4 w-4 mr-0 sm:mr-2" />
-                            <span className="hidden sm:inline">Imprimir</span>
-                        </Button>
-
-                        <Button
-                            onClick={handleGenerateSolution}
-                            disabled={isGeneratingSolution || sections.length === 0}
-                            size="sm"
-                            className="h-9 px-3 sm:px-4 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-900/30 transition-all active:scale-95 ml-1"
-                            title="Generar Solucionario con IA"
-                        >
-                            {isGeneratingSolution ? <Loader2 className="h-4 w-4 mr-0 sm:mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-0 sm:mr-2 text-indigo-200" />}
-                            <span className="hidden sm:inline">Resuelve IA</span>
-                        </Button>
-                    </div>
-                </div>
-            </div>
 
         </div >
     )

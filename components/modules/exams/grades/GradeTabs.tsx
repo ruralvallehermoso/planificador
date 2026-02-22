@@ -450,7 +450,6 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                         <BarChart
                                             data={barData}
                                             margin={{ top: 20, right: 30, left: -20, bottom: 0 }}
-                                            onClick={handleThermometerClick}
                                         >
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#fed7aa" opacity={0.3} />
                                             <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#9a3412' }} tickLine={false} axisLine={{ stroke: '#fdba74' }} />
@@ -459,7 +458,13 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                                 cursor={{ fill: '#ffedd5', opacity: 0.4 }}
                                                 contentStyle={{ borderRadius: '8px', border: '1px solid #fed7aa', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
                                             />
-                                            <Bar dataKey="alumnos" radius={[4, 4, 0, 0]} maxBarSize={60} className="cursor-pointer hover:opacity-80 transition-opacity">
+                                            <Bar
+                                                dataKey="alumnos"
+                                                radius={[4, 4, 0, 0]}
+                                                maxBarSize={60}
+                                                className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                onClick={(data) => handleThermometerClick(data)}
+                                            >
                                                 {barData.map((entry, index) => {
                                                     const isActive = filterConfig.type === 'thermometer' && filterConfig.failsCount === entry.fails;
                                                     const isOtherActive = filterConfig.type === 'thermometer' && filterConfig.failsCount !== entry.fails;

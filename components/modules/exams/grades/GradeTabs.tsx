@@ -181,8 +181,19 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
     }
 
     const handleThermometerClick = (data: any) => {
-        if (!data || !data.activePayload || !data.activePayload[0]) return
-        const fails = data.activePayload[0].payload.fails
+        if (!data) return
+
+        // Recharts gives different data structures depending on where you click (Bar vs Background)
+        let fails = undefined
+        if (data.activePayload && data.activePayload[0]) {
+            fails = data.activePayload[0].payload.fails
+        } else if (data.payload && data.payload.fails !== undefined) {
+            fails = data.payload.fails
+        } else if (data.fails !== undefined) {
+            fails = data.fails
+        }
+
+        if (fails === undefined) return
 
         if (filterConfig.type === 'thermometer' && filterConfig.failsCount === fails) {
             setFilterConfig({ type: 'none' })

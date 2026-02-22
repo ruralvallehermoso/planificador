@@ -545,11 +545,27 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
 
                                             return (
                                                 <tr key={idx} className={rowClass}>
-                                                    {columns.map(col => (
-                                                        <td key={`${idx}-${col}`} className="px-6 py-4 truncate max-w-[200px]" title={String(row[col])}>
-                                                            {String(row[col])}
-                                                        </td>
-                                                    ))}
+                                                    {columns.map(col => {
+                                                        const isFilteredByColumn = filterConfig.type === 'column' && filterConfig.column === col;
+                                                        const isFilteredByThermometer = filterConfig.type === 'thermometer' && (config.charts || []).some((c: any) => c.column === col);
+                                                        const val = parseFloat(row[col]);
+
+                                                        let badge = null;
+                                                        if (!isNaN(val) && (isFilteredByColumn || isFilteredByThermometer)) {
+                                                            if (val >= 5) {
+                                                                badge = <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-200 text-green-800">Aprobado</span>
+                                                            } else {
+                                                                badge = <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-200 text-red-800">Suspenso</span>
+                                                            }
+                                                        }
+
+                                                        return (
+                                                            <td key={`${idx}-${col}`} className="px-6 py-4 truncate max-w-[200px]" title={String(row[col])}>
+                                                                {String(row[col])}
+                                                                {badge}
+                                                            </td>
+                                                        )
+                                                    })}
                                                 </tr>
                                             )
                                         }) : (

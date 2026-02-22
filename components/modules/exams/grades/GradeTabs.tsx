@@ -150,15 +150,16 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
         if (filterConfig.type === 'thermometer' && filterConfig.failsCount !== undefined) {
             const activeColumns = (config.charts || []).map((c: any) => c.column)
             let fails = 0
-            let hasAnyData = false
+
             activeColumns.forEach((col: string) => {
                 const val = parseFloat(row[col])
-                if (!isNaN(val)) {
-                    hasAnyData = true
-                    if (val < 5) fails++
+                // Si la celda está vacía o es NaN, simplemente no cuenta como suspenso 
+                // pero NO excluye al alumno del recuento total.
+                if (!isNaN(val) && val < 5) {
+                    fails++
                 }
             })
-            return hasAnyData && fails === filterConfig.failsCount
+            return fails === filterConfig.failsCount
         }
 
         return true
@@ -416,17 +417,16 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                 const counts = new Array(maxSuspensos + 1).fill(0);
                                 rawData.forEach(row => {
                                     let fails = 0;
-                                    let hasAnyData = false;
+
                                     activeColumns.forEach((col: string) => {
                                         const val = parseFloat(row[col]);
-                                        if (!isNaN(val)) {
-                                            hasAnyData = true;
-                                            if (val < 5) fails++;
+                                        if (!isNaN(val) && val < 5) {
+                                            fails++;
                                         }
                                     });
-                                    if (hasAnyData) {
-                                        counts[fails]++;
-                                    }
+
+                                    // Todos los alumnos entran en alguna categoría, incluso los que tienen 0 notas (0 suspensos)
+                                    counts[fails]++;
                                 });
 
                                 // 3. Formatear para Recharts

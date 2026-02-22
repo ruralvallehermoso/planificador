@@ -540,24 +540,32 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                     <tbody className="divide-y divide-gray-100">
                                         {paginatedData.length > 0 ? paginatedData.map((row, idx) => {
                                             let rowClass = "bg-white hover:bg-gray-50 transition-colors"
+                                            let stickyBgColor = "bg-white group-hover:bg-gray-50 transition-colors"
 
                                             if (filterConfig.type === 'column' && filterConfig.column) {
                                                 const cleanStr = String(row[filterConfig.column] || '').replace(',', '.')
                                                 const grade = parseFloat(cleanStr)
                                                 const status = getGradeStatus(grade)
                                                 if (!isNaN(grade)) {
-                                                    if (status === 'passed') rowClass = "bg-green-50 hover:bg-green-100 font-medium text-green-900 border-l-4 border-l-green-500"
-                                                    if (status === 'failed') rowClass = "bg-red-50 hover:bg-red-100 font-medium text-red-900 border-l-4 border-l-red-500"
+                                                    if (status === 'passed') {
+                                                        rowClass = "bg-green-50 hover:bg-green-100 font-medium text-green-900 border-l-4 border-l-green-500 group"
+                                                        stickyBgColor = "bg-green-50 group-hover:bg-green-100 transition-colors"
+                                                    }
+                                                    if (status === 'failed') {
+                                                        rowClass = "bg-red-50 hover:bg-red-100 font-medium text-red-900 border-l-4 border-l-red-500 group"
+                                                        stickyBgColor = "bg-red-50 group-hover:bg-red-100 transition-colors"
+                                                    }
                                                 }
                                             } else if (filterConfig.type === 'thermometer' && filterConfig.failsCount !== undefined) {
                                                 const dangerColor = filterConfig.failsCount === 0 ? 'green'
                                                     : filterConfig.failsCount === 1 ? 'yellow'
                                                         : filterConfig.failsCount === 2 ? 'orange' : 'red'
-                                                rowClass = `bg-${dangerColor}-50 hover:bg-${dangerColor}-100 font-medium text-${dangerColor}-900 border-l-4 border-l-${dangerColor}-500`
+                                                rowClass = `bg-${dangerColor}-50 hover:bg-${dangerColor}-100 font-medium text-${dangerColor}-900 border-l-4 border-l-${dangerColor}-500 group`
+                                                stickyBgColor = `bg-${dangerColor}-50 group-hover:bg-${dangerColor}-100 transition-colors`
                                             }
 
                                             return (
-                                                <tr key={idx} className={rowClass}>
+                                                <tr key={idx} className={rowClass.includes("hover:") && !rowClass.includes("group") ? rowClass + " group" : rowClass}>
                                                     {columns.map((col, cIdx) => {
                                                         const isFilteredByColumn = filterConfig.type === 'column' && filterConfig.column === col;
                                                         const isFilteredByThermometer = filterConfig.type === 'thermometer' && (config.charts || []).some((c: any) => c.column === col);
@@ -576,9 +584,9 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
 
                                                         let cellClass = "px-6 py-4 max-w-[200px]";
                                                         if (cIdx === 0) {
-                                                            cellClass += " sticky left-0 z-20 bg-inherit min-w-[220px] max-w-[220px]";
+                                                            cellClass += ` sticky left-0 z-20 ${stickyBgColor} min-w-[220px] max-w-[220px]`;
                                                         } else if (cIdx === 1) {
-                                                            cellClass += " sticky left-[220px] z-20 bg-inherit shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] min-w-[200px] max-w-[200px] border-r border-gray-100/50";
+                                                            cellClass += ` sticky left-[220px] z-20 ${stickyBgColor} shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] min-w-[200px] max-w-[200px] border-r border-gray-100/50`;
                                                         }
 
                                                         return (

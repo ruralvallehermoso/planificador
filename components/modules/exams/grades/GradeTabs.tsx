@@ -530,7 +530,8 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                             let rowClass = "hover:bg-gray-50/50 transition-colors"
 
                                             if (filterConfig.type === 'column' && filterConfig.column) {
-                                                const grade = parseFloat(row[filterConfig.column])
+                                                const cleanStr = String(row[filterConfig.column] || '').replace(',', '.')
+                                                const grade = parseFloat(cleanStr)
                                                 const status = getGradeStatus(grade)
                                                 if (!isNaN(grade)) {
                                                     if (status === 'passed') rowClass = "bg-green-100/50 hover:bg-green-100 font-medium text-green-900 border-l-4 border-l-green-500"
@@ -548,21 +549,25 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                                     {columns.map(col => {
                                                         const isFilteredByColumn = filterConfig.type === 'column' && filterConfig.column === col;
                                                         const isFilteredByThermometer = filterConfig.type === 'thermometer' && (config.charts || []).some((c: any) => c.column === col);
-                                                        const val = parseFloat(row[col]);
+
+                                                        const cleanGradeStr = String(row[col] ?? '').replace(',', '.').trim();
+                                                        const val = parseFloat(cleanGradeStr);
 
                                                         let badge = null;
                                                         if (!isNaN(val) && (isFilteredByColumn || isFilteredByThermometer)) {
                                                             if (val >= 5) {
-                                                                badge = <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-200 text-green-800">Aprobado</span>
+                                                                badge = <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-green-200 text-green-800 shrink-0 shadow-sm border border-green-300/50 uppercase tracking-widest">Aprobado</span>
                                                             } else {
-                                                                badge = <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-200 text-red-800">Suspenso</span>
+                                                                badge = <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-200 text-red-800 shrink-0 shadow-sm border border-red-300/50 uppercase tracking-widest">Suspenso</span>
                                                             }
                                                         }
 
                                                         return (
-                                                            <td key={`${idx}-${col}`} className="px-6 py-4 truncate max-w-[200px]" title={String(row[col])}>
-                                                                {String(row[col])}
-                                                                {badge}
+                                                            <td key={`${idx}-${col}`} className="px-6 py-4 max-w-[200px]" title={String(row[col])}>
+                                                                <div className="flex items-center justify-between gap-1 overflow-hidden">
+                                                                    <span className="truncate">{String(row[col])}</span>
+                                                                    {badge}
+                                                                </div>
                                                             </td>
                                                         )
                                                     })}

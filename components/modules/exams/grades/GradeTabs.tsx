@@ -520,33 +520,45 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                 <table className="w-full text-sm text-left">
                                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
                                         <tr>
-                                            {columns.map(col => (
-                                                <th key={col} className="px-6 py-3 font-semibold whitespace-nowrap bg-gray-50 z-10">{col}</th>
-                                            ))}
+                                            {columns.map((col, cIdx) => {
+                                                let thClass = "px-6 py-3 font-semibold whitespace-nowrap bg-gray-50";
+
+                                                if (cIdx === 0) {
+                                                    thClass += " sticky left-0 z-30 min-w-[220px] max-w-[220px]";
+                                                } else if (cIdx === 1) {
+                                                    thClass += " sticky left-[220px] z-30 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] min-w-[200px] max-w-[200px] border-r border-gray-200";
+                                                } else {
+                                                    thClass += " z-10";
+                                                }
+
+                                                return (
+                                                    <th key={col} className={thClass}>{col}</th>
+                                                )
+                                            })}
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
                                         {paginatedData.length > 0 ? paginatedData.map((row, idx) => {
-                                            let rowClass = "hover:bg-gray-50/50 transition-colors"
+                                            let rowClass = "bg-white hover:bg-gray-50 transition-colors"
 
                                             if (filterConfig.type === 'column' && filterConfig.column) {
                                                 const cleanStr = String(row[filterConfig.column] || '').replace(',', '.')
                                                 const grade = parseFloat(cleanStr)
                                                 const status = getGradeStatus(grade)
                                                 if (!isNaN(grade)) {
-                                                    if (status === 'passed') rowClass = "bg-green-100/50 hover:bg-green-100 font-medium text-green-900 border-l-4 border-l-green-500"
-                                                    if (status === 'failed') rowClass = "bg-red-100/50 hover:bg-red-100 font-medium text-red-900 border-l-4 border-l-red-500"
+                                                    if (status === 'passed') rowClass = "bg-green-50 hover:bg-green-100 font-medium text-green-900 border-l-4 border-l-green-500"
+                                                    if (status === 'failed') rowClass = "bg-red-50 hover:bg-red-100 font-medium text-red-900 border-l-4 border-l-red-500"
                                                 }
                                             } else if (filterConfig.type === 'thermometer' && filterConfig.failsCount !== undefined) {
                                                 const dangerColor = filterConfig.failsCount === 0 ? 'green'
                                                     : filterConfig.failsCount === 1 ? 'yellow'
                                                         : filterConfig.failsCount === 2 ? 'orange' : 'red'
-                                                rowClass = `bg-${dangerColor}-100/50 hover:bg-${dangerColor}-100 font-medium text-${dangerColor}-900 border-l-4 border-l-${dangerColor}-500`
+                                                rowClass = `bg-${dangerColor}-50 hover:bg-${dangerColor}-100 font-medium text-${dangerColor}-900 border-l-4 border-l-${dangerColor}-500`
                                             }
 
                                             return (
                                                 <tr key={idx} className={rowClass}>
-                                                    {columns.map(col => {
+                                                    {columns.map((col, cIdx) => {
                                                         const isFilteredByColumn = filterConfig.type === 'column' && filterConfig.column === col;
                                                         const isFilteredByThermometer = filterConfig.type === 'thermometer' && (config.charts || []).some((c: any) => c.column === col);
 
@@ -562,8 +574,15 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                                             }
                                                         }
 
+                                                        let cellClass = "px-6 py-4 max-w-[200px]";
+                                                        if (cIdx === 0) {
+                                                            cellClass += " sticky left-0 z-20 bg-inherit min-w-[220px] max-w-[220px]";
+                                                        } else if (cIdx === 1) {
+                                                            cellClass += " sticky left-[220px] z-20 bg-inherit shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] min-w-[200px] max-w-[200px] border-r border-gray-100/50";
+                                                        }
+
                                                         return (
-                                                            <td key={`${idx}-${col}`} className="px-6 py-4 max-w-[200px]" title={String(row[col])}>
+                                                            <td key={`${idx}-${col}`} className={cellClass} title={String(row[col])}>
                                                                 <div className="flex items-center justify-between gap-1 overflow-hidden">
                                                                     <span className="truncate">{String(row[col])}</span>
                                                                     {badge}

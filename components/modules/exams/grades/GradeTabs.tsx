@@ -22,7 +22,7 @@ interface GradeTabsProps {
 export function GradeTabs({ report, examId }: GradeTabsProps) {
     const [notes, setNotes] = useState(report?.notes || '')
     const [rawData, setRawData] = useState<any[]>(report?.rawData || [])
-    const [config, setConfig] = useState<any>(report?.config || { charts: [] })
+    const [config, setConfig] = useState<any>(report?.config || { charts: [], showBarChart: true })
     const [isSaving, setIsSaving] = useState(false)
     const [columns, setColumns] = useState<string[]>(
         report?.config?.columns || (rawData.length > 0 ? Object.keys(rawData[0]) : [])

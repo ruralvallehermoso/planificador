@@ -27,10 +27,12 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
     const [columns, setColumns] = useState<string[]>(
         report?.config?.columns || (rawData.length > 0 ? Object.keys(rawData[0]) : [])
     )
-    const [filterStatus, setFilterStatus] = useState<'all' | 'passed' | 'failed'>('all')
+    const [filterConfig, setFilterConfig] = useState<{ type: 'none' | 'column' | 'thermometer', column?: string, status?: 'passed' | 'failed', failsCount?: number }>({ type: 'none' })
 
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
+
+    // ... handleFileUpload y handleSave se mantienen igual
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -69,7 +71,7 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                 setColumns(validHeaders)
                 setConfig((prev: any) => ({ ...prev, columns: validHeaders }))
                 setCurrentPage(1)
-                setFilterStatus('all')
+                setFilterConfig({ type: 'none' })
                 toast.success(`Importadas ${data.length} filas correctamente`)
             }
         }
@@ -134,41 +136,60 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
         setConfig({ ...config, charts: newCharts })
     }
 
-    // Use the first chart for filtering context if multiple, or just disable filtering logic for now if complex.
-    // For now, let's keep filtering logic but maybe bind it to the LAST interacted chart or just the first one?
-    // User asked for "create new graphs". The click filtering might become ambiguous with multiple graphs.
-    // Let's assume global filter applies to ALL charts? No, that relies on one column.
-    // Simplifying: Filter probably creates confusion with multiple columns.
-    // Let's keep filter but maybe clear it if charts change?
-    // Actually, rows get colored based on which column? We need a "primary" column for row coloring/filtering?
-    // Or maybe each chart filters independently? That's complex.
-    // Let's assume the "Row Coloring" uses the FIRST chart's column as "Main Grade".
-
     const mainGradeColumn = config.charts?.[0]?.column
 
-    // Filtering & Pagination logic based on Main Grade Column
+    // Filtering & Pagination logic
     const filteredData = rawData.filter(row => {
-        if (filterStatus === 'all' || !mainGradeColumn) return true
-        const grade = parseFloat(row[mainGradeColumn])
-        const status = getGradeStatus(grade)
-        return status === filterStatus
+        if (filterConfig.type === 'none') return true
+
+        if (filterConfig.type === 'column' && filterConfig.column) {
+            const grade = parseFloat(row[filterConfig.column])
+            return getGradeStatus(grade) === filterConfig.status
+        }
+
+        if (filterConfig.type === 'thermometer' && filterConfig.failsCount !== undefined) {
+            const activeColumns = (config.charts || []).map((c: any) => c.column)
+            let fails = 0
+            let hasAnyData = false
+            activeColumns.forEach((col: string) => {
+                const val = parseFloat(row[col])
+                if (!isNaN(val)) {
+                    hasAnyData = true
+                    if (val < 5) fails++
+                }
+            })
+            return hasAnyData && fails === filterConfig.failsCount
+        }
+
+        return true
     })
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage)
     const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
     const handleChartClick = (data: any, column: string) => {
-        // Only allow filtering if clicking on the main grade chart
-        if (column !== mainGradeColumn) {
-            toast.info("El filtrado solo está activo para el primer gráfico (principal)")
-            return
-        }
+        if (!data || !data.payload || !data.payload.type) return
+        const type = data.payload.type as 'passed' | 'failed'
 
-        if (data && data.payload && data.payload.type) {
-            const type = data.payload.type as 'passed' | 'failed'
-            setFilterStatus(prev => prev === type ? 'all' : type)
+        if (filterConfig.type === 'column' && filterConfig.column === column && filterConfig.status === type) {
+            setFilterConfig({ type: 'none' })
+        } else {
+            setFilterConfig({ type: 'column', column, status: type })
             setCurrentPage(1)
-            toast.info(`Filtrando por: ${type === 'passed' ? 'Aprobados' : 'Suspensos'}`)
+            toast.info(`Filtrando: ${column} (${type === 'passed' ? 'Aprobados' : 'Suspensos'})`, { id: 'filter-toast' })
+        }
+    }
+
+    const handleThermometerClick = (data: any) => {
+        if (!data || !data.activePayload || !data.activePayload[0]) return
+        const fails = data.activePayload[0].payload.fails
+
+        if (filterConfig.type === 'thermometer' && filterConfig.failsCount === fails) {
+            setFilterConfig({ type: 'none' })
+        } else {
+            setFilterConfig({ type: 'thermometer', failsCount: fails })
+            setCurrentPage(1)
+            toast.info(`Filtrando alumnos con ${fails} suspenso${fails !== 1 ? 's' : ''}`, { id: 'filter-toast' })
         }
     }
 
@@ -295,13 +316,23 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                                                 onClick={(d) => handleChartClick(d, chart.column)}
                                                                 className={idx === 0 ? "cursor-pointer hover:opacity-85 transition-opacity duration-200" : ""}
                                                             >
-                                                                {pieData.map((entry, index) => (
-                                                                    <Cell
-                                                                        key={`cell-${index}`}
-                                                                        fill={entry.color}
-                                                                        opacity={idx === 0 && (filterStatus === 'all' || filterStatus === entry.type) ? 1 : (idx === 0 ? 0.3 : 1)}
-                                                                    />
-                                                                ))}
+                                                                {pieData.map((entry, index) => {
+                                                                    const isActive = filterConfig.type === 'column' && filterConfig.column === chart.column && filterConfig.status === entry.type;
+                                                                    const isOtherActiveInSameChart = filterConfig.type === 'column' && filterConfig.column === chart.column && filterConfig.status !== entry.type;
+                                                                    const isAnyFilterActive = filterConfig.type !== 'none';
+
+                                                                    let opacity = 1;
+                                                                    if (isOtherActiveInSameChart) opacity = 0.3;
+                                                                    else if (isAnyFilterActive && filterConfig.column !== chart.column) opacity = 0.5;
+
+                                                                    return (
+                                                                        <Cell
+                                                                            key={`cell-${index}`}
+                                                                            fill={entry.color}
+                                                                            opacity={opacity}
+                                                                        />
+                                                                    )
+                                                                })}
                                                             </Pie>
                                                             <Tooltip wrapperStyle={{ zIndex: 100, fontSize: '11px' }} itemStyle={{ color: '#374151' }} />
                                                         </RePieChart>
@@ -405,7 +436,11 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
 
                                 return (
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={barData} margin={{ top: 20, right: 30, left: -20, bottom: 0 }}>
+                                        <BarChart
+                                            data={barData}
+                                            margin={{ top: 20, right: 30, left: -20, bottom: 0 }}
+                                            onClick={handleThermometerClick}
+                                        >
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#fed7aa" opacity={0.3} />
                                             <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#9a3412' }} tickLine={false} axisLine={{ stroke: '#fdba74' }} />
                                             <YAxis tick={{ fontSize: 11, fill: '#9a3412' }} tickLine={false} axisLine={false} allowDecimals={false} />
@@ -413,10 +448,14 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                                 cursor={{ fill: '#ffedd5', opacity: 0.4 }}
                                                 contentStyle={{ borderRadius: '8px', border: '1px solid #fed7aa', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
                                             />
-                                            <Bar dataKey="alumnos" radius={[4, 4, 0, 0]} maxBarSize={60}>
-                                                {barData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={getFailColor(entry.fails)} />
-                                                ))}
+                                            <Bar dataKey="alumnos" radius={[4, 4, 0, 0]} maxBarSize={60} className="cursor-pointer hover:opacity-80 transition-opacity">
+                                                {barData.map((entry, index) => {
+                                                    const isActive = filterConfig.type === 'thermometer' && filterConfig.failsCount === entry.fails;
+                                                    const isOtherActive = filterConfig.type === 'thermometer' && filterConfig.failsCount !== entry.fails;
+                                                    const opacity = isOtherActive ? 0.3 : (filterConfig.type !== 'none' && filterConfig.type !== 'thermometer' ? 0.5 : 1);
+
+                                                    return <Cell key={`cell-${index}`} fill={getFailColor(entry.fails)} opacity={opacity} />
+                                                })}
                                             </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -440,10 +479,14 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                         <CardTitle className="flex items-center gap-2">
                             <TableIcon className="w-5 h-5" />
                             Datos Importados
-                            {filterStatus !== 'all' && (
+                            {filterConfig.type !== 'none' && (
                                 <span className="ml-2 text-sm font-normal text-white bg-blue-600 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                    Filtro: {filterStatus === 'passed' ? 'Aprobados' : 'Suspensos'}
-                                    <button onClick={() => setFilterStatus('all')} className="ml-1 hover:text-blue-100">x</button>
+                                    Filtro: {
+                                        filterConfig.type === 'column'
+                                            ? `${filterConfig.column} (${filterConfig.status === 'passed' ? 'Aprobados' : 'Suspensos'})`
+                                            : `Alumnos con ${filterConfig.failsCount} suspenso${filterConfig.failsCount !== 1 ? 's' : ''}`
+                                    }
+                                    <button onClick={() => setFilterConfig({ type: 'none' })} className="ml-1 hover:text-blue-100">x</button>
                                 </span>
                             )}
                         </CardTitle>
@@ -464,14 +507,20 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
                                         {paginatedData.length > 0 ? paginatedData.map((row, idx) => {
-                                            // Row styling based on MAIN GRADE column (first chart)
-                                            const mainGrade = mainGradeColumn ? parseFloat(row[mainGradeColumn]) : NaN
-                                            const status = getGradeStatus(mainGrade)
                                             let rowClass = "hover:bg-gray-50/50 transition-colors"
 
-                                            if (!isNaN(mainGrade)) {
-                                                if (status === 'passed') rowClass = "bg-green-200 hover:bg-green-300 font-medium text-green-900 border-l-4 border-l-green-600"
-                                                if (status === 'failed') rowClass = "bg-red-200 hover:bg-red-300 font-medium text-red-900 border-l-4 border-l-red-600"
+                                            if (filterConfig.type === 'column' && filterConfig.column) {
+                                                const grade = parseFloat(row[filterConfig.column])
+                                                const status = getGradeStatus(grade)
+                                                if (!isNaN(grade)) {
+                                                    if (status === 'passed') rowClass = "bg-green-100/50 hover:bg-green-100 font-medium text-green-900 border-l-4 border-l-green-500"
+                                                    if (status === 'failed') rowClass = "bg-red-100/50 hover:bg-red-100 font-medium text-red-900 border-l-4 border-l-red-500"
+                                                }
+                                            } else if (filterConfig.type === 'thermometer' && filterConfig.failsCount !== undefined) {
+                                                const dangerColor = filterConfig.failsCount === 0 ? 'green'
+                                                    : filterConfig.failsCount === 1 ? 'yellow'
+                                                        : filterConfig.failsCount === 2 ? 'orange' : 'red'
+                                                rowClass = `bg-${dangerColor}-100/50 hover:bg-${dangerColor}-100 font-medium text-${dangerColor}-900 border-l-4 border-l-${dangerColor}-500`
                                             }
 
                                             return (

@@ -209,17 +209,28 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
 
                         {columns.length > 0 && (
                             <div className="space-y-3 pt-3 border-t border-gray-100">
-                                <h4 className="text-[13px] font-semibold text-gray-700">Añadir Gráfico de Notas</h4>
-                                <Select onValueChange={(val) => addChart(val)}>
-                                    <SelectTrigger className="w-full bg-white border-gray-200 shadow-sm text-[13px] h-9">
-                                        <SelectValue placeholder="Seleccionar columna..." />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg max-h-[300px] z-[100]">
-                                        {columns.map(col => (
-                                            <SelectItem key={col} value={col} className="hover:bg-gray-50 cursor-pointer text-[13px]">{col}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <h4 className="text-[13px] font-semibold text-gray-700">Añadir Gráficos</h4>
+                                <div className="space-y-2">
+                                    <Select onValueChange={(val) => addChart(val)}>
+                                        <SelectTrigger className="w-full bg-white border-gray-200 shadow-sm text-[13px] h-9">
+                                            <SelectValue placeholder="Seleccionar columna..." />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg max-h-[300px] z-[100]">
+                                            {columns.map(col => (
+                                                <SelectItem key={col} value={col} className="hover:bg-gray-50 cursor-pointer text-[13px]">{col}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-full justify-start h-9 text-[13px] font-medium border-dashed border-gray-300 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300 transition-colors"
+                                        onClick={() => setConfig({ ...config, showBarChart: !config.showBarChart })}
+                                    >
+                                        <BarChart3 className="w-4 h-4 mr-2" />
+                                        {config.showBarChart ? 'Ocultar Termómetro General' : 'Añadir Termómetro General'}
+                                    </Button>
+                                </div>
                             </div>
                         )}
                     </CardContent>
@@ -327,7 +338,89 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                     </div>
                 )}
 
-                {(config.charts || []).length === 0 && (
+                {/* TERMÓMETRO DE CLASE (BAR CHART) */}
+                {config.showBarChart && (config.charts || []).length > 0 && (
+                    <Card className="relative overflow-hidden shadow-sm border-orange-200/60 bg-gradient-to-br from-white to-orange-50/20">
+                        <div className="absolute top-2 right-2 z-10 opacity-0 hover:opacity-100 transition-opacity">
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-gray-400 hover:text-red-500 rounded-full" onClick={() => setConfig({ ...config, showBarChart: false })}>
+                                <span className="sr-only">Cerrar</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
+                                    <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                </svg>
+                            </Button>
+                        </div>
+                        <CardHeader className="pb-2 pt-5 px-6">
+                            <CardTitle className="text-sm font-semibold text-orange-900 flex items-center gap-2">
+                                <BarChart3 className="w-4 h-4 text-orange-500" />
+                                Termómetro de la Clase (Acumulación de Suspensos)
+                            </CardTitle>
+                            <CardDescription className="text-xs text-orange-700/70">
+                                Distribución de alumnos según la cantidad de criterios seleccionados que han suspendido
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="h-[260px] p-6 pt-0">
+                            {(() => {
+                                // 1. Recopilar columnas activas (criterios evaluados)
+                                const activeColumns = (config.charts || []).map((c: any) => c.column);
+                                const maxSuspensos = activeColumns.length;
+
+                                // 2. Contar cuántos suspensos tiene cada alumno
+                                const counts = new Array(maxSuspensos + 1).fill(0);
+                                rawData.forEach(row => {
+                                    let fails = 0;
+                                    let hasAnyData = false;
+                                    activeColumns.forEach((col: string) => {
+                                        const val = parseFloat(row[col]);
+                                        if (!isNaN(val)) {
+                                            hasAnyData = true;
+                                            if (val < 5) fails++;
+                                        }
+                                    });
+                                    if (hasAnyData) {
+                                        counts[fails]++;
+                                    }
+                                });
+
+                                // 3. Formatear para Recharts
+                                const barData = counts.map((count, i) => ({
+                                    name: i === 0 ? 'Todo Aprobado' : `${i} Suspenso${i > 1 ? 's' : ''}`,
+                                    alumnos: count,
+                                    fails: i
+                                }));
+
+                                // Helper para colores progresivos según peligro (más suspensos = rojo más intenso)
+                                const getFailColor = (fails: number) => {
+                                    if (fails === 0) return '#22c55e'; // verde
+                                    if (fails === 1) return '#f59e0b'; // naranja/amarillo
+                                    if (fails === 2) return '#f97316'; // naranja fuerte
+                                    if (fails === 3) return '#ef4444'; // rojo suave
+                                    return '#b91c1c'; // rojo oscuro
+                                };
+
+                                return (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={barData} margin={{ top: 20, right: 30, left: -20, bottom: 0 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#fed7aa" opacity={0.3} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#9a3412' }} tickLine={false} axisLine={{ stroke: '#fdba74' }} />
+                                            <YAxis tick={{ fontSize: 11, fill: '#9a3412' }} tickLine={false} axisLine={false} allowDecimals={false} />
+                                            <Tooltip
+                                                cursor={{ fill: '#ffedd5', opacity: 0.4 }}
+                                                contentStyle={{ borderRadius: '8px', border: '1px solid #fed7aa', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
+                                            />
+                                            <Bar dataKey="alumnos" radius={[4, 4, 0, 0]} maxBarSize={60}>
+                                                {barData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={getFailColor(entry.fails)} />
+                                                ))}
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                );
+                            })()}
+                        </CardContent>
+                    </Card>
+                )}
+
+                {(config.charts || []).length === 0 && !config.showBarChart && (
                     <div className="w-full flex flex-col items-center justify-center h-[160px] border-2 border-dashed border-gray-200/80 rounded-xl text-gray-400 bg-gray-50/30 hover:bg-gray-50/80 transition-colors">
                         <PieChart className="w-10 h-10 mb-3 opacity-40 text-gray-400" />
                         <p className="text-[13px] font-medium text-gray-500">Añade un gráfico seleccionando una columna en la configuración</p>

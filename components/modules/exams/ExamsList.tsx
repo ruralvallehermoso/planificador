@@ -30,11 +30,11 @@ interface ExamsListProps {
 }
 
 const ACCENT_COLORS = [
-    { banner: "bg-gradient-to-r from-blue-600 to-cyan-500", ring: "text-blue-500", evalBg: "bg-blue-50", evalText: "text-blue-700", evalBorder: "border-blue-200" },
-    { banner: "bg-gradient-to-r from-emerald-500 to-teal-400", ring: "text-emerald-500", evalBg: "bg-emerald-50", evalText: "text-emerald-700", evalBorder: "border-emerald-200" },
-    { banner: "bg-gradient-to-r from-violet-600 to-fuchsia-500", ring: "text-violet-500", evalBg: "bg-violet-50", evalText: "text-violet-700", evalBorder: "border-violet-200" },
-    { banner: "bg-gradient-to-r from-orange-500 to-amber-400", ring: "text-orange-500", evalBg: "bg-orange-50", evalText: "text-orange-700", evalBorder: "border-orange-200" },
-    { banner: "bg-gradient-to-r from-rose-500 to-pink-500", ring: "text-rose-500", evalBg: "bg-rose-50", evalText: "text-rose-700", evalBorder: "border-rose-200" },
+    { topBorder: "border-t-blue-500", ring: "text-blue-500", evalBg: "bg-blue-50/50", evalText: "text-blue-700", evalBorder: "border-blue-200/60", tagBg: "bg-blue-50/80", tagText: "text-blue-700" },
+    { topBorder: "border-t-emerald-500", ring: "text-emerald-500", evalBg: "bg-emerald-50/50", evalText: "text-emerald-700", evalBorder: "border-emerald-200/60", tagBg: "bg-emerald-50/80", tagText: "text-emerald-700" },
+    { topBorder: "border-t-violet-500", ring: "text-violet-500", evalBg: "bg-violet-50/50", evalText: "text-violet-700", evalBorder: "border-violet-200/60", tagBg: "bg-violet-50/80", tagText: "text-violet-700" },
+    { topBorder: "border-t-amber-500", ring: "text-amber-500", evalBg: "bg-amber-50/50", evalText: "text-amber-700", evalBorder: "border-amber-200/60", tagBg: "bg-amber-50/80", tagText: "text-amber-700" },
+    { topBorder: "border-t-rose-500", ring: "text-rose-500", evalBg: "bg-rose-50/50", evalText: "text-rose-700", evalBorder: "border-rose-200/60", tagBg: "bg-rose-50/80", tagText: "text-rose-700" },
 ]
 
 function getSubjectColor(subject: string | null | undefined) {
@@ -163,23 +163,23 @@ export function ExamsList({ templates }: ExamsListProps) {
                             <Link
                                 key={template.id}
                                 href={`/fp-informatica/exams/${template.id}`}
-                                className="group flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-gray-200 transition-all duration-300 overflow-hidden relative outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                className={`group flex flex-col bg-white rounded-xl border border-gray-200/75 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-300 overflow-hidden relative outline-none focus-visible:ring-2 focus-visible:ring-blue-500 border-t-[3px] ${colors.topBorder}`}
                             >
-                                {/* Top Banner */}
-                                <div className={`h-24 w-full ${colors.banner} relative p-5 flex items-start justify-between`}>
-                                    <div className="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 text-white shadow-[0_2px_10px_rgba(0,0,0,0.1)] border border-white/20">
-                                        <Tag className="h-3.5 w-3.5" />
-                                        <span className="text-xs font-semibold tracking-wide">
+                                {/* Top Header Mini-Banner */}
+                                <div className="w-full relative px-6 pt-5 pb-2 flex items-start justify-between">
+                                    <div className={`px-2.5 py-1 rounded-md inline-flex items-center gap-1.5 ${colors.tagBg} ${colors.tagText} border border-transparent shadow-sm`}>
+                                        <Tag className="h-3 w-3" />
+                                        <span className="text-[11px] font-bold tracking-wide uppercase">
                                             {template.subject || 'Examen'}
                                         </span>
                                     </div>
 
-                                    {/* Action Menu - Overlayed on Banner */}
-                                    <div className="relative z-10" onClick={(e) => e.preventDefault()}>
+                                    {/* Action Menu */}
+                                    <div className="relative z-10 -mr-2" onClick={(e) => e.preventDefault()}>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/20 rounded-full focus-visible:ring-0">
-                                                    <MoreVertical className="h-5 w-5" />
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full focus-visible:ring-0">
+                                                    <MoreVertical className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end" className="w-48 shadow-lg border-gray-100 rounded-xl">

@@ -30,10 +30,11 @@ interface ExamsListProps {
 }
 
 const ACCENT_COLORS = [
-    { bar: "bg-blue-500", ring: "text-blue-500", evalBg: "bg-blue-50", evalText: "text-blue-700", evalBorder: "border-blue-200" },
-    { bar: "bg-emerald-500", ring: "text-emerald-500", evalBg: "bg-emerald-50", evalText: "text-emerald-700", evalBorder: "border-emerald-200" },
-    { bar: "bg-violet-500", ring: "text-violet-500", evalBg: "bg-violet-50", evalText: "text-violet-700", evalBorder: "border-violet-200" },
-    { bar: "bg-cyan-500", ring: "text-cyan-500", evalBg: "bg-cyan-50", evalText: "text-cyan-700", evalBorder: "border-cyan-200" },
+    { banner: "bg-gradient-to-r from-blue-600 to-cyan-500", ring: "text-blue-500", evalBg: "bg-blue-50", evalText: "text-blue-700", evalBorder: "border-blue-200" },
+    { banner: "bg-gradient-to-r from-emerald-500 to-teal-400", ring: "text-emerald-500", evalBg: "bg-emerald-50", evalText: "text-emerald-700", evalBorder: "border-emerald-200" },
+    { banner: "bg-gradient-to-r from-violet-600 to-fuchsia-500", ring: "text-violet-500", evalBg: "bg-violet-50", evalText: "text-violet-700", evalBorder: "border-violet-200" },
+    { banner: "bg-gradient-to-r from-orange-500 to-amber-400", ring: "text-orange-500", evalBg: "bg-orange-50", evalText: "text-orange-700", evalBorder: "border-orange-200" },
+    { banner: "bg-gradient-to-r from-rose-500 to-pink-500", ring: "text-rose-500", evalBg: "bg-rose-50", evalText: "text-rose-700", evalBorder: "border-rose-200" },
 ]
 
 function getSubjectColor(subject: string | null | undefined) {
@@ -47,17 +48,17 @@ function getSubjectColor(subject: string | null | undefined) {
 
 /** SVG donut chart */
 function DonutChart({ value, color, label }: { value: number; color: string; label: string }) {
-    const radius = 30
+    const radius = 24
     const circumference = 2 * Math.PI * radius
     const offset = circumference - (value / 100) * circumference
 
     return (
-        <div className="flex flex-col items-center gap-1">
-            <div className="relative w-[70px] h-[70px]">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
-                    <circle cx="40" cy="40" r={radius} fill="none" stroke="#f1f5f9" strokeWidth="6" />
+        <div className="flex items-center gap-3">
+            <div className="relative w-[54px] h-[54px]">
+                <svg className="w-full h-full -rotate-90 drop-shadow-sm" viewBox="0 0 60 60">
+                    <circle cx="30" cy="30" r={radius} fill="none" stroke="#f1f5f9" strokeWidth="6" />
                     <circle
-                        cx="40" cy="40" r={radius}
+                        cx="30" cy="30" r={radius}
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="6"
@@ -67,11 +68,11 @@ function DonutChart({ value, color, label }: { value: number; color: string; lab
                         className={`${color} transition-all duration-700 ease-out`}
                     />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-800">
+                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-800">
                     {value}%
                 </span>
             </div>
-            <span className="text-[11px] font-medium text-gray-500">{label}</span>
+            <span className="text-sm font-medium text-gray-600">{label}</span>
         </div>
     )
 }
@@ -115,19 +116,19 @@ export function ExamsList({ templates }: ExamsListProps) {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center space-x-4">
-                    <Link href="/fp-informatica" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                    <Link href="/fp-informatica" className="p-2.5 hover:bg-gray-100 rounded-full transition-colors shrink-0">
                         <ArrowLeft className="h-5 w-5 text-gray-600" />
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Exámenes</h1>
+                        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Exámenes</h1>
                         <p className="text-sm text-gray-500">Gestión de plantillas y exámenes</p>
                     </div>
                 </div>
-                <Button asChild>
+                <Button asChild className="gap-2 shadow-sm">
                     <Link href="/fp-informatica/exams/create">
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="h-4 w-4" />
                         Nuevo Examen
                     </Link>
                 </Button>
@@ -135,22 +136,23 @@ export function ExamsList({ templates }: ExamsListProps) {
 
             {/* Empty state */}
             {templates.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <FileText className="h-8 w-8 text-gray-400" />
+                <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <FileText className="h-10 w-10 text-blue-500" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No hay exámenes creados</h3>
-                    <p className="text-gray-500 max-w-sm mx-auto mb-6">
-                        Comienza creando tu primera plantilla de examen para gestionar tus evaluaciones.
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No hay exámenes creados</h3>
+                    <p className="text-gray-500 max-w-md mx-auto mb-8">
+                        Comienza creando tu primera plantilla de examen estructurada para gestionar y evaluar a tus alumnos eficientemente.
                     </p>
-                    <Button asChild variant="outline">
+                    <Button asChild size="lg" className="shadow-sm">
                         <Link href="/fp-informatica/exams/create">
+                            <Plus className="mr-2 h-5 w-5" />
                             Crear mi primer examen
                         </Link>
                     </Button>
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {templates.map((template) => {
                         const colors = getSubjectColor(template.subject)
                         const p1 = parseFloat(template.part1Percentage?.replace('%', '') || '0')
@@ -161,108 +163,110 @@ export function ExamsList({ templates }: ExamsListProps) {
                             <Link
                                 key={template.id}
                                 href={`/fp-informatica/exams/${template.id}`}
-                                className="group block"
+                                className="group flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-gray-200 transition-all duration-300 overflow-hidden relative outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                             >
-                                <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300 transition-all duration-200 overflow-hidden flex flex-col">
-                                    <div className="flex">
-                                        {/* Left accent bar */}
-                                        <div className={`w-1.5 shrink-0 ${colors.bar}`} />
-
-                                        {/* Content area */}
-                                        <div className="flex-1 min-w-0 p-5 flex flex-col sm:flex-row gap-4">
-                                            {/* Left: Title + subject info */}
-                                            <div className="flex-1 min-w-0 space-y-2">
-                                                <div className="flex items-start gap-3">
-                                                    <div className="flex-1 min-w-0">
-                                                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2">
-                                                            {template.name}
-                                                        </h3>
-                                                        <p className="text-sm text-gray-500 mt-1 line-clamp-1">
-                                                            {[
-                                                                template.subject && `Asignatura: ${template.subject}`,
-                                                                template.course && template.course,
-                                                            ].filter(Boolean).join(" | ")}
-                                                        </p>
-                                                    </div>
-
-                                                    {/* Evaluation badge */}
-                                                    {template.evaluation && (
-                                                        <span className={`shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${colors.evalBg} ${colors.evalText} ${colors.evalBorder}`}>
-                                                            {template.evaluation}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* Center: Metadata */}
-                                            <div className="flex sm:flex-col gap-3 sm:gap-1.5 sm:min-w-[150px] sm:border-l sm:border-gray-100 sm:pl-4 text-sm text-gray-500 flex-wrap">
-                                                {template.date && (
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Calendar className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                                                        <span>{new Date(template.date).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric", timeZone: "Europe/Madrid" })}</span>
-                                                    </div>
-                                                )}
-                                                {template.duration && (
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Timer className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                                                        <span>{template.duration}</span>
-                                                    </div>
-                                                )}
-                                                {template.raEvaluated && (
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Tag className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                                                        <span className="line-clamp-1">{template.raEvaluated}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Right: Donut charts */}
-                                            {hasParts && (
-                                                <div className="flex items-center gap-4 sm:border-l sm:border-gray-100 sm:pl-4 shrink-0">
-                                                    {p1 > 0 && <DonutChart value={p1} color={colors.ring} label="Parte 1" />}
-                                                    {p2 > 0 && <DonutChart value={p2} color="text-indigo-500" label="Parte 2" />}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Menu (top right) */}
-                                        <div className="pt-3 pr-3 shrink-0">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                                                    <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <MoreVertical className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href={`/fp-informatica/exams/${template.id}`}>
-                                                            <Edit className="mr-2 h-4 w-4" />
-                                                            Abrir / Editar
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        className="text-red-600 focus:text-red-600"
-                                                        onClick={(e) => {
-                                                            e.preventDefault()
-                                                            handleDelete(template.id)
-                                                        }}
-                                                        disabled={isDeleting === template.id}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Eliminar
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    </div>
-
-                                    {/* Footer: timestamp */}
-                                    <div className="px-5 py-2 border-t border-gray-100 flex justify-end">
-                                        <span className="text-[11px] text-gray-400 flex items-center gap-1">
-                                            <Clock className="h-3 w-3" />
-                                            Actualizado: {formatTimeAgo(template.updatedAt)}
+                                {/* Top Banner */}
+                                <div className={`h-24 w-full ${colors.banner} relative p-5 flex items-start justify-between`}>
+                                    <div className="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 text-white shadow-[0_2px_10px_rgba(0,0,0,0.1)] border border-white/20">
+                                        <Tag className="h-3.5 w-3.5" />
+                                        <span className="text-xs font-semibold tracking-wide">
+                                            {template.subject || 'Examen'}
                                         </span>
                                     </div>
+
+                                    {/* Action Menu - Overlayed on Banner */}
+                                    <div className="relative z-10" onClick={(e) => e.preventDefault()}>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/20 rounded-full focus-visible:ring-0">
+                                                    <MoreVertical className="h-5 w-5" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="w-48 shadow-lg border-gray-100 rounded-xl">
+                                                <DropdownMenuItem asChild className="p-2.5 cursor-pointer">
+                                                    <Link href={`/fp-informatica/exams/${template.id}`}>
+                                                        <Edit className="mr-2.5 h-4 w-4 text-gray-500" />
+                                                        <span className="font-medium">Modificar Examen</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    className="p-2.5 cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50"
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        handleDelete(template.id)
+                                                    }}
+                                                    disabled={isDeleting === template.id}
+                                                >
+                                                    <Trash2 className="mr-2.5 h-4 w-4" />
+                                                    <span className="font-medium">Eliminar</span>
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                </div>
+
+                                {/* Main Content Body */}
+                                <div className="flex-1 px-6 pt-5 pb-6 flex flex-col">
+                                    {/* Title Section */}
+                                    <div className="mb-4 flex-1">
+                                        <h3 className="text-[1.15rem] font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug line-clamp-2 mb-2">
+                                            {template.name}
+                                        </h3>
+                                        <p className="text-sm font-medium text-gray-500 line-clamp-1">
+                                            {[template.course, template.cycle].filter(Boolean).join(" • ")}
+                                        </p>
+                                    </div>
+
+                                    {/* Evaluation Badge if present */}
+                                    {template.evaluation && (
+                                        <div className="mb-5">
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold border ${colors.evalBg} ${colors.evalText} ${colors.evalBorder}`}>
+                                                {template.evaluation}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Metadata Grid */}
+                                    <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-[13px] text-gray-600 mb-6 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                        {template.date && (
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="h-4 w-4 text-gray-400 shrink-0" />
+                                                <span className="truncate" title={new Date(template.date).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric", timeZone: "Europe/Madrid" })}>
+                                                    {new Date(template.date).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric", timeZone: "Europe/Madrid" })}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {template.duration && (
+                                            <div className="flex items-center gap-2">
+                                                <Timer className="h-4 w-4 text-gray-400 shrink-0" />
+                                                <span className="truncate">{template.duration}</span>
+                                            </div>
+                                        )}
+                                        {template.raEvaluated && (
+                                            <div className="flex items-center gap-2 col-span-2 pt-2 border-t border-gray-200/60 mt-1">
+                                                <Tag className="h-4 w-4 text-gray-400 shrink-0" />
+                                                <span className="truncate text-gray-500 italic">RA: {template.raEvaluated}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Donut Charts / Footer */}
+                                    {hasParts && (
+                                        <div className="mt-auto border-t border-gray-100 pt-5 flex items-center justify-between">
+                                            <div className="flex items-center gap-6">
+                                                {p1 > 0 && <DonutChart value={p1} color={colors.ring} label="Parte 1" />}
+                                                {p2 > 0 && <DonutChart value={p2} color="text-indigo-500" label="Parte 2" />}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Bottom Timestamp */}
+                                <div className="bg-gray-50/50 px-6 py-3 border-t border-gray-100">
+                                    <span className="text-[11px] font-medium text-gray-400 flex items-center gap-1.5 uppercase tracking-wider">
+                                        <Clock className="h-3.5 w-3.5" />
+                                        Actualizado {formatTimeAgo(template.updatedAt)}
+                                    </span>
                                 </div>
                             </Link>
                         )

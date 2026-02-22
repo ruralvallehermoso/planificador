@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload, FileSpreadsheet, Save, BarChart3, PieChart, Table as TableIcon } from 'lucide-react'
 import * as XLSX from 'xlsx'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RePieChart, Pie, Cell } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RePieChart, Pie, Cell, LabelList } from 'recharts'
 import { toast } from "sonner"
 import { saveExamGradeReport } from '@/lib/actions/exam-grades'
 
@@ -472,6 +472,7 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
 
                                                     return <Cell key={`cell-${index}`} fill={getFailColor(entry.fails)} opacity={opacity} />
                                                 })}
+                                                <LabelList dataKey="alumnos" position="top" style={{ fontSize: '12px', fill: '#9a3412', fontWeight: 600 }} />
                                             </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -496,13 +497,16 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
                             <TableIcon className="w-5 h-5" />
                             Datos Importados
                             {filterConfig.type !== 'none' && (
-                                <span className="ml-2 text-sm font-normal text-white bg-blue-600 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span className="ml-2 text-sm font-normal text-white bg-blue-600 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm">
                                     Filtro: {
                                         filterConfig.type === 'column'
                                             ? `${filterConfig.column} (${filterConfig.status === 'passed' ? 'Aprobados' : 'Suspensos'})`
                                             : `Alumnos con ${filterConfig.failsCount} suspenso${filterConfig.failsCount !== 1 ? 's' : ''}`
                                     }
-                                    <button onClick={() => setFilterConfig({ type: 'none' })} className="ml-1 hover:text-blue-100">x</button>
+                                    <span className="font-semibold px-1.5 py-0.5 bg-blue-700/50 rounded-md text-[11px] ml-1">
+                                        {filteredData.length} de {rawData.length}
+                                    </span>
+                                    <button onClick={() => setFilterConfig({ type: 'none' })} className="ml-1 hover:text-blue-200 transition-colors">x</button>
                                 </span>
                             )}
                         </CardTitle>

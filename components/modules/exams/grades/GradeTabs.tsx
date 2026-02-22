@@ -316,11 +316,17 @@ export function GradeTabs({ report, examId }: GradeTabsProps) {
 
                                                 <div className="flex justify-center gap-2.5 text-[11px] font-semibold mt-auto px-5 w-full">
                                                     <div className="flex flex-col items-center flex-1 bg-green-50/50 rounded-md py-1.5 border border-green-100/50 hover:bg-green-50 transition-colors">
-                                                        <span className="text-green-700">{data.passedPct}%</span>
+                                                        <div className="flex items-baseline gap-1">
+                                                            <span className="text-green-700">{data.passed}</span>
+                                                            <span className="text-[10px] text-green-600/80">({data.passedPct}%)</span>
+                                                        </div>
                                                         <span className="text-[8px] text-green-600/70 uppercase">Aprobados</span>
                                                     </div>
                                                     <div className="flex flex-col items-center flex-1 bg-red-50/50 rounded-md py-1.5 border border-red-100/50 hover:bg-red-50 transition-colors">
-                                                        <span className="text-red-700">{data.failedPct}%</span>
+                                                        <div className="flex items-baseline gap-1">
+                                                            <span className="text-red-700">{data.failed}</span>
+                                                            <span className="text-[10px] text-red-600/80">({data.failedPct}%)</span>
+                                                        </div>
                                                         <span className="text-[8px] text-red-600/70 uppercase">Suspensos</span>
                                                     </div>
                                                 </div>

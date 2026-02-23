@@ -114,6 +114,7 @@ const roleColors: Record<string, string> = {
     TEACHER: 'bg-blue-100 text-blue-700',
     FAMILY: 'bg-green-100 text-green-700',
     EMPLEADO: 'bg-orange-100 text-orange-700',
+    FINANZAS: 'bg-blue-100 text-blue-700',
     GUEST: 'bg-slate-100 text-slate-700',
 }
 

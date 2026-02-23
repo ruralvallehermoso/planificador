@@ -845,6 +845,7 @@ enum Role {
   CASA_RURAL
   EMPLEADO
   MASTER
+  FINANZAS
 
   @@schema("public")
 }

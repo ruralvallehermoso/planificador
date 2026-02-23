@@ -38,6 +38,7 @@ model User {
   vaultSections          VaultSection[]
   assets                 Asset[]
   portfolioSnapshots     PortfolioSnapshot[]
+  finanzasTasks          FinanzasTask[]
 
   @@schema("public")
 }
@@ -856,5 +857,19 @@ enum ExpenseCategory {
   IBI
   OTROS
 
+  @@schema("public")
+}
+
+model FinanzasTask {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  status    String   @default("PENDING")
+  dueDate   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
   @@schema("public")
 }

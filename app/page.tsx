@@ -69,7 +69,26 @@ export default async function Home() {
     })
   ]) : [0, []];
 
-  // Merge Master Tasks count into categories
+  // Fetch pending Finanzas Tasks
+  const [pendingFinanzasTasksCount, pendingFinanzasTasks] = user ? await Promise.all([
+    prisma.finanzasTask.count({
+      where: {
+        userId: user.id,
+        status: { not: "COMPLETED" }
+      }
+    }),
+    prisma.finanzasTask.findMany({
+      where: {
+        userId: user.id,
+        status: { not: "COMPLETED" }
+      },
+      take: 3,
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, title: true, status: true }
+    })
+  ]) : [0, []];
+
+  // Merge Master Tasks and Finanzas Tasks count into categories
   const categoriesWithMaster = categories.map(cat => {
     if (cat.slug === 'master-unie') {
       return {
@@ -79,6 +98,18 @@ export default async function Home() {
           id: t.id,
           title: t.title,
           status: 'TODO',
+          priority: 'MEDIUM'
+        }))
+      }
+    }
+    if (cat.slug === 'finanzas') {
+      return {
+        ...cat,
+        _count: { items: pendingFinanzasTasksCount },
+        items: pendingFinanzasTasks.map(t => ({
+          id: t.id,
+          title: t.title,
+          status: t.status,
           priority: 'MEDIUM'
         }))
       }
@@ -118,7 +149,7 @@ export default async function Home() {
       </div>
 
       {/* Pending Tasks Overview - Main Section */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {categoriesWithMaster.map((category) => {
           const config = MODULES_CONFIG[category.slug];
           const Icon = config?.icon || Circle;

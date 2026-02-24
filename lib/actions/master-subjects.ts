@@ -190,6 +190,9 @@ export async function getSubject(id: string) {
                 notesList: {
                     include: { images: true },
                     orderBy: { date: 'desc' }
+                },
+                resources: {
+                    orderBy: { createdAt: 'desc' }
                 }
             }
         })
@@ -257,5 +260,51 @@ export async function deleteSubjectTask(taskId: string) {
     } catch (error) {
         console.error("Error deleting task:", error)
         return { success: false, error: "Error al eliminar la tarea" }
+    }
+}
+
+export async function createSubjectResource(
+    subjectId: string,
+    name: string,
+    type: string,
+    url: string,
+    size?: number
+) {
+    try {
+        const resource = await prisma.subjectResource.create({
+            data: { subjectId, name, type, url, size }
+        })
+        revalidatePath(`/master-unie/asignaturas/${subjectId}`)
+        return { success: true, resource }
+    } catch (error) {
+        console.error("Error creating resource:", error)
+        return { success: false, error: "Error al crear el recurso" }
+    }
+}
+
+export async function deleteSubjectResource(resourceId: string, subjectId: string) {
+    try {
+        const resource = await prisma.subjectResource.findUnique({
+            where: { id: resourceId }
+        })
+
+        if (!resource) return { success: false, error: "Recurso no encontrado" }
+
+        // Delete from Vercel Blob if it's an uploaded file (not an external link)
+        if (resource.type !== 'LINK') {
+            try {
+                const { del } = await import('@vercel/blob')
+                await del(resource.url)
+            } catch (blobError) {
+                console.error('Error deleting blob:', blobError)
+            }
+        }
+
+        await prisma.subjectResource.delete({ where: { id: resourceId } })
+        revalidatePath(`/master-unie/asignaturas/${subjectId}`)
+        return { success: true }
+    } catch (error) {
+        console.error("Error deleting resource:", error)
+        return { success: false, error: "Error al eliminar el recurso" }
     }
 }

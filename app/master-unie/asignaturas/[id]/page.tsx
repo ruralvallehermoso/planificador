@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { getSubject } from "@/lib/actions/master-subjects"
 import { SubjectNotesList } from "@/components/modules/master/SubjectNotesList"
 import { SubjectTasks } from "@/components/modules/master/SubjectTasks"
+import { SubjectResources } from "@/components/modules/master/SubjectResources"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, GraduationCap, User, Calendar, BookOpen } from "lucide-react"
 import Link from "next/link"
@@ -104,16 +105,11 @@ export default async function SubjectDetailPage({ params }: PageProps) {
                         categoryId={subject.categoryId || ""}
                     />
 
-                    {/* Resources Placeholder */}
-                    <div className="bg-white rounded-xl border border-slate-200 p-6">
-                        <h3 className="font-semibold text-slate-900 mb-4 flex items-center">
-                            <BookOpen className="h-4 w-4 mr-2" />
-                            Recursos
-                        </h3>
-                        <p className="text-sm text-slate-500 text-center py-4 bg-slate-50 rounded-lg border border-dashed border-slate-200">
-                            Próximamente: Enlaces y Archivos
-                        </p>
-                    </div>
+                    {/* Resources Section */}
+                    <SubjectResources
+                        subjectId={subject.id}
+                        initialResources={subject.resources || []}
+                    />
                 </div>
             </div>
         </div>

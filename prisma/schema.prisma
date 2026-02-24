@@ -211,6 +211,7 @@ model Subject {
   category    Category?         @relation(fields: [categoryId], references: [id])
   notesList   SubjectNote[]
   practices   SubjectPractice[]
+  resources   SubjectResource[]
   topics      SubjectTopic[]
 
   @@schema("public")
@@ -274,6 +275,20 @@ model Assessment {
   title     String
   weight    Float
   grade     Float?
+  subjectId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model SubjectResource {
+  id        String   @id @default(cuid())
+  name      String
+  type      String
+  url       String
+  size      Int?
   subjectId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

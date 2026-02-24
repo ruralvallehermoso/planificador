@@ -2,6 +2,27 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== 'production';
 
+// Allowed origins for CSP and CORS
+const PORTFOLIO_URL = process.env.NEXT_PUBLIC_PORTFOLIO_URL || (isDev ? 'http://localhost:5173' : 'https://finanzas-tau-ten.vercel.app');
+const CASARURAL_URL = process.env.NEXT_PUBLIC_CASARURAL_URL || (isDev ? 'http://localhost:3002' : 'https://casa-rural-web-alpha.vercel.app');
+const HOGAR_URL = process.env.NEXT_PUBLIC_HOGAR_URL || (isDev ? 'http://localhost:3003' : 'https://hogar-web.vercel.app');
+const FINANZAS_BACKEND_URL = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
+
+// Build Content-Security-Policy
+const cspDirectives = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-eval' 'unsafe-inline'`,
+  `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
+  `img-src 'self' data: blob: https:`,
+  `font-src 'self' https://fonts.gstatic.com`,
+  `connect-src 'self' ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL} ${FINANZAS_BACKEND_URL}`,
+  `frame-src 'self' ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL}`,
+  "frame-ancestors 'self'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "object-src 'none'",
+].join('; ');
+
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
@@ -85,7 +106,11 @@ const nextConfig: NextConfig = {
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
-          }
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: cspDirectives,
+          },
         ],
       },
     ]

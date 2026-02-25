@@ -31,7 +31,7 @@ export default async function SubjectsListPage() {
                 </Link>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {subjects.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
                         <Library className="h-12 w-12 text-gray-300 mx-auto mb-3" />
@@ -40,25 +40,27 @@ export default async function SubjectsListPage() {
                     </div>
                 ) : (
                     subjects.map((subject) => (
-                        <div key={subject.id} className="relative bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-xl hover:border-blue-300 group cursor-pointer">
+                        <div key={subject.id} className="relative bg-white rounded-3xl shadow-lg shadow-gray-200/50 p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group cursor-pointer flex flex-col h-full">
                             <Link href={`/fp-informatica/subjects/${subject.id}`} className="absolute inset-0 z-0" />
-                            <div className="flex justify-between items-start relative z-10">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                            {subject.name}
-                                        </h3>
+
+                            <div className="flex justify-between items-start relative z-10 mb-6 flex-1">
+                                <div className="space-y-2">
+                                    <div className="flex flex-col items-start gap-2">
                                         {subject.code && (
-                                            <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-700 transition-colors">
+                                            <span className="text-xs font-bold font-mono bg-indigo-50 px-2.5 py-1 rounded-full text-indigo-700">
                                                 {subject.code}
                                             </span>
                                         )}
+                                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors leading-tight">
+                                            {subject.name}
+                                        </h3>
                                     </div>
-                                    {subject.description && <p className="text-gray-600">{subject.description}</p>}
+                                    {subject.description && <p className="text-sm text-gray-500 line-clamp-2 mt-1">{subject.description}</p>}
                                 </div>
-                                <div className="flex items-center gap-2">
+
+                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <Link href={`/fp-informatica/subjects/${subject.id}/edit`}>
-                                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-blue-600 hover:bg-blue-50 hover:scale-110 transition-all">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full">
                                             <Pencil className="h-4 w-4" />
                                         </Button>
                                     </Link>
@@ -66,25 +68,31 @@ export default async function SubjectsListPage() {
                                         'use server'
                                         await deleteSubject(subject.id)
                                     }}>
-                                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-red-500 rounded-full">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </form>
                                 </div>
                             </div>
 
-                            <div className="flex gap-4 mt-4 text-sm text-gray-500">
-                                <div className="flex items-center gap-1.5 bg-purple-50 text-purple-700 px-2.5 py-1 rounded-md">
-                                    <Clock className="h-4 w-4" />
-                                    <span>{subject.semester}º Cuatrimestre</span>
+                            {/* Bento Metrics Grid */}
+                            <div className="grid grid-cols-3 gap-2 relative z-10 mt-auto">
+                                <div className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors group-hover:bg-purple-50/50">
+                                    <Clock className="w-5 h-5 text-purple-400 mb-2 opacity-50" />
+                                    <span className="text-2xl font-bold text-gray-900">{subject.semester}º</span>
+                                    <span className="text-[10px] font-medium uppercase tracking-wider text-gray-500 mt-1">Cuatri</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md">
-                                    <Book className="h-4 w-4" />
-                                    <span>{subject._count.topics} Temas</span>
+
+                                <div className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors group-hover:bg-blue-50/50">
+                                    <Book className="w-5 h-5 text-blue-400 mb-2 opacity-50" />
+                                    <span className="text-2xl font-bold text-gray-900">{subject._count.topics}</span>
+                                    <span className="text-[10px] font-medium uppercase tracking-wider text-gray-500 mt-1">Temas</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 bg-green-50 text-green-700 px-2.5 py-1 rounded-md">
-                                    <FileText className="h-4 w-4" />
-                                    <span>{subject._count.practices} Prácticas</span>
+
+                                <div className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors group-hover:bg-green-50/50">
+                                    <FileText className="w-5 h-5 text-green-400 mb-2 opacity-50" />
+                                    <span className="text-2xl font-bold text-gray-900">{subject._count.practices}</span>
+                                    <span className="text-[10px] font-medium uppercase tracking-wider text-gray-500 mt-1">Prácticas</span>
                                 </div>
                             </div>
                         </div>

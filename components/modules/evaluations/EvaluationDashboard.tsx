@@ -142,6 +142,40 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         })
     }, [studentsData, selectedCriteria])
 
+    // Distribution Data formatting
+    const failsDistributionData = useMemo(() => {
+        if (!selectedCriteria.length || studentsData.length === 0) return []
+
+        const counts: Record<number, number> = {}
+        for (let i = 0; i <= selectedCriteria.length; i++) counts[i] = 0
+
+        studentsData.forEach(student => {
+            let fails = 0
+            selectedCriteria.forEach(crit => {
+                const rawVal = student[crit]
+                let isPassed = false
+                const numVal = parseFloat(rawVal)
+                if (!isNaN(numVal)) isPassed = numVal >= 5.0
+                else if (typeof rawVal === 'string') {
+                    const str = rawVal.toLowerCase().trim()
+                    isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(str)
+                }
+                if (rawVal === null || rawVal === undefined || rawVal === '') isPassed = false
+                if (!isPassed) fails++
+            })
+            counts[fails]++
+        })
+
+        return Object.entries(counts)
+            .filter(([fails, count]) => count > 0 || fails === '0')
+            .map(([fails, count]) => ({
+                name: fails === '0' ? 'Pleno' : `${fails} susp.`,
+                fullName: fails === '0' ? 'Todo Aprobado' : `${fails} criterios suspensos`,
+                Alumnos: count,
+                failsCount: parseInt(fails)
+            }))
+    }, [studentsData, selectedCriteria])
+
     // Pagination and Filtering for the Table
     const filteredStudents = useMemo(() => {
         let result = studentsData
@@ -205,6 +239,29 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                         <span className="font-bold text-gray-900">{suspendidos} <span className="text-gray-400 font-normal text-xs ml-1">({pctSuspendidos}%)</span></span>
                     </div>
                     <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-3 pt-2 border-t border-gray-100 text-center font-semibold text-indigo-500">Click en la barra para filtrar</p>
+                </div>
+            )
+        }
+        return null
+    }
+
+    const CustomDistributionTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload
+            const alumnos = data.Alumnos
+            const total = studentsData.length
+            const pct = total > 0 ? ((alumnos / total) * 100).toFixed(1) : "0.0"
+
+            return (
+                <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100 text-sm min-w-[180px]">
+                    <p className="font-bold text-gray-800 mb-3">{data.fullName}</p>
+                    <div className="flex justify-between items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-sm bg-amber-500"></div>
+                            <span className="text-gray-600 font-medium">Alumnos</span>
+                        </div>
+                        <span className="font-bold text-gray-900">{alumnos} <span className="text-gray-400 font-normal text-xs ml-1">({pct}%)</span></span>
+                    </div>
                 </div>
             )
         }
@@ -303,39 +360,65 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
 
                     {/* ---- VISUALIZATIONS GRID ---- */}
                     {selectedCriteria.length > 0 && (
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div className="space-y-6">
 
-                            {/* Bar Chart Global */}
-                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
-                                <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                    <BarChart3 className="h-5 w-5 text-emerald-500" /> Rendimiento Global
-                                </h3>
-                                <div className="flex-1 w-full min-h-[300px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={graphData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
-                                            <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-                                            <Legend wrapperStyle={{ paddingTop: '30px' }} />
-                                            <Bar
-                                                dataKey="Aprobados" stackId="a" fill="#10B981" radius={[0, 0, 4, 4]} barSize={40}
-                                                className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                onClick={(e) => {
-                                                    setCriteriaFilter({ criteria: e.name || e.payload?.name || '', status: 'Aprobados' })
-                                                    document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
-                                                }}
-                                            />
-                                            <Bar
-                                                dataKey="Suspendidos" stackId="a" fill="#EF4444" radius={[4, 4, 0, 0]}
-                                                className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                onClick={(e) => {
-                                                    setCriteriaFilter({ criteria: e.name || e.payload?.name || '', status: 'Suspendidos' })
-                                                    document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
-                                                }}
-                                            />
-                                        </BarChart>
-                                    </ResponsiveContainer>
+                            {/* Charts Row */}
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+                                {/* Bar Chart Global */}
+                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
+                                    <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                        <BarChart3 className="h-5 w-5 text-emerald-500" /> Rendimiento Global
+                                    </h3>
+                                    <div className="flex-1 w-full min-h-[300px]">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={graphData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
+                                                <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+                                                <Legend wrapperStyle={{ paddingTop: '30px' }} />
+                                                <Bar
+                                                    dataKey="Aprobados" stackId="a" fill="#10B981" radius={[0, 0, 4, 4]} barSize={40}
+                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                    onClick={(e) => {
+                                                        setCriteriaFilter({ criteria: e.name || e.payload?.name || '', status: 'Aprobados' })
+                                                        document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                    }}
+                                                />
+                                                <Bar
+                                                    dataKey="Suspendidos" stackId="a" fill="#EF4444" radius={[4, 4, 0, 0]}
+                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                    onClick={(e) => {
+                                                        setCriteriaFilter({ criteria: e.name || e.payload?.name || '', status: 'Suspendidos' })
+                                                        document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                    }}
+                                                />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+
+                                {/* Distribution Chart */}
+                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
+                                    <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                        <BarChart3 className="h-5 w-5 text-amber-500" /> Distribución de Suspensos
+                                    </h3>
+                                    <div className="flex-1 w-full min-h-[300px]">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={failsDistributionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
+                                                <RechartsTooltip content={<CustomDistributionTooltip />} cursor={{ fill: 'transparent' }} />
+                                                <Legend wrapperStyle={{ paddingTop: '30px' }} />
+                                                <Bar
+                                                    dataKey="Alumnos" fill="#F59E0B" radius={[4, 4, 0, 0]} barSize={40}
+                                                    className="hover:opacity-80 transition-opacity"
+                                                />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
                                 </div>
                             </div>
 

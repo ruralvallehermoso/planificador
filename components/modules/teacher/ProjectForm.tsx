@@ -97,8 +97,11 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
         }
     }, [project, editor])
 
-    async function handleSubmit(formData: FormData) {
+    async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
         setLoading(true)
+
+        const formData = new FormData(e.currentTarget)
         formData.append('categorySlug', categorySlug)
 
         // Get content from editor
@@ -210,7 +213,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-                    <form id="mainForm" action={handleSubmit} className={`space-y-6 ${activeTab === 'content' ? '' : 'hidden'}`}>
+                    <form id="mainForm" onSubmit={onSubmit} className={`space-y-6 ${activeTab === 'content' ? '' : 'hidden'}`}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
                                 <div>

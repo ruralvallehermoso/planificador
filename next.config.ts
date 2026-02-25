@@ -15,7 +15,7 @@ const cspDirectives = [
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `img-src 'self' data: blob: https:`,
   `font-src 'self' https://fonts.gstatic.com`,
-  `connect-src 'self' ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL} ${FINANZAS_BACKEND_URL}`,
+  `connect-src 'self' https://vercel.com ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL} ${FINANZAS_BACKEND_URL}`,
   `frame-src 'self' ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL}`,
   "frame-ancestors 'self'",
   "base-uri 'self'",

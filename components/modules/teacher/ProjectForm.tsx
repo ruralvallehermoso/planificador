@@ -5,6 +5,7 @@ import { Plus, X, Upload, Trash2, Link as LinkIcon, Save, Bold, Italic, Underlin
 import { createProject, updateProject, addProjectLink, deleteProjectLink } from '@/lib/actions/projects'
 import { toast } from 'sonner'
 import { upload } from '@vercel/blob/client'
+import { useRouter } from 'next/navigation'
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -23,6 +24,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
     const [loading, setLoading] = useState(false)
     const [uploading, setUploading] = useState(false)
     const [activeTab, setActiveTab] = useState<'content' | 'links'>('content')
+    const router = useRouter()
 
     // Local state for immediate UI updates
     const [links, setLinks] = useState<any[]>(project?.links || [])
@@ -130,6 +132,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
 
         setLoading(false)
         if (result?.success) {
+            router.refresh()
             onClose()
         } else {
             toast.error(result?.error || "Error al guardar")

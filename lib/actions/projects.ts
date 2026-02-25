@@ -29,7 +29,17 @@ export async function createProject(formData: FormData) {
     const categorySlug = formData.get('categorySlug') as string
 
     const technologies = formData.get('technologies') as string
-    const coverImage = formData.get('coverImage') as string // Base64 string
+    const coverImageFile = formData.get('coverImageFile') as File | null
+    let coverImage = formData.get('coverImage') as string || '' // Fallback if no new file
+
+    // Upload to Vercel Blob if a file is provided
+    if (coverImageFile && coverImageFile.size > 0) {
+        const { put } = await import('@vercel/blob')
+        const cleanName = coverImageFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+        const blobPath = `ProyectoIntermodular/${Date.now()}_${cleanName}`
+        const blob = await put(blobPath, coverImageFile, { access: 'public' })
+        coverImage = blob.url
+    }
 
     // Resolve slug to ID
     const category = await prisma.category.findUnique({ where: { slug: categorySlug } })
@@ -64,7 +74,16 @@ export async function updateProject(projectId: string, formData: FormData) {
     const categorySlug = formData.get('categorySlug') as string
 
     const technologies = formData.get('technologies') as string
-    const coverImage = formData.get('coverImage') as string
+    const coverImageFile = formData.get('coverImageFile') as File | null
+    let coverImage = formData.get('coverImage') as string || '' // Retain old value if no new file
+
+    if (coverImageFile && coverImageFile.size > 0) {
+        const { put } = await import('@vercel/blob')
+        const cleanName = coverImageFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+        const blobPath = `ProyectoIntermodular/${Date.now()}_${cleanName}`
+        const blob = await put(blobPath, coverImageFile, { access: 'public' })
+        coverImage = blob.url
+    }
 
     try {
         await prisma.project.update({
@@ -99,11 +118,16 @@ export async function deleteProject(projectId: string, categorySlug: string) {
         if (project) {
             for (const image of project.images) {
                 try {
-                    // remove leading slash for local path resolution
-                    const relativePath = image.url.startsWith('/') ? image.url.slice(1) : image.url
-                    const filePath = join(process.cwd(), 'public', relativePath)
-                    // Best effort to delete file
-                    await unlink(filePath).catch(() => { })
+                    if (image.url.includes('blob.vercel-storage.com')) {
+                        const { del } = await import('@vercel/blob')
+                        await del(image.url).catch(() => { })
+                    } else {
+                        // remove leading slash for local path resolution
+                        const relativePath = image.url.startsWith('/') ? image.url.slice(1) : image.url
+                        const filePath = join(process.cwd(), 'public', relativePath)
+                        // Best effort to delete file
+                        await unlink(filePath).catch(() => { })
+                    }
                 } catch (e) {
                     // ignore file deletion errors
                 }
@@ -131,13 +155,12 @@ export async function uploadProjectImage(formData: FormData) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Save to public/uploads
-    const filename = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, '_')}`
-    const path = join(process.cwd(), 'public/uploads', filename)
-
     try {
-        await writeFile(path, buffer)
-        const url = `/uploads/${filename}`
+        const { put } = await import('@vercel/blob')
+        const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+        const blobPath = `ProyectoIntermodular/${Date.now()}_${cleanName}`
+        const blob = await put(blobPath, file, { access: 'public' })
+        const url = blob.url
 
         // Only create DB record if we have a projectId (i.e. we are editing, or associating with gallery)
         if (projectId) {
@@ -163,9 +186,14 @@ export async function deleteProjectImage(imageId: string, categorySlug: string) 
     try {
         const image = await prisma.projectImage.findUnique({ where: { id: imageId } })
         if (image) {
-            const relativePath = image.url.startsWith('/') ? image.url.slice(1) : image.url
-            const filePath = join(process.cwd(), 'public', relativePath)
-            await unlink(filePath).catch(() => { })
+            if (image.url.includes('blob.vercel-storage.com')) {
+                const { del } = await import('@vercel/blob')
+                await del(image.url).catch(() => { })
+            } else {
+                const relativePath = image.url.startsWith('/') ? image.url.slice(1) : image.url
+                const filePath = join(process.cwd(), 'public', relativePath)
+                await unlink(filePath).catch(() => { })
+            }
 
             await prisma.projectImage.delete({ where: { id: imageId } })
         }

@@ -54,44 +54,32 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                     const file = imageItem.getAsFile()
                     if (!file) return true
 
-                    // Use Base64 with resizing to avoid payload issues
-                    const reader = new FileReader()
-                    reader.onload = (readerEvent) => {
-                        const img = new window.Image()
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas')
-                            const MAX_WIDTH = 800
-                            const MAX_HEIGHT = 800
-                            let width = img.width
-                            let height = img.height
+                    const formData = new FormData()
+                    formData.append('file', file)
 
-                            if (width > height) {
-                                if (width > MAX_WIDTH) {
-                                    height *= MAX_WIDTH / width
-                                    width = MAX_WIDTH
-                                }
+                    toast.promise(
+                        fetch('/api/upload/proyecto-image', {
+                            method: 'POST',
+                            body: formData
+                        }).then(r => {
+                            if (!r.ok) throw new Error()
+                            return r.json()
+                        }).then(data => {
+                            if (data.url) {
+                                const { schema } = view.state
+                                const node = schema.nodes.image.create({ src: data.url })
+                                const transaction = view.state.tr.insert(view.state.selection.from, node)
+                                view.dispatch(transaction)
                             } else {
-                                if (height > MAX_HEIGHT) {
-                                    width *= MAX_HEIGHT / height
-                                    height = MAX_HEIGHT
-                                }
+                                throw new Error('No URL')
                             }
-                            canvas.width = width
-                            canvas.height = height
-                            const ctx = canvas.getContext('2d')
-                            ctx?.drawImage(img, 0, 0, width, height)
-                            // Convert to WebP for better compression
-                            const dataUrl = canvas.toDataURL('image/webp', 0.8)
-
-                            const { schema } = view.state
-                            const node = schema.nodes.image.create({ src: dataUrl })
-                            const transaction = view.state.tr.insert(view.state.selection.from, node)
-                            view.dispatch(transaction)
-                            toast.success("Imagen procesada y añadida")
+                        }),
+                        {
+                            loading: 'Subiendo imagen...',
+                            success: 'Imagen procesada y añadida',
+                            error: 'Error al subir imagen'
                         }
-                        img.src = readerEvent.target?.result as string
-                    }
-                    reader.readAsDataURL(file)
+                    )
 
                     return true // Handled
                 }
@@ -222,29 +210,23 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                                     <div className="flex items-center gap-3">
                                         <input
                                             type="file"
+                                            name="coverImageFile"
                                             accept="image/*"
                                             onChange={(e) => {
                                                 const file = e.target.files?.[0];
                                                 if (file) {
-                                                    const reader = new FileReader();
-                                                    reader.onloadend = () => {
-                                                        const base64 = reader.result as string;
-                                                        // We put this in a hidden input or state
-                                                        const input = document.getElementById('coverImageInput') as HTMLInputElement;
-                                                        if (input) input.value = base64;
-                                                        // Preview?
-                                                        const preview = document.getElementById('coverPreview') as HTMLImageElement;
-                                                        if (preview) preview.src = base64;
-                                                        // Ensure preview is visible
-                                                        if (preview) preview.style.display = 'block';
-                                                    };
-                                                    reader.readAsDataURL(file);
+                                                    const objectUrl = URL.createObjectURL(file);
+                                                    const preview = document.getElementById('coverPreview') as HTMLImageElement;
+                                                    if (preview) {
+                                                        preview.src = objectUrl;
+                                                        preview.style.display = 'block';
+                                                    }
                                                 }
                                             }}
                                             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                                         />
                                     </div>
-                                    <input type="hidden" name="coverImage" id="coverImageInput" defaultValue={project?.coverImage} />
+                                    <input type="hidden" name="coverImage" defaultValue={project?.coverImage || ''} />
                                     <img
                                         id="coverPreview"
                                         src={project?.coverImage}

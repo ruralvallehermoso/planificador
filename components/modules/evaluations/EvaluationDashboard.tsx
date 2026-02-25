@@ -36,6 +36,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
     const [isSaving, setIsSaving] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
+    const [heatmapSearchTerm, setHeatmapSearchTerm] = useState("")
     const [page, setPage] = useState(1)
 
     // NEW Filter state for bar clicks
@@ -62,6 +63,8 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                 setStudentsData(data)
                 setSelectedCriteria([])
                 setPage(1)
+                setSearchTerm("")
+                setHeatmapSearchTerm("")
                 setCriteriaFilter(null)
             } catch (error) {
                 console.error("Error parsing:" + error)
@@ -89,6 +92,8 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         setStudentsData([])
         setSelectedCriteria([])
         setCriteriaFilter(null)
+        setSearchTerm("")
+        setHeatmapSearchTerm("")
         setIsSaving(true)
         await updateFpEvaluationData(evaluation.id, [], [])
         setIsSaving(false)
@@ -200,6 +205,11 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
 
         return result
     }, [studentsData, searchTerm, nameColumns, criteriaFilter])
+
+    const filteredHeatmapStudents = useMemo(() => {
+        if (!heatmapSearchTerm) return studentsData;
+        return studentsData.filter(student => getStudentFullName(student).toLowerCase().includes(heatmapSearchTerm.toLowerCase()))
+    }, [studentsData, heatmapSearchTerm, nameColumns])
 
     const paginatedStudents = useMemo(() => {
         const startIndex = (page - 1) * ITEMS_PER_PAGE
@@ -424,9 +434,25 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
 
                             {/* Heatmap / Matricial View */}
                             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[450px]">
-                                <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                    <Grip className="h-5 w-5 text-blue-500" /> Mapa de Calor Aprobados/Suspensos
-                                </h3>
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                                    <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                                        <Grip className="h-5 w-5 text-blue-500" /> Mapa de Calor Aprobados/Suspensos
+                                    </h3>
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                                        <Input
+                                            placeholder="Buscar en el mapa..."
+                                            value={heatmapSearchTerm}
+                                            onChange={(e) => setHeatmapSearchTerm(e.target.value)}
+                                            className="pl-8 h-9 text-sm w-full sm:w-[220px] bg-gray-50 border-gray-200"
+                                        />
+                                        {heatmapSearchTerm && (
+                                            <button className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setHeatmapSearchTerm("")}>
+                                                <X className="h-3.5 w-3.5" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
                                 <div className="flex-1 overflow-auto rounded-xl border border-gray-200 bg-white custom-scrollbar relative shadow-inner">
                                     <table className="w-full text-left border-collapse min-w-max">
                                         <thead className="sticky top-0 z-20 bg-gray-50 shadow-sm">
@@ -442,40 +468,51 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white">
-                                            {studentsData.slice(0, 100).map((student, i) => (
-                                                <tr key={i}
-                                                    className="group hover:bg-indigo-50/40 cursor-pointer border-b border-gray-100 transition-colors"
-                                                    onClick={() => {
-                                                        setSearchTerm(getStudentFullName(student)); setPage(1);
-                                                        document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
-                                                    }}
-                                                >
-                                                    <td className="sticky left-0 z-10 bg-white group-hover:bg-indigo-50/80 p-3 text-sm font-medium text-gray-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors border-r border-gray-100">
-                                                        <span className="line-clamp-1" title={getStudentFullName(student)}>{getStudentFullName(student)}</span>
+                                            {filteredHeatmapStudents.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={selectedCriteria.length + 1} className="p-8 text-center text-gray-500 text-sm">
+                                                        No hay resultados para "{heatmapSearchTerm}"
                                                     </td>
-                                                    {selectedCriteria.map(crit => {
-                                                        const rawVal = student[crit]
-                                                        let isPassed = false, isMissing = rawVal === null || rawVal === undefined || rawVal === ''
-                                                        const numVal = parseFloat(rawVal)
-                                                        if (!isNaN(numVal)) isPassed = numVal >= 5.0
-                                                        else if (typeof rawVal === 'string') isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(rawVal.toLowerCase().trim())
-
-                                                        let cellColor = isMissing ? "bg-gray-100 border-gray-200 text-gray-400" : isPassed ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-rose-50 border-rose-200 text-rose-700"
-
-                                                        return (
-                                                            <td key={crit} className="p-1 border-l border-gray-50 align-middle">
-                                                                <div className={`w-[60px] h-7 mx-auto rounded flex items-center justify-center text-[11px] font-bold border opacity-90 group-hover:opacity-100 transition-opacity ${cellColor}`} title={`${getStudentFullName(student)}: ${rawVal}`}>
-                                                                    {isMissing ? '-' : rawVal}
-                                                                </div>
-                                                            </td>
-                                                        )
-                                                    })}
                                                 </tr>
-                                            ))}
+                                            ) : (
+                                                filteredHeatmapStudents.slice(0, 100).map((student, i) => (
+                                                    <tr key={i}
+                                                        className="group hover:bg-indigo-50/40 cursor-pointer border-b border-gray-100 transition-colors"
+                                                        onClick={() => {
+                                                            setSearchTerm(getStudentFullName(student)); setPage(1);
+                                                            document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                        }}
+                                                    >
+                                                        <td className="sticky left-0 z-10 bg-white group-hover:bg-indigo-50/80 p-3 text-sm font-medium text-gray-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors border-r border-gray-100">
+                                                            <span className="line-clamp-1" title={getStudentFullName(student)}>{getStudentFullName(student)}</span>
+                                                        </td>
+                                                        {selectedCriteria.map(crit => {
+                                                            const rawVal = student[crit]
+                                                            let isPassed = false, isMissing = rawVal === null || rawVal === undefined || rawVal === ''
+                                                            const numVal = parseFloat(rawVal)
+                                                            if (!isNaN(numVal)) isPassed = numVal >= 5.0
+                                                            else if (typeof rawVal === 'string') isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(rawVal.toLowerCase().trim())
+
+                                                            let cellColor = isMissing ? "bg-gray-100 border-gray-200 text-gray-400" : isPassed ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-rose-50 border-rose-200 text-rose-700"
+
+                                                            return (
+                                                                <td key={crit} className="p-1 border-l border-gray-50 align-middle">
+                                                                    <div className={`w-[60px] h-7 mx-auto rounded flex items-center justify-center text-[11px] font-bold border opacity-90 group-hover:opacity-100 transition-opacity ${cellColor}`} title={`${getStudentFullName(student)}: ${rawVal}`}>
+                                                                        {isMissing ? '-' : rawVal}
+                                                                    </div>
+                                                                </td>
+                                                            )
+                                                        })}
+                                                    </tr>
+                                                ))
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
-                                <div className="mt-3 text-xs text-gray-400 font-medium">Click en el alumno para buscarlo en la tabla. Mostrando máx 100 en el heatmap.</div>
+                                <div className="mt-3 text-xs text-gray-400 font-medium flex justify-between">
+                                    <span>Click en el alumno para buscarlo en la tabla principal.</span>
+                                    <span>Mostrando máx 100 resultados.</span>
+                                </div>
                             </div>
                         </div>
                     )}

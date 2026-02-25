@@ -313,7 +313,6 @@ model EmployeeActivity {
 
 model ExamTemplate {
   id                    String           @id @default(cuid())
-  type                  String           @default("EXAM") // EXAM, EVALUATION
   name                  String
   logoUrl               String?
   cycle                 String?

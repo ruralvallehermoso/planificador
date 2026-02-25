@@ -27,8 +27,6 @@ interface ExamTemplate {
 
 interface ExamsListProps {
     templates: ExamTemplate[]
-    basePath?: string
-    type?: 'EXAM' | 'EVALUATION'
 }
 
 const ACCENT_COLORS = [
@@ -93,7 +91,7 @@ function formatTimeAgo(date: Date): string {
     return new Date(date).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric", timeZone: "Europe/Madrid" })
 }
 
-export function ExamsList({ templates, basePath = '/fp-informatica/exams', type = 'EXAM' }: ExamsListProps) {
+export function ExamsList({ templates }: ExamsListProps) {
     const router = useRouter()
     const [isDeleting, setIsDeleting] = useState<string | null>(null)
 
@@ -124,18 +122,14 @@ export function ExamsList({ templates, basePath = '/fp-informatica/exams', type 
                         <ArrowLeft className="h-5 w-5 text-gray-600" />
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-                            {type === 'EVALUATION' ? 'Evaluaciones' : 'Exámenes'}
-                        </h1>
-                        <p className="text-sm text-gray-500">
-                            {type === 'EVALUATION' ? 'Gestión de evaluaciones y rúbricas' : 'Gestión de plantillas y exámenes'}
-                        </p>
+                        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Exámenes</h1>
+                        <p className="text-sm text-gray-500">Gestión de plantillas y exámenes</p>
                     </div>
                 </div>
                 <Button asChild className="gap-2 shadow-sm">
-                    <Link href={`${basePath}/create`}>
+                    <Link href="/fp-informatica/exams/create">
                         <Plus className="h-4 w-4" />
-                        {type === 'EVALUATION' ? 'Nueva Evaluación' : 'Nuevo Examen'}
+                        Nuevo Examen
                     </Link>
                 </Button>
             </div>
@@ -146,16 +140,14 @@ export function ExamsList({ templates, basePath = '/fp-informatica/exams', type 
                     <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-5">
                         <FileText className="h-10 w-10 text-blue-500" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        {type === 'EVALUATION' ? 'No hay evaluaciones creadas' : 'No hay exámenes creados'}
-                    </h3>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No hay exámenes creados</h3>
                     <p className="text-gray-500 max-w-md mx-auto mb-8">
-                        {type === 'EVALUATION' ? 'Comienza creando tu primera estructura de evaluación.' : 'Comienza creando tu primera plantilla de examen estructurada para gestionar y evaluar a tus alumnos eficientemente.'}
+                        Comienza creando tu primera plantilla de examen estructurada para gestionar y evaluar a tus alumnos eficientemente.
                     </p>
                     <Button asChild size="lg" className="shadow-sm">
-                        <Link href={`${basePath}/create`}>
+                        <Link href="/fp-informatica/exams/create">
                             <Plus className="mr-2 h-5 w-5" />
-                            {type === 'EVALUATION' ? 'Crear mi primera evaluación' : 'Crear mi primer examen'}
+                            Crear mi primer examen
                         </Link>
                     </Button>
                 </div>
@@ -170,7 +162,7 @@ export function ExamsList({ templates, basePath = '/fp-informatica/exams', type 
                         return (
                             <Link
                                 key={template.id}
-                                href={`${basePath}/${template.id}`}
+                                href={`/fp-informatica/exams/${template.id}`}
                                 className={`group flex flex-col bg-white rounded-xl border border-gray-200/75 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-300 overflow-hidden relative outline-none focus-visible:ring-2 focus-visible:ring-blue-500 border-t-[3px] ${colors.topBorder}`}
                             >
                                 {/* Top Header Mini-Banner */}
@@ -192,11 +184,9 @@ export function ExamsList({ templates, basePath = '/fp-informatica/exams', type 
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end" className="w-48 shadow-lg border-gray-100 rounded-xl">
                                                 <DropdownMenuItem asChild className="p-2.5 cursor-pointer">
-                                                    <Link href={`${basePath}/${template.id}`}>
+                                                    <Link href={`/fp-informatica/exams/${template.id}`}>
                                                         <Edit className="mr-2.5 h-4 w-4 text-gray-500" />
-                                                        <span className="font-medium">
-                                                            {type === 'EVALUATION' ? 'Modificar Evaluación' : 'Modificar Examen'}
-                                                        </span>
+                                                        <span className="font-medium">Modificar Examen</span>
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem

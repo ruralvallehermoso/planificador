@@ -8,7 +8,7 @@ import {
     Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, TrendingDown, BarChart3,
     ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield, X,
     LogOut, Wallet, Wrench, Users, PiggyBank, Settings, Target, Utensils, Calendar, Package,
-    CheckSquare, Clock, CreditCard, DollarSign, FileText, User, Briefcase, Library, Loader2, Zap
+    CheckSquare, Clock, CreditCard, DollarSign, FileText, User, Briefcase, Library, Loader2, Zap, ClipboardCheck
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useState, useEffect, useMemo, useRef } from 'react'
@@ -54,6 +54,7 @@ const allNavigation: NavItem[] = [
             { name: 'Asignaturas', href: '/fp-informatica/subjects', icon: Library },
             { name: 'Clases', href: '/fp-informatica/classes', icon: BookOpen },
             { name: 'Exámenes', href: '/fp-informatica/exams', icon: ClipboardList },
+            { name: 'Evaluaciones', href: '/fp-informatica/evaluations', icon: ClipboardCheck },
             { name: 'Temas Pendientes', href: '/fp-informatica#tasks', icon: Target },
 
             { name: 'Proyectos', href: '/fp-informatica/projects', icon: Package },

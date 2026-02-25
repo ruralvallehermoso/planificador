@@ -352,6 +352,22 @@ model ExamGradeReport {
   @@schema("public")
 }
 
+model FpEvaluation {
+  id               String   @id @default(cuid())
+  name             String?
+  cycle            String?
+  subject          String?
+  course           String?
+  evaluation       String?
+  description      String?
+  studentsData     Json?
+  selectedCriteria Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@schema("public")
+}
+
 model Asset {
   id           String   @id @default(cuid()) @db.VarChar
   name         String   @db.VarChar

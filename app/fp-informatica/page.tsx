@@ -1,4 +1,4 @@
-import { Calendar, BookOpen, GraduationCap, Library, Globe } from "lucide-react"
+import { Calendar, BookOpen, GraduationCap, Library, Globe, ClipboardCheck } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { SidebarTaskManager } from "@/components/modules/teacher/SidebarTaskManager"
@@ -53,6 +53,16 @@ const DASHBOARD_CARDS = [
         bgColor: "bg-rose-100",
         borderColor: "border-rose-200",
         hoverBorder: "hover:border-rose-300",
+    },
+    {
+        title: "Evaluación",
+        description: "Gestión de Excel analítico, carga de notas de prácticas y rúbricas.",
+        icon: ClipboardCheck,
+        href: "/fp-informatica/evaluations",
+        color: "text-indigo-600",
+        bgColor: "bg-indigo-100",
+        borderColor: "border-indigo-200",
+        hoverBorder: "hover:border-indigo-300",
     }
 ]
 

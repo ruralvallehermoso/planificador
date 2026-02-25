@@ -272,8 +272,6 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                             <MenuBar />
                             <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
                         </div>
-
-                        </div>
                     </form>
 
                     <div className={activeTab === 'links' && isEditing ? '' : 'hidden'}>

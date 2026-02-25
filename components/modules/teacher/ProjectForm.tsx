@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, X, Upload, Trash2, Link as LinkIcon, Save, Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Heading2, Globe } from 'lucide-react'
 import { createProject, updateProject, addProjectLink, deleteProjectLink } from '@/lib/actions/projects'
 import { toast } from 'sonner'
+import { upload } from '@vercel/blob/client'
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -54,25 +55,19 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                     const file = imageItem.getAsFile()
                     if (!file) return true
 
-                    const formData = new FormData()
-                    formData.append('file', file)
-
                     toast.promise(
-                        fetch('/api/upload/proyecto-image', {
-                            method: 'POST',
-                            body: formData
-                        }).then(r => {
-                            if (!r.ok) throw new Error()
-                            return r.json()
-                        }).then(data => {
-                            if (data.url) {
-                                const { schema } = view.state
-                                const node = schema.nodes.image.create({ src: data.url })
-                                const transaction = view.state.tr.insert(view.state.selection.from, node)
-                                view.dispatch(transaction)
-                            } else {
-                                throw new Error('No URL')
-                            }
+                        (async () => {
+                            const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+                            const newBlob = await upload(`ProyectoIntermodular/${Date.now()}_${cleanName}`, file, {
+                                access: 'public',
+                                handleUploadUrl: '/api/upload/blob',
+                            })
+                            return newBlob.url
+                        })().then(url => {
+                            const { schema } = view.state
+                            const node = schema.nodes.image.create({ src: url })
+                            const transaction = view.state.tr.insert(view.state.selection.from, node)
+                            view.dispatch(transaction)
                         }),
                         {
                             loading: 'Subiendo imagen...',
@@ -108,6 +103,24 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
         const html = editor?.getHTML() || ''
         formData.set('description', html)
 
+        const file = formData.get('coverImageFile') as File | null
+        if (file && file.size > 0) {
+            try {
+                const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+                const newBlob = await upload(`ProyectoIntermodular/${Date.now()}_${cleanName}`, file, {
+                    access: 'public',
+                    handleUploadUrl: '/api/upload/blob',
+                })
+                formData.set('coverImage', newBlob.url)
+            } catch (err) {
+                toast.error("Error subiendo la imagen de portada")
+                setLoading(false)
+                return
+            }
+        }
+        // Remove file to avoid Next.js Action 4.5MB Payload limit on Vercel
+        formData.delete('coverImageFile')
+
         let result
         if (isEditing) {
             result = await updateProject(project.id, formData)
@@ -118,6 +131,8 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
         setLoading(false)
         if (result?.success) {
             onClose()
+        } else {
+            toast.error(result?.error || "Error al guardar")
         }
     }
 

@@ -29,17 +29,7 @@ export async function createProject(formData: FormData) {
     const categorySlug = formData.get('categorySlug') as string
 
     const technologies = formData.get('technologies') as string
-    const coverImageFile = formData.get('coverImageFile') as File | null
-    let coverImage = formData.get('coverImage') as string || '' // Fallback if no new file
-
-    // Upload to Vercel Blob if a file is provided
-    if (coverImageFile && coverImageFile.size > 0) {
-        const { put } = await import('@vercel/blob')
-        const cleanName = coverImageFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-        const blobPath = `ProyectoIntermodular/${Date.now()}_${cleanName}`
-        const blob = await put(blobPath, coverImageFile, { access: 'public' })
-        coverImage = blob.url
-    }
+    const coverImage = formData.get('coverImage') as string || '' // URL from client upload
 
     // Resolve slug to ID
     const category = await prisma.category.findUnique({ where: { slug: categorySlug } })
@@ -74,16 +64,7 @@ export async function updateProject(projectId: string, formData: FormData) {
     const categorySlug = formData.get('categorySlug') as string
 
     const technologies = formData.get('technologies') as string
-    const coverImageFile = formData.get('coverImageFile') as File | null
-    let coverImage = formData.get('coverImage') as string || '' // Retain old value if no new file
-
-    if (coverImageFile && coverImageFile.size > 0) {
-        const { put } = await import('@vercel/blob')
-        const cleanName = coverImageFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-        const blobPath = `ProyectoIntermodular/${Date.now()}_${cleanName}`
-        const blob = await put(blobPath, coverImageFile, { access: 'public' })
-        coverImage = blob.url
-    }
+    const coverImage = formData.get('coverImage') as string || ''
 
     try {
         await prisma.project.update({

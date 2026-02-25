@@ -39,6 +39,7 @@ export type ExamFormatting = {
 
 export type ExamTemplateData = {
     name: string
+    type?: string
     header: ExamHeaderData
     sections: ExamSection[]
     formatting: ExamFormatting
@@ -58,10 +59,11 @@ export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
         return { success: false, error: "Unauthorized" }
     }
     try {
-        const { name, header, sections, formatting } = data
+        const { name, type, header, sections, formatting } = data
 
         const payload = {
             name,
+            type: type || 'EXAM',
             logoUrl: header.logoUrl,
             cycle: header.cycle,
             course: header.course,
@@ -93,7 +95,7 @@ export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
             })
         }
 
-        revalidatePath("/fp-informatica/exams/create")
+        revalidatePath("/fp-informatica", "layout")
         return { success: true, id: template.id }
     } catch (error) {
         console.error("Failed to save template:", error)
@@ -101,9 +103,10 @@ export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
     }
 }
 
-export async function getExamTemplates() {
+export async function getExamTemplates(type: string = 'EXAM') {
     try {
         const templates = await prisma.examTemplate.findMany({
+            where: { type },
             orderBy: { createdAt: 'desc' }
         })
         return templates
@@ -120,7 +123,7 @@ export async function deleteTemplate(id: string) {
     }
     try {
         await prisma.examTemplate.delete({ where: { id } })
-        revalidatePath("/fp-informatica/exams/create")
+        revalidatePath("/fp-informatica", "layout")
         return { success: true }
     } catch (error) {
         return { success: false, error: "Failed to delete template" }

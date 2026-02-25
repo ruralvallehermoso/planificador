@@ -1,0 +1,64 @@
+import { prisma } from '@/lib/prisma'
+import { getExamGradeReport } from '@/lib/actions/exam-grades'
+import { ExamFormBuilder } from "@/components/modules/exams/ExamFormBuilder"
+import { GradeTabs } from '@/components/modules/exams/grades/GradeTabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ArrowLeft, Edit, GraduationCap } from 'lucide-react'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+
+interface PageProps {
+    params: Promise<{ id: string }>
+}
+
+export default async function EvaluationDetailPage({ params }: PageProps) {
+    const { id } = await params
+
+    const evaluation = await prisma.examTemplate.findUnique({
+        where: { id: id }
+    })
+
+    if (!evaluation || evaluation.type !== 'EVALUATION') {
+        notFound()
+    }
+
+    const { report } = await getExamGradeReport(id)
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center gap-4 mb-6 print:hidden">
+                <Link href="/fp-informatica/evaluations" className="p-2 hover:bg-gray-100 rounded-full transition-colors print:hidden">
+                    <ArrowLeft className="h-5 w-5 text-gray-600" />
+                </Link>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">{evaluation.name}</h1>
+                    <p className="text-sm text-gray-500">{evaluation.subject || 'Sin Asignatura'} - {evaluation.course}</p>
+                </div>
+            </div>
+
+            <Tabs defaultValue="design" className="w-full">
+                <TabsList className="mb-4 print:hidden">
+                    <TabsTrigger value="design" className="flex items-center gap-2">
+                        <Edit className="w-4 h-4" />
+                        Diseño / Contenido
+                    </TabsTrigger>
+                    <TabsTrigger value="grades" className="flex items-center gap-2">
+                        <GraduationCap className="w-4 h-4" />
+                        Calificaciones
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="design" className="mt-0">
+                    <div className="bg-white rounded-xl border p-1 print:border-none print:p-0">
+                        {/* We reuse the builder but verify functionality */}
+                        <ExamFormBuilder initialData={evaluation} basePath="/fp-informatica/evaluations" type="EVALUATION" />
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="grades" className="mt-0">
+                    <GradeTabs report={report} examId={id} />
+                </TabsContent>
+            </Tabs>
+        </div>
+    )
+}

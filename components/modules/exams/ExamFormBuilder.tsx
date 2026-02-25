@@ -49,9 +49,11 @@ const DEFAULT_GRADING: GradingRules = {
 
 interface ExamFormBuilderProps {
     initialData?: any
+    basePath?: string
+    type?: 'EXAM' | 'EVALUATION'
 }
 
-export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
+export function ExamFormBuilder({ initialData, basePath = '/fp-informatica/exams', type = 'EXAM' }: ExamFormBuilderProps) {
     const [header, setHeader] = useState<ExamHeaderData>(DEFAULT_HEADER)
     const [sections, setSections] = useState<ExamSection[]>([])
     const [formatting, setFormatting] = useState<ExamFormatting>(DEFAULT_FORMATTING)
@@ -109,7 +111,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     }, [urlTemplateId, templates, initialData, selectedTemplateId])
 
     const loadTemplates = async () => {
-        const t = await getExamTemplates()
+        const t = await getExamTemplates(type)
         setTemplates(t)
     }
 
@@ -162,6 +164,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         setIsSaving(true)
         const data: ExamTemplateData = {
             name: newTemplateName,
+            type,
             header,
             sections,
             formatting,
@@ -175,14 +178,14 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
 
         if (result.success) {
             // Reload list to get updated names/IDs
-            const t = await getExamTemplates()
+            const t = await getExamTemplates(type)
             setTemplates(t)
 
             if (result.id) {
                 setSelectedTemplateId(result.id)
                 // If it's a new template or ID changed, update URL to the DETAIL page
                 if (result.id !== urlTemplateId) {
-                    router.push(`/fp-informatica/exams/${result.id}`)
+                    router.push(`${basePath}/${result.id}`)
                 }
             }
         }
@@ -454,10 +457,12 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
             <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b z-30 print:hidden shadow-sm">
                 <div className="w-full max-w-[1800px] mx-auto px-4 h-14 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 min-w-0">
-                        <Link href="/fp-informatica/exams" className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0">
+                        <Link href={basePath} className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0">
                             <ArrowLeft className="h-5 w-5 text-gray-600" />
                         </Link>
-                        <h1 className="text-lg font-bold text-gray-900 truncate hidden sm:block">Generador de Exámenes</h1>
+                        <h1 className="text-lg font-bold text-gray-900 truncate hidden sm:block">
+                            {type === 'EVALUATION' ? 'Generador de Evaluaciones' : 'Generador de Exámenes'}
+                        </h1>
                     </div>
 
                     <div className="flex items-center gap-2 flex-1 md:flex-none justify-end">

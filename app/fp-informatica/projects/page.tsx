@@ -4,6 +4,8 @@ import { ProjectsList } from "@/components/modules/teacher/ProjectsList"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
+export const dynamic = 'force-dynamic'
+
 export default async function ProjectsPage() {
     const categorySlug = 'fp-informatica'
     const category = await prisma.category.findUnique({ where: { slug: categorySlug } })

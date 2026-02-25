@@ -1,4 +1,4 @@
-import { Calendar, BookOpen, GraduationCap, Library } from "lucide-react"
+import { Calendar, BookOpen, GraduationCap, Library, Globe } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { SidebarTaskManager } from "@/components/modules/teacher/SidebarTaskManager"
@@ -43,6 +43,16 @@ const DASHBOARD_CARDS = [
         bgColor: "bg-emerald-100",
         borderColor: "border-emerald-200",
         hoverBorder: "hover:border-emerald-300",
+    },
+    {
+        title: "Proyectos",
+        description: "Documenta el progreso y evidencias de los proyectos de clase.",
+        icon: Globe,
+        href: "/fp-informatica/projects",
+        color: "text-rose-600",
+        bgColor: "bg-rose-100",
+        borderColor: "border-rose-200",
+        hoverBorder: "hover:border-rose-300",
     }
 ]
 

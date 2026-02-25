@@ -273,10 +273,6 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                             <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
                         </div>
 
-                        <div className="pt-4 border-t flex justify-end">
-                            <button type="submit" disabled={loading} className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50">
-                                {loading ? 'Guardando...' : 'Guardar Cambios'}
-                            </button>
                         </div>
                     </form>
 
@@ -320,7 +316,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                         </button>
                     )}
                 </div>
-            </div>
+            </div >
         </div >
     )
 }

@@ -39,8 +39,9 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
     const [heatmapSearchTerm, setHeatmapSearchTerm] = useState("")
     const [page, setPage] = useState(1)
 
-    // NEW Filter state for bar clicks
+    // NEW Filter states for bar clicks
     const [criteriaFilter, setCriteriaFilter] = useState<{ criteria: string, status: 'Aprobados' | 'Suspendidos' } | null>(null)
+    const [distributionFilter, setDistributionFilter] = useState<number | null>(null)
 
     const fileInputRef = useRef<HTMLInputElement>(null)
     const ITEMS_PER_PAGE = 20
@@ -66,6 +67,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                 setSearchTerm("")
                 setHeatmapSearchTerm("")
                 setCriteriaFilter(null)
+                setDistributionFilter(null)
             } catch (error) {
                 console.error("Error parsing:" + error)
             } finally {
@@ -92,6 +94,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         setStudentsData([])
         setSelectedCriteria([])
         setCriteriaFilter(null)
+        setDistributionFilter(null)
         setSearchTerm("")
         setHeatmapSearchTerm("")
         setIsSaving(true)
@@ -122,6 +125,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         setSelectedCriteria(prev => {
             const next = prev.includes(criterion) ? prev.filter(c => c !== criterion) : [...prev, criterion]
             if (criteriaFilter && criteriaFilter.criteria === criterion) setCriteriaFilter(null)
+            if (distributionFilter !== null) setDistributionFilter(null)
             return next
         })
     }
@@ -203,8 +207,27 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
             })
         }
 
+        if (distributionFilter !== null) {
+            result = result.filter(student => {
+                let fails = 0
+                selectedCriteria.forEach(crit => {
+                    const rawVal = student[crit]
+                    let isPassed = false
+                    const numVal = parseFloat(rawVal)
+                    if (!isNaN(numVal)) isPassed = numVal >= 5.0
+                    else if (typeof rawVal === 'string') {
+                        const str = rawVal.toLowerCase().trim()
+                        isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(str)
+                    }
+                    if (rawVal === null || rawVal === undefined || rawVal === '') isPassed = false
+                    if (!isPassed) fails++
+                })
+                return fails === distributionFilter
+            })
+        }
+
         return result
-    }, [studentsData, searchTerm, nameColumns, criteriaFilter])
+    }, [studentsData, searchTerm, nameColumns, criteriaFilter, distributionFilter, selectedCriteria])
 
     const filteredHeatmapStudents = useMemo(() => {
         if (!heatmapSearchTerm) return studentsData;
@@ -272,6 +295,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                         </div>
                         <span className="font-bold text-gray-900">{alumnos} <span className="text-gray-400 font-normal text-xs ml-1">({pct}%)</span></span>
                     </div>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-3 pt-2 border-t border-gray-100 text-center font-semibold text-amber-500">Click en la barra para filtrar</p>
                 </div>
             )
         }
@@ -424,7 +448,15 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                                 <Legend wrapperStyle={{ paddingTop: '30px' }} />
                                                 <Bar
                                                     dataKey="Alumnos" fill="#F59E0B" radius={[4, 4, 0, 0]} barSize={40}
-                                                    className="hover:opacity-80 transition-opacity"
+                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                    onClick={(e) => {
+                                                        const failsCount = e.payload?.failsCount
+                                                        if (failsCount !== undefined) {
+                                                            setDistributionFilter(failsCount)
+                                                            setCriteriaFilter(null) // Reset the other filter just in case
+                                                            document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                        }
+                                                    }}
                                                 />
                                             </BarChart>
                                         </ResponsiveContainer>
@@ -522,11 +554,22 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                         <div className="p-5 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             <div className="flex flex-wrap items-center gap-3">
                                 <h3 className="text-base font-bold text-gray-900">Datos Detallados</h3>
+
                                 {criteriaFilter && (
                                     <div className="flex items-center gap-2 px-3 py-1 bg-indigo-50 border border-indigo-100 rounded-full text-xs font-semibold text-indigo-700">
                                         <Filter className="h-3 w-3" />
                                         <span>{criteriaFilter.criteria}: {criteriaFilter.status === 'Aprobados' ? 'Aprobados' : 'Suspendidos'}</span>
                                         <button onClick={() => { setCriteriaFilter(null); setPage(1) }} className="hover:bg-indigo-200 rounded-full p-0.5 transition-colors">
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                )}
+
+                                {distributionFilter !== null && (
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full text-xs font-semibold text-amber-700">
+                                        <Filter className="h-3 w-3" />
+                                        <span>Filtro de Suspensos: {distributionFilter === 0 ? 'Pleno (0)' : distributionFilter}</span>
+                                        <button onClick={() => { setDistributionFilter(null); setPage(1) }} className="hover:bg-amber-200 rounded-full p-0.5 transition-colors">
                                             <X className="h-3 w-3" />
                                         </button>
                                     </div>
@@ -562,8 +605,8 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                                 <div className="flex flex-col items-center justify-center">
                                                     <Search className="h-8 w-8 text-gray-300 mb-3" />
                                                     <p>No se encontraron alumnos bajo estos filtros.</p>
-                                                    {(searchTerm || criteriaFilter) && (
-                                                        <Button variant="link" onClick={() => { setSearchTerm(""); setCriteriaFilter(null); setPage(1); }} className="text-indigo-600 mt-2">
+                                                    {(searchTerm || criteriaFilter || distributionFilter !== null) && (
+                                                        <Button variant="link" onClick={() => { setSearchTerm(""); setCriteriaFilter(null); setDistributionFilter(null); setPage(1); }} className="text-indigo-600 mt-2">
                                                             Limpiar todos los filtros
                                                         </Button>
                                                     )}

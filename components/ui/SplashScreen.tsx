@@ -16,8 +16,8 @@ function FloatingPlanner3D() {
         if (!sceneRef.current) return;
         const t = state.clock.elapsedTime;
 
-        // Rotación global envolvente
-        sceneRef.current.rotation.y = Math.sin(t * 0.3) * 0.2 + t * 0.05;
+        // Rotación global envolvente - 1 vuelta completa (2 PI) en ~16 seg
+        sceneRef.current.rotation.y = Math.sin(t * 0.3) * 0.2 + t * 0.4;
         sceneRef.current.position.y = Math.sin(t * 1.2) * 0.12;
 
         // Tapa del planner "respira" muy sutilmente
@@ -402,7 +402,7 @@ export function SplashScreen() {
             setShowSplash(true);
             const timer = setTimeout(() => {
                 handleClose();
-            }, 11000); // 11s to appreciate details
+            }, 16000); // 16s para ver una rotación 360 grados
 
             return () => clearTimeout(timer);
         }
@@ -491,7 +491,7 @@ export function SplashScreen() {
                                     <motion.div
                                         initial={{ x: "-100%" }}
                                         animate={{ x: "0%" }}
-                                        transition={{ duration: 10.5, ease: "easeOut" }}
+                                        transition={{ duration: 15.5, ease: "easeOut" }}
                                         className="h-full bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 w-[200%]"
                                     />
                                 </div>

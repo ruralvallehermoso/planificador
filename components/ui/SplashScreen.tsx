@@ -402,7 +402,7 @@ export function SplashScreen() {
             setShowSplash(true);
             const timer = setTimeout(() => {
                 handleClose();
-            }, 6000); // 6s to appreciate details
+            }, 11000); // 11s to appreciate details
 
             return () => clearTimeout(timer);
         }
@@ -491,7 +491,7 @@ export function SplashScreen() {
                                     <motion.div
                                         initial={{ x: "-100%" }}
                                         animate={{ x: "0%" }}
-                                        transition={{ duration: 5.5, ease: "easeOut" }}
+                                        transition={{ duration: 10.5, ease: "easeOut" }}
                                         className="h-full bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 w-[200%]"
                                     />
                                 </div>

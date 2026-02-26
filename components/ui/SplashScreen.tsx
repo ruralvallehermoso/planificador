@@ -124,11 +124,11 @@ export function SplashScreen() {
                         {/* Contenedor del Elemento 3D interactivo real */}
                         <div className="relative w-72 h-72 md:w-96 md:h-96 drop-shadow-2xl mb-8 flex items-center justify-center">
                             <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-                                <ambientLight intensity={0.5} />
-                                <directionalLight position={[10, 10, 5]} intensity={1} />
-                                <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#A78BFA" />
+                                <ambientLight intensity={2.5} />
+                                <directionalLight position={[10, 10, 10]} intensity={3} castShadow />
+                                <directionalLight position={[-10, -10, -10]} intensity={1.5} color="#A78BFA" />
+                                <pointLight position={[0, 5, 0]} intensity={2} color="#ffffff" />
                                 <FloatingPlanner3D />
-                                <Environment preset="city" />
                             </Canvas>
                         </div>
 

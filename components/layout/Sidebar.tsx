@@ -8,7 +8,8 @@ import {
     Home, GraduationCap, BookOpen, Coffee, LayoutDashboard, TrendingUp, TrendingDown, BarChart3,
     ClipboardList, Calculator, ChevronDown, ChevronRight, ChevronLeft, Menu, Search, Shield, X,
     LogOut, Wallet, Wrench, Users, PiggyBank, Settings, Target, Utensils, Calendar, Package,
-    CheckSquare, Clock, CreditCard, DollarSign, FileText, User, Briefcase, Library, Loader2, Zap, ClipboardCheck
+    CheckSquare, Clock, CreditCard, DollarSign, FileText, User, Briefcase, Library, Loader2, Zap, ClipboardCheck,
+    LucideIcon
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useState, useEffect, useMemo, useRef } from 'react'
@@ -18,10 +19,10 @@ import { MODULES, type ModuleName } from '@/lib/auth/config'
 interface NavItem {
     name: string
     href: string
-    icon: React.ElementType
+    icon: LucideIcon
     module?: ModuleName
     adminOnly?: boolean
-    children?: { name: string; href: string; icon: React.ElementType; adminOnly?: boolean }[]
+    children?: { name: string; href: string; icon: LucideIcon; adminOnly?: boolean }[]
 }
 
 interface SidebarProps {

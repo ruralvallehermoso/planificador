@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { AppShell } from "@/components/layout/AppShell";
+import { SplashScreen } from "@/components/ui/SplashScreen";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -40,6 +41,7 @@ export default async function RootLayout({
     <html lang="en" className="h-full bg-gray-50" suppressHydrationWarning={true}>
       <body className={`${inter.className} h-full overflow-hidden`} suppressHydrationWarning={true}>
         <AuthProvider session={session}>
+          <SplashScreen />
           <AppShell>
             {children}
             <Toaster />

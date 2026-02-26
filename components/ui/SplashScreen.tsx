@@ -84,7 +84,7 @@ export function SplashScreen() {
                             className="relative w-72 h-72 md:w-96 md:h-96 drop-shadow-2xl mb-8"
                         >
                             <Image
-                                src="/images/app_splash_3d.png"
+                                src="/images/app_splash_comic.png"
                                 alt="Unified Planner 3D"
                                 fill
                                 priority

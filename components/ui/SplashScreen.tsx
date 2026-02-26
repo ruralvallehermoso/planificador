@@ -77,19 +77,25 @@ export function SplashScreen() {
                         transition={{ delay: 0.2, duration: 0.8, type: "spring", bounce: 0.4 }}
                         className="relative z-10 flex flex-col items-center justify-center w-full max-w-md p-8"
                     >
-                        {/* Contenedor de la imagen con efecto flotante */}
+                        {/* Contenedor de la imagen con efecto flotante y rotatorio */}
                         <motion.div
                             animate={{ y: [-10, 10, -10] }}
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            className="relative w-72 h-72 md:w-96 md:h-96 drop-shadow-2xl mb-8"
+                            className="relative w-72 h-72 md:w-96 md:h-96 drop-shadow-2xl mb-8 flex items-center justify-center"
                         >
-                            <Image
-                                src="/images/app_splash_comic.png"
-                                alt="Unified Planner 3D"
-                                fill
-                                priority
-                                className="object-contain"
-                            />
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                                className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)] border-2 border-white/10"
+                            >
+                                <Image
+                                    src="/images/app_splash_comic_formal.png"
+                                    alt="Unified Planner 3D"
+                                    fill
+                                    priority
+                                    className="object-cover scale-110"
+                                />
+                            </motion.div>
                         </motion.div>
 
                         {/* Título y ProgressBar */}

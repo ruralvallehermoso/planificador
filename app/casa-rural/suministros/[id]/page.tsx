@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSuministro } from "@/app/actions/suministros";
-import { ArrowLeft, ExternalLink, Phone, Mail, FileText, Zap, Droplets, Flame, Wifi, MoreHorizontal } from "lucide-react";
+import { ArrowLeft, ExternalLink, Phone, Mail, FileText, Zap, Droplets, Flame, Wifi, MoreHorizontal, LucideIcon } from "lucide-react";
 import { SuministroEditForm } from "./SuministroEditForm";
 import { InvoiceList } from "./InvoiceList";
 
-const TYPE_CONFIG: Record<string, { icon: React.ElementType<any>; color: string; label: string }> = {
+const TYPE_CONFIG: Record<string, { icon: LucideIcon; color: string; label: string }> = {
     LUZ: { icon: Zap, color: "#f59e0b", label: "Luz" },
     AGUA: { icon: Droplets, color: "#3b82f6", label: "Agua" },
     GAS: { icon: Flame, color: "#ef4444", label: "Gas" },

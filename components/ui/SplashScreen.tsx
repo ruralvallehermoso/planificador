@@ -3,7 +3,50 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Environment } from "@react-three/drei";
+import * as THREE from "three";
+
+function FloatingPlanner3D() {
+    const meshRef = useRef<THREE.Group>(null);
+
+    useFrame((state) => {
+        if (!meshRef.current) return;
+        // Rotación lenta sobre sí mismo 360 grados
+        meshRef.current.rotation.y += 0.01;
+        // Movimiento de flotación leve
+        meshRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.2;
+    });
+
+    return (
+        <group ref={meshRef}>
+            {/* Cuerpo principal del "Planner/Libro" */}
+            <mesh castShadow receiveShadow>
+                <boxGeometry args={[2.5, 3.5, 0.4]} />
+                <meshStandardMaterial color="#1E293B" roughness={0.7} metalness={0.2} />
+            </mesh>
+
+            {/* Detalles: páginas del libro (borde blanco) */}
+            <mesh position={[0.05, 0, 0]} castShadow>
+                <boxGeometry args={[2.45, 3.4, 0.41]} />
+                <meshStandardMaterial color="#F8FAFC" roughness={0.9} />
+            </mesh>
+
+            {/* Detalles: lomo del libro */}
+            <mesh position={[-1.25, 0, 0]} castShadow>
+                <cylinderGeometry args={[0.2, 0.2, 3.5, 16]} />
+                <meshStandardMaterial color="#0F172A" roughness={0.8} />
+            </mesh>
+
+            {/* Elemento dorado central (Logo/Cierre) */}
+            <mesh position={[0.8, 0, 0.22]} castShadow>
+                <boxGeometry args={[0.5, 0.8, 0.1]} />
+                <meshStandardMaterial color="#EAB308" metalness={0.8} roughness={0.2} />
+            </mesh>
+        </group>
+    );
+}
 
 export function SplashScreen() {
     const [showSplash, setShowSplash] = useState(false);
@@ -77,26 +120,16 @@ export function SplashScreen() {
                         transition={{ delay: 0.2, duration: 0.8, type: "spring", bounce: 0.4 }}
                         className="relative z-10 flex flex-col items-center justify-center w-full max-w-md p-8"
                     >
-                        {/* Contenedor de la imagen con efecto flotante y rotatorio */}
-                        <motion.div
-                            animate={{ y: [-10, 10, -10] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            className="relative w-72 h-72 md:w-96 md:h-96 drop-shadow-2xl mb-8 flex items-center justify-center"
-                        >
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                                className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)] border-2 border-white/10"
-                            >
-                                <Image
-                                    src="/images/app_splash_comic_formal.png"
-                                    alt="Unified Planner 3D"
-                                    fill
-                                    priority
-                                    className="object-cover scale-110"
-                                />
-                            </motion.div>
-                        </motion.div>
+                        {/* Contenedor del Elemento 3D interactivo real */}
+                        <div className="relative w-72 h-72 md:w-96 md:h-96 drop-shadow-2xl mb-8 flex items-center justify-center">
+                            <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+                                <ambientLight intensity={0.5} />
+                                <directionalLight position={[10, 10, 5]} intensity={1} />
+                                <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#A78BFA" />
+                                <FloatingPlanner3D />
+                                <Environment preset="city" />
+                            </Canvas>
+                        </div>
 
                         {/* Título y ProgressBar */}
                         <motion.div

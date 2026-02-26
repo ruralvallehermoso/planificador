@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink, Phone, Mail, FileText, Zap, Droplets, Flame, W
 import { SuministroEditForm } from "./SuministroEditForm";
 import { InvoiceList } from "./InvoiceList";
 
-const TYPE_CONFIG: Record<string, { icon: React.ElementType; color: string; label: string }> = {
+const TYPE_CONFIG: Record<string, { icon: React.ElementType<any>; color: string; label: string }> = {
     LUZ: { icon: Zap, color: "#f59e0b", label: "Luz" },
     AGUA: { icon: Droplets, color: "#3b82f6", label: "Agua" },
     GAS: { icon: Flame, color: "#ef4444", label: "Gas" },

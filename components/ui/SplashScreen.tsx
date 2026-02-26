@@ -97,8 +97,8 @@ function FloatingPlanner3D() {
                 </mesh>
 
                 {/* Pantalla bisagra */}
-                <mesh position={[0, 0.08, -0.68]}>
-                    <cylinderGeometry args={[0.03, 0.03, 1.8, 32]} rotation={[0, 0, Math.PI / 2]} />
+                <mesh position={[0, 0.08, -0.68]} rotation={[0, 0, Math.PI / 2]}>
+                    <cylinderGeometry args={[0.03, 0.03, 1.8, 32]} />
                     <meshStandardMaterial color="#1E293B" />
                 </mesh>
 
@@ -317,8 +317,8 @@ function FloatingPlanner3D() {
                     <cylinderGeometry args={[0.24, 0.24, 0.02, 32]} />
                     <meshStandardMaterial color="#2d170e" roughness={0.2} metalness={0.6} />
                 </mesh>
-                <mesh position={[0, 0.471, 0]}>
-                    <ringGeometry args={[0.18, 0.24, 32]} rotation={[-Math.PI / 2, 0, 0]} />
+                <mesh position={[0, 0.471, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                    <ringGeometry args={[0.18, 0.24, 32]} />
                     <meshStandardMaterial color="#8d5524" roughness={0.8} />
                 </mesh>
                 {/* Asa estilizada de la taza */}

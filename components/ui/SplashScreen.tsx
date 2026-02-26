@@ -11,116 +11,190 @@ import * as THREE from "three";
 
 function FloatingPlanner3D() {
     const groupRef = useRef<THREE.Group>(null);
+    const coverRef = useRef<THREE.Group>(null);
+    const particlesRef = useRef<THREE.Group>(null);
 
     useFrame((state) => {
-        if (!groupRef.current) return;
-        // Rotación continua 360 grados
-        groupRef.current.rotation.y += 0.008;
-        // Movimiento de flotación leve
-        groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.15;
+        if (!groupRef.current || !coverRef.current || !particlesRef.current) return;
+        const t = state.clock.elapsedTime;
+
+        // Rotación continua 360 grados todo el conjunto principal
+        groupRef.current.rotation.y += 0.005;
+        groupRef.current.position.y = Math.sin(t * 1.5) * 0.15;
+
+        // La tapa frontal "respira" abriéndose un poco más o menos
+        coverRef.current.rotation.y = Math.sin(t * 1.5) * 0.05 - 0.25;
+
+        // Partículas temáticas flotando alrededor a distinto ritmo
+        particlesRef.current.rotation.y -= 0.006;
+        particlesRef.current.rotation.z = Math.sin(t * 0.5) * 0.1;
+        particlesRef.current.position.y = Math.sin(t * 2) * 0.1;
     });
 
     return (
-        <group ref={groupRef}>
-            {/* --- CUERPO PRINCIPAL DEL LIBRO (TAPA) --- */}
-            {/* Tapa Trasera */}
-            <mesh position={[0, 0, -0.22]} castShadow receiveShadow>
-                <boxGeometry args={[2.5, 3.5, 0.05]} />
+        <group ref={groupRef} scale={0.9}>
+            {/* --- ANILLAS DEL BINDER (LOMO METÁLICO) --- */}
+            {Array.from({ length: 6 }).map((_, i) => (
+                <mesh key={`ring-${i}`} position={[-1.3, 1.2 - i * 0.48, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+                    <torusGeometry args={[0.18, 0.03, 16, 32]} />
+                    <meshStandardMaterial color="#CBD5E1" metalness={0.9} roughness={0.1} />
+                </mesh>
+            ))}
+
+            {/* --- TAPA TRASERA --- */}
+            <mesh position={[-0.1, 0, -0.22]} castShadow receiveShadow>
+                <boxGeometry args={[2.5, 3.6, 0.06]} />
                 <meshStandardMaterial color="#0F172A" roughness={0.9} />
             </mesh>
-            {/* Tapa Delantera */}
-            <mesh position={[0, 0, 0.22]} castShadow receiveShadow>
-                <boxGeometry args={[2.5, 3.5, 0.05]} />
-                <meshStandardMaterial color="#1E293B" roughness={0.7} metalness={0.1} />
-            </mesh>
-            {/* Lomo curvado */}
-            <mesh position={[-1.25, 0, 0]} castShadow receiveShadow>
-                <cylinderGeometry args={[0.24, 0.24, 3.5, 32]} />
-                <meshStandardMaterial color="#020617" roughness={0.9} />
-            </mesh>
 
-            {/* --- IMPRESIÓN / LOGO EN PORTADA --- */}
-            <mesh position={[0, 0.8, 0.25]} castShadow>
-                <boxGeometry args={[1.5, 0.6, 0.02]} />
-                <meshStandardMaterial color="#38BDF8" metalness={0.5} roughness={0.2} />
-            </mesh>
-            <mesh position={[0, 0.1, 0.25]} castShadow>
-                <boxGeometry args={[1, 0.1, 0.02]} />
-                <meshStandardMaterial color="#94A3B8" roughness={0.5} />
-            </mesh>
-            <mesh position={[0, -0.2, 0.25]} castShadow>
-                <boxGeometry args={[0.8, 0.1, 0.02]} />
-                <meshStandardMaterial color="#94A3B8" roughness={0.5} />
-            </mesh>
-
-            {/* --- BLOQUE DE PÁGINAS --- */}
-            <mesh position={[0.05, 0, 0]} castShadow receiveShadow>
-                <boxGeometry args={[2.35, 3.4, 0.38]} />
+            {/* --- BLOQUE DE PÁGINAS INTERNAS --- */}
+            {/* Página base gruesa */}
+            <mesh position={[-0.05, 0, 0]} castShadow receiveShadow>
+                <boxGeometry args={[2.35, 3.4, 0.3]} />
                 <meshStandardMaterial color="#F8FAFC" roughness={1} />
             </mesh>
+            {/* Páginas superiores algo desordenadas para realismo */}
+            <mesh position={[-0.03, 0.02, 0.16]} rotation={[0, 0, 0.01]} castShadow>
+                <boxGeometry args={[2.3, 3.38, 0.02]} />
+                <meshStandardMaterial color="#FFFFFF" roughness={0.9} />
+            </mesh>
+            <mesh position={[-0.02, -0.01, 0.18]} rotation={[0, 0, -0.005]} castShadow>
+                <boxGeometry args={[2.3, 3.38, 0.02]} />
+                <meshStandardMaterial color="#F1F5F9" roughness={0.9} />
+            </mesh>
 
-            {/* --- SEPARADORES DE PESTAÑAS (MÓDULOS DEL PLANIFICADOR) --- */}
+            {/* --- POST-ITS Y MARCADORES EN LAS PÁGINAS --- */}
+            {/* Post-it amarillo (Tareas) */}
+            <mesh position={[0.4, 0.8, 0.2]} rotation={[0, 0, 0.05]} castShadow>
+                <boxGeometry args={[0.6, 0.6, 0.01]} />
+                <meshStandardMaterial color="#FEF08A" roughness={0.8} />
+            </mesh>
+            {/* Post-it rosa (Ideas) */}
+            <mesh position={[0.6, -0.2, 0.2]} rotation={[0, 0, -0.08]} castShadow>
+                <boxGeometry args={[0.5, 0.5, 0.01]} />
+                <meshStandardMaterial color="#FBCFE8" roughness={0.8} />
+            </mesh>
+
+            {/* --- SEPARADORES DE PESTAÑAS LATERALES --- */}
             {/* Finanzas */}
-            <mesh position={[1.25, 1.2, 0]} castShadow>
-                <boxGeometry args={[0.15, 0.4, 0.35]} />
+            <mesh position={[1.15, 1.2, 0]} castShadow>
+                <boxGeometry args={[0.3, 0.4, 0.02]} />
                 <meshStandardMaterial color="#10B981" roughness={0.6} />
             </mesh>
-            {/* Hogar / Casa Rural */}
-            <mesh position={[1.25, 0.6, 0]} castShadow>
-                <boxGeometry args={[0.15, 0.4, 0.35]} />
+            {/* Hogar */}
+            <mesh position={[1.15, 0.6, 0]} castShadow>
+                <boxGeometry args={[0.3, 0.4, 0.02]} />
                 <meshStandardMaterial color="#F59E0B" roughness={0.6} />
             </mesh>
-            {/* Estudios / FP / UNIE */}
-            <mesh position={[1.25, 0, 0]} castShadow>
-                <boxGeometry args={[0.15, 0.4, 0.35]} />
+            {/* FP / UNIE */}
+            <mesh position={[1.15, 0, 0]} castShadow>
+                <boxGeometry args={[0.3, 0.4, 0.02]} />
                 <meshStandardMaterial color="#3B82F6" roughness={0.6} />
             </mesh>
-            {/* Inventario / Otros */}
-            <mesh position={[1.25, -0.6, 0]} castShadow>
-                <boxGeometry args={[0.15, 0.4, 0.35]} />
+            {/* Inventario/Otros */}
+            <mesh position={[1.15, -0.6, 0]} castShadow>
+                <boxGeometry args={[0.3, 0.4, 0.02]} />
                 <meshStandardMaterial color="#8B5CF6" roughness={0.6} />
             </mesh>
 
-            {/* --- MARCAPÁGINAS DE TELA --- */}
-            <mesh position={[0.5, -1.8, 0.1]} rotation={[0, 0, 0.1]} castShadow>
-                <boxGeometry args={[0.15, 0.8, 0.01]} />
-                <meshStandardMaterial color="#E11D48" roughness={0.9} />
-            </mesh>
+            {/* --- TAPA DELANTERA (ARTICULADA DESDE LAS ANILLAS) --- */}
+            <group ref={coverRef} position={[-1.3, 0, 0.22]}>
+                {/* Geometría de la tapa desplazada para que el pivote sea el lomo */}
+                <group position={[1.2, 0, 0]}>
+                    <mesh castShadow receiveShadow>
+                        <boxGeometry args={[2.5, 3.6, 0.06]} />
+                        <meshStandardMaterial color="#1E293B" roughness={0.8} metalness={0.2} />
+                    </mesh>
 
-            {/* --- BROCHE/CIERRE MAGNÉTICO --- */}
-            {/* Tira del broche */}
-            <mesh position={[1.2, 0, 0.23]} castShadow>
-                <boxGeometry args={[0.6, 0.8, 0.05]} />
-                <meshStandardMaterial color="#0F172A" roughness={0.8} />
-            </mesh>
-            {/* Remache metálico / Botón */}
-            <mesh position={[1.35, 0, 0.27]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-                <cylinderGeometry args={[0.15, 0.15, 0.05, 16]} />
-                <meshStandardMaterial color="#FBBF24" metalness={0.9} roughness={0.1} />
-            </mesh>
+                    {/* Costuras/Bordes decorativos tapa frontal */}
+                    <mesh position={[0, 0, 0.035]} castShadow>
+                        <boxGeometry args={[2.3, 3.4, 0.01]} />
+                        <meshBasicMaterial color="#334155" />
+                    </mesh>
 
-            {/* --- BOLÍGRAFO / STYLUS FLOTANDO AL LADO --- */}
-            <group position={[1.8, 0, 0]} rotation={[0, 0, 0.1]}>
-                {/* Cuerpo del boli */}
+                    {/* Impresión / Placa metálica dorada */}
+                    <mesh position={[0, 0.3, 0.04]} castShadow>
+                        <boxGeometry args={[1.2, 0.8, 0.02]} />
+                        <meshStandardMaterial color="#FBBF24" metalness={0.8} roughness={0.2} />
+                    </mesh>
+                    {/* Interior placa central */}
+                    <mesh position={[0, 0.3, 0.05]} castShadow>
+                        <boxGeometry args={[1.0, 0.6, 0.01]} />
+                        <meshStandardMaterial color="#0F172A" roughness={0.8} />
+                    </mesh>
+
+                    {/* Cinta elástica (cierre vertical) */}
+                    <mesh position={[0.9, 0, 0.03]} castShadow>
+                        <boxGeometry args={[0.15, 3.62, 0.02]} />
+                        <meshStandardMaterial color="#0F172A" roughness={0.9} />
+                    </mesh>
+                </group>
+            </group>
+
+            {/* --- BOLÍGRAFO PREMIUM FLOTANDO ACERTADO --- */}
+            <group position={[1.9, -0.5, 0.5]} rotation={[0.2, 0, 0.3]}>
+                {/* Cuerpo principal */}
                 <mesh castShadow receiveShadow>
-                    <cylinderGeometry args={[0.06, 0.06, 2.8, 16]} />
-                    <meshStandardMaterial color="#1E293B" metalness={0.7} roughness={0.2} />
+                    <cylinderGeometry args={[0.07, 0.07, 2.8, 32]} />
+                    <meshStandardMaterial color="#0F172A" metalness={0.4} roughness={0.6} />
                 </mesh>
                 {/* Punta metálica */}
                 <mesh position={[0, -1.5, 0]} castShadow>
-                    <coneGeometry args={[0.06, 0.2, 16]} />
+                    <coneGeometry args={[0.07, 0.25, 32]} />
                     <meshStandardMaterial color="#94A3B8" metalness={0.9} roughness={0.1} />
                 </mesh>
-                {/* Clip del boli */}
-                <mesh position={[0.06, 1.1, 0]} castShadow>
-                    <boxGeometry args={[0.04, 0.6, 0.02]} />
+                {/* Grip acolchado inferior */}
+                <mesh position={[0, -1.0, 0]} castShadow>
+                    <cylinderGeometry args={[0.072, 0.072, 0.6, 32]} />
+                    <meshStandardMaterial color="#334155" roughness={0.9} />
+                </mesh>
+                {/* Clip Dorado */}
+                <mesh position={[0.08, 1.0, 0]} castShadow>
+                    <boxGeometry args={[0.03, 0.8, 0.04]} />
                     <meshStandardMaterial color="#FBBF24" metalness={0.9} roughness={0.1} />
                 </mesh>
-                {/* Botón superior / Goma */}
+                {/* Cap superior u oro */}
                 <mesh position={[0, 1.45, 0]} castShadow>
-                    <cylinderGeometry args={[0.08, 0.06, 0.1, 16]} />
-                    <meshStandardMaterial color="#38BDF8" metalness={0.2} roughness={0.8} />
+                    <cylinderGeometry args={[0.07, 0.07, 0.15, 32]} />
+                    <meshStandardMaterial color="#FBBF24" metalness={0.8} roughness={0.2} />
                 </mesh>
+            </group>
+
+            {/* --- ELEMENTOS FLOTANTES ALREDEDOR (TAREAS, FINANZAS, NOTAS) --- */}
+            <group ref={particlesRef}>
+                {/* Tarjeta de crédito flotante (Finanzas) */}
+                <mesh position={[-2.2, 1.2, 1]} rotation={[0.5, 0.2, 0.3]} castShadow>
+                    <boxGeometry args={[0.8, 0.5, 0.02]} />
+                    <meshStandardMaterial color="#3B82F6" roughness={0.5} />
+                </mesh>
+                <mesh position={[-2.2, 1.2, 1.02]} rotation={[0.5, 0.2, 0.3]} castShadow>
+                    <boxGeometry args={[0.1, 0.3, 0.01]} />
+                    <meshStandardMaterial color="#FBBF24" metalness={0.8} roughness={0.2} />
+                </mesh>
+
+                {/* Pequeño cubo verde de "construcción" (Hábitos/Tareas) */}
+                <mesh position={[2, 2, -1]} rotation={[0.4, 0.6, 0.1]} castShadow>
+                    <boxGeometry args={[0.4, 0.4, 0.4]} />
+                    <meshStandardMaterial color="#10B981" roughness={0.3} metalness={0.2} />
+                </mesh>
+
+                {/* Moneda / Ficha circular naranja (Hogar) */}
+                <mesh position={[1.5, -2, 1.5]} rotation={[1.5, 0, 0]} castShadow>
+                    <cylinderGeometry args={[0.3, 0.3, 0.05, 32]} />
+                    <meshStandardMaterial color="#F59E0B" metalness={0.6} roughness={0.2} />
+                </mesh>
+
+                {/* Foto polaroid o doc textual pequeño (Estudios) */}
+                <group position={[-1.8, -1.8, -1]} rotation={[-0.2, -0.4, 0.1]}>
+                    <mesh castShadow>
+                        <boxGeometry args={[0.6, 0.7, 0.02]} />
+                        <meshStandardMaterial color="#FFFFFF" roughness={1} />
+                    </mesh>
+                    <mesh position={[0, 0.05, 0.015]} castShadow>
+                        <boxGeometry args={[0.5, 0.5, 0.01]} />
+                        <meshStandardMaterial color="#64748B" roughness={0.7} />
+                    </mesh>
+                </group>
             </group>
         </group>
     );

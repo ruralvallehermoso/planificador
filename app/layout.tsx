@@ -41,7 +41,7 @@ export default async function RootLayout({
     <html lang="en" className="h-full bg-gray-50" suppressHydrationWarning={true}>
       <body className={`${inter.className} h-full overflow-hidden`} suppressHydrationWarning={true}>
         <AuthProvider session={session}>
-          <SplashScreen />
+          {session?.user && <SplashScreen />}
           <AppShell>
             {children}
             <Toaster />

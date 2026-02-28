@@ -9,7 +9,8 @@ import {
     Package,
     ArrowRight,
     ChefHat,
-    Sparkles
+    Sparkles,
+    Zap
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -19,12 +20,18 @@ export default async function HogarPage() {
     const user = session?.user;
 
     // Fetch data in parallel
-    const [recipesCount, pendingTasksCount] = await Promise.all([
+    const [recipesCount, pendingTasksCount, suministrosCount] = await Promise.all([
         prisma.recipe.count(),
         prisma.actionItem.count({
             where: {
                 category: { slug: 'hogar' },
                 status: { not: "DONE" }
+            }
+        }),
+        prisma.homeSuministro.count({
+            where: {
+                userId: user?.id,
+                status: 'ACTIVE'
             }
         })
     ]);
@@ -67,6 +74,16 @@ export default async function HogarPage() {
             color: "#8b5cf6", // Violet-500
             count: null,
             bgGradient: "from-violet-50 to-purple-50"
+        },
+        {
+            title: "Suministros",
+            description: "Gestiona tus recibos, contratos y contactos de suministros.",
+            href: "/hogar/suministros",
+            icon: Zap,
+            color: "#f59e0b", // Amber-500
+            count: suministrosCount,
+            countLabel: "activos",
+            bgGradient: "from-yellow-50 to-amber-50"
         }
     ];
 
@@ -120,7 +137,7 @@ export default async function HogarPage() {
                                 </p>
                             </div>
 
-                            {card.count !== null && (
+                            {card.count !== null && card.count !== undefined && (
                                 <div className="mt-2 inline-flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full bg-white/60 border border-gray-100 w-fit">
                                     <span style={{ color: card.color }}>{card.count}</span>
                                     <span className="text-gray-500">{card.countLabel}</span>
@@ -129,36 +146,6 @@ export default async function HogarPage() {
                         </div>
                     </Link>
                 ))}
-
-                {/* Proposal Card: Inventory / Pantry */}
-                <div className="group relative overflow-hidden rounded-2xl border border-dashed border-gray-300 p-6 bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                    <div className="absolute top-4 right-4">
-                        <span className="px-2 py-1 rounded text-xs font-semibold bg-gray-200 text-gray-600">
-                            PRÓXIMAMENTE
-                        </span>
-                    </div>
-
-                    <div className="relative z-10 flex flex-col h-full justify-between gap-4 opacity-75 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-start justify-between">
-                            <div className="p-3 rounded-xl bg-gray-200 text-gray-500">
-                                <Package className="w-8 h-8" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-700">
-                                Despensa Inteligente
-                            </h3>
-                            <p className="mt-1 text-sm text-gray-500">
-                                Controla tu inventario, fechas de caducidad y sugerencias de recetas basadas en lo que tienes.
-                            </p>
-                        </div>
-
-                        <div className="mt-2 text-sm text-gray-400 italic">
-                            ¿Te gustaría tener esta funcionalidad?
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     );

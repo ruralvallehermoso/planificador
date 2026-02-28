@@ -105,6 +105,7 @@ const allNavigation: NavItem[] = [
             { name: 'Comidas', href: '/hogar/comidas', icon: Utensils },
             { name: 'Calendario', href: '/hogar/calendario', icon: Calendar },
             { name: 'Lista Compra', href: '/hogar/lista-compra', icon: Package },
+            { name: 'Suministros', href: '/hogar/suministros', icon: Zap },
         ]
     },
     { name: 'Admin Usuarios', href: '/admin/users', icon: Shield, adminOnly: true },

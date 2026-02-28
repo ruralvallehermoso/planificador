@@ -41,6 +41,7 @@ model User {
   finanzasTasks          FinanzasTask[]
   shoppingItems          ShoppingItem[]
   homeEvents             HomeEvent[]
+  homeSuministros        HomeSuministro[]
 
   @@schema("public")
 }
@@ -936,5 +937,25 @@ model HomeEvent {
 
   @@index([userId])
   @@index([startDate])
+  @@schema("public")
+}
+
+model HomeSuministro {
+  id           String   @id @default(cuid())
+  userId       String
+  name         String   // Nombre del suministro (Ej: Luz, Agua)
+  provider     String?  // Empresa (Ej: Iberdrola)
+  contractRef  String?  // Referencia de contrato/póliza
+  contactPhone String?  // Teléfono de soporte
+  contactEmail String?  // Email de soporte
+  notes        String?  // Notas adicionales
+  url          String?  // Web del proveedor
+  cost         Float?   // Gasto estimado/mensual
+  status       String   @default("ACTIVE") // Estado del suministro
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
   @@schema("public")
 }

@@ -1,4 +1,4 @@
-import { Calendar, BookOpen, GraduationCap, Library, Globe, ClipboardCheck } from "lucide-react"
+import { Calendar, BookOpen, GraduationCap, Library, Globe, ClipboardCheck, Bookmark } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { SidebarTaskManager } from "@/components/modules/teacher/SidebarTaskManager"
@@ -63,6 +63,16 @@ const DASHBOARD_CARDS = [
         bgColor: "bg-indigo-100",
         borderColor: "border-indigo-200",
         hoverBorder: "hover:border-indigo-300",
+    },
+    {
+        title: "Marcadores",
+        description: "Importa y gestiona tus recursos web y enlaces de Chrome.",
+        icon: Bookmark,
+        href: "/fp-informatica/bookmarks",
+        color: "text-teal-600",
+        bgColor: "bg-teal-100",
+        borderColor: "border-teal-200",
+        hoverBorder: "hover:border-teal-300",
     }
 ]
 

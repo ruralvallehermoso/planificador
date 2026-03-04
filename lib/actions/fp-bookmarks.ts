@@ -10,6 +10,8 @@ import * as cheerio from "cheerio"
  */
 export async function importChromeBookmarks(htmlContent: string) {
     try {
+        console.log("=== START IMPORT BOOKMARKS ===")
+        console.log(`Received HTML content length: ${htmlContent.length}`)
         const $ = cheerio.load(htmlContent)
 
         // Limpia los marcadores y carpetas anteriores (Opcional, pero recomendable si queremos reemplazar)
@@ -21,8 +23,12 @@ export async function importChromeBookmarks(htmlContent: string) {
         const foldersToCreate: any[] = []
 
         // Los marcadores de Chrome tienen las carpetas en etiquetas <H3>
-        $("h3").each((i, folderEl) => {
+        const h3Tags = $("h3")
+        console.log(`Found ${h3Tags.length} <h3> tags (potential folders)`)
+
+        h3Tags.each((i, folderEl) => {
             const folderName = $(folderEl).text().trim()
+            console.log(`\nProcessing folder [${i}]: "${folderName}"`)
 
             // El contenedor de enlaces suele ser el siguiente <DL> o un <DL> hermano dentro del <DT>
             // Un enfoque robusto es buscar el DL que le sigue inmediatamente, o buscar en el padre
@@ -49,13 +55,18 @@ export async function importChromeBookmarks(htmlContent: string) {
             })
 
             if (links.length > 0) {
+                console.log(`=> Added folder "${folderName}" with ${links.length} links`)
                 foldersToCreate.push({
                     name: folderName,
                     order: i,
                     links
                 })
+            } else {
+                console.log(`=> Skipped folder "${folderName}" (0 links)`)
             }
         })
+
+        console.log(`\n=== TOTAL FOLDERS TO CREATE: ${foldersToCreate.length} ===`)
 
         // Insertar en la base de datos de manera transaccional
         await prisma.$transaction(async (tx) => {
@@ -83,7 +94,8 @@ export async function importChromeBookmarks(htmlContent: string) {
         revalidatePath("/fp-informatica/bookmarks")
         revalidatePath("/fp-informatica")
 
-        return { success: true, message: "Marcadores importados correctamente" }
+        console.log("=== IMPORT SUCCESSFUL ===")
+        return { success: true, message: `Marcadores importados correctamente (${foldersToCreate.length} carpetas)` }
     } catch (error) {
         console.error("Error importing bookmarks:", error)
         return { success: false, message: "Error al importar los marcadores" }

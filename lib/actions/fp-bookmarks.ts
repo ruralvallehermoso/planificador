@@ -20,24 +20,31 @@ export async function importChromeBookmarks(htmlContent: string) {
 
         const foldersToCreate: any[] = []
 
-        // Los marcadores de Chrome se estructuran en <DT><H3> Nombre Carpeta </H3>
-        // Seguido inmediatamente por un <DL><p> que contiene los <DT><A> Enlaces </A>
-        $("dt > h3").each((i, folderEl) => {
+        // Los marcadores de Chrome tienen las carpetas en etiquetas <H3>
+        $("h3").each((i, folderEl) => {
             const folderName = $(folderEl).text().trim()
 
-            // Ignorar carpetas ocultas o por defecto si se requiere, de momento importamos todas
-            // El contenedor de enlaces es el siguiente hermano <dl>
-            const linksContainer = $(folderEl).parent().children("dl").first()
+            // El contenedor de enlaces suele ser el siguiente <DL> o un <DL> hermano dentro del <DT>
+            // Un enfoque robusto es buscar el DL que le sigue inmediatamente, o buscar en el padre
+            let linksContainer = $(folderEl).next("dl")
+            if (linksContainer.length === 0) {
+                linksContainer = $(folderEl).parent().children("dl").first()
+            }
 
             const links: { title: string, url: string, iconUrl?: string }[] = []
 
-            linksContainer.find("dt > a").each((j, linkEl) => {
-                const title = $(linkEl).text().trim() || "Sin título"
-                const url = $(linkEl).attr("href")
-                const iconUrl = $(linkEl).attr("icon")
+            linksContainer.find("a").each((j, linkEl) => {
+                // Para no anidar enlaces de subcarpetas en la carpeta padre,
+                // aseguramos que el ancestro DL más cercano sea justamente este linksContainer
+                const closestDl = $(linkEl).closest("dl")
+                if (closestDl[0] === linksContainer[0]) {
+                    const title = $(linkEl).text().trim() || "Sin título"
+                    const url = $(linkEl).attr("href")
+                    const iconUrl = $(linkEl).attr("icon")
 
-                if (url) {
-                    links.push({ title, url, iconUrl })
+                    if (url) {
+                        links.push({ title, url, iconUrl })
+                    }
                 }
             })
 

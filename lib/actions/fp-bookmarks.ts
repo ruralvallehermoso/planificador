@@ -68,28 +68,27 @@ export async function importChromeBookmarks(htmlContent: string) {
 
         console.log(`\n=== TOTAL FOLDERS TO CREATE: ${foldersToCreate.length} ===`)
 
-        // Insertar en la base de datos de manera transaccional
-        await prisma.$transaction(async (tx) => {
-            for (const folderData of foldersToCreate) {
-                const createdFolder = await tx.fpBookmarkFolder.create({
-                    data: {
-                        name: folderData.name,
-                        order: folderData.order
-                    }
-                })
-
-                if (folderData.links.length > 0) {
-                    await tx.fpBookmark.createMany({
-                        data: folderData.links.map((link: any) => ({
-                            title: link.title,
-                            url: link.url,
-                            iconUrl: link.iconUrl,
-                            folderId: createdFolder.id
-                        }))
-                    })
+        // Insertar en la base de datos (sin $transaction para evitar timeout de 5s en Vercel free tier)
+        for (const folderData of foldersToCreate) {
+            const createdFolder = await prisma.fpBookmarkFolder.create({
+                data: {
+                    name: folderData.name,
+                    order: folderData.order
                 }
+            })
+
+            if (folderData.links.length > 0) {
+                // Insertamos los links de esta carpeta de golpe
+                await prisma.fpBookmark.createMany({
+                    data: folderData.links.map((link: any) => ({
+                        title: link.title,
+                        url: link.url,
+                        iconUrl: link.iconUrl,
+                        folderId: createdFolder.id
+                    }))
+                })
             }
-        })
+        }
 
         revalidatePath("/fp-informatica/bookmarks")
         revalidatePath("/fp-informatica")

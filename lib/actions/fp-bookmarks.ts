@@ -133,3 +133,35 @@ export async function clearBookmarks() {
         return { success: false, message: "Error al limpiar marcadores" }
     }
 }
+
+/**
+ * Eliminar carpeta individual
+ */
+export async function deleteBookmarkFolder(folderId: string) {
+    try {
+        await prisma.fpBookmarkFolder.delete({
+            where: { id: folderId }
+        })
+        revalidatePath("/fp-informatica/bookmarks")
+        return { success: true, message: "Carpeta eliminada" }
+    } catch (error) {
+        console.error("Error deleting folder:", error)
+        return { success: false, message: "Error al eliminar carpeta" }
+    }
+}
+
+/**
+ * Eliminar enlace individual
+ */
+export async function deleteBookmark(bookmarkId: string) {
+    try {
+        await prisma.fpBookmark.delete({
+            where: { id: bookmarkId }
+        })
+        revalidatePath("/fp-informatica/bookmarks")
+        return { success: true, message: "Enlace eliminado" }
+    } catch (error) {
+        console.error("Error deleting bookmark:", error)
+        return { success: false, message: "Error al eliminar enlace" }
+    }
+}

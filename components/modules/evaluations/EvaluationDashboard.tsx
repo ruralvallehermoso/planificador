@@ -574,7 +574,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                     <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
                                         <BarChart3 className="h-5 w-5 text-violet-500" /> Recuperación por RA
                                     </h3>
-                                    <div className="flex-1 w-full min-h-[300px]">
+                                    <div className="w-full h-[350px]">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <BarChart data={raRecoveryData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />

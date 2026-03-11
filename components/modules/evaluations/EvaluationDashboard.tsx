@@ -43,6 +43,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
     const [criteriaFilter, setCriteriaFilter] = useState<{ criteria: string, status: 'Aprobados' | 'Suspendidos' } | null>(null)
     const [distributionFilter, setDistributionFilter] = useState<number | null>(null)
     const [raRecoveryFilter, setRaRecoveryFilter] = useState<string | null>(null)
+    const [raDistributionFilter, setRaDistributionFilter] = useState<number | null>(null)
 
     const fileInputRef = useRef<HTMLInputElement>(null)
     const ITEMS_PER_PAGE = 20
@@ -70,6 +71,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                 setCriteriaFilter(null)
                 setDistributionFilter(null)
                 setRaRecoveryFilter(null)
+                setRaDistributionFilter(null)
             } catch (error) {
                 console.error("Error parsing:" + error)
             } finally {
@@ -98,6 +100,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         setCriteriaFilter(null)
         setDistributionFilter(null)
         setRaRecoveryFilter(null)
+        setRaDistributionFilter(null)
         setSearchTerm("")
         setHeatmapSearchTerm("")
         setIsSaving(true)
@@ -130,6 +133,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
             if (criteriaFilter && criteriaFilter.criteria === criterion) setCriteriaFilter(null)
             if (distributionFilter !== null) setDistributionFilter(null)
             if (raRecoveryFilter !== null) setRaRecoveryFilter(null)
+            if (raDistributionFilter !== null) setRaDistributionFilter(null)
             return next
         })
     }
@@ -236,6 +240,46 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         })
     }, [studentsData, selectedCriteria, raGroupsMap])
 
+    // Distribution of students by number of RAs failed
+    const raFailsDistributionData = useMemo(() => {
+        if (!selectedCriteria.length || studentsData.length === 0 || Object.keys(raGroupsMap).length === 0) return []
+
+        const raKeys = Object.keys(raGroupsMap)
+        const counts: Record<number, number> = {}
+        for (let i = 0; i <= raKeys.length; i++) counts[i] = 0
+
+        studentsData.forEach(student => {
+            let failedRAs = 0
+            raKeys.forEach(ra => {
+                const criteria = raGroupsMap[ra]
+                let hasFailInRA = false
+                criteria.forEach(crit => {
+                    const rawVal = student[crit]
+                    let isPassed = false
+                    const numVal = parseFloat(rawVal)
+                    if (!isNaN(numVal)) isPassed = numVal >= 5.0
+                    else if (typeof rawVal === 'string') {
+                        const str = rawVal.toLowerCase().trim()
+                        isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(str)
+                    }
+                    if (rawVal === null || rawVal === undefined || rawVal === '') isPassed = false
+                    if (!isPassed) hasFailInRA = true
+                })
+                if (hasFailInRA) failedRAs++
+            })
+            counts[failedRAs]++
+        })
+
+        return Object.entries(counts)
+            .filter(([fails, count]) => count > 0 || fails === '0')
+            .map(([fails, count]) => ({
+                name: fails === '0' ? 'Pleno' : `${fails} RA`,
+                fullName: fails === '0' ? 'Todos los RA aprobados' : `${fails} RA suspendidos`,
+                Alumnos: count,
+                failsCount: parseInt(fails)
+            }))
+    }, [studentsData, selectedCriteria, raGroupsMap])
+
     // Pagination and Filtering for the Table
     const filteredStudents = useMemo(() => {
         let result = studentsData
@@ -299,8 +343,33 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
             }
         }
 
+        if (raDistributionFilter !== null) {
+            const raKeys = Object.keys(raGroupsMap)
+            result = result.filter(student => {
+                let failedRAs = 0
+                raKeys.forEach(ra => {
+                    const criteria = raGroupsMap[ra]
+                    let hasFailInRA = false
+                    criteria.forEach(crit => {
+                        const rawVal = student[crit]
+                        let isPassed = false
+                        const numVal = parseFloat(rawVal)
+                        if (!isNaN(numVal)) isPassed = numVal >= 5.0
+                        else if (typeof rawVal === 'string') {
+                            const str = rawVal.toLowerCase().trim()
+                            isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(str)
+                        }
+                        if (rawVal === null || rawVal === undefined || rawVal === '') isPassed = false
+                        if (!isPassed) hasFailInRA = true
+                    })
+                    if (hasFailInRA) failedRAs++
+                })
+                return failedRAs === raDistributionFilter
+            })
+        }
+
         return result
-    }, [studentsData, searchTerm, nameColumns, criteriaFilter, distributionFilter, raRecoveryFilter, selectedCriteria, raGroupsMap])
+    }, [studentsData, searchTerm, nameColumns, criteriaFilter, distributionFilter, raRecoveryFilter, raDistributionFilter, selectedCriteria, raGroupsMap])
 
     const filteredHeatmapStudents = useMemo(() => {
         if (!heatmapSearchTerm) return studentsData;
@@ -398,6 +467,30 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                             <span className="text-gray-600 font-medium">Recuperar</span>
                         </div>
                         <span className="font-bold text-gray-900">{data.Recuperar} <span className="text-gray-400 font-normal text-xs ml-1">({pctRecuperar}%)</span></span>
+                    </div>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-3 pt-2 border-t border-gray-100 text-center font-semibold text-violet-500">Click en la barra para filtrar</p>
+                </div>
+            )
+        }
+        return null
+    }
+
+    const CustomRADistributionTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload
+            const alumnos = data.Alumnos
+            const total = studentsData.length
+            const pct = total > 0 ? ((alumnos / total) * 100).toFixed(1) : "0.0"
+
+            return (
+                <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100 text-sm min-w-[180px]">
+                    <p className="font-bold text-gray-800 mb-3">{data.fullName}</p>
+                    <div className="flex justify-between items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-sm bg-violet-500"></div>
+                            <span className="text-gray-600 font-medium">Alumnos</span>
+                        </div>
+                        <span className="font-bold text-gray-900">{alumnos} <span className="text-gray-400 font-normal text-xs ml-1">({pct}%)</span></span>
                     </div>
                     <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-3 pt-2 border-t border-gray-100 text-center font-semibold text-violet-500">Click en la barra para filtrar</p>
                 </div>
@@ -589,6 +682,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                                         setRaRecoveryFilter(e.name || e.payload?.name || '')
                                                         setCriteriaFilter(null)
                                                         setDistributionFilter(null)
+                                                        setRaDistributionFilter(null)
                                                         document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
                                                     }}
                                                 >
@@ -602,12 +696,61 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                                         setRaRecoveryFilter(e.name || e.payload?.name || '')
                                                         setCriteriaFilter(null)
                                                         setDistributionFilter(null)
+                                                        setRaDistributionFilter(null)
                                                         document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
                                                     }}
                                                 >
                                                     <LabelList dataKey="Recuperar" position="center" fill="#fff" fontSize={12} fontWeight={700}
                                                         formatter={(v: any) => v > 0 ? v : ''} />
                                                 </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* RA Distribution Chart - Total suspensos por nº de RAs */}
+                            {raFailsDistributionData.length > 0 && (
+                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                                            <BarChart3 className="h-5 w-5 text-violet-500" /> Suspensos por Nº de RA
+                                        </h3>
+                                        {(() => {
+                                            const totalConAlMenosUnRA = raFailsDistributionData
+                                                .filter(d => d.failsCount > 0)
+                                                .reduce((sum, d) => sum + d.Alumnos, 0)
+                                            const pct = studentsData.length > 0 ? ((totalConAlMenosUnRA / studentsData.length) * 100).toFixed(1) : '0'
+                                            return (
+                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-rose-50 border border-rose-100 rounded-lg">
+                                                    <span className="text-sm font-bold text-rose-700">{totalConAlMenosUnRA}</span>
+                                                    <span className="text-xs text-rose-500">con ≥1 RA susp. ({pct}%)</span>
+                                                </div>
+                                            )
+                                        })()}
+                                    </div>
+                                    <div className="w-full h-[350px]">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={raFailsDistributionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
+                                                <RechartsTooltip content={<CustomRADistributionTooltip />} cursor={{ fill: 'transparent' }} />
+                                                <Legend wrapperStyle={{ paddingTop: '30px' }} />
+                                                <Bar
+                                                    dataKey="Alumnos" fill="#8B5CF6" radius={[4, 4, 0, 0]} barSize={40}
+                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                    onClick={(e) => {
+                                                        const failsCount = e.payload?.failsCount
+                                                        if (failsCount !== undefined) {
+                                                            setRaDistributionFilter(failsCount)
+                                                            setCriteriaFilter(null)
+                                                            setDistributionFilter(null)
+                                                            setRaRecoveryFilter(null)
+                                                            document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                        }
+                                                    }}
+                                                />
                                             </BarChart>
                                         </ResponsiveContainer>
                                     </div>
@@ -734,6 +877,16 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                         </button>
                                     </div>
                                 )}
+
+                                {raDistributionFilter !== null && (
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-violet-50 border border-violet-100 rounded-full text-xs font-semibold text-violet-700">
+                                        <Filter className="h-3 w-3" />
+                                        <span>RA Suspensos: {raDistributionFilter === 0 ? 'Pleno (0)' : raDistributionFilter}</span>
+                                        <button onClick={() => { setRaDistributionFilter(null); setPage(1) }} className="hover:bg-violet-200 rounded-full p-0.5 transition-colors">
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="relative">
@@ -765,8 +918,8 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                                 <div className="flex flex-col items-center justify-center">
                                                     <Search className="h-8 w-8 text-gray-300 mb-3" />
                                                     <p>No se encontraron alumnos bajo estos filtros.</p>
-                                                    {(searchTerm || criteriaFilter || distributionFilter !== null || raRecoveryFilter) && (
-                                                        <Button variant="link" onClick={() => { setSearchTerm(""); setCriteriaFilter(null); setDistributionFilter(null); setRaRecoveryFilter(null); setPage(1); }} className="text-indigo-600 mt-2">
+                                                    {(searchTerm || criteriaFilter || distributionFilter !== null || raRecoveryFilter || raDistributionFilter !== null) && (
+                                                        <Button variant="link" onClick={() => { setSearchTerm(""); setCriteriaFilter(null); setDistributionFilter(null); setRaRecoveryFilter(null); setRaDistributionFilter(null); setPage(1); }} className="text-indigo-600 mt-2">
                                                             Limpiar todos los filtros
                                                         </Button>
                                                     )}

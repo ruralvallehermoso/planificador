@@ -190,10 +190,9 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
     }, [studentsData, selectedCriteria])
 
     // RA Recovery Data - groups criteria by RA prefix and counts students needing recovery
-    const raRecoveryData = useMemo(() => {
-        if (!selectedCriteria.length || studentsData.length === 0) return []
+    const raGroupsMap = useMemo(() => {
+        if (!selectedCriteria.length) return {} as Record<string, string[]>
 
-        // Group criteria by RA prefix (e.g. "RA1.CE1" -> "RA1", "RA2a" -> "RA2")
         const raGroups: Record<string, string[]> = {}
         selectedCriteria.forEach(crit => {
             const match = crit.match(/RA\d+/i)
@@ -201,8 +200,13 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
             if (!raGroups[raKey]) raGroups[raKey] = []
             raGroups[raKey].push(crit)
         })
+        return raGroups
+    }, [selectedCriteria])
 
-        return Object.entries(raGroups).map(([ra, criteria]) => {
+    const raRecoveryData = useMemo(() => {
+        if (!selectedCriteria.length || studentsData.length === 0 || Object.keys(raGroupsMap).length === 0) return []
+
+        return Object.entries(raGroupsMap).map(([ra, criteria]) => {
             let needsRecovery = 0
             let allPassed = 0
 
@@ -224,13 +228,13 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                 else allPassed++
             })
 
-            return { name: ra, Recuperar: needsRecovery, Aprobados: allPassed, criteria }
+            return { name: ra, Recuperar: needsRecovery, Aprobados: allPassed }
         }).sort((a, b) => {
             const numA = parseInt(a.name.replace(/\D/g, '')) || 0
             const numB = parseInt(b.name.replace(/\D/g, '')) || 0
             return numA - numB
         })
-    }, [studentsData, selectedCriteria])
+    }, [studentsData, selectedCriteria, raGroupsMap])
 
     // Pagination and Filtering for the Table
     const filteredStudents = useMemo(() => {
@@ -274,11 +278,11 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         }
 
         if (raRecoveryFilter) {
-            const raEntry = raRecoveryData.find(r => r.name === raRecoveryFilter)
-            if (raEntry) {
+            const raCriteria = raGroupsMap[raRecoveryFilter]
+            if (raCriteria) {
                 result = result.filter(student => {
                     let hasFailInRA = false
-                    raEntry.criteria.forEach(crit => {
+                    raCriteria.forEach(crit => {
                         const rawVal = student[crit]
                         let isPassed = false
                         const numVal = parseFloat(rawVal)
@@ -296,7 +300,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         }
 
         return result
-    }, [studentsData, searchTerm, nameColumns, criteriaFilter, distributionFilter, raRecoveryFilter, selectedCriteria, raRecoveryData])
+    }, [studentsData, searchTerm, nameColumns, criteriaFilter, distributionFilter, raRecoveryFilter, selectedCriteria, raGroupsMap])
 
     const filteredHeatmapStudents = useMemo(() => {
         if (!heatmapSearchTerm) return studentsData;

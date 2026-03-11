@@ -11,7 +11,7 @@ import {
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, LabelList } from "recharts"
 
 interface EvaluationDashboardProps {
     evaluation: FpEvaluation
@@ -42,6 +42,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
     // NEW Filter states for bar clicks
     const [criteriaFilter, setCriteriaFilter] = useState<{ criteria: string, status: 'Aprobados' | 'Suspendidos' } | null>(null)
     const [distributionFilter, setDistributionFilter] = useState<number | null>(null)
+    const [raRecoveryFilter, setRaRecoveryFilter] = useState<string | null>(null)
 
     const fileInputRef = useRef<HTMLInputElement>(null)
     const ITEMS_PER_PAGE = 20
@@ -68,6 +69,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                 setHeatmapSearchTerm("")
                 setCriteriaFilter(null)
                 setDistributionFilter(null)
+                setRaRecoveryFilter(null)
             } catch (error) {
                 console.error("Error parsing:" + error)
             } finally {
@@ -95,6 +97,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         setSelectedCriteria([])
         setCriteriaFilter(null)
         setDistributionFilter(null)
+        setRaRecoveryFilter(null)
         setSearchTerm("")
         setHeatmapSearchTerm("")
         setIsSaving(true)
@@ -126,6 +129,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
             const next = prev.includes(criterion) ? prev.filter(c => c !== criterion) : [...prev, criterion]
             if (criteriaFilter && criteriaFilter.criteria === criterion) setCriteriaFilter(null)
             if (distributionFilter !== null) setDistributionFilter(null)
+            if (raRecoveryFilter !== null) setRaRecoveryFilter(null)
             return next
         })
     }
@@ -185,6 +189,49 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
             }))
     }, [studentsData, selectedCriteria])
 
+    // RA Recovery Data - groups criteria by RA prefix and counts students needing recovery
+    const raRecoveryData = useMemo(() => {
+        if (!selectedCriteria.length || studentsData.length === 0) return []
+
+        // Group criteria by RA prefix (e.g. "RA1.CE1" -> "RA1", "RA2a" -> "RA2")
+        const raGroups: Record<string, string[]> = {}
+        selectedCriteria.forEach(crit => {
+            const match = crit.match(/RA\d+/i)
+            const raKey = match ? match[0].toUpperCase() : crit
+            if (!raGroups[raKey]) raGroups[raKey] = []
+            raGroups[raKey].push(crit)
+        })
+
+        return Object.entries(raGroups).map(([ra, criteria]) => {
+            let needsRecovery = 0
+            let allPassed = 0
+
+            studentsData.forEach(student => {
+                let hasFailInRA = false
+                criteria.forEach(crit => {
+                    const rawVal = student[crit]
+                    let isPassed = false
+                    const numVal = parseFloat(rawVal)
+                    if (!isNaN(numVal)) isPassed = numVal >= 5.0
+                    else if (typeof rawVal === 'string') {
+                        const str = rawVal.toLowerCase().trim()
+                        isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(str)
+                    }
+                    if (rawVal === null || rawVal === undefined || rawVal === '') isPassed = false
+                    if (!isPassed) hasFailInRA = true
+                })
+                if (hasFailInRA) needsRecovery++
+                else allPassed++
+            })
+
+            return { name: ra, Recuperar: needsRecovery, Aprobados: allPassed, criteria }
+        }).sort((a, b) => {
+            const numA = parseInt(a.name.replace(/\D/g, '')) || 0
+            const numB = parseInt(b.name.replace(/\D/g, '')) || 0
+            return numA - numB
+        })
+    }, [studentsData, selectedCriteria])
+
     // Pagination and Filtering for the Table
     const filteredStudents = useMemo(() => {
         let result = studentsData
@@ -226,8 +273,30 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
             })
         }
 
+        if (raRecoveryFilter) {
+            const raEntry = raRecoveryData.find(r => r.name === raRecoveryFilter)
+            if (raEntry) {
+                result = result.filter(student => {
+                    let hasFailInRA = false
+                    raEntry.criteria.forEach(crit => {
+                        const rawVal = student[crit]
+                        let isPassed = false
+                        const numVal = parseFloat(rawVal)
+                        if (!isNaN(numVal)) isPassed = numVal >= 5.0
+                        else if (typeof rawVal === 'string') {
+                            const str = rawVal.toLowerCase().trim()
+                            isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(str)
+                        }
+                        if (rawVal === null || rawVal === undefined || rawVal === '') isPassed = false
+                        if (!isPassed) hasFailInRA = true
+                    })
+                    return hasFailInRA
+                })
+            }
+        }
+
         return result
-    }, [studentsData, searchTerm, nameColumns, criteriaFilter, distributionFilter, selectedCriteria])
+    }, [studentsData, searchTerm, nameColumns, criteriaFilter, distributionFilter, raRecoveryFilter, selectedCriteria, raRecoveryData])
 
     const filteredHeatmapStudents = useMemo(() => {
         if (!heatmapSearchTerm) return studentsData;
@@ -296,6 +365,37 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                         <span className="font-bold text-gray-900">{alumnos} <span className="text-gray-400 font-normal text-xs ml-1">({pct}%)</span></span>
                     </div>
                     <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-3 pt-2 border-t border-gray-100 text-center font-semibold text-amber-500">Click en la barra para filtrar</p>
+                </div>
+            )
+        }
+        return null
+    }
+
+    const CustomRARecoveryTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload
+            const total = data.Recuperar + data.Aprobados
+            const pctRecuperar = total > 0 ? ((data.Recuperar / total) * 100).toFixed(1) : "0.0"
+            const pctAprobados = total > 0 ? ((data.Aprobados / total) * 100).toFixed(1) : "0.0"
+
+            return (
+                <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100 text-sm min-w-[180px]">
+                    <p className="font-bold text-gray-800 mb-3">{data.name}</p>
+                    <div className="flex justify-between items-center gap-4 mb-2">
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-sm bg-emerald-500"></div>
+                            <span className="text-gray-600 font-medium">Aprobados</span>
+                        </div>
+                        <span className="font-bold text-gray-900">{data.Aprobados} <span className="text-gray-400 font-normal text-xs ml-1">({pctAprobados}%)</span></span>
+                    </div>
+                    <div className="flex justify-between items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-sm bg-rose-500"></div>
+                            <span className="text-gray-600 font-medium">Recuperar</span>
+                        </div>
+                        <span className="font-bold text-gray-900">{data.Recuperar} <span className="text-gray-400 font-normal text-xs ml-1">({pctRecuperar}%)</span></span>
+                    </div>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-3 pt-2 border-t border-gray-100 text-center font-semibold text-violet-500">Click en la barra para filtrar</p>
                 </div>
             )
         }
@@ -464,6 +564,52 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                 </div>
                             </div>
 
+                            {/* RA Recovery Chart */}
+                            {raRecoveryData.length > 0 && (
+                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
+                                    <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                        <BarChart3 className="h-5 w-5 text-violet-500" /> Recuperación por RA
+                                    </h3>
+                                    <div className="flex-1 w-full min-h-[300px]">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={raRecoveryData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
+                                                <RechartsTooltip content={<CustomRARecoveryTooltip />} cursor={{ fill: 'transparent' }} />
+                                                <Legend wrapperStyle={{ paddingTop: '30px' }} />
+                                                <Bar
+                                                    dataKey="Aprobados" stackId="ra" fill="#10B981" radius={[0, 0, 4, 4]} barSize={40}
+                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                    onClick={(e) => {
+                                                        setRaRecoveryFilter(e.name || e.payload?.name || '')
+                                                        setCriteriaFilter(null)
+                                                        setDistributionFilter(null)
+                                                        document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                    }}
+                                                >
+                                                    <LabelList dataKey="Aprobados" position="center" fill="#fff" fontSize={12} fontWeight={700}
+                                                        formatter={(v: any) => v > 0 ? v : ''} />
+                                                </Bar>
+                                                <Bar
+                                                    dataKey="Recuperar" stackId="ra" fill="#EF4444" radius={[4, 4, 0, 0]}
+                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                    onClick={(e) => {
+                                                        setRaRecoveryFilter(e.name || e.payload?.name || '')
+                                                        setCriteriaFilter(null)
+                                                        setDistributionFilter(null)
+                                                        document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                    }}
+                                                >
+                                                    <LabelList dataKey="Recuperar" position="center" fill="#fff" fontSize={12} fontWeight={700}
+                                                        formatter={(v: any) => v > 0 ? v : ''} />
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Heatmap / Matricial View */}
                             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[450px]">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
@@ -574,6 +720,16 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                         </button>
                                     </div>
                                 )}
+
+                                {raRecoveryFilter && (
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-violet-50 border border-violet-100 rounded-full text-xs font-semibold text-violet-700">
+                                        <Filter className="h-3 w-3" />
+                                        <span>Recuperación: {raRecoveryFilter}</span>
+                                        <button onClick={() => { setRaRecoveryFilter(null); setPage(1) }} className="hover:bg-violet-200 rounded-full p-0.5 transition-colors">
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="relative">
@@ -605,8 +761,8 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                                 <div className="flex flex-col items-center justify-center">
                                                     <Search className="h-8 w-8 text-gray-300 mb-3" />
                                                     <p>No se encontraron alumnos bajo estos filtros.</p>
-                                                    {(searchTerm || criteriaFilter || distributionFilter !== null) && (
-                                                        <Button variant="link" onClick={() => { setSearchTerm(""); setCriteriaFilter(null); setDistributionFilter(null); setPage(1); }} className="text-indigo-600 mt-2">
+                                                    {(searchTerm || criteriaFilter || distributionFilter !== null || raRecoveryFilter) && (
+                                                        <Button variant="link" onClick={() => { setSearchTerm(""); setCriteriaFilter(null); setDistributionFilter(null); setRaRecoveryFilter(null); setPage(1); }} className="text-indigo-600 mt-2">
                                                             Limpiar todos los filtros
                                                         </Button>
                                                     )}

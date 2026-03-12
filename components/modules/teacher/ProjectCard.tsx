@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { MoreVertical, Image as ImageIcon, Link as LinkIcon, Edit, Trash2, Github, Globe } from 'lucide-react'
+import { MoreVertical, Image as ImageIcon, Link as LinkIcon, Edit, Trash2, Github, Globe, Users } from 'lucide-react'
 import Image from 'next/image'
 
 interface ProjectCardProps {
@@ -86,6 +86,13 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
                             </span>
                         ))}
                         {techStack.length > 3 && <span className="text-xs text-gray-400 self-center">+{techStack.length - 3}</span>}
+                    </div>
+                )}
+
+                {project.members && (
+                    <div className="flex items-center gap-1.5 text-xs text-gray-700 mb-2 font-medium">
+                        <Users className="h-3.5 w-3.5 text-gray-500 shrink-0" />
+                        <span className="line-clamp-1 truncate">{project.members}</span>
                     </div>
                 )}
 

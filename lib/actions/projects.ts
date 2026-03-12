@@ -26,6 +26,8 @@ export async function createProject(formData: FormData) {
 
     const title = formData.get('title') as string
     const description = formData.get('description') as string
+    const members = formData.get('members') as string || ''
+    const notes = formData.get('notes') as string || ''
     const categorySlug = formData.get('categorySlug') as string
 
     const technologies = formData.get('technologies') as string
@@ -40,6 +42,8 @@ export async function createProject(formData: FormData) {
             data: {
                 title,
                 description,
+                members,
+                notes,
                 technologies,
                 coverImage,
                 categoryId: category.id,
@@ -61,6 +65,8 @@ export async function updateProject(projectId: string, formData: FormData) {
     }
     const title = formData.get('title') as string
     const description = formData.get('description') as string
+    const members = formData.get('members') as string || ''
+    const notes = formData.get('notes') as string || ''
     const categorySlug = formData.get('categorySlug') as string
 
     const technologies = formData.get('technologies') as string
@@ -72,6 +78,8 @@ export async function updateProject(projectId: string, formData: FormData) {
             data: {
                 title,
                 description,
+                members,
+                notes,
                 technologies,
                 coverImage,
             }

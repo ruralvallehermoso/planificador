@@ -165,6 +165,8 @@ model Project {
   updatedAt    DateTime       @updatedAt
   technologies String?
   coverImage   String?
+  members      String?
+  notes        String?
   category     Category       @relation(fields: [categoryId], references: [id])
   images       ProjectImage[]
   links        ProjectLink[]

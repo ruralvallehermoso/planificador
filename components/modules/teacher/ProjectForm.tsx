@@ -43,7 +43,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                 allowBase64: true,
             })
         ],
-        content: project?.description || '',
+        content: project?.notes || '',
         editorProps: {
             attributes: {
                 class: 'prose prose-sm max-w-none focus:outline-none min-h-[200px] p-4',
@@ -91,8 +91,8 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
             // Only update if editor is empty or we are switching projects (though usually remounts)
             // Ideally check if content differs, but for now just rely on initial content.
             // Actually, since we unmount, this might not be needed, but safe to add if we reuse component.
-            if (editor.isEmpty && project.description) {
-                editor.commands.setContent(project.description)
+            if (editor.isEmpty && project.notes) {
+                editor.commands.setContent(project.notes)
             }
         }
     }, [project, editor])
@@ -106,7 +106,7 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
 
         // Get content from editor
         const html = editor?.getHTML() || ''
-        formData.set('description', html)
+        formData.set('notes', html)
 
         const file = formData.get('coverImageFile') as File | null
         if (file && file.size > 0) {
@@ -224,6 +224,26 @@ export function ProjectForm({ project, categorySlug, onClose }: ProjectFormProps
                                         required
                                         placeholder="Ej: Sistema de Gestión de Inventario"
                                         className="block w-full rounded-md border border-gray-300 px-3 py-2 text-lg font-medium focus:border-indigo-500 focus:ring-indigo-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Miembros del grupo</label>
+                                    <input
+                                        name="members"
+                                        defaultValue={project?.members}
+                                        placeholder="P. ej: Juan Pérez, Ana García"
+                                        className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Descripción corta</label>
+                                    <textarea
+                                        name="description"
+                                        defaultValue={project?.description}
+                                        rows={2}
+                                        maxLength={300}
+                                        placeholder="Breve resumen del proyecto..."
+                                        className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 resize-none"
                                     />
                                 </div>
                                 <div>

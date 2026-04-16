@@ -136,7 +136,8 @@ export function MicrofrontendFrame({
                 style={{ height: '100%', minHeight: '100%' }}
                 onLoad={handleLoad}
                 onError={handleError}
-                allow="clipboard-read; clipboard-write"
+                allow="clipboard-read; clipboard-write; fullscreen"
+                allowFullScreen
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
             />
         </div>

@@ -196,8 +196,9 @@ export default function PdfEditor() {
       return;
     }
 
+    const toastId = 'sign-process';
     try {
-      const toastId = toast.loading('Generando PDF para firmar...');
+      toast.loading('Preparando documento para firmar...', { id: toastId });
       const modifiedPdfBytes = await generateModifiedPdf();
       
       // Convertir a Base64
@@ -207,36 +208,70 @@ export default function PdfEditor() {
         binary += String.fromCharCode(modifiedPdfBytes[i]);
       }
       const base64Pdf = window.btoa(binary);
+
+      // 1. Subir el PDF al servidor para que AutoFirma lo descargue
+      toast.loading('Subiendo PDF al servidor...', { id: toastId });
+      const prepareResp = await fetch('/api/pdf/autofirma/prepare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: base64Pdf }),
+      });
       
-      // Primero descargar el PDF editado
-      const blob = new Blob([modifiedPdfBytes as BlobPart], { type: 'application/pdf' });
-      saveAs(blob, `para_firmar_${file.name}`);
+      if (!prepareResp.ok) throw new Error('Error al subir el PDF');
+      const { id } = await prepareResp.json();
 
-      toast.success('PDF descargado. Abriendo AutoFirma...', { id: toastId });
+      // 2. Construir la URL del protocolo con rtservlet + stservlet (patrón tri-servidor)
+      const origin = window.location.origin;
+      const rtServlet = `${origin}/api/pdf/autofirma/retrieve`;
+      const stServlet = `${origin}/api/pdf/autofirma/signed`;
+      
+      const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&fileid=${encodeURIComponent(id)}&rtservlet=${encodeURIComponent(rtServlet)}&stservlet=${encodeURIComponent(stServlet)}`;
+      
+      // 3. Invocar AutoFirma
+      toast.loading('Abriendo AutoFirma...', { id: toastId });
+      window.open(protocolUrl, '_blank');
 
-      // Invocar AutoFirma usando un iframe oculto para no navegar fuera de la página
-      setTimeout(() => {
-        const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&dat=${encodeURIComponent(base64Pdf)}`;
+      // 4. Polling para esperar el resultado
+      toast.loading('Esperando firma de AutoFirma... Selecciona tu certificado en la aplicación.', { id: toastId });
+      
+      let attempts = 0;
+      const maxAttempts = 120; // 5 minutos (cada 2.5s)
+      
+      const pollInterval = setInterval(async () => {
+        attempts++;
+        if (attempts > maxAttempts) {
+          clearInterval(pollInterval);
+          toast.error('Tiempo de espera agotado. Si no se abrió AutoFirma, asegúrate de tenerla instalada.', { id: toastId });
+          return;
+        }
         
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = protocolUrl;
-        document.body.appendChild(iframe);
-        
-        // Limpiar el iframe después de un momento
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-        }, 3000);
-
-        toast.info(
-          'AutoFirma se ha abierto. Selecciona tu certificado, firma el documento y guárdalo.',
-          { duration: 10000 }
-        );
-      }, 1000);
+        try {
+          const resp = await fetch(`/api/pdf/autofirma/status/${id}`);
+          if (!resp.ok) return;
+          
+          const data = await resp.json();
+          
+          if (data.status === 'COMPLETED') {
+            clearInterval(pollInterval);
+            toast.success('¡Documento firmado con éxito! Descargando...', { id: toastId });
+            
+            // Convertir Base64 a Blob y descargar
+            const binaryStr = window.atob(data.signedPdf);
+            const bytes = new Uint8Array(binaryStr.length);
+            for (let i = 0; i < binaryStr.length; i++) {
+              bytes[i] = binaryStr.charCodeAt(i);
+            }
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            saveAs(blob, `firmado_${file?.name || 'documento.pdf'}`);
+          }
+        } catch {
+          // Silently continue polling
+        }
+      }, 2500);
       
     } catch (error) {
       console.error(error);
-      toast.error('Error al preparar el documento para la firma.');
+      toast.error('Error al preparar el documento para la firma.', { id: toastId });
     }
   };
 

@@ -2,22 +2,25 @@
 
 import React, { useState, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { Download, Upload, X, ShieldCheck } from 'lucide-react';
+import { Download, Upload, X, ShieldCheck, Type, PenTool } from 'lucide-react';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import { addTextToPdf, TextAnnotation } from '@/lib/pdf/pdf-utils';
+import { addTextToPdf, TextAnnotation, AnnotationType, SIGNATURE_WIDTH, SIGNATURE_HEIGHT } from '@/lib/pdf/pdf-utils';
 import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
 
 // Configurar el worker de PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
+type EditorTool = 'text' | 'signature';
+
 export default function PdfEditor() {
   const [file, setFile] = useState<File | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
   const [annotations, setAnnotations] = useState<TextAnnotation[]>([]);
   const [selectedPageIndex, setSelectedPageIndex] = useState<number>(0);
-  const [scale, setScale] = useState<number>(1.2); // Un poco más de zoom por defecto
+  const [scale, setScale] = useState<number>(1.2);
+  const [activeTool, setActiveTool] = useState<EditorTool>('text');
   
   const pageContainerRef = useRef<HTMLDivElement>(null);
 
@@ -37,8 +40,8 @@ export default function PdfEditor() {
   };
 
   const handlePageClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Only add if clicking directly on the container, not on an existing input
-    if ((e.target as HTMLElement).tagName.toLowerCase() === 'input') return;
+    const target = e.target as HTMLElement;
+    if (target.tagName.toLowerCase() === 'input' || target.tagName.toLowerCase() === 'textarea') return;
 
     if (!pageContainerRef.current) return;
     
@@ -46,25 +49,41 @@ export default function PdfEditor() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // Convert scaled coordinates to original PDF coordinates
     const unscaledX = x / scale;
     const unscaledY = y / scale;
 
-    const newAnnotation: TextAnnotation = {
-      id: crypto.randomUUID(),
-      pageIndex: selectedPageIndex,
-      text: '',
-      x: unscaledX,
-      y: unscaledY,
-      fontSize: 12, // Default size
-      maxWidth: 200, // Default width
-    };
-
-    setAnnotations([...annotations, newAnnotation]);
+    if (activeTool === 'signature') {
+      const newAnnotation: TextAnnotation = {
+        id: crypto.randomUUID(),
+        type: 'signature',
+        pageIndex: selectedPageIndex,
+        text: '',
+        x: unscaledX,
+        y: unscaledY,
+        fontSize: 10,
+        maxWidth: SIGNATURE_WIDTH,
+        signerName: '',
+        signerOrg: '',
+      };
+      setAnnotations([...annotations, newAnnotation]);
+      setActiveTool('text'); // Volver a modo texto después de colocar
+    } else {
+      const newAnnotation: TextAnnotation = {
+        id: crypto.randomUUID(),
+        type: 'text',
+        pageIndex: selectedPageIndex,
+        text: '',
+        x: unscaledX,
+        y: unscaledY,
+        fontSize: 12,
+        maxWidth: 200,
+      };
+      setAnnotations([...annotations, newAnnotation]);
+    }
   };
 
-  const updateAnnotationText = (id: string, text: string) => {
-    setAnnotations(annotations.map(a => a.id === id ? { ...a, text } : a));
+  const updateAnnotation = (id: string, updates: Partial<TextAnnotation>) => {
+    setAnnotations(annotations.map(a => a.id === id ? { ...a, ...updates } : a));
   };
 
   const handleResizeStart = (id: string, e: React.MouseEvent) => {
@@ -80,7 +99,6 @@ export default function PdfEditor() {
     const onMouseMove = (moveEvent: MouseEvent) => {
       const deltaX = moveEvent.clientX - startX;
       const newWidth = Math.max(50, initialWidth + deltaX);
-      
       setAnnotations(prev => prev.map(a => 
         a.id === id ? { ...a, maxWidth: newWidth / scale } : a
       ));
@@ -96,10 +114,11 @@ export default function PdfEditor() {
   };
 
   const handleDragStart = (id: string, e: React.MouseEvent) => {
-    // Si se hace clic en el textarea o en el handle de redimensionamiento, no arrastramos
+    const target = e.target as HTMLElement;
     if (
-      (e.target as HTMLElement).tagName.toLowerCase() === 'textarea' ||
-      (e.target as HTMLElement).closest('.resize-handle')
+      target.tagName.toLowerCase() === 'textarea' ||
+      target.tagName.toLowerCase() === 'input' ||
+      target.closest('.resize-handle')
     ) return;
     
     e.preventDefault();
@@ -117,7 +136,6 @@ export default function PdfEditor() {
     const onMouseMove = (moveEvent: MouseEvent) => {
       const deltaX = (moveEvent.clientX - startX) / scale;
       const deltaY = (moveEvent.clientY - startY) / scale;
-      
       setAnnotations(prev => prev.map(a => 
         a.id === id ? { ...a, x: initialX + deltaX, y: initialY + deltaY } : a
       ));
@@ -137,111 +155,85 @@ export default function PdfEditor() {
     setAnnotations(annotations.filter(a => a.id !== id));
   };
 
-  const [isSigning, setIsSigning] = useState(false);
-  
-  const pollSignature = async (id: string) => {
-    const toastId = 'poll-signature';
-    toast.loading('Esperando firma de AutoFirma...', { id: toastId });
-    
-    let attempts = 0;
-    const maxAttempts = 60; // 2 minutos
-    
-    const interval = setInterval(async () => {
-      attempts++;
-      if (attempts > maxAttempts) {
-        clearInterval(interval);
-        setIsSigning(false);
-        toast.error('Tiempo de espera agotado. Asegúrate de haber completado la firma en la aplicación.', { id: toastId });
-        return;
-      }
-      
-      try {
-        const response = await fetch(`/api/pdf/check-signature?id=${id}`);
-        if (!response.ok) return;
-        
-        const data = await response.json();
-        
-        if (data.status === 'COMPLETED') {
-          clearInterval(interval);
-          setIsSigning(false);
-          toast.success('¡Documento firmado con éxito!', { id: toastId });
-          
-          // Convertir Base64 a Blob y descargar
-          const base64Data = data.signedPdf;
-          const binaryString = window.atob(base64Data);
-          const bytes = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-          }
-          
-          const blob = new Blob([bytes], { type: 'application/pdf' });
-          saveAs(blob, `firmado_${file?.name || 'documento.pdf'}`);
-        }
-      } catch (error) {
-        console.error('Error polling signature:', error);
-      }
-    }, 2500);
-  };
-
-  const handleAutoFirmaSign = async () => {
-    if (!file) return;
-    
-    const validAnnotations = annotations.filter(a => a.text.trim().length > 0);
-    
-    try {
-      setIsSigning(true);
-      const toastId = toast.loading('Generando documento...');
-      const fileBuffer = await file.arrayBuffer();
-      
-      const modifiedPdfBytes = await addTextToPdf(fileBuffer, validAnnotations);
-      
-      let binary = '';
-      const bytes = modifiedPdfBytes;
-      const len = bytes.byteLength;
-      for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64Pdf = window.btoa(binary);
-      
-      // Generar un ID único para esta operación de firma
-      const id = crypto.randomUUID();
-      
-      const callbackUrl = `${window.location.origin}/api/pdf/sign-callback/${id}`;
-      const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&stservlet=${encodeURIComponent(callbackUrl)}&dat=${encodeURIComponent(base64Pdf)}`;
-      
-      window.location.href = protocolUrl;
-      
-      toast.dismiss(toastId);
-      pollSignature(id);
-      
-    } catch (error) {
-      console.error(error);
-      setIsSigning(false);
-      toast.error('Error al preparar el documento para AutoFirma.');
-    }
+  const generateModifiedPdf = async (): Promise<Uint8Array> => {
+    if (!file) throw new Error('No file');
+    const fileBuffer = await file.arrayBuffer();
+    // Incluir textos con contenido y todas las firmas
+    const validAnnotations = annotations.filter(a => 
+      a.type === 'signature' || (a.type === 'text' && a.text.trim().length > 0)
+    );
+    return await addTextToPdf(fileBuffer, validAnnotations);
   };
 
   const handleDownload = async () => {
     if (!file) return;
-    
-    // Validate we don't save empty annotations
-    const validAnnotations = annotations.filter(a => a.text.trim().length > 0);
-    
     try {
       const toastId = toast.loading('Procesando PDF...');
-      const fileBuffer = await file.arrayBuffer();
-      
-      const modifiedPdfBytes = await addTextToPdf(fileBuffer, validAnnotations);
-      
+      const modifiedPdfBytes = await generateModifiedPdf();
       const blob = new Blob([modifiedPdfBytes as BlobPart], { type: 'application/pdf' });
       saveAs(blob, `editado_${file.name}`);
-      
       toast.success('PDF descargado correctamente', { id: toastId });
     } catch (error) {
       console.error(error);
       toast.error('Ocurrió un error al procesar el PDF.');
     }
   };
+
+  const handleSignAndDownload = async () => {
+    if (!file) return;
+    
+    // Verificar que hay al menos una firma colocada
+    const signatures = annotations.filter(a => a.type === 'signature');
+    if (signatures.length === 0) {
+      toast.error('Coloca al menos un sello de firma en el documento antes de firmar.');
+      return;
+    }
+
+    // Verificar que las firmas tienen nombre
+    const emptySignatures = signatures.filter(s => !s.signerName?.trim());
+    if (emptySignatures.length > 0) {
+      toast.error('Rellena el nombre del firmante en todos los sellos de firma.');
+      return;
+    }
+
+    try {
+      const toastId = toast.loading('Generando PDF para firmar...');
+      const modifiedPdfBytes = await generateModifiedPdf();
+      
+      // Convertir a Base64
+      let binary = '';
+      const len = modifiedPdfBytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(modifiedPdfBytes[i]);
+      }
+      const base64Pdf = window.btoa(binary);
+      
+      // Primero descargar el PDF editado
+      const blob = new Blob([modifiedPdfBytes as BlobPart], { type: 'application/pdf' });
+      saveAs(blob, `para_firmar_${file.name}`);
+
+      toast.success('PDF descargado. Abriendo AutoFirma...', { id: toastId });
+
+      // Invocar AutoFirma con protocolo simplificado
+      // AutoFirma firmará y permitirá guardar el resultado localmente
+      setTimeout(() => {
+        const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&dat=${encodeURIComponent(base64Pdf)}`;
+        window.location.href = protocolUrl;
+
+        toast.info(
+          'AutoFirma se ha abierto. Selecciona tu certificado, firma el documento y guárdalo.',
+          { duration: 10000 }
+        );
+      }, 1000);
+      
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al preparar el documento para la firma.');
+    }
+  };
+
+  // Verificar si hay firmas colocadas
+  const hasSignatures = annotations.some(a => a.type === 'signature');
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
@@ -272,31 +264,72 @@ export default function PdfEditor() {
 
         {file && (
           <div className="flex items-center gap-3">
-             <div className="flex items-center gap-2 mr-4 text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-md">
-                <span className="font-medium">Zoom:</span>
-                <button onClick={() => setScale(Math.max(0.5, scale - 0.1))} className="hover:text-blue-600 px-1">-</button>
-                <span>{Math.round(scale * 100)}%</span>
-                <button onClick={() => setScale(Math.min(3, scale + 0.1))} className="hover:text-blue-600 px-1">+</button>
-             </div>
-            
-            <button
-              onClick={handleAutoFirmaSign}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors shadow-sm"
-            >
-              <ShieldCheck className="w-4 h-4" />
-              Firmar con AutoFirma
-            </button>
+            {/* Herramientas de anotación */}
+            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden mr-2">
+              <button
+                onClick={() => setActiveTool('text')}
+                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${
+                  activeTool === 'text' 
+                    ? 'bg-blue-50 text-blue-700' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+                title="Herramienta de texto"
+              >
+                <Type className="w-4 h-4" />
+                Texto
+              </button>
+              <button
+                onClick={() => setActiveTool('signature')}
+                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors border-l border-gray-200 ${
+                  activeTool === 'signature' 
+                    ? 'bg-green-50 text-green-700' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+                title="Colocar sello de firma"
+              >
+                <PenTool className="w-4 h-4" />
+                Firma
+              </button>
+            </div>
 
+            {/* Zoom */}
+            <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-md">
+              <span className="font-medium">Zoom:</span>
+              <button onClick={() => setScale(Math.max(0.5, scale - 0.1))} className="hover:text-blue-600 px-1">-</button>
+              <span>{Math.round(scale * 100)}%</span>
+              <button onClick={() => setScale(Math.min(3, scale + 0.1))} className="hover:text-blue-600 px-1">+</button>
+            </div>
+            
+            {/* Botón Firmar con AutoFirma */}
+            {hasSignatures && (
+              <button
+                onClick={handleSignAndDownload}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors shadow-sm"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                Firmar con AutoFirma
+              </button>
+            )}
+
+            {/* Botón Descargar */}
             <button
               onClick={handleDownload}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
             >
               <Download className="w-4 h-4" />
-              Descargar Modificado
+              Descargar
             </button>
           </div>
         )}
       </div>
+
+      {/* Indicador de herramienta activa */}
+      {file && activeTool === 'signature' && (
+        <div className="bg-green-50 border-b border-green-200 px-4 py-2 text-sm text-green-700 flex items-center gap-2">
+          <PenTool className="w-4 h-4" />
+          <span className="font-medium">Modo firma activo:</span> Haz clic en el documento para colocar el sello de firma.
+        </div>
+      )}
 
       {/* Editor Area */}
       <div className="flex flex-1 overflow-hidden relative">
@@ -307,7 +340,7 @@ export default function PdfEditor() {
               Páginas ({numPages})
             </span>
             {Array.from(new Array(numPages), (el, index) => {
-               const pageAnnotations = annotations.filter(a => a.pageIndex === index && a.text.trim().length > 0);
+               const pageAnnotations = annotations.filter(a => a.pageIndex === index && (a.type === 'signature' || a.text.trim().length > 0));
                return (
                 <button
                     key={`page_${index + 1}`}
@@ -354,14 +387,12 @@ export default function PdfEditor() {
                   </div>
                 }
               >
-                {/* Contenedor de la página con clics */}
                 <div 
                   ref={pageContainerRef} 
-                  className="relative cursor-text"
+                  className={`relative ${activeTool === 'signature' ? 'cursor-crosshair' : 'cursor-text'}`}
                   onClick={handlePageClick}
                   style={{ width: 'fit-content', height: 'fit-content' }}
                 >
-                  {/* Para asegurar que se renderiza bien, envolvemos en un div que impida el overflow */}
                   <div className="overflow-hidden bg-white">
                      <Page 
                         pageNumber={selectedPageIndex + 1} 
@@ -376,60 +407,10 @@ export default function PdfEditor() {
                   {annotations
                     .filter(a => a.pageIndex === selectedPageIndex)
                     .map((annotation) => (
-                    <div
-                      key={annotation.id}
-                      className="absolute group z-10 origin-top-left cursor-move"
-                      style={{
-                        left: annotation.x * scale,
-                        top: annotation.y * scale,
-                        width: (annotation.maxWidth || 200) * scale,
-                        // Ajustamos visualmente un poco hacia arriba para que el centro del clic sea donde escribes
-                        transform: 'translateY(-50%)'
-                      }}
-                      onMouseDown={(e) => handleDragStart(annotation.id, e)}
-                      onClick={(e) => e.stopPropagation()} 
-                    >
-                      {/* Botón de eliminar (visible al hacer hover en el contenedor del input) */}
-                      <button
-                        onClick={(e) => removeAnnotation(annotation.id, e)}
-                        className="absolute -top-4 -right-4 w-6 h-6 bg-red-500 text-white rounded-full items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 flex shadow-sm hover:bg-red-600"
-                        title="Eliminar texto"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                      
-                      {/* Textarea de Texto */}
-                      <textarea
-                        autoFocus={annotation.text === ''}
-                        value={annotation.text}
-                        onChange={(e) => {
-                          updateAnnotationText(annotation.id, e.target.value);
-                          // Auto-resize height
-                          e.target.style.height = 'auto';
-                          e.target.style.height = `${e.target.scrollHeight}px`;
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.height = 'auto';
-                          e.target.style.height = `${e.target.scrollHeight}px`;
-                        }}
-                        placeholder="Escribe aquí..."
-                        className="w-full bg-transparent border border-dashed border-blue-400 hover:border-blue-500 focus:border-blue-600 focus:bg-white/90 focus:outline-none px-1 text-black placeholder-gray-400 shadow-sm transition-all rounded-sm resize-none overflow-hidden min-h-[1.5em] cursor-text"
-                        style={{
-                          fontSize: `${annotation.fontSize * scale}px`,
-                          fontFamily: 'Helvetica, Arial, sans-serif',
-                          lineHeight: 1.2,
-                        }}
-                      />
-
-                      {/* Handle de redimensionamiento */}
-                      <div
-                        className="absolute bottom-0 right-0 w-3 h-3 cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center resize-handle"
-                        onMouseDown={(e) => handleResizeStart(annotation.id, e)}
-                      >
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-sm" />
-                      </div>
-                    </div>
-                  ))}
+                      annotation.type === 'signature' 
+                        ? renderSignatureAnnotation(annotation)
+                        : renderTextAnnotation(annotation)
+                    ))}
                 </div>
               </Document>
             </div>
@@ -438,4 +419,144 @@ export default function PdfEditor() {
       </div>
     </div>
   );
+
+  // ─── Renderizado de anotación de TEXTO ───
+  function renderTextAnnotation(annotation: TextAnnotation) {
+    return (
+      <div
+        key={annotation.id}
+        className="absolute group z-10 origin-top-left cursor-move"
+        style={{
+          left: annotation.x * scale,
+          top: annotation.y * scale,
+          width: (annotation.maxWidth || 200) * scale,
+          transform: 'translateY(-50%)'
+        }}
+        onMouseDown={(e) => handleDragStart(annotation.id, e)}
+        onClick={(e) => e.stopPropagation()} 
+      >
+        <button
+          onClick={(e) => removeAnnotation(annotation.id, e)}
+          className="absolute -top-4 -right-4 w-6 h-6 bg-red-500 text-white rounded-full items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 flex shadow-sm hover:bg-red-600"
+          title="Eliminar texto"
+        >
+          <X className="w-3 h-3" />
+        </button>
+        
+        <textarea
+          autoFocus={annotation.text === ''}
+          value={annotation.text}
+          onChange={(e) => {
+            updateAnnotation(annotation.id, { text: e.target.value });
+            e.target.style.height = 'auto';
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
+          onFocus={(e) => {
+            e.target.style.height = 'auto';
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
+          placeholder="Escribe aquí..."
+          className="w-full bg-transparent border border-dashed border-blue-400 hover:border-blue-500 focus:border-blue-600 focus:bg-white/90 focus:outline-none px-1 text-black placeholder-gray-400 shadow-sm transition-all rounded-sm resize-none overflow-hidden min-h-[1.5em] cursor-text"
+          style={{
+            fontSize: `${annotation.fontSize * scale}px`,
+            fontFamily: 'Helvetica, Arial, sans-serif',
+            lineHeight: 1.2,
+          }}
+        />
+
+        <div
+          className="absolute bottom-0 right-0 w-3 h-3 cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center resize-handle"
+          onMouseDown={(e) => handleResizeStart(annotation.id, e)}
+        >
+          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-sm" />
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Renderizado de anotación de FIRMA ───
+  function renderSignatureAnnotation(annotation: TextAnnotation) {
+    const boxWidth = (annotation.maxWidth || SIGNATURE_WIDTH) * scale;
+    const boxHeight = SIGNATURE_HEIGHT * scale;
+    const dateStr = new Date().toLocaleDateString('es-ES', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+    });
+
+    return (
+      <div
+        key={annotation.id}
+        className="absolute group z-10 origin-top-left cursor-move"
+        style={{
+          left: annotation.x * scale,
+          top: annotation.y * scale,
+          width: boxWidth,
+          height: boxHeight,
+        }}
+        onMouseDown={(e) => handleDragStart(annotation.id, e)}
+        onClick={(e) => e.stopPropagation()} 
+      >
+        {/* Botón eliminar */}
+        <button
+          onClick={(e) => removeAnnotation(annotation.id, e)}
+          className="absolute -top-4 -right-4 w-6 h-6 bg-red-500 text-white rounded-full items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 flex shadow-sm hover:bg-red-600"
+          title="Eliminar firma"
+        >
+          <X className="w-3 h-3" />
+        </button>
+
+        {/* Sello visual de firma */}
+        <div 
+          className="w-full h-full rounded border-2 border-green-500 bg-green-50/80 flex flex-col justify-between p-2 shadow-sm"
+          style={{ fontSize: `${8 * scale}px` }}
+        >
+          {/* Header del sello */}
+          <div className="flex items-center gap-1">
+            <ShieldCheck className="text-green-600 shrink-0" style={{ width: `${12 * scale}px`, height: `${12 * scale}px` }} />
+            <span className="font-bold text-green-700" style={{ fontSize: `${8 * scale}px` }}>
+              Firmado digitalmente
+            </span>
+          </div>
+          
+          {/* Campos editables */}
+          <div className="flex flex-col gap-0.5">
+            <div className="flex items-center gap-1">
+              <span className="text-gray-500 shrink-0" style={{ fontSize: `${7 * scale}px` }}>Por:</span>
+              <input
+                type="text"
+                value={annotation.signerName || ''}
+                onChange={(e) => updateAnnotation(annotation.id, { signerName: e.target.value })}
+                placeholder="Nombre del firmante"
+                className="bg-transparent border-none outline-none text-gray-800 w-full placeholder-gray-400 cursor-text"
+                style={{ fontSize: `${7 * scale}px` }}
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-gray-500 shrink-0" style={{ fontSize: `${7 * scale}px` }}>Org:</span>
+              <input
+                type="text"
+                value={annotation.signerOrg || ''}
+                onChange={(e) => updateAnnotation(annotation.id, { signerOrg: e.target.value })}
+                placeholder="Organización (opcional)"
+                className="bg-transparent border-none outline-none text-gray-800 w-full placeholder-gray-400 cursor-text"
+                style={{ fontSize: `${7 * scale}px` }}
+              />
+            </div>
+          </div>
+
+          {/* Fecha */}
+          <div className="text-gray-400" style={{ fontSize: `${6 * scale}px` }}>
+            Fecha: {dateStr}
+          </div>
+        </div>
+
+        {/* Handle de redimensionamiento */}
+        <div
+          className="absolute bottom-0 right-0 w-3 h-3 cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center resize-handle"
+          onMouseDown={(e) => handleResizeStart(annotation.id, e)}
+        >
+          <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-sm" />
+        </div>
+      </div>
+    );
+  }
 }

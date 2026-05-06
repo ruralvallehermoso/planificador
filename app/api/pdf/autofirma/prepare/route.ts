@@ -14,7 +14,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No data provided' }, { status: 400 });
     }
 
-    const id = crypto.randomUUID();
+    const id = Array.from(crypto.getRandomValues(new Uint8Array(8)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join(''); // 16 chars hex
 
     await prisma.webhookLog.create({
       data: {

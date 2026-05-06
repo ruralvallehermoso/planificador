@@ -95,9 +95,84 @@ export default function PdfEditor() {
     window.addEventListener('mouseup', onMouseUp);
   };
 
+  const handleDragStart = (id: string, e: React.MouseEvent) => {
+    // Si se hace clic en el textarea o en el handle de redimensionamiento, no arrastramos
+    if (
+      (e.target as HTMLElement).tagName.toLowerCase() === 'textarea' ||
+      (e.target as HTMLElement).closest('.resize-handle')
+    ) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const startX = e.clientX;
+    const startY = e.clientY;
+    
+    const annotation = annotations.find(a => a.id === id);
+    if (!annotation) return;
+    
+    const initialX = annotation.x;
+    const initialY = annotation.y;
+    
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = (moveEvent.clientX - startX) / scale;
+      const deltaY = (moveEvent.clientY - startY) / scale;
+      
+      setAnnotations(prev => prev.map(a => 
+        a.id === id ? { ...a, x: initialX + deltaX, y: initialY + deltaY } : a
+      ));
+    };
+    
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+    
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
   const removeAnnotation = (id: string, e?: React.MouseEvent) => {
     if (e) { e.stopPropagation(); }
     setAnnotations(annotations.filter(a => a.id !== id));
+  };
+
+  const handleAutoFirmaSign = async () => {
+    if (!file) return;
+    
+    // Validar anotaciones
+    const validAnnotations = annotations.filter(a => a.text.trim().length > 0);
+    
+    try {
+      const toastId = toast.loading('Generando PDF para firmar...');
+      const fileBuffer = await file.arrayBuffer();
+      
+      const modifiedPdfBytes = await addTextToPdf(fileBuffer, validAnnotations);
+      
+      // Convertir Uint8Array a Base64 de forma eficiente para el navegador
+      let binary = '';
+      const bytes = new Uint8Array(modifiedPdfBytes as ArrayBuffer);
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64Pdf = window.btoa(binary);
+      
+      // Protocolo de AutoFirma (v1)
+      // Parámetros básicos para firma PAdES (PDF)
+      const protocolUrl = `afirma://sign?op=sign&format=pades&algorithm=SHA256withRSA&data=${encodeURIComponent(base64Pdf)}`;
+      
+      // Abrir el protocolo
+      window.location.href = protocolUrl;
+      
+      toast.info('Solicitud enviada a AutoFirma. Si no se abre la aplicación, asegúrate de tenerla instalada.', { 
+        id: toastId,
+        duration: 6000 
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al preparar el documento para AutoFirma.');
+    }
   };
 
   const handleDownload = async () => {
@@ -157,6 +232,15 @@ export default function PdfEditor() {
                 <span>{Math.round(scale * 100)}%</span>
                 <button onClick={() => setScale(Math.min(3, scale + 0.1))} className="hover:text-blue-600 px-1">+</button>
              </div>
+            
+            <button
+              onClick={handleAutoFirmaSign}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors shadow-sm"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              Firmar con AutoFirma
+            </button>
+
             <button
               onClick={handleDownload}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
@@ -248,7 +332,7 @@ export default function PdfEditor() {
                     .map((annotation) => (
                     <div
                       key={annotation.id}
-                      className="absolute group z-10 origin-top-left"
+                      className="absolute group z-10 origin-top-left cursor-move"
                       style={{
                         left: annotation.x * scale,
                         top: annotation.y * scale,
@@ -256,6 +340,7 @@ export default function PdfEditor() {
                         // Ajustamos visualmente un poco hacia arriba para que el centro del clic sea donde escribes
                         transform: 'translateY(-50%)'
                       }}
+                      onMouseDown={(e) => handleDragStart(annotation.id, e)}
                       onClick={(e) => e.stopPropagation()} 
                     >
                       {/* Botón de eliminar (visible al hacer hover en el contenedor del input) */}
@@ -282,7 +367,7 @@ export default function PdfEditor() {
                           e.target.style.height = `${e.target.scrollHeight}px`;
                         }}
                         placeholder="Escribe aquí..."
-                        className="w-full bg-transparent border border-dashed border-blue-400 hover:border-blue-500 focus:border-blue-600 focus:bg-white/90 focus:outline-none px-1 text-black placeholder-gray-400 shadow-sm transition-all rounded-sm resize-none overflow-hidden min-h-[1.5em]"
+                        className="w-full bg-transparent border border-dashed border-blue-400 hover:border-blue-500 focus:border-blue-600 focus:bg-white/90 focus:outline-none px-1 text-black placeholder-gray-400 shadow-sm transition-all rounded-sm resize-none overflow-hidden min-h-[1.5em] cursor-text"
                         style={{
                           fontSize: `${annotation.fontSize * scale}px`,
                           fontFamily: 'Helvetica, Arial, sans-serif',
@@ -292,7 +377,7 @@ export default function PdfEditor() {
 
                       {/* Handle de redimensionamiento */}
                       <div
-                        className="absolute bottom-0 right-0 w-3 h-3 cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        className="absolute bottom-0 right-0 w-3 h-3 cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center resize-handle"
                         onMouseDown={(e) => handleResizeStart(annotation.id, e)}
                       >
                         <div className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-sm" />

@@ -83,7 +83,7 @@ export default function PdfEditor() {
       
       const modifiedPdfBytes = await addTextToPdf(fileBuffer, validAnnotations);
       
-      const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+      const blob = new Blob([modifiedPdfBytes as BlobPart], { type: 'application/pdf' });
       saveAs(blob, `editado_${file.name}`);
       
       toast.success('PDF descargado correctamente', { id: toastId });

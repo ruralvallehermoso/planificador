@@ -21,6 +21,7 @@ export default function PdfEditor() {
   const [selectedPageIndex, setSelectedPageIndex] = useState<number>(0);
   const [scale, setScale] = useState<number>(1.2);
   const [activeTool, setActiveTool] = useState<EditorTool>('text');
+  const [showSignInstructions, setShowSignInstructions] = useState(false);
   
   const pageContainerRef = useRef<HTMLDivElement>(null);
 
@@ -198,80 +199,25 @@ export default function PdfEditor() {
 
     const toastId = 'sign-process';
     try {
-      toast.loading('Preparando documento para firmar...', { id: toastId });
+      toast.loading('Generando PDF con sello de firma...', { id: toastId });
       const modifiedPdfBytes = await generateModifiedPdf();
       
-      // Convertir a Base64
-      let binary = '';
-      const len = modifiedPdfBytes.byteLength;
-      for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(modifiedPdfBytes[i]);
-      }
-      const base64Pdf = window.btoa(binary);
+      // Descargar el PDF con la firma visual
+      const blob = new Blob([modifiedPdfBytes as BlobPart], { type: 'application/pdf' });
+      const fileName = `para_firmar_${file.name}`;
+      saveAs(blob, fileName);
 
-      // 1. Crear un registro en el servidor para rastrear la firma
-      toast.loading('Preparando firma...', { id: toastId });
-      const prepareResp = await fetch('/api/pdf/autofirma/prepare', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: '' }), // Solo necesitamos el ID
-      });
-      
-      if (!prepareResp.ok) throw new Error('Error al preparar la firma');
-      const { id } = await prepareResp.json();
+      toast.success(
+        `PDF descargado como "${fileName}". Ábrelo con AutoFirma para añadir la firma digital.`,
+        { id: toastId, duration: 8000 }
+      );
 
-      // 2. Construir la URL del protocolo - datos directos con stservlet para recibir resultado
-      const origin = window.location.origin;
-      const stServlet = `${origin}/api/pdf/autofirma/signed`;
-      
-      // Usamos dat directamente y stservlet para el resultado. El id se usa para rastrear.
-      const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&id=${encodeURIComponent(id)}&stservlet=${encodeURIComponent(stServlet)}&dat=${encodeURIComponent(base64Pdf)}`;
-      
-      // 3. Invocar AutoFirma
-      toast.loading('Abriendo AutoFirma...', { id: toastId });
-      window.open(protocolUrl, '_blank');
-
-      // 4. Polling para esperar el resultado
-      toast.loading('Esperando firma de AutoFirma... Selecciona tu certificado en la aplicación.', { id: toastId });
-      
-      let attempts = 0;
-      const maxAttempts = 120; // 5 minutos (cada 2.5s)
-      
-      const pollInterval = setInterval(async () => {
-        attempts++;
-        if (attempts > maxAttempts) {
-          clearInterval(pollInterval);
-          toast.error('Tiempo de espera agotado. Si no se abrió AutoFirma, asegúrate de tenerla instalada.', { id: toastId });
-          return;
-        }
-        
-        try {
-          const resp = await fetch(`/api/pdf/autofirma/status/${id}`);
-          if (!resp.ok) return;
-          
-          const data = await resp.json();
-          
-          if (data.status === 'COMPLETED') {
-            clearInterval(pollInterval);
-            toast.success('¡Documento firmado con éxito! Descargando...', { id: toastId });
-            
-            // Convertir Base64 a Blob y descargar
-            const binaryStr = window.atob(data.signedPdf);
-            const bytes = new Uint8Array(binaryStr.length);
-            for (let i = 0; i < binaryStr.length; i++) {
-              bytes[i] = binaryStr.charCodeAt(i);
-            }
-            const blob = new Blob([bytes], { type: 'application/pdf' });
-            saveAs(blob, `firmado_${file?.name || 'documento.pdf'}`);
-          }
-        } catch {
-          // Silently continue polling
-        }
-      }, 2500);
+      // Mostrar instrucciones claras
+      setShowSignInstructions(true);
       
     } catch (error) {
       console.error(error);
-      toast.error('Error al preparar el documento para la firma.', { id: toastId });
+      toast.error('Error al generar el documento.', { id: toastId });
     }
   };
 
@@ -460,6 +406,51 @@ export default function PdfEditor() {
           )}
         </div>
       </div>
+      {/* Modal de instrucciones de firma */}
+      {showSignInstructions && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5 text-green-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Firmar con AutoFirma</h3>
+            </div>
+            
+            <p className="text-sm text-gray-600 mb-4">
+              El PDF con el sello visual se ha descargado. Para añadir la firma digital criptográfica, sigue estos pasos:
+            </p>
+            
+            <ol className="space-y-3 mb-6">
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-bold shrink-0">1</span>
+                <span className="text-sm text-gray-700">Abre la aplicación <strong>AutoFirma</strong> en tu ordenador.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-bold shrink-0">2</span>
+                <span className="text-sm text-gray-700">Haz clic en <strong>&quot;Seleccionar fichero a firmar&quot;</strong> y elige el PDF que acabas de descargar.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-bold shrink-0">3</span>
+                <span className="text-sm text-gray-700">Selecciona tu <strong>certificado digital</strong> (DNIe o FNMT) e introduce tu contraseña.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-bold shrink-0">4</span>
+                <span className="text-sm text-gray-700">Elige dónde guardar el <strong>documento firmado</strong>. ¡Listo!</span>
+              </li>
+            </ol>
+            
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowSignInstructions(false)}
+                className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 

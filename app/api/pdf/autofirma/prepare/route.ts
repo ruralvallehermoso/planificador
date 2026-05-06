@@ -8,11 +8,7 @@ import { prisma } from '@/lib/prisma';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { data } = body;
-
-    if (!data) {
-      return NextResponse.json({ error: 'No data provided' }, { status: 400 });
-    }
+    const data = body.data ?? '';
 
     const id = Array.from(crypto.getRandomValues(new Uint8Array(8)))
       .map(b => b.toString(16).padStart(2, '0'))

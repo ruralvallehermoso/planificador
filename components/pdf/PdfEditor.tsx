@@ -209,23 +209,23 @@ export default function PdfEditor() {
       }
       const base64Pdf = window.btoa(binary);
 
-      // 1. Subir el PDF al servidor para que AutoFirma lo descargue
-      toast.loading('Subiendo PDF al servidor...', { id: toastId });
+      // 1. Crear un registro en el servidor para rastrear la firma
+      toast.loading('Preparando firma...', { id: toastId });
       const prepareResp = await fetch('/api/pdf/autofirma/prepare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: base64Pdf }),
+        body: JSON.stringify({ data: '' }), // Solo necesitamos el ID
       });
       
-      if (!prepareResp.ok) throw new Error('Error al subir el PDF');
+      if (!prepareResp.ok) throw new Error('Error al preparar la firma');
       const { id } = await prepareResp.json();
 
-      // 2. Construir la URL del protocolo con rtservlet + stservlet (patrón tri-servidor)
+      // 2. Construir la URL del protocolo - datos directos con stservlet para recibir resultado
       const origin = window.location.origin;
-      const rtServlet = `${origin}/api/pdf/autofirma/retrieve`;
       const stServlet = `${origin}/api/pdf/autofirma/signed`;
       
-      const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&fileid=${encodeURIComponent(id)}&rtservlet=${encodeURIComponent(rtServlet)}&stservlet=${encodeURIComponent(stServlet)}`;
+      // Usamos dat directamente y stservlet para el resultado. El id se usa para rastrear.
+      const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&id=${encodeURIComponent(id)}&stservlet=${encodeURIComponent(stServlet)}&dat=${encodeURIComponent(base64Pdf)}`;
       
       // 3. Invocar AutoFirma
       toast.loading('Abriendo AutoFirma...', { id: toastId });

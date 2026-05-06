@@ -151,7 +151,7 @@ export default function PdfEditor() {
       
       // Convertir Uint8Array a Base64 de forma eficiente para el navegador
       let binary = '';
-      const bytes = new Uint8Array(modifiedPdfBytes as ArrayBuffer);
+      const bytes = modifiedPdfBytes; // Ya es un Uint8Array
       const len = bytes.byteLength;
       for (let i = 0; i < len; i++) {
         binary += String.fromCharCode(bytes[i]);

@@ -4,10 +4,12 @@ import { prisma } from '@/lib/prisma';
 /**
  * Endpoint para recibir el PDF firmado desde AutoFirma.
  */
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const signatureId = searchParams.get('id');
+    const { id: signatureId } = await params;
 
     if (!signatureId) {
       return new NextResponse('ID de firma no proporcionado', { status: 400 });

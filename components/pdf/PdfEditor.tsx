@@ -206,7 +206,7 @@ export default function PdfEditor() {
       // Generar un ID único para esta operación de firma
       const id = crypto.randomUUID();
       
-      const callbackUrl = `${window.location.origin}/api/pdf/sign-callback?id=${id}`;
+      const callbackUrl = `${window.location.origin}/api/pdf/sign-callback/${id}`;
       const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&stservlet=${encodeURIComponent(callbackUrl)}&dat=${encodeURIComponent(base64Pdf)}`;
       
       window.location.href = protocolUrl;

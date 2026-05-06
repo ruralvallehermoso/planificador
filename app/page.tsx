@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Circle, Clock, Home as HomeIcon, Wallet, GraduationCap, Coffee, BookOpen, ArrowUpRight, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowRight, CheckCircle2, Circle, Clock, Home as HomeIcon, Wallet, GraduationCap, Coffee, BookOpen, ArrowUpRight, TrendingUp, TrendingDown, Wrench } from "lucide-react";
 import { clsx } from "clsx";
 import { auth } from "@/auth";
 import { canAccessModule } from "@/lib/auth/permissions";
@@ -18,6 +18,7 @@ const MODULES_CONFIG: Record<string, { module: ModuleName; icon: any; color: str
   'fp-informatica': { module: MODULES.FP_INFORMATICA, icon: GraduationCap, color: '#f59e0b', tasksPath: '/fp-informatica' },
   'hogar': { module: MODULES.HOGAR, icon: Coffee, color: '#ec4899', tasksPath: '/hogar/tareas' },
   'master-unie': { module: MODULES.MASTER_UNIE, icon: BookOpen, color: '#8b5cf6', tasksPath: '/master-unie' },
+  'herramientas': { module: MODULES.HERRAMIENTAS, icon: Wrench, color: '#64748b', tasksPath: '/herramientas/pdf' },
 };
 
 /* Server Component */
@@ -116,6 +117,16 @@ export default async function Home() {
     }
     return cat;
   });
+
+  if (canAccessModule(user || null, MODULES.HERRAMIENTAS) || BYPASS_PERMISSIONS) {
+    categoriesWithMaster.push({
+      id: 'herramientas-card-mock-id',
+      name: 'Herramientas',
+      slug: 'herramientas',
+      _count: { items: 0 },
+      items: []
+    } as any);
+  }
 
   // Calculate total pending
   const totalPending = categoriesWithMaster.reduce((sum, c) => sum + c._count.items, 0);

@@ -17,7 +17,7 @@ export function MicrofrontendFrame({
     className = '',
     onMessage,
     fallbackMessage = 'La aplicación no está disponible en este momento.',
-}: MicrofrontendFrameProps) {
+}: MicrofrontendFrameProps) {  
     const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
     const [retryCount, setRetryCount] = useState(0);
     const iframeRef = useRef<HTMLIFrameElement>(null);

@@ -7,15 +7,16 @@ export const MODULES = {
     FP_INFORMATICA: 'fp-informatica',
     HOGAR: 'hogar',
     MASTER_UNIE: 'master-unie',
+    HERRAMIENTAS: 'herramientas',
 } as const
 
 export type ModuleName = typeof MODULES[keyof typeof MODULES]
 
 // Default permissions by role
 export const ROLE_PERMISSIONS: Record<Role, ModuleName[]> = {
-    ADMIN: [MODULES.CASA_RURAL, MODULES.FINANZAS, MODULES.FP_INFORMATICA, MODULES.HOGAR, MODULES.MASTER_UNIE],
-    OWNER: [MODULES.CASA_RURAL, MODULES.FINANZAS, MODULES.HOGAR],
-    TEACHER: [MODULES.FP_INFORMATICA, MODULES.MASTER_UNIE],
+    ADMIN: [MODULES.CASA_RURAL, MODULES.FINANZAS, MODULES.FP_INFORMATICA, MODULES.HOGAR, MODULES.MASTER_UNIE, MODULES.HERRAMIENTAS],
+    OWNER: [MODULES.CASA_RURAL, MODULES.FINANZAS, MODULES.HOGAR, MODULES.HERRAMIENTAS],
+    TEACHER: [MODULES.FP_INFORMATICA, MODULES.MASTER_UNIE, MODULES.HERRAMIENTAS],
     FAMILY: [MODULES.HOGAR],
     CASA_RURAL: [MODULES.CASA_RURAL],
     EMPLEADO: [MODULES.CASA_RURAL], // Limited to SES Hospedajes + Actividades only
@@ -55,5 +56,11 @@ export const MODULE_INFO: Record<ModuleName, { name: string; description: string
         description: 'Seguimiento académico',
         href: '/master-unie',
         color: 'from-cyan-500 to-blue-600',
+    },
+    'herramientas': {
+        name: 'Herramientas',
+        description: 'Utilidades y edición de PDFs',
+        href: '/herramientas/pdf',
+        color: 'from-gray-500 to-slate-600',
     },
 }

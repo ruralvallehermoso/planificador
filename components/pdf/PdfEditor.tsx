@@ -3,8 +3,8 @@
 import React, { useState, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Download, Upload, X } from 'lucide-react';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 import { addTextToPdf, TextAnnotation } from '@/lib/pdf/pdf-utils';
 import { saveAs } from 'file-saver';
 import { toast } from 'sonner';

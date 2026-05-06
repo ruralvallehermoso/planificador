@@ -5,8 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
 export const processInvoice = inngest.createFunction(
-    { id: "process-invoice" },
-    { event: "invoice/received" },
+    { id: "process-invoice", triggers: [{ event: "invoice/received" }] },
     async ({ event, step }) => {
         const { pdfBase64, pdfUrl, fileName, from } = event.data;
 

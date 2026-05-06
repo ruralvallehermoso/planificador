@@ -52,12 +52,13 @@ export async function addTextToPdf(fileBuffer: ArrayBuffer, annotations: TextAnn
         borderWidth: 1,
       });
 
-      // Icono de candado (texto)
-      page.drawText('🔒', {
-        x: annotation.x + 6,
-        y: pdfY + boxHeight - 16,
-        size: 10,
-        font,
+      // Icono de candado (texto) - Usamos [*] en lugar de emoji, no soportado por fuentes estándar
+      page.drawText('[*]', {
+        x: annotation.x + 4,
+        y: pdfY + boxHeight - 15,
+        size: 8,
+        font: fontBold,
+        color: rgb(0.3, 0.45, 0.75),
       });
 
       // Título

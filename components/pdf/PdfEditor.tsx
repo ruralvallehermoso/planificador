@@ -214,11 +214,19 @@ export default function PdfEditor() {
 
       toast.success('PDF descargado. Abriendo AutoFirma...', { id: toastId });
 
-      // Invocar AutoFirma con protocolo simplificado
-      // AutoFirma firmará y permitirá guardar el resultado localmente
+      // Invocar AutoFirma usando un iframe oculto para no navegar fuera de la página
       setTimeout(() => {
         const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&dat=${encodeURIComponent(base64Pdf)}`;
-        window.location.href = protocolUrl;
+        
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = protocolUrl;
+        document.body.appendChild(iframe);
+        
+        // Limpiar el iframe después de un momento
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 3000);
 
         toast.info(
           'AutoFirma se ha abierto. Selecciona tu certificado, firma el documento y guárdalo.',

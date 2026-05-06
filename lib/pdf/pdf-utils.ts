@@ -7,6 +7,7 @@ export interface TextAnnotation {
   x: number;
   y: number; // Browser coordinate (top-left origin) relative to the unscaled page size
   fontSize: number;
+  maxWidth?: number;
 }
 
 /**
@@ -36,6 +37,8 @@ export async function addTextToPdf(fileBuffer: ArrayBuffer, annotations: TextAnn
       y: pdfY,
       size: annotation.fontSize,
       color: rgb(0, 0, 0),
+      maxWidth: annotation.maxWidth,
+      lineHeight: annotation.fontSize * 1.2,
     });
   }
 

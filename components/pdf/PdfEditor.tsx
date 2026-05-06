@@ -57,6 +57,7 @@ export default function PdfEditor() {
       x: unscaledX,
       y: unscaledY,
       fontSize: 12, // Default size
+      maxWidth: 200, // Default width
     };
 
     setAnnotations([...annotations, newAnnotation]);
@@ -64,6 +65,34 @@ export default function PdfEditor() {
 
   const updateAnnotationText = (id: string, text: string) => {
     setAnnotations(annotations.map(a => a.id === id ? { ...a, text } : a));
+  };
+
+  const handleResizeStart = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const startX = e.clientX;
+    const annotation = annotations.find(a => a.id === id);
+    if (!annotation) return;
+    
+    const initialWidth = (annotation.maxWidth || 200) * scale;
+    
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - startX;
+      const newWidth = Math.max(50, initialWidth + deltaX);
+      
+      setAnnotations(prev => prev.map(a => 
+        a.id === id ? { ...a, maxWidth: newWidth / scale } : a
+      ));
+    };
+    
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+    
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
   };
 
   const removeAnnotation = (id: string, e?: React.MouseEvent) => {
@@ -223,6 +252,7 @@ export default function PdfEditor() {
                       style={{
                         left: annotation.x * scale,
                         top: annotation.y * scale,
+                        width: (annotation.maxWidth || 200) * scale,
                         // Ajustamos visualmente un poco hacia arriba para que el centro del clic sea donde escribes
                         transform: 'translateY(-50%)'
                       }}
@@ -237,19 +267,36 @@ export default function PdfEditor() {
                         <X className="w-3 h-3" />
                       </button>
                       
-                      {/* Input de Texto */}
-                      <input
-                        type="text"
+                      {/* Textarea de Texto */}
+                      <textarea
                         autoFocus={annotation.text === ''}
                         value={annotation.text}
-                        onChange={(e) => updateAnnotationText(annotation.id, e.target.value)}
+                        onChange={(e) => {
+                          updateAnnotationText(annotation.id, e.target.value);
+                          // Auto-resize height
+                          e.target.style.height = 'auto';
+                          e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.height = 'auto';
+                          e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
                         placeholder="Escribe aquí..."
-                        className="bg-transparent border border-dashed border-blue-400 hover:border-blue-500 focus:border-blue-600 focus:bg-white/90 focus:outline-none px-1 text-black placeholder-gray-400 min-w-[150px] shadow-sm transition-all rounded-sm"
+                        className="w-full bg-transparent border border-dashed border-blue-400 hover:border-blue-500 focus:border-blue-600 focus:bg-white/90 focus:outline-none px-1 text-black placeholder-gray-400 shadow-sm transition-all rounded-sm resize-none overflow-hidden min-h-[1.5em]"
                         style={{
                           fontSize: `${annotation.fontSize * scale}px`,
-                          fontFamily: 'Helvetica, Arial, sans-serif'
+                          fontFamily: 'Helvetica, Arial, sans-serif',
+                          lineHeight: 1.2,
                         }}
                       />
+
+                      {/* Handle de redimensionamiento */}
+                      <div
+                        className="absolute bottom-0 right-0 w-3 h-3 cursor-nwse-resize opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        onMouseDown={(e) => handleResizeStart(annotation.id, e)}
+                      >
+                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-sm" />
+                      </div>
                     </div>
                   ))}
                 </div>

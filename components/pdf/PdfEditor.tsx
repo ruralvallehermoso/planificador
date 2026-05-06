@@ -137,42 +137,86 @@ export default function PdfEditor() {
     setAnnotations(annotations.filter(a => a.id !== id));
   };
 
+  const [isSigning, setIsSigning] = useState(false);
+  
+  const pollSignature = async (id: string) => {
+    const toastId = 'poll-signature';
+    toast.loading('Esperando firma de AutoFirma...', { id: toastId });
+    
+    let attempts = 0;
+    const maxAttempts = 60; // 2 minutos
+    
+    const interval = setInterval(async () => {
+      attempts++;
+      if (attempts > maxAttempts) {
+        clearInterval(interval);
+        setIsSigning(false);
+        toast.error('Tiempo de espera agotado. Asegúrate de haber completado la firma en la aplicación.', { id: toastId });
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/pdf/check-signature?id=${id}`);
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        
+        if (data.status === 'COMPLETED') {
+          clearInterval(interval);
+          setIsSigning(false);
+          toast.success('¡Documento firmado con éxito!', { id: toastId });
+          
+          // Convertir Base64 a Blob y descargar
+          const base64Data = data.signedPdf;
+          const binaryString = window.atob(base64Data);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          
+          const blob = new Blob([bytes], { type: 'application/pdf' });
+          saveAs(blob, `firmado_${file?.name || 'documento.pdf'}`);
+        }
+      } catch (error) {
+        console.error('Error polling signature:', error);
+      }
+    }, 2500);
+  };
+
   const handleAutoFirmaSign = async () => {
     if (!file) return;
     
-    // Validar anotaciones
     const validAnnotations = annotations.filter(a => a.text.trim().length > 0);
     
     try {
-      const toastId = toast.loading('Generando PDF para firmar...');
+      setIsSigning(true);
+      const toastId = toast.loading('Generando documento...');
       const fileBuffer = await file.arrayBuffer();
       
       const modifiedPdfBytes = await addTextToPdf(fileBuffer, validAnnotations);
       
-      // Convertir Uint8Array a Base64 de forma eficiente para el navegador
       let binary = '';
-      const bytes = modifiedPdfBytes; // Ya es un Uint8Array
+      const bytes = modifiedPdfBytes;
       const len = bytes.byteLength;
       for (let i = 0; i < len; i++) {
         binary += String.fromCharCode(bytes[i]);
       }
       const base64Pdf = window.btoa(binary);
       
-      // Protocolo de AutoFirma (v1)
-      // Parámetros básicos para firma PAdES (PDF)
-      // Reordenamos para que los parámetros pequeños vayan primero y no se trunquen si el PDF es grande
-      const callbackUrl = `${window.location.origin}/api/pdf/sign-callback`;
+      // Generar un ID único para esta operación de firma
+      const id = crypto.randomUUID();
+      
+      const callbackUrl = `${window.location.origin}/api/pdf/sign-callback?id=${id}`;
       const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&stservlet=${encodeURIComponent(callbackUrl)}&dat=${encodeURIComponent(base64Pdf)}`;
       
-      // Abrir el protocolo
       window.location.href = protocolUrl;
       
-      toast.info('Solicitud enviada a AutoFirma. Si no se abre la aplicación, asegúrate de tenerla instalada.', { 
-        id: toastId,
-        duration: 6000 
-      });
+      toast.dismiss(toastId);
+      pollSignature(id);
+      
     } catch (error) {
       console.error(error);
+      setIsSigning(false);
       toast.error('Error al preparar el documento para AutoFirma.');
     }
   };

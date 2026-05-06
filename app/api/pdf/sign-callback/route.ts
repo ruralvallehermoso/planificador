@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 /**
  * Endpoint para recibir el PDF firmado desde AutoFirma.
- * AutoFirma enviará un POST con el contenido del PDF firmado en el cuerpo o en un parámetro 'data'.
  */
 export async function POST(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const signatureId = searchParams.get('id');
+
+    if (!signatureId) {
+      return new NextResponse('ID de firma no proporcionado', { status: 400 });
+    }
+
     const contentType = request.headers.get('content-type') || '';
     let signedData: string | null = null;
 
@@ -13,7 +20,6 @@ export async function POST(request: Request) {
       const formData = await request.formData();
       signedData = formData.get('data') as string;
     } else {
-      // Intentar leer como texto plano o binario si viene directo
       signedData = await request.text();
     }
 
@@ -21,11 +27,18 @@ export async function POST(request: Request) {
       return new NextResponse('No se recibió el documento firmado', { status: 400 });
     }
 
-    // Aquí podrías guardar el documento en una base de datos, en un storage (S3/Vercel Blob), etc.
-    // Por ahora, como es una integración básica, podríamos devolver una respuesta exitosa.
-    // Nota: El navegador no verá esta respuesta, la verá la aplicación AutoFirma.
+    // Guardamos en WebhookLog para que el frontend pueda consultarlo
+    await prisma.webhookLog.create({
+      data: {
+        provider: `autofirma_${signatureId}`,
+        payload: {
+          signedPdf: signedData,
+          timestamp: new Date().toISOString()
+        }
+      }
+    });
     
-    console.log('PDF firmado recibido correctamente.');
+    console.log(`PDF firmado recibido correctamente para ID: ${signatureId}`);
 
     return new NextResponse('OK', { status: 200 });
   } catch (error) {

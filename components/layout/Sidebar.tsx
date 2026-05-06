@@ -108,6 +108,16 @@ const allNavigation: NavItem[] = [
             { name: 'Suministros', href: '/hogar/suministros', icon: Zap },
         ]
     },
+    {
+        name: 'Herramientas',
+        href: '/herramientas',
+        icon: Wrench,
+        module: MODULES.HERRAMIENTAS,
+        children: [
+            { name: 'Dashboard', href: '/herramientas', icon: LayoutDashboard },
+            { name: 'Editor PDF', href: '/herramientas/pdf', icon: FileText },
+        ]
+    },
     { name: 'Admin Usuarios', href: '/admin/users', icon: Shield, adminOnly: true },
 ]
 

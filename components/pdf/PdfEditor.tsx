@@ -162,7 +162,7 @@ export default function PdfEditor() {
       // Parámetros básicos para firma PAdES (PDF)
       // Reordenamos para que los parámetros pequeños vayan primero y no se trunquen si el PDF es grande
       const callbackUrl = `${window.location.origin}/api/pdf/sign-callback`;
-      const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&alg=SHA256withRSA&stservlet=${encodeURIComponent(callbackUrl)}&dat=${encodeURIComponent(base64Pdf)}`;
+      const protocolUrl = `afirma://sign?op=sign&v=1&format=pades&algorithm=SHA256withRSA&stservlet=${encodeURIComponent(callbackUrl)}&dat=${encodeURIComponent(base64Pdf)}`;
       
       // Abrir el protocolo
       window.location.href = protocolUrl;

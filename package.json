@@ -50,7 +50,7 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^12.33.0",
     "hash-wasm": "^4.12.0",
-    "inngest": "^3.49.1",
+    "inngest": "^4.3.0",
     "jszip": "^3.10.1",
     "katex": "^0.16.27",
     "lucide-react": "^0.556.0",

@@ -114,7 +114,6 @@ const allNavigation: NavItem[] = [
         icon: Wrench,
         module: MODULES.HERRAMIENTAS,
         children: [
-            { name: 'Dashboard', href: '/herramientas', icon: LayoutDashboard },
             { name: 'Editor PDF', href: '/herramientas/pdf', icon: FileText },
         ]
     },

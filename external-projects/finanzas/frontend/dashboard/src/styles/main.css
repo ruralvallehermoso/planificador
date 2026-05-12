@@ -1629,6 +1629,91 @@ body {
     margin-bottom: 1.25rem;
 }
 
+.balance-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.balance-card-header .card-title {
+    margin-bottom: 0;
+}
+
+.balance-summary-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.balance-summary-box {
+    min-width: 9.5rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 0.75rem 0.875rem;
+}
+
+.balance-summary-box.positive {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.balance-summary-box.negative {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.balance-summary-box.neutral {
+    background: rgba(100, 116, 139, 0.08);
+    border-color: rgba(100, 116, 139, 0.3);
+}
+
+.balance-summary-label {
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.balance-summary-value {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    white-space: nowrap;
+}
+
+.balance-summary-box.positive .balance-summary-value {
+    color: var(--success);
+}
+
+.balance-summary-box.negative .balance-summary-value {
+    color: var(--danger);
+}
+
+@media (max-width: 700px) {
+    .balance-card-header {
+        flex-direction: column;
+    }
+
+    .balance-summary-row {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .balance-summary-box {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
 .simulator-form .form-group {
     margin-bottom: 1.25rem;
 }
@@ -1662,6 +1747,35 @@ body {
     border: none;
     border-top: 1px solid var(--border-color);
     margin: 1.5rem 0;
+}
+
+.scenario-settings {
+    margin-bottom: 1.25rem;
+}
+
+.scenario-settings-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.scenario-input-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.scenario-input-grid .form-group {
+    margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+    .scenario-input-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .btn-primary {

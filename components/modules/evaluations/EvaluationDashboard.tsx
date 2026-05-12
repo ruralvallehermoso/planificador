@@ -959,11 +959,23 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                                     }
 
                                                     if (/grupo/i.test(col)) {
+                                                        let inferredGroup = val;
+                                                        if (!inferredGroup || inferredGroup === "") {
+                                                            for (const key of Object.keys(row)) {
+                                                                const rowStr = String(row[key]).toLowerCase();
+                                                                const match = rowStr.match(/(smr|daw|dam|asir)\d?([ab])/i);
+                                                                if (match) {
+                                                                    inferredGroup = match[2].toUpperCase();
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+
                                                         return (
                                                             <td key={j} className="px-6 py-3">
                                                                 <select
                                                                     className="border-gray-200 bg-gray-50/50 hover:bg-gray-100 rounded-md text-sm py-1 pl-2 pr-6 focus:ring-indigo-500 focus:border-indigo-500 transition-colors cursor-pointer"
-                                                                    value={val || ""}
+                                                                    value={inferredGroup || ""}
                                                                     onChange={(e) => {
                                                                         const newData = [...studentsData]
                                                                         const realIndex = studentsData.findIndex(s => s === row)

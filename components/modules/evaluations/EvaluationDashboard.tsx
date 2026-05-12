@@ -127,6 +127,32 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
 
     const availableCriteria = useMemo(() => allColumns.filter(col => !nameColumns.includes(col)), [allColumns, nameColumns])
 
+    const detailedTableColumns = useMemo(() => {
+        let cols = [...allColumns]
+        const columnsToRemove = ["departamento", "institución", "número de id", "última descarga de este curso"]
+        
+        cols = cols.filter(c => !columnsToRemove.some(rem => c.toLowerCase().includes(rem)))
+
+        const apellidoCol = cols.find(c => /apellido|surname/i.test(c))
+        const grupoCol = cols.find(c => /grupo/i.test(c))
+        const correoCol = cols.find(c => /correo|email/i.test(c))
+
+        if (apellidoCol) {
+            if (grupoCol) cols = cols.filter(c => c !== grupoCol)
+            if (correoCol) cols = cols.filter(c => c !== correoCol)
+
+            const apellidoIndex = cols.indexOf(apellidoCol)
+
+            const toInsert = []
+            toInsert.push(grupoCol || "Grupo")
+            if (correoCol) toInsert.push(correoCol)
+
+            cols.splice(apellidoIndex + 1, 0, ...toInsert)
+        }
+
+        return cols
+    }, [allColumns])
+
     const toggleCriterion = (criterion: string) => {
         setSelectedCriteria(prev => {
             const next = prev.includes(criterion) ? prev.filter(c => c !== criterion) : [...prev, criterion]
@@ -898,13 +924,13 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-gray-50/80 text-gray-500 font-medium border-b border-gray-100">
                                     <tr>
-                                        {allColumns.map(col => <th key={col} className="px-6 py-3 whitespace-nowrap">{col}</th>)}
+                                        {detailedTableColumns.map(col => <th key={col} className="px-6 py-3 whitespace-nowrap">{col}</th>)}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {paginatedStudents.length === 0 ? (
                                         <tr>
-                                            <td colSpan={allColumns.length} className="px-6 py-12 text-center text-gray-500">
+                                            <td colSpan={detailedTableColumns.length} className="px-6 py-12 text-center text-gray-500">
                                                 <div className="flex flex-col items-center justify-center">
                                                     <Search className="h-8 w-8 text-gray-300 mb-3" />
                                                     <p>No se encontraron alumnos bajo estos filtros.</p>
@@ -919,7 +945,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                     ) : (
                                         paginatedStudents.map((row, i) => (
                                             <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                                                {allColumns.map((col, j) => {
+                                                {detailedTableColumns.map((col, j) => {
                                                     const val = row[col]
                                                     let badgeColor = ""
                                                     if (selectedCriteria.includes(col)) {

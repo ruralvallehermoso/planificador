@@ -958,9 +958,32 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                                         }
                                                     }
 
+                                                    if (/grupo/i.test(col)) {
+                                                        return (
+                                                            <td key={j} className="px-6 py-3">
+                                                                <select
+                                                                    className="border-gray-200 bg-gray-50/50 hover:bg-gray-100 rounded-md text-sm py-1 pl-2 pr-6 focus:ring-indigo-500 focus:border-indigo-500 transition-colors cursor-pointer"
+                                                                    value={val || ""}
+                                                                    onChange={(e) => {
+                                                                        const newData = [...studentsData]
+                                                                        const realIndex = studentsData.findIndex(s => s === row)
+                                                                        if (realIndex !== -1) {
+                                                                            newData[realIndex][col] = e.target.value
+                                                                            setStudentsData(newData)
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <option value="">-</option>
+                                                                    <option value="A">A</option>
+                                                                    <option value="B">B</option>
+                                                                </select>
+                                                            </td>
+                                                        )
+                                                    }
+
                                                     return (
                                                         <td key={j} className={`px-6 py-3 ${nameColumns.includes(col) ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
-                                                            {badgeColor ? <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}`}>{val}</span> : <span className="truncate max-w-[200px] inline-block">{val !== null && val !== undefined ? String(val) : '-'}</span>}
+                                                            {badgeColor ? <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}`}>{val}</span> : <span className="truncate max-w-[200px] inline-block">{val !== null && val !== undefined && val !== '' ? String(val) : '-'}</span>}
                                                         </td>
                                                     )
                                                 })}

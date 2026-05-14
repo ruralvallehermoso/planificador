@@ -448,7 +448,7 @@ function renderBalanceChart(history) {
                     backgroundColor: 'rgba(16, 185, 129, 0.18)',
                     borderWidth: 3,
                     fill: {
-                        target: 'origin',
+                        target: 2,
                         above: 'rgba(16, 185, 129, 0.18)',
                         below: 'rgba(16, 185, 129, 0)'
                     },
@@ -466,7 +466,7 @@ function renderBalanceChart(history) {
                     backgroundColor: 'rgba(239, 68, 68, 0.16)',
                     borderWidth: 3,
                     fill: {
-                        target: 'origin',
+                        target: 2,
                         above: 'rgba(239, 68, 68, 0)',
                         below: 'rgba(239, 68, 68, 0.16)'
                     },
@@ -476,17 +476,6 @@ function renderBalanceChart(history) {
                     pointHoverBorderWidth: 2,
                     pointHoverBackgroundColor: '#ffffff',
                     spanGaps: false
-                },
-                {
-                    label: 'Beneficio Neto Cartera',
-                    data: balanceSeries.benefit,
-                    borderColor: 'rgba(16, 185, 129, 0.45)',
-                    backgroundColor: 'rgba(16, 185, 129, 0.06)',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.25,
-                    pointRadius: 0,
-                    pointHoverRadius: 4
                 },
                 {
                     label: 'Coste Acumulado Hipoteca',
@@ -518,7 +507,19 @@ function renderBalanceChart(history) {
                         filter: (item) => item.text !== 'Balance Neto (negativo)'
                     }
                 },
-                tooltip: getEuroTooltipOptions(isDark)
+                tooltip: {
+                    ...getEuroTooltipOptions(isDark),
+                    callbacks: {
+                        label: (ctx) => {
+                            const label = ctx.dataset.label === 'Balance Neto (negativo)' ? 'Balance Neto' : ctx.dataset.label;
+                            let val = ctx.parsed.y;
+                            if (label === 'Balance Neto' && balanceSeries.rawPoints[ctx.dataIndex]) {
+                                val = balanceSeries.rawPoints[ctx.dataIndex].balance;
+                            }
+                            return `${label}: ${formatEUR(val)}`;
+                        }
+                    }
+                }
             },
             scales: {
                 y: {
@@ -568,10 +569,11 @@ function buildBalanceChartSeries(history) {
 
     return {
         labels: points.map(point => point.label),
-        positiveBalance: points.map(point => point.balance >= 0 ? point.balance : null),
-        negativeBalance: points.map(point => point.balance <= 0 ? point.balance : null),
+        positiveBalance: points.map(point => point.balance >= 0 ? point.net_benefit : null),
+        negativeBalance: points.map(point => point.balance <= 0 ? point.net_benefit : null),
         benefit: points.map(point => point.net_benefit),
-        interest: points.map(point => point.interest_paid)
+        interest: points.map(point => point.interest_paid),
+        rawPoints: points
     };
 }
 

@@ -382,9 +382,9 @@ function renderSimulatorChart(history) {
                 {
                     label: 'Coste Acumulado Hipoteca',
                     data: interestData,
-                    borderColor: '#ef4444',
-                    borderDash: [5, 5],
-                    borderWidth: 2,
+                    borderColor: '#8b5cf6',
+                    borderDash: [4, 4],
+                    borderWidth: 3,
                     fill: false,
                     tension: 0.1
                 }
@@ -491,10 +491,10 @@ function renderBalanceChart(history) {
                 {
                     label: 'Coste Acumulado Hipoteca',
                     data: balanceSeries.interest,
-                    borderColor: 'rgba(239, 68, 68, 0.6)',
-                    backgroundColor: 'rgba(239, 68, 68, 0.05)',
-                    borderWidth: 2,
-                    borderDash: [6, 6],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    borderWidth: 3,
+                    borderDash: [4, 4],
                     fill: false,
                     stepped: true,
                     tension: 0,

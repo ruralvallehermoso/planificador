@@ -40,7 +40,7 @@ export const microfrontends: Record<string, MicrofrontendConfig> = {
         id: 'dashboard-financiero',
         name: 'Simulador Financiero',
         description: 'Simulador financiero y análisis de hipoteca',
-        url: process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_PORTFOLIO_URL ? process.env.NEXT_PUBLIC_PORTFOLIO_URL + '/?view=simulator' : '/static/finanzas/index.html#simulator',
+        url: process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_PORTFOLIO_URL ? process.env.NEXT_PUBLIC_PORTFOLIO_URL + '/?view=simulator' : '/static/finanzas/index.html?view=simulator',
         icon: 'BarChart3',
         color: '#6366F1',
         get available() { return this.url !== ''; },

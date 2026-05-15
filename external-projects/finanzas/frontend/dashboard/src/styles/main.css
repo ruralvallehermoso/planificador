@@ -1799,7 +1799,7 @@ body {
 /* Metrics Row */
 .simulator-metrics {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
     gap: 1.25rem;
     margin-bottom: 1.5rem;
 }
@@ -1855,6 +1855,221 @@ body {
 #sim-net-card.not-profitable .metric-value,
 #sim-net-card.not-profitable .metric-delta {
     color: var(--danger);
+}
+
+.net-gain-panel {
+    --net-gain-accent: var(--success);
+    --net-gain-progress: 0%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) auto minmax(17rem, 0.95fr);
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    background:
+        linear-gradient(135deg, rgba(16, 185, 129, 0.11), rgba(99, 102, 241, 0.08)),
+        var(--bg-card);
+    border: 1px solid rgba(16, 185, 129, 0.24);
+    border-radius: 1rem;
+    box-shadow: 0 14px 35px -24px rgba(15, 23, 42, 0.55);
+}
+
+.net-gain-panel.negative {
+    --net-gain-accent: var(--danger);
+    background:
+        linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(99, 102, 241, 0.07)),
+        var(--bg-card);
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.net-gain-panel.neutral {
+    --net-gain-accent: var(--text-muted);
+    background:
+        linear-gradient(135deg, rgba(100, 116, 139, 0.11), rgba(99, 102, 241, 0.07)),
+        var(--bg-card);
+    border-color: rgba(100, 116, 139, 0.25);
+}
+
+.dark .net-gain-panel {
+    box-shadow: 0 18px 45px -28px rgba(0, 0, 0, 0.8);
+}
+
+.net-gain-copy {
+    min-width: 0;
+}
+
+.net-gain-eyebrow {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.net-gain-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.45rem;
+}
+
+.net-gain-percent {
+    color: var(--net-gain-accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.15rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.net-gain-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.7rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--net-gain-accent) 13%, transparent);
+    color: var(--net-gain-accent);
+    border: 1px solid color-mix(in srgb, var(--net-gain-accent) 28%, transparent);
+    font-size: 0.72rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.net-gain-copy p {
+    max-width: 42rem;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.55;
+}
+
+.net-gain-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 7rem;
+}
+
+.net-gain-ring {
+    width: 6.25rem;
+    height: 6.25rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    position: relative;
+    background:
+        conic-gradient(var(--net-gain-accent) var(--net-gain-progress), rgba(148, 163, 184, 0.18) 0);
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.22);
+}
+
+.net-gain-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0.72rem;
+    border-radius: 50%;
+    background: var(--bg-card);
+    box-shadow: inset 0 0 0 1px var(--border-color);
+}
+
+.net-gain-ring span {
+    position: relative;
+    z-index: 1;
+    color: var(--net-gain-accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.net-gain-ring-caption {
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.net-gain-breakdown {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    min-width: 0;
+}
+
+.net-gain-stat {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "label value"
+        "note value";
+    align-items: center;
+    gap: 0.1rem 0.75rem;
+    padding: 0.68rem 0.75rem;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 0.75rem;
+}
+
+.dark .net-gain-stat {
+    background: rgba(15, 23, 42, 0.34);
+}
+
+.net-gain-stat span {
+    grid-area: label;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.net-gain-stat strong {
+    grid-area: value;
+    color: var(--text-main);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.98rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.net-gain-stat small {
+    grid-area: note;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
+@media (max-width: 1020px) {
+    .net-gain-panel {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .net-gain-breakdown {
+        grid-column: 1 / -1;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .net-gain-panel {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .net-gain-visual {
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .net-gain-breakdown {
+        grid-template-columns: 1fr;
+    }
+
+    .net-gain-percent {
+        font-size: 1.85rem;
+    }
 }
 
 /* Chart and Table */

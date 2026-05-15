@@ -52,6 +52,42 @@ export function createSimulatorView() {
                     </div>
                 </div>
 
+                <div class="net-gain-panel" id="sim-net-gain-panel">
+                    <div class="net-gain-copy">
+                        <span class="net-gain-eyebrow">Rentabilidad de la operación</span>
+                        <div class="net-gain-title-row">
+                            <span class="net-gain-percent" id="sim-net-gain-pct">--%</span>
+                            <span class="net-gain-badge" id="sim-net-gain-badge">Pendiente de cálculo</span>
+                        </div>
+                        <p id="sim-net-gain-copy">
+                            Calculando el porcentaje de ganancia neta frente a la base invertida.
+                        </p>
+                    </div>
+                    <div class="net-gain-visual" aria-hidden="true">
+                        <div class="net-gain-ring" id="sim-net-gain-ring">
+                            <span id="sim-net-gain-ring-value">--%</span>
+                        </div>
+                        <div class="net-gain-ring-caption">Balance / base</div>
+                    </div>
+                    <div class="net-gain-breakdown">
+                        <div class="net-gain-stat">
+                            <span>Beneficio neto cartera</span>
+                            <strong id="sim-net-profit-value">--</strong>
+                            <small id="sim-net-profit-pct">--%</small>
+                        </div>
+                        <div class="net-gain-stat">
+                            <span>Coste hipotecario</span>
+                            <strong id="sim-net-mortgage-cost">--</strong>
+                            <small>intereses pagados</small>
+                        </div>
+                        <div class="net-gain-stat">
+                            <span>Balance neto</span>
+                            <strong id="sim-net-operation-balance">--</strong>
+                            <small id="sim-net-operation-note">resultado final</small>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="simulator-card chart-card">
                     <h3 class="card-title">Evolución Comparativa</h3>
                     <div class="simulator-chart-container">
@@ -308,6 +344,8 @@ function renderSimulatorResults(data) {
         cardEl.classList.remove('profitable');
     }
 
+    updateNetGainPanel(data);
+
     // 2. Render Chart (Historical)
     renderSimulatorChart(data.daily_history);
     renderBalanceChart(data.daily_history);
@@ -316,6 +354,75 @@ function renderSimulatorResults(data) {
     // 3. Render Tables
     renderAssetBreakdown(data.asset_breakdown);
     renderAmortizationTable(data.amortization_schedule);
+}
+
+function updateNetGainPanel(data) {
+    const operationPct = Number.isFinite(data.roi_pct) ? data.roi_pct : calculatePercentage(data.balance, data.portfolio_basis);
+    const portfolioNetPct = calculatePercentage(data.net_benefit, data.portfolio_basis);
+    const status = getNetGainStatus(operationPct);
+    const progress = Math.min(Math.abs(operationPct), 100);
+
+    const panel = document.getElementById('sim-net-gain-panel');
+    const percent = document.getElementById('sim-net-gain-pct');
+    const badge = document.getElementById('sim-net-gain-badge');
+    const copy = document.getElementById('sim-net-gain-copy');
+    const ring = document.getElementById('sim-net-gain-ring');
+    const ringValue = document.getElementById('sim-net-gain-ring-value');
+    const netProfitValue = document.getElementById('sim-net-profit-value');
+    const netProfitPct = document.getElementById('sim-net-profit-pct');
+    const mortgageCost = document.getElementById('sim-net-mortgage-cost');
+    const operationBalance = document.getElementById('sim-net-operation-balance');
+    const operationNote = document.getElementById('sim-net-operation-note');
+
+    if (panel) {
+        panel.classList.remove('positive', 'negative', 'neutral');
+        panel.classList.add(status.className);
+        panel.style.setProperty('--net-gain-progress', `${progress}%`);
+    }
+
+    if (percent) percent.textContent = formatSignedPercentage(operationPct);
+    if (badge) badge.textContent = status.label;
+    if (ringValue) ringValue.textContent = formatSignedPercentage(operationPct);
+    if (ring) ring.setAttribute('aria-label', `Porcentaje de ganancia neta ${formatSignedPercentage(operationPct)}`);
+    if (netProfitValue) netProfitValue.textContent = formatSignedEUR(data.net_benefit);
+    if (netProfitPct) netProfitPct.textContent = `${formatSignedPercentage(portfolioNetPct)} sobre base`;
+    if (mortgageCost) mortgageCost.textContent = formatEUR(data.total_interest_paid);
+    if (operationBalance) operationBalance.textContent = formatSignedEUR(data.balance);
+    if (operationNote) operationNote.textContent = data.balance >= 0 ? 'después de intereses' : 'por debajo del coste';
+
+    if (copy) {
+        copy.textContent = `La operación acumula ${formatSignedEUR(data.balance)} frente a una base de ${formatEUR(data.portfolio_basis)}, después de impuestos y del coste hipotecario pagado.`;
+    }
+}
+
+function getNetGainStatus(value) {
+    if (value > 0) {
+        return { className: 'positive', label: 'Resultado positivo' };
+    }
+
+    if (value < 0) {
+        return { className: 'negative', label: 'Resultado negativo' };
+    }
+
+    return { className: 'neutral', label: 'Punto de equilibrio' };
+}
+
+function calculatePercentage(value, base) {
+    if (!Number.isFinite(value) || !Number.isFinite(base) || base === 0) {
+        return 0;
+    }
+
+    return (value / base) * 100;
+}
+
+function formatSignedPercentage(value) {
+    const safeValue = Number.isFinite(value) ? value : 0;
+    return `${safeValue > 0 ? '+' : ''}${safeValue.toFixed(2)}%`;
+}
+
+function formatSignedEUR(value) {
+    const safeValue = Number.isFinite(value) ? value : 0;
+    return `${safeValue > 0 ? '+' : ''}${formatEUR(safeValue)}`;
 }
 
 /**

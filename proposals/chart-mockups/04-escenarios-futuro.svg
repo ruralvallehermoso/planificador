@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-label="4. Escenarios futuros de decisión">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <linearGradient id="greenArea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#10b981" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#10b981" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="redArea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ef4444" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#ef4444" stop-opacity="0.32"/>
+    </linearGradient>
+    <linearGradient id="fanBand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#f97316" stop-opacity="0.18"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="#f8fafc"/>
+  <rect x="44" y="40" width="1112" height="632" rx="8" fill="#ffffff" filter="url(#shadow)"/>
+  <text x="82" y="92" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="760" fill="#0f172a">4. Escenarios futuros de decisión</text>
+  <text x="82" y="124" font-family="Inter, Arial, sans-serif" font-size="15" fill="#64748b">Proyección del balance neto bajo supuestos de rentabilidad distintos frente al coste hipotecario.</text>
+  <line x1="110" y1="150" x2="1040" y2="150" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="255" x2="1040" y2="255" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="360" x2="1040" y2="360" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="465" x2="1040" y2="465" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="570" x2="1040" y2="570" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="150" x2="110" y2="570" stroke="#cbd5e1"/><line x1="110" y1="570" x2="1040" y2="570" stroke="#cbd5e1"/>
+  <text x="84" y="155" text-anchor="end" font-family="Inter, Arial" font-size="12" fill="#94a3b8">45k</text><text x="84" y="365" text-anchor="end" font-family="Inter, Arial" font-size="12" fill="#94a3b8">19k</text><text x="84" y="511.60377358490564" text-anchor="end" font-family="Inter, Arial" font-size="12" fill="#94a3b8">0k</text><text x="84" y="575" text-anchor="end" font-family="Inter, Arial" font-size="12" fill="#94a3b8">-8k</text><text x="110" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">hoy</text><text x="296" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">12m</text><text x="482" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">24m</text><text x="668" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">36m</text><text x="854" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">48m</text><text x="1040" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">60m</text><line x1="110" y1="506.60377358490564" x2="1040" y2="506.60377358490564" stroke="#334155" stroke-width="1.3" stroke-dasharray="5 5"/><polygon points="110.0,457.2 203.0,436.9 296.0,409.9 389.0,381.4 482.0,352.9 575.0,323.5 668.0,293.4 761.0,263.3 854.0,233.2 947.0,201.5 1040.0,169.0 1040.0,539.9 947.0,535.1 854.0,531.2 761.0,527.2 668.0,520.9 575.0,511.4 482.0,499.5 389.0,491.5 296.0,481.2 203.0,468.6 110.0,457.2" fill="url(#fanBand)"/><path d="M 110.0 457.2 L 203.0 468.6 L 296.0 481.2 L 389.0 491.5 L 482.0 499.5 L 575.0 511.4 L 668.0 520.9 L 761.0 527.2 L 854.0 531.2 L 947.0 535.1 L 1040.0 539.9" fill="none" stroke="#f97316" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 7"/><path d="M 110.0 457.2 L 203.0 449.5 L 296.0 440.8 L 389.0 428.9 L 482.0 416.3 L 575.0 404.4 L 668.0 391.7 L 761.0 379.8 L 854.0 366.3 L 947.0 353.7 L 1040.0 339.4" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/><path d="M 110.0 457.2 L 203.0 436.9 L 296.0 409.9 L 389.0 381.4 L 482.0 352.9 L 575.0 323.5 L 668.0 293.4 L 761.0 263.3 L 854.0 233.2 L 947.0 201.5 L 1040.0 169.0" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 7"/><circle cx="110" cy="457.1547169811321" r="7" fill="#0f172a" stroke="#fff" stroke-width="3"/><g><circle cx="742" cy="112" r="5" fill="#f97316"/><text x="754" y="117" font-family="Inter, Arial" font-size="13" fill="#334155">Conservador 2%</text></g><g><circle cx="886" cy="112" r="5" fill="#2563eb"/><text x="898" y="117" font-family="Inter, Arial" font-size="13" fill="#334155">Base 5%</text></g><g><circle cx="980" cy="112" r="5" fill="#16a34a"/><text x="992" y="117" font-family="Inter, Arial" font-size="13" fill="#334155">Optimista 8%</text></g><g>
+    <rect x="82" y="582" width="214" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="100" y="610" font-family="Inter, Arial" font-size="12" font-weight="700" fill="#64748b" letter-spacing="0.04em">HORIZONTE BASE</text>
+    <text x="100" y="640" font-family="Inter, Arial" font-size="26" font-weight="760" fill="#2563eb">+21.100 €</text>
+  </g><g>
+    <rect x="314" y="582" width="214" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="332" y="610" font-family="Inter, Arial" font-size="12" font-weight="700" fill="#64748b" letter-spacing="0.04em">RIESGO BAJISTA</text>
+    <text x="332" y="640" font-family="Inter, Arial" font-size="26" font-weight="760" fill="#ea580c">-4.200 €</text>
+  </g><text x="580" y="615" font-family="Inter, Arial" font-size="15" fill="#64748b">Sirve para decidir con hipótesis futuras, no solo con histórico.</text>
+  
+</svg>

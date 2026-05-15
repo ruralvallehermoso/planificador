@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-label="2. Comparativa con breakeven">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <linearGradient id="greenArea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#10b981" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#10b981" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="redArea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ef4444" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#ef4444" stop-opacity="0.32"/>
+    </linearGradient>
+    <linearGradient id="fanBand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#f97316" stop-opacity="0.18"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="#f8fafc"/>
+  <rect x="44" y="40" width="1112" height="632" rx="8" fill="#ffffff" filter="url(#shadow)"/>
+  <text x="82" y="92" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="760" fill="#0f172a">2. Comparativa con breakeven</text>
+  <text x="82" y="124" font-family="Inter, Arial, sans-serif" font-size="15" fill="#64748b">La versión actual, pero con línea escalonada de intereses, área de ventaja y cruce explícito.</text>
+  <line x1="110" y1="150" x2="1040" y2="150" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="255" x2="1040" y2="255" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="360" x2="1040" y2="360" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="465" x2="1040" y2="465" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="570" x2="1040" y2="570" stroke="#e2e8f0" stroke-width="1"/><line x1="110" y1="150" x2="110" y2="570" stroke="#cbd5e1"/><line x1="110" y1="570" x2="1040" y2="570" stroke="#cbd5e1"/>
+  <text x="84" y="155" text-anchor="end" font-family="Inter, Arial" font-size="12" fill="#94a3b8">11k</text><text x="84" y="365" text-anchor="end" font-family="Inter, Arial" font-size="12" fill="#94a3b8">6k</text><text x="84" y="575" text-anchor="end" font-family="Inter, Arial" font-size="12" fill="#94a3b8">0k</text><text x="84" y="575" text-anchor="end" font-family="Inter, Arial" font-size="12" fill="#94a3b8">0k</text><text x="110" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">24 nov</text><text x="265" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">22 dic</text><text x="420" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">19 ene</text><text x="575" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">16 feb</text><text x="730" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">16 mar</text><text x="885" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">13 abr</text><text x="1040" y="602" text-anchor="middle" font-family="Inter, Arial" font-size="12" fill="#64748b">11 may</text><polygon points="110.0,569.2 187.5,558.5 265.0,558.9 342.5,503.6 420.0,435.2 497.5,391.3 575.0,399.3 652.5,326.0 730.0,282.1 807.5,305.8 885.0,238.2 962.5,205.4 1040.0,195.8 1040.0,434.1 962.5,433.7 885.0,433.7 807.5,453.2 730.0,453.2 652.5,473.8 575.0,473.8 497.5,494.4 420.0,494.4 342.5,515.0 265.0,515.0 187.5,534.9 110.0,534.9" fill="#10b981" opacity="0.12"/><path d="M 110.0 569.2 L 187.5 558.5 L 265.0 558.9 L 342.5 503.6 L 420.0 435.2 L 497.5 391.3 L 575.0 399.3 L 652.5 326.0 L 730.0 282.1 L 807.5 305.8 L 885.0 238.2 L 962.5 205.4 L 1040.0 195.8" fill="none" stroke="#10b981" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><path d="M 110.0 534.9 L 148.8 534.9 L 148.8 534.9 L 187.5 534.9 L 226.3 534.9 L 226.3 515.0 L 265.0 515.0 L 303.8 515.0 L 303.8 515.0 L 342.5 515.0 L 381.3 515.0 L 381.3 494.4 L 420.0 494.4 L 458.8 494.4 L 458.8 494.4 L 497.5 494.4 L 536.3 494.4 L 536.3 473.8 L 575.0 473.8 L 613.8 473.8 L 613.8 473.8 L 652.5 473.8 L 691.3 473.8 L 691.3 453.2 L 730.0 453.2 L 768.8 453.2 L 768.8 453.2 L 807.5 453.2 L 846.3 453.2 L 846.3 433.7 L 885.0 433.7 L 923.8 433.7 L 923.8 433.7 L 962.5 433.7 L 1001.3 433.7 L 1001.3 434.1 L 1040.0 434.1" fill="none" stroke="#ef4444" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><line x1="342.5" y1="150" x2="342.5" y2="570" stroke="#64748b" stroke-width="1.2" stroke-dasharray="5 6"/><circle cx="342.5" cy="510.8181818181818" r="7" fill="#fff" stroke="#0f172a" stroke-width="3"/><rect x="360.5" y="442.8181818181818" width="174" height="58" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+           <text x="376.5" y="467.8181818181818" font-family="Inter, Arial" font-size="12" font-weight="700" fill="#64748b">BREAKEVEN</text>
+           <text x="376.5" y="492.8181818181818" font-family="Inter, Arial" font-size="22" font-weight="760" fill="#0f172a">05 ene</text><g><circle cx="782" cy="112" r="5" fill="#10b981"/><text x="794" y="117" font-family="Inter, Arial" font-size="13" fill="#334155">Beneficio neto cartera</text></g><g><circle cx="974" cy="112" r="5" fill="#ef4444"/><text x="986" y="117" font-family="Inter, Arial" font-size="13" fill="#334155">Coste acumulado hipoteca</text></g><rect x="82" y="589" width="420" height="46" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+           <text x="104" y="618" font-family="Inter, Arial" font-size="15" fill="#334155">La zona sombreada es la ventaja acumulada entre ambas curvas.</text>
+  
+</svg>

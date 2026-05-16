@@ -7,7 +7,6 @@ import { BACKEND_URL } from '../config.js';
 
 Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Legend, Tooltip);
 
-let simulatorChartInstance = null;
 let balanceChartInstance = null;
 let scenarioChartInstance = null;
 
@@ -85,13 +84,6 @@ export function createSimulatorView() {
                             <strong id="sim-net-operation-balance">--</strong>
                             <small id="sim-net-operation-note">resultado final</small>
                         </div>
-                    </div>
-                </div>
-
-                <div class="simulator-card chart-card">
-                    <h3 class="card-title">Evolución Comparativa</h3>
-                    <div class="simulator-chart-container">
-                        <canvas id="simulatorChart"></canvas>
                     </div>
                 </div>
 
@@ -346,8 +338,7 @@ function renderSimulatorResults(data) {
 
     updateNetGainPanel(data);
 
-    // 2. Render Chart (Historical)
-    renderSimulatorChart(data.daily_history);
+    // 2. Render Charts
     renderBalanceChart(data.daily_history);
     renderScenarioChart(data);
 
@@ -448,82 +439,6 @@ function renderAssetBreakdown(breakdown) {
     `).join('');
 }
 
-/**
- * Render comparison chart
- */
-function renderSimulatorChart(history) {
-    const canvas = document.getElementById('simulatorChart');
-    if (!canvas) return;
-
-    if (simulatorChartInstance) {
-        simulatorChartInstance.destroy();
-    }
-
-    const isDark = document.documentElement.classList.contains('dark');
-
-    // Format dates for labels
-    const labels = history.map(h => {
-        const d = new Date(h.date);
-        return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-    });
-
-    const benefitData = history.map(h => h.net_benefit);
-    const interestData = history.map(h => h.interest_paid);
-
-    const ctx = canvas.getContext('2d');
-
-    simulatorChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [
-                {
-                    label: 'Beneficio Neto Cartera',
-                    data: benefitData,
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.1
-                },
-                {
-                    label: 'Coste Acumulado Hipoteca',
-                    data: interestData,
-                    borderColor: '#8b5cf6',
-                    borderDash: [4, 4],
-                    borderWidth: 3,
-                    fill: false,
-                    tension: 0.1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: { color: isDark ? '#e2e8f0' : '#1e293b' }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: isDark ? '#334155' : '#e2e8f0' },
-                    ticks: {
-                        color: isDark ? '#94a3b8' : '#64748b',
-                        callback: (v) => formatEUR(v)
-                    }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: isDark ? '#94a3b8' : '#64748b' }
-                }
-            }
-        }
-    });
-}
-
 function renderBalanceChart(history) {
     const canvas = document.getElementById('simulatorBalanceChart');
     if (!canvas) return;
@@ -563,7 +478,8 @@ function renderBalanceChart(history) {
                     pointHoverRadius: 5,
                     pointHoverBorderWidth: 2,
                     pointHoverBackgroundColor: '#ffffff',
-                    spanGaps: false
+                    spanGaps: false,
+                    order: 1
                 },
                 {
                     label: 'Balance Neto (negativo)',
@@ -581,20 +497,25 @@ function renderBalanceChart(history) {
                     pointHoverRadius: 5,
                     pointHoverBorderWidth: 2,
                     pointHoverBackgroundColor: '#ffffff',
-                    spanGaps: false
+                    spanGaps: false,
+                    order: 1
                 },
                 {
                     label: 'Coste Acumulado Hipoteca',
                     data: balanceSeries.interest,
-                    borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    borderWidth: 3,
-                    borderDash: [4, 4],
+                    borderColor: '#f97316',
+                    backgroundColor: '#f97316',
+                    borderWidth: 4,
+                    borderDash: [12, 5],
                     fill: false,
                     stepped: true,
                     tension: 0,
-                    pointRadius: 0,
-                    pointHoverRadius: 4
+                    pointRadius: (ctx) => ctx.dataIndex === ctx.dataset.data.length - 1 ? 4 : 0,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#f97316',
+                    pointBorderColor: isDark ? '#0f172a' : '#ffffff',
+                    pointBorderWidth: 1.5,
+                    order: 0
                 }
             ]
         },

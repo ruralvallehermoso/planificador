@@ -74,12 +74,17 @@ export function createSimulatorView() {
                             <strong id="sim-net-profit-value">--</strong>
                             <small id="sim-net-profit-pct">--%</small>
                         </div>
+                        <div class="net-gain-stat net-gain-stat-deduction">
+                            <span>Impuestos estimados</span>
+                            <strong id="sim-net-tax-value">--</strong>
+                            <small id="sim-net-tax-note">a restar</small>
+                        </div>
                         <div class="net-gain-stat">
                             <span>Coste hipotecario</span>
                             <strong id="sim-net-mortgage-cost">--</strong>
                             <small>intereses pagados</small>
                         </div>
-                        <div class="net-gain-stat">
+                        <div class="net-gain-stat net-gain-stat-result">
                             <span>Balance neto</span>
                             <strong id="sim-net-operation-balance">--</strong>
                             <small id="sim-net-operation-note">resultado final</small>
@@ -350,6 +355,9 @@ function renderSimulatorResults(data) {
 function updateNetGainPanel(data) {
     const operationPct = Number.isFinite(data.roi_pct) ? data.roi_pct : calculatePercentage(data.balance, data.portfolio_basis);
     const portfolioNetPct = calculatePercentage(data.net_benefit, data.portfolio_basis);
+    const grossBenefit = data.portfolio_value - data.portfolio_basis;
+    const estimatedTaxes = Math.max(0, grossBenefit - data.net_benefit);
+    const taxRate = readNumberInput('tax-rate', 19);
     const status = getNetGainStatus(operationPct);
     const progress = Math.min(Math.abs(operationPct), 100);
 
@@ -361,6 +369,8 @@ function updateNetGainPanel(data) {
     const ringValue = document.getElementById('sim-net-gain-ring-value');
     const netProfitValue = document.getElementById('sim-net-profit-value');
     const netProfitPct = document.getElementById('sim-net-profit-pct');
+    const taxValue = document.getElementById('sim-net-tax-value');
+    const taxNote = document.getElementById('sim-net-tax-note');
     const mortgageCost = document.getElementById('sim-net-mortgage-cost');
     const operationBalance = document.getElementById('sim-net-operation-balance');
     const operationNote = document.getElementById('sim-net-operation-note');
@@ -377,12 +387,14 @@ function updateNetGainPanel(data) {
     if (ring) ring.setAttribute('aria-label', `Porcentaje de ganancia neta ${formatSignedPercentage(operationPct)}`);
     if (netProfitValue) netProfitValue.textContent = formatSignedEUR(data.net_benefit);
     if (netProfitPct) netProfitPct.textContent = `${formatSignedPercentage(portfolioNetPct)} sobre base`;
+    if (taxValue) taxValue.textContent = formatDeductionEUR(estimatedTaxes);
+    if (taxNote) taxNote.textContent = `a restar (${formatRate(taxRate)}%)`;
     if (mortgageCost) mortgageCost.textContent = formatEUR(data.total_interest_paid);
     if (operationBalance) operationBalance.textContent = formatSignedEUR(data.balance);
     if (operationNote) operationNote.textContent = data.balance >= 0 ? 'después de intereses' : 'por debajo del coste';
 
     if (copy) {
-        copy.textContent = `La operación acumula ${formatSignedEUR(data.balance)} frente a una base de ${formatEUR(data.portfolio_basis)}, después de impuestos y del coste hipotecario pagado.`;
+        copy.textContent = `La operación acumula ${formatSignedEUR(data.balance)}: ${formatSignedEUR(grossBenefit)} de plusvalía bruta, ${formatDeductionEUR(estimatedTaxes)} en impuestos estimados y ${formatDeductionEUR(data.total_interest_paid)} de coste hipotecario.`;
     }
 }
 
@@ -414,6 +426,16 @@ function formatSignedPercentage(value) {
 function formatSignedEUR(value) {
     const safeValue = Number.isFinite(value) ? value : 0;
     return `${safeValue > 0 ? '+' : ''}${formatEUR(safeValue)}`;
+}
+
+function formatDeductionEUR(value) {
+    const safeValue = Number.isFinite(value) ? Math.max(0, value) : 0;
+    return safeValue > 0 ? `-${formatEUR(safeValue)}` : formatEUR(0);
+}
+
+function formatRate(value) {
+    const safeValue = Number.isFinite(value) ? value : 0;
+    return Number.isInteger(safeValue) ? String(safeValue) : safeValue.toFixed(1);
 }
 
 /**

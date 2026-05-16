@@ -537,8 +537,7 @@ function renderBalanceChart(history) {
     const balanceSeries = buildBalanceChartSeries(history);
     const currentBalanceData = history.map(h => h.balance);
     const yRange = getPaddedRange([
-        ...currentBalanceData,
-        ...balanceSeries.benefit,
+        ...balanceSeries.balance,
         ...balanceSeries.interest
     ]);
     updateBalanceSummary(currentBalanceData);
@@ -555,7 +554,7 @@ function renderBalanceChart(history) {
                     backgroundColor: 'rgba(16, 185, 129, 0.18)',
                     borderWidth: 3,
                     fill: {
-                        target: 2,
+                        target: 'origin',
                         above: 'rgba(16, 185, 129, 0.18)',
                         below: 'rgba(16, 185, 129, 0)'
                     },
@@ -573,7 +572,7 @@ function renderBalanceChart(history) {
                     backgroundColor: 'rgba(239, 68, 68, 0.16)',
                     borderWidth: 3,
                     fill: {
-                        target: 2,
+                        target: 'origin',
                         above: 'rgba(239, 68, 68, 0)',
                         below: 'rgba(239, 68, 68, 0.16)'
                     },
@@ -676,8 +675,9 @@ function buildBalanceChartSeries(history) {
 
     return {
         labels: points.map(point => point.label),
-        positiveBalance: points.map(point => point.balance >= 0 ? point.net_benefit : null),
-        negativeBalance: points.map(point => point.balance <= 0 ? point.net_benefit : null),
+        positiveBalance: points.map(point => point.balance >= 0 ? point.balance : null),
+        negativeBalance: points.map(point => point.balance <= 0 ? point.balance : null),
+        balance: points.map(point => point.balance),
         benefit: points.map(point => point.net_benefit),
         interest: points.map(point => point.interest_paid),
         rawPoints: points

@@ -49,6 +49,7 @@ let currentView = 'portfolio'; // 'portfolio' or 'history'
 let currentPeriod = '24h';  // Must match the default active button in HistoryChart.js
 let currentCategory = null;
 let currentAssetId = null;
+let historyRequestId = 0;
 
 /**
  * Initialize the application
@@ -204,7 +205,7 @@ function setupHistoryListeners() {
             currentAssetId = null;
 
             // Update asset selector based on category
-            populateAssetSelector(getAssets(), currentCategory);
+            populateAssetSelector(getAssets(), currentCategory, currentAssetId);
 
             updateHistoryData();
         });
@@ -221,20 +222,29 @@ function setupHistoryListeners() {
     }
 
     // Populate asset selector with current assets
-    populateAssetSelector(getAssets());
+    populateAssetSelector(getAssets(), currentCategory, currentAssetId);
 }
 
 /**
  * Update history chart and performance data
  */
 async function updateHistoryData() {
+    const requestId = ++historyRequestId;
+    const selectedPeriod = currentPeriod;
+    const selectedCategory = currentCategory;
+    const selectedAssetId = currentAssetId;
+
     try {
         // Fetch history and performance data in parallel
         const [history, performance, perf24h] = await Promise.all([
-            fetchPortfolioHistory(currentPeriod, currentCategory, currentAssetId),
-            fetchPortfolioPerformance(currentPeriod, currentCategory, currentAssetId),
-            fetchPortfolioPerformance('24h', currentCategory, currentAssetId)
+            fetchPortfolioHistory(selectedPeriod, selectedCategory, selectedAssetId),
+            fetchPortfolioPerformance(selectedPeriod, selectedCategory, selectedAssetId),
+            fetchPortfolioPerformance('24h', selectedCategory, selectedAssetId)
         ]);
+
+        if (requestId !== historyRequestId) {
+            return;
+        }
 
         // Use frontend's live current value (backend may have stale prices)
         let adjustedPerformance = performance;
@@ -243,16 +253,16 @@ async function updateHistoryData() {
         // Calculate current value from frontend data
         let currentValue = 0;
 
-        if (currentAssetId) {
+        if (selectedAssetId) {
             // Individual asset - find it in frontend data
             const assets = getAssets('All');
-            const asset = assets.find(a => a.id === currentAssetId);
+            const asset = assets.find(a => a.id === selectedAssetId);
             if (asset) {
                 currentValue = asset.price * asset.qty;
             }
-        } else if (currentCategory) {
+        } else if (selectedCategory) {
             // Category view - sum assets in that category
-            const assets = getAssets(currentCategory);
+            const assets = getAssets(selectedCategory);
             currentValue = assets.reduce((sum, a) => sum + (a.price * a.qty), 0);
         } else {
             // Global portfolio
@@ -263,7 +273,7 @@ async function updateHistoryData() {
         if (currentValue > 0) {
             // For 24h period, use the dedicated perf24h calculation for both displays
             // This ensures consistency since daily historical data doesn't have hourly granularity
-            const perfForPeriod = currentPeriod === '24h' ? perf24h : performance;
+            const perfForPeriod = selectedPeriod === '24h' ? perf24h : performance;
 
             if (perfForPeriod && perfForPeriod.previous_value > 0) {
                 const changeAbsolute = currentValue - perfForPeriod.previous_value;
@@ -291,19 +301,20 @@ async function updateHistoryData() {
         // Determine if change is positive
         const isPositive = adjustedPerformance ? adjustedPerformance.change_percent >= 0 : true;
 
-        // Inject current live value as the last point in history so chart reflects actual state
+        // Inject current live value for aggregate views only. Individual asset histories
+        // come from the market provider with real intraday timestamps.
         let adjustedHistory = history || [];
-        if (adjustedHistory.length > 0 && currentValue > 0) {
+        if (!selectedAssetId && adjustedHistory.length > 0 && currentValue > 0) {
             // Add current value as the final data point (now)
-            const now = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+            const now = new Date().toISOString();
             adjustedHistory = [...adjustedHistory, { date: now, value: currentValue }];
         }
 
         // Render chart with adjusted history
-        renderHistoryChart(adjustedHistory, isPositive);
+        renderHistoryChart(adjustedHistory, isPositive, selectedPeriod);
 
         // Update performance display
-        updatePerformanceDisplay(adjustedPerformance, adjustedPerf24h);
+        updatePerformanceDisplay(adjustedPerformance, adjustedPerf24h, selectedPeriod);
 
     } catch (e) {
         console.error('Error updating history data:', e);
@@ -468,7 +479,7 @@ async function updateIndexa() {
         if (historyView && !historyView.classList.contains('hidden')) {
             const viewSelect = document.getElementById('history-view-select');
             const category = viewSelect ? (viewSelect.value === 'global' ? null : viewSelect.value) : null;
-            populateAssetSelector(getAssets(), category);
+            populateAssetSelector(getAssets(), category, currentAssetId);
         }
     } else {
 

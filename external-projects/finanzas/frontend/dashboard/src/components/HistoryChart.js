@@ -12,6 +12,25 @@ Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale
 
 let historyChartInstance = null;
 
+const PERIOD_LABELS = {
+    '24h': '24h',
+    '7d': '7D',
+    '1m': '1M',
+    '3m': '3M',
+    '6m': '6M',
+    '1y': '1Y',
+    '3y': '3Y'
+};
+
+function getPeriodLabel(period) {
+    return PERIOD_LABELS[period] || period;
+}
+
+function formatSignedCurrencyValue(value, currency) {
+    const sign = value >= 0 ? '+' : '';
+    return `${sign}${formatCurrency(convertValue(value), currency)}`;
+}
+
 /**
  * Create history chart container HTML
  */
@@ -68,8 +87,9 @@ export function createHistoryChartContainer() {
  * Render the history line chart
  * @param {Array<{date: string, value: number}>} data - Historical data points
  * @param {boolean} isPositive - Whether the change is positive (for color)
+ * @param {string} period - Selected period
  */
-export function renderHistoryChart(data, isPositive = true) {
+export function renderHistoryChart(data, isPositive = true, period = '1m') {
     const canvas = document.getElementById('historyChart');
     if (!canvas) return;
 
@@ -90,8 +110,26 @@ export function renderHistoryChart(data, isPositive = true) {
         return;
     }
 
-    const labels = data.map(d => new Date(d.date));
-    const values = data.map(d => d.value);
+    const chartPoints = data
+        .map(d => ({ x: new Date(d.date), y: Number(d.value) }))
+        .filter(d => Number.isFinite(d.x.getTime()) && Number.isFinite(d.y))
+        .sort((a, b) => a.x - b.x);
+
+    if (chartPoints.length === 0) {
+        ctx.font = '14px Inter';
+        ctx.fillStyle = isDark ? '#64748b' : '#94a3b8';
+        ctx.textAlign = 'center';
+        ctx.fillText('No hay datos históricos disponibles', canvas.width / 2, canvas.height / 2);
+        return;
+    }
+
+    const values = chartPoints.map(d => d.y);
+    const hasTimeData = chartPoints.some(d =>
+        d.x.getHours() !== 0 ||
+        d.x.getMinutes() !== 0 ||
+        d.x.getSeconds() !== 0
+    );
+    const useHourlyScale = period === '24h' || period === '7d' || hasTimeData;
 
     // Gradient fill
     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
@@ -108,14 +146,13 @@ export function renderHistoryChart(data, isPositive = true) {
     historyChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels,
             datasets: [{
-                data: values,
+                data: chartPoints,
                 borderColor: lineColor,
                 backgroundColor: gradient,
                 borderWidth: 2,
                 fill: true,
-                tension: 0.4,
+                tension: useHourlyScale ? 0.18 : 0.28,
                 pointRadius: 0,
                 pointHoverRadius: 6,
                 pointHoverBackgroundColor: lineColor,
@@ -143,13 +180,30 @@ export function renderHistoryChart(data, isPositive = true) {
                     callbacks: {
                         title: (ctx) => {
                             const date = new Date(ctx[0].parsed.x);
-                            return date.toLocaleDateString('es-ES', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric'
-                            });
+                            return useHourlyScale
+                                ? date.toLocaleString('es-ES', {
+                                    weekday: 'short',
+                                    day: 'numeric',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })
+                                : date.toLocaleDateString('es-ES', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric'
+                                });
                         },
-                        label: (ctx) => formatCurrency(convertValue(ctx.parsed.y), getDisplayCurrency())
+                        label: (ctx) => `Valor: ${formatCurrency(convertValue(ctx.parsed.y), getDisplayCurrency())}`,
+                        afterLabel: (ctx) => {
+                            const firstValue = chartPoints[0]?.y;
+                            if (!firstValue || firstValue <= 0) return '';
+
+                            const change = ctx.parsed.y - firstValue;
+                            const pct = (change / firstValue) * 100;
+                            const sign = pct >= 0 ? '+' : '';
+                            return `${getPeriodLabel(period)}: ${formatSignedCurrencyValue(change, getDisplayCurrency())} (${sign}${pct.toFixed(2)}%)`;
+                        }
                     }
                 }
             },
@@ -157,8 +211,9 @@ export function renderHistoryChart(data, isPositive = true) {
                 x: {
                     type: 'time',
                     time: {
-                        unit: 'day',
+                        unit: useHourlyScale ? 'hour' : 'day',
                         displayFormats: {
+                            hour: period === '24h' ? 'HH:mm' : 'dd MMM HH:mm',
                             day: 'dd MMM'
                         }
                     },
@@ -168,7 +223,7 @@ export function renderHistoryChart(data, isPositive = true) {
                     ticks: {
                         color: isDark ? '#64748b' : '#94a3b8',
                         font: { size: 10 },
-                        maxTicksLimit: 6
+                        maxTicksLimit: useHourlyScale ? 8 : 6
                     }
                 },
                 y: {
@@ -194,24 +249,31 @@ export function renderHistoryChart(data, isPositive = true) {
  * Update performance display
  * @param {object} perf - Performance data
  * @param {object} perf24h - 24h performance data
+ * @param {string} period - Selected period
  */
-export function updatePerformanceDisplay(perf, perf24h) {
+export function updatePerformanceDisplay(perf, perf24h, period = '24h') {
     const valueEl = document.getElementById('perf-value');
     const changeEl = document.getElementById('perf-change');
     const change24hEl = document.getElementById('perf-24h-change');
+    const change24hLabelEl = document.querySelector('#perf-24h .perf-24h-label');
 
     if (perf && valueEl && changeEl) {
         const currency = getDisplayCurrency();
         valueEl.textContent = formatCurrency(convertValue(perf.current_value), currency);
 
         const sign = perf.change_percent >= 0 ? '+' : '';
-        changeEl.textContent = `${sign}${perf.change_percent.toFixed(2)}% (${sign}${formatCurrency(convertValue(perf.change_absolute), currency)})`;
+        changeEl.textContent = `${sign}${perf.change_percent.toFixed(2)}% (${formatSignedCurrencyValue(perf.change_absolute, currency)})`;
+        changeEl.title = `Variación ${getPeriodLabel(period)}`;
         changeEl.className = `performance-change ${perf.change_percent >= 0 ? 'positive' : 'negative'}`;
     }
 
     if (perf24h && change24hEl) {
+        const currency = getDisplayCurrency();
         const sign = perf24h.change_percent >= 0 ? '+' : '';
-        change24hEl.textContent = `${sign}${perf24h.change_percent.toFixed(2)}%`;
+        if (change24hLabelEl) {
+            change24hLabelEl.textContent = '24h:';
+        }
+        change24hEl.textContent = `${sign}${perf24h.change_percent.toFixed(2)}% (${formatSignedCurrencyValue(perf24h.change_absolute, currency)})`;
         change24hEl.className = `perf-24h-value ${perf24h.change_percent >= 0 ? 'positive' : 'negative'}`;
     }
 }
@@ -220,8 +282,9 @@ export function updatePerformanceDisplay(perf, perf24h) {
  * Populate asset selector dropdown
  * @param {Array} assets - List of assets
  * @param {string} category - Current selected category to filter
+ * @param {string|null} selectedAssetId - Current selected asset
  */
-export function populateAssetSelector(assets, category = null) {
+export function populateAssetSelector(assets, category = null, selectedAssetId = null) {
     const select = document.getElementById('history-asset-select');
     if (!select) return;
 
@@ -239,5 +302,8 @@ export function populateAssetSelector(assets, category = null) {
         option.textContent = asset.name;
         select.appendChild(option);
     });
-}
 
+    if (selectedAssetId && filteredAssets.some(asset => asset.id === selectedAssetId)) {
+        select.value = selectedAssetId;
+    }
+}

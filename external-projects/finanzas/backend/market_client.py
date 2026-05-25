@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Tuple
 
 import os
@@ -10,6 +10,7 @@ from urllib3.util.retry import Retry
 
 
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=1d"
+YAHOO_HISTORY_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
 COINGECKO_SIMPLE_URL = "https://api.coingecko.com/api/v3/simple/price"
 COINGECKO_MARKET_CHART_URL = "https://api.coingecko.com/api/v3/coins/{id}/market_chart"
 COINCAP_BASE_URL = "https://rest.coincap.io/v3"
@@ -96,6 +97,151 @@ def fetch_coingecko_prices(ids: Dict[str, str]) -> Dict[str, float]:
         return prices
     except Exception:
         return {}
+
+
+YAHOO_PERIODS = {
+    "24h": ("5d", "1h"),
+    "7d": ("7d", "1h"),
+    "1m": ("1mo", "1d"),
+    "3m": ("3mo", "1d"),
+    "6m": ("6mo", "1d"),
+    "1y": ("1y", "1d"),
+    "3y": ("3y", "1wk"),
+}
+
+COINGECKO_DAYS = {
+    "24h": "1",
+    "7d": "7",
+    "1m": "30",
+    "3m": "90",
+    "6m": "180",
+    "1y": "365",
+    "3y": "1095",
+}
+
+PERIOD_DELTAS = {
+    "24h": timedelta(hours=24),
+    "7d": timedelta(days=7),
+    "1m": timedelta(days=30),
+    "3m": timedelta(days=90),
+    "6m": timedelta(days=180),
+    "1y": timedelta(days=365),
+    "3y": timedelta(days=365 * 3),
+}
+
+
+def _clip_to_period(points: List[Tuple[datetime, float]], period: str) -> List[Tuple[datetime, float]]:
+    if not points or period not in PERIOD_DELTAS:
+        return points
+
+    latest = points[-1][0]
+    start = latest - PERIOD_DELTAS[period]
+    clipped = [(dt, price) for dt, price in points if dt >= start]
+    return clipped or points[-1:]
+
+
+def _resample_hourly(points: List[Tuple[datetime, float]]) -> List[Tuple[datetime, float]]:
+    buckets: Dict[datetime, float] = {}
+    for dt, price in points:
+        bucket = dt.replace(minute=0, second=0, microsecond=0)
+        buckets[bucket] = price
+    return sorted(buckets.items(), key=lambda item: item[0])
+
+
+def fetch_yahoo_history_for_period(symbol: str, period: str = "1m") -> List[Tuple[datetime, float]]:
+    """
+    Devuelve precios de Yahoo para el periodo exacto solicitado.
+    24h y 7d usan puntos horarios; periodos largos usan cierres diarios/semanales.
+    """
+    import time
+
+    query_range, interval = YAHOO_PERIODS.get(period, YAHOO_PERIODS["1m"])
+    params = {"range": query_range, "interval": interval}
+    url = YAHOO_HISTORY_URL.format(symbol=symbol)
+    max_retries = 3
+
+    for attempt in range(max_retries):
+        try:
+            res = requests.get(url, params=params, headers=DEFAULT_HEADERS, timeout=30)
+            if res.status_code == 429 and attempt < max_retries - 1:
+                time.sleep(2 * (2 ** attempt))
+                continue
+            res.raise_for_status()
+
+            data = res.json()
+            result = data.get("chart", {}).get("result", [None])[0]
+            if not result:
+                return []
+
+            timestamps = result.get("timestamp") or []
+            quote = result.get("indicators", {}).get("quote", [{}])[0]
+            closes = quote.get("close") or []
+            currency = result.get("meta", {}).get("currency", "EUR")
+            usd_to_eur = fetch_usd_eur_rate() if currency == "USD" else None
+
+            points: List[Tuple[datetime, float]] = []
+            for ts, close in zip(timestamps, closes):
+                if close is None:
+                    continue
+                dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+                price = float(close)
+                if usd_to_eur:
+                    price *= usd_to_eur
+                points.append((dt, price))
+
+            points.sort(key=lambda item: item[0])
+            points = _clip_to_period(points, period)
+            if period in {"24h", "7d"}:
+                points = _resample_hourly(points)
+            return points
+        except Exception as e:
+            if attempt == max_retries - 1:
+                print(f"❌ Yahoo period history error for {symbol}: {e}")
+                return []
+            time.sleep(2 * (2 ** attempt))
+
+    return []
+
+
+def fetch_coingecko_history_for_period(coin_id: str, period: str = "1m") -> List[Tuple[datetime, float]]:
+    """
+    Devuelve histórico de CoinGecko en EUR; se remuestrea por hora para 24h/7d.
+    """
+    import time
+
+    days = COINGECKO_DAYS.get(period, COINGECKO_DAYS["1m"])
+    max_retries = 3
+
+    for attempt in range(max_retries):
+        try:
+            res = requests.get(
+                COINGECKO_MARKET_CHART_URL.format(id=coin_id),
+                headers=DEFAULT_HEADERS,
+                params={"vs_currency": "eur", "days": days},
+                timeout=30,
+            )
+            if res.status_code == 429 and attempt < max_retries - 1:
+                time.sleep(2 * (2 ** attempt))
+                continue
+            res.raise_for_status()
+
+            points = [
+                (datetime.fromtimestamp(ts_ms / 1000.0, tz=timezone.utc), float(price))
+                for ts_ms, price in res.json().get("prices", [])
+                if price is not None
+            ]
+            points.sort(key=lambda item: item[0])
+            points = _clip_to_period(points, period)
+            if period in {"24h", "7d"}:
+                points = _resample_hourly(points)
+            return points
+        except Exception as e:
+            if attempt == max_retries - 1:
+                print(f"❌ CoinGecko period history error for {coin_id}: {e}")
+                return []
+            time.sleep(2 * (2 ** attempt))
+
+    return []
 
 
 def _get_indexa_token() -> str:
@@ -556,6 +702,5 @@ def fetch_history_cryptocompare(symbol: str, years: int = 5) -> List[Tuple[datet
             return []
     
     return []
-
 
 

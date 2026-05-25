@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Optional, List, Dict, Any
 
 from pydantic import BaseModel
@@ -49,7 +49,7 @@ class AssetDetail(Asset):
 
 class PortfolioHistoryPoint(BaseModel):
     """Punto de histórico de cartera."""
-    date: date
+    date: datetime | date
     value: float
 
 

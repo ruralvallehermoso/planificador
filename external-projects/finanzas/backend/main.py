@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import date
+from datetime import date, timedelta
 from typing import List, Optional
 import sys
 import os
+import math
 
 # Core Imports
 try:
@@ -116,6 +117,38 @@ def update_markets(db: Session = Depends(get_db)):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"MARKET UPDATE ERROR: {str(e)}")
 
+
+def _asset_live_value_history(db: Session, asset_id: str, period: str) -> List[dict]:
+    """
+    Obtiene la serie de valor de un activo desde su proveedor de mercado.
+    Devuelve valor en cartera (precio x cantidad), no precio unitario.
+    """
+    asset = crud.get_asset(db, asset_id)
+    if not asset or asset.quantity <= 0:
+        return []
+
+    try:
+        import market_client
+
+        if asset.yahoo_symbol and not asset.manual:
+            raw_points = market_client.fetch_yahoo_history_for_period(asset.yahoo_symbol, period)
+        elif asset.coingecko_id and not asset.manual:
+            raw_points = market_client.fetch_coingecko_history_for_period(asset.coingecko_id, period)
+        else:
+            raw_points = []
+    except Exception as e:
+        print(f"⚠️ Live history error for {asset_id}: {e}")
+        raw_points = []
+
+    points = []
+    for dt, price in raw_points:
+        value = float(price) * float(asset.quantity)
+        if math.isfinite(value) and value > 0:
+            points.append({"date": dt, "value": round(value, 2)})
+
+    return points
+
+
 @app.get("/api/portfolio/history", response_model=List[schemas.PortfolioHistoryPoint])
 def get_portfolio_history(
     period: str = "1m",
@@ -123,6 +156,14 @@ def get_portfolio_history(
     asset_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
+    if asset_id:
+        live_history = _asset_live_value_history(db, asset_id, period)
+        if len(live_history) >= 2:
+            return [
+                schemas.PortfolioHistoryPoint(date=h["date"], value=h["value"])
+                for h in live_history
+            ]
+
     start_date, end_date = crud.get_period_dates(period)
     # 1. Try snapshots
     snapshots = crud.get_portfolio_snapshots(db, start_date, end_date, category, asset_id)
@@ -139,7 +180,22 @@ def get_portfolio_performance(
     asset_id: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    from datetime import timedelta
+    if asset_id:
+        live_history = _asset_live_value_history(db, asset_id, period)
+        if len(live_history) >= 2:
+            previous_value = live_history[0]["value"]
+            current_value = live_history[-1]["value"]
+            change_abs = current_value - previous_value
+            change_pct = (change_abs / previous_value * 100) if previous_value > 0 else 0.0
+
+            return schemas.PortfolioPerformance(
+                current_value=round(current_value, 2),
+                previous_value=round(previous_value, 2),
+                change_percent=round(change_pct, 2),
+                change_absolute=round(change_abs, 2),
+                period=period
+            )
+
     start_date, end_date = crud.get_period_dates(period)
     current_value = crud.calculate_portfolio_value(db, category=category, asset_id=asset_id)
     

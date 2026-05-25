@@ -1073,6 +1073,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
     padding: 0.75rem 1rem;
     background: var(--bg-main);
     border-radius: 0.5rem;
@@ -1087,6 +1089,8 @@ body {
     display: flex;
     align-items: baseline;
     gap: 0.75rem;
+    flex-wrap: wrap;
+    min-width: 0;
 }
 
 .performance-value {
@@ -1105,6 +1109,7 @@ body {
     font-size: 0.875rem;
     font-weight: 700;
     font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
 }
 
 .performance-change.positive {
@@ -1123,6 +1128,7 @@ body {
     background: var(--bg-card);
     border-radius: 0.375rem;
     border: 1px solid var(--border-color);
+    max-width: 100%;
 }
 
 .dark .performance-24h {
@@ -1140,6 +1146,7 @@ body {
     font-size: 0.875rem;
     font-weight: 700;
     font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
 }
 
 .perf-24h-value.positive {

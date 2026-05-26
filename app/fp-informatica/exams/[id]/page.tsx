@@ -29,6 +29,12 @@ export default async function ExamDetailPage({ params }: PageProps) {
 
     const { report } = await getExamGradeReport(id)
 
+    const serializedExam = {
+        ...exam,
+        createdAt: exam.createdAt.toISOString(),
+        updatedAt: exam.updatedAt.toISOString(),
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4 mb-6 print:hidden">
@@ -56,7 +62,7 @@ export default async function ExamDetailPage({ params }: PageProps) {
                 <TabsContent value="design" className="mt-0">
                     <div className="bg-white rounded-xl border p-1 print:border-none print:p-0">
                         {/* We reuse the builder but verify functionality */}
-                        <ExamFormBuilder initialData={exam} />
+                        <ExamFormBuilder initialData={serializedExam} />
                     </div>
                 </TabsContent>
 

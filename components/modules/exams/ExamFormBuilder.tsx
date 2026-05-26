@@ -414,7 +414,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.download = `${header.subject || 'Examen'}.doc`
+        const cleanSubject = (header.subject || 'Examen').replace(/[/\\?%*:|"<>\s]/g, '_')
+        link.download = `${cleanSubject}.doc`
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

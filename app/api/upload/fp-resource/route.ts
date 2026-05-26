@@ -26,9 +26,14 @@ export async function POST(request: Request): Promise<NextResponse> {
                 name: filename,
                 type: type,
                 url: blob.url,
-                size: 0, // We could pass this via headers if needed, but not strictly required
+                size: 0,
             }
         })
+
+        const { revalidatePath } = await import('next/cache')
+        revalidatePath('/fp-informatica/exams/create')
+        revalidatePath(`/fp-informatica/exams/[id]`, 'page')
+        revalidatePath('/fp-informatica/recursos')
 
         return NextResponse.json({ success: true, blob, resource })
     } catch (error) {

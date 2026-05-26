@@ -10,7 +10,7 @@ import "react-pdf/dist/Page/TextLayer.css"
 
 // Configure worker for react-pdf
 if (typeof window !== "undefined") {
-    pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 }
 
 interface ResourceViewerProps {
@@ -24,7 +24,9 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
     const [numPages, setNumPages] = useState<number>(0)
     const [docxHtml, setDocxHtml] = useState<string>("")
     const [loading, setLoading] = useState<boolean>(true)
+    const [errorMsg, setErrorMsg] = useState<string | null>(null)
     const containerRef = useRef<HTMLDivElement>(null)
+    const proxyUrl = `/api/upload/resource/proxy?url=${encodeURIComponent(url)}`
 
     // Selection popup state
     const [selection, setSelection] = useState<{ text: string, x: number, y: number } | null>(null)
@@ -37,13 +39,16 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
 
     const loadDocx = async () => {
         setLoading(true)
+        setErrorMsg(null)
         try {
-            const res = await fetch(url)
+            const res = await fetch(proxyUrl)
+            if (!res.ok) throw new Error("Error fetching document")
             const arrayBuffer = await res.arrayBuffer()
             const result = await mammoth.convertToHtml({ arrayBuffer })
-            setDocxHtml(result.value)
+            setDocxHtml(result.value || "<p><i>El documento no contiene texto o está vacío.</i></p>")
         } catch (error) {
             console.error("Error loading DOCX:", error)
+            setErrorMsg("No se pudo cargar el documento DOCX.")
         } finally {
             setLoading(false)
         }
@@ -106,11 +111,22 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
                     </div>
                 )}
 
-                {type === "pdf" && (
+                {errorMsg && (
+                    <div className="flex items-center justify-center h-full text-red-500 text-sm">
+                        {errorMsg}
+                    </div>
+                )}
+
+                {type === "pdf" && !errorMsg && (
                     <div className="flex flex-col items-center">
                         <Document
-                            file={url}
+                            file={proxyUrl}
                             onLoadSuccess={onDocumentLoadSuccess}
+                            onLoadError={(err) => {
+                                console.error(err)
+                                setErrorMsg("Error cargando el PDF. Puede que el archivo esté corrupto.")
+                                setLoading(false)
+                            }}
                             loading={<div className="p-8"><Loader2 className="h-8 w-8 animate-spin text-slate-400" /></div>}
                             className="flex flex-col gap-4"
                         >

@@ -46,6 +46,7 @@ export type ExamTemplateData = {
         testPointsPerQuestion: number
         testPenaltyPerError: number
         testMaxScore: number
+        testQuestionCount?: number | null
     }
     manualSolution?: string
 }
@@ -78,6 +79,7 @@ export async function saveExamTemplate(data: ExamTemplateData, id?: string) {
             testPointsPerQuestion: data.grading.testPointsPerQuestion,
             testPenaltyPerError: data.grading.testPenaltyPerError,
             testMaxScore: data.grading.testMaxScore,
+            testQuestionCount: data.grading.testQuestionCount,
             manualSolution: data.manualSolution,
         }
 
@@ -122,7 +124,7 @@ export async function deleteTemplate(id: string) {
         await prisma.examTemplate.delete({ where: { id } })
         revalidatePath("/fp-informatica/exams/create")
         return { success: true }
-    } catch (error) {
+    } catch {
         return { success: false, error: "Failed to delete template" }
     }
 }

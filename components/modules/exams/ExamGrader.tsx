@@ -14,11 +14,14 @@ interface GradingRules {
     testPointsPerQuestion: number
     testPenaltyPerError: number
     testMaxScore: number
+    testQuestionCount?: number | null
 }
 
 interface ExamGraderProps {
     sections: ExamSection[]
     gradingRules: GradingRules
+    detectedQuestionCount: number
+    onGradingChange?: (rules: GradingRules) => void
     part1Weight?: number // 0-100
     part2Weight?: number // 0-100
     onWeightsChange?: (p1: number, p2: number) => void
@@ -34,6 +37,8 @@ interface ExamGraderProps {
 export function ExamGrader({
     sections,
     gradingRules,
+    detectedQuestionCount,
+    onGradingChange,
     part1Weight = 50,
     part2Weight = 50,
     onWeightsChange,
@@ -42,7 +47,7 @@ export function ExamGrader({
 }: ExamGraderProps) {
 
     // Auto-detect questions
-    const detectedQuestions = countTestQuestions(sections)
+    const detectedQuestions = detectedQuestionCount || countTestQuestions(sections)
 
     // State (Internal fallback if not provided, though we intend to provide it)
     const [testHitsLocal, setTestHitsLocal] = useState(0)
@@ -64,7 +69,15 @@ export function ExamGrader({
         }
     }
 
-    const totalQuestions = detectedQuestions
+    const totalQuestions = gradingRules.testQuestionCount ?? detectedQuestions
+
+    const handleQuestionCountChange = (value: string) => {
+        const parsedValue = Number.parseInt(value, 10)
+        onGradingChange?.({
+            ...gradingRules,
+            testQuestionCount: Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : null
+        })
+    }
 
     const handleWeightChange = (p1: number) => {
         if (onWeightsChange) {
@@ -102,9 +115,12 @@ export function ExamGrader({
                     <div className="space-y-1">
                         <Label className="text-xs text-slate-500">Preguntas Test</Label>
                         <Input
-                            readOnly
+                            type="number"
+                            min="1"
                             value={totalQuestions > 0 ? totalQuestions : ""}
-                            className="h-8 bg-slate-50"
+                            onChange={(e) => handleQuestionCountChange(e.target.value)}
+                            placeholder={detectedQuestions > 0 ? String(detectedQuestions) : ""}
+                            className="h-8 bg-white"
                         />
                     </div>
                     <div className="space-y-1">

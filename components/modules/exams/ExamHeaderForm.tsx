@@ -16,16 +16,19 @@ interface GradingRules {
     testPointsPerQuestion: number
     testPenaltyPerError: number
     testMaxScore: number
+    testQuestionCount?: number | null
 }
 
 interface ExamHeaderFormProps {
     data: ExamHeaderData
     grading: GradingRules
     autoTestGrading: AutoTestGradingRules | null
+    detectedTestQuestionCount: number
     onChange: (data: ExamHeaderData) => void
+    onGradingChange: (data: GradingRules) => void
 }
 
-export function ExamHeaderForm({ data, grading, autoTestGrading, onChange }: ExamHeaderFormProps) {
+export function ExamHeaderForm({ data, grading, autoTestGrading, detectedTestQuestionCount, onChange, onGradingChange }: ExamHeaderFormProps) {
     const handleChange = <K extends keyof ExamHeaderData>(field: K, value: ExamHeaderData[K]) => {
         onChange({ ...data, [field]: value })
     }
@@ -38,6 +41,14 @@ export function ExamHeaderForm({ data, grading, autoTestGrading, onChange }: Exa
     const formatAutoValue = (value: number | undefined) => (
         autoTestGrading && value !== undefined ? value.toFixed(2) : ""
     )
+
+    const handleQuestionCountChange = (value: string) => {
+        const parsedValue = Number.parseInt(value, 10)
+        onGradingChange({
+            ...grading,
+            testQuestionCount: Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : null
+        })
+    }
 
     return (
         <div className="space-y-6 bg-white p-8 rounded-2xl shadow-md border-l-4 border-l-indigo-400 hover:shadow-lg transition-all duration-300">
@@ -171,10 +182,16 @@ export function ExamHeaderForm({ data, grading, autoTestGrading, onChange }: Exa
                     <div className="space-y-2">
                         <Label className="text-xs">Preguntas Test</Label>
                         <Input
-                            readOnly
+                            type="number"
+                            min="1"
                             value={autoTestGrading ? autoTestGrading.questionCount : ""}
-                            className="bg-white/70"
+                            onChange={e => handleQuestionCountChange(e.target.value)}
+                            placeholder={detectedTestQuestionCount > 0 ? String(detectedTestQuestionCount) : ""}
+                            className="bg-white"
                         />
+                        {grading.testQuestionCount && grading.testQuestionCount !== detectedTestQuestionCount && (
+                            <p className="text-[11px] text-purple-600">Detectadas: {detectedTestQuestionCount}</p>
+                        )}
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs">Valor Total Test</Label>

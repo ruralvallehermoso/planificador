@@ -6,10 +6,16 @@ interface Props {
     header: ExamHeaderData
     sections: ExamSection[]
     formatting: ExamFormatting
+    grading?: {
+        testPointsPerQuestion: number
+        testPenaltyPerError: number
+        testQuestionCount?: number | null
+    }
 }
 
-export function ExamPreview({ header, sections, formatting }: Props) {
+export function ExamPreview({ header, sections, formatting, grading }: Props) {
     const { font, fontSize, isBoldTitle, lineHeight, paragraphSpacing } = formatting
+    const showTestRules = grading?.testQuestionCount && grading.testQuestionCount > 0
 
     // Clear document title to remove "Planificador" from print header
     useEffect(() => {
@@ -122,6 +128,18 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                             <span>{header.part2Percentage}</span>
                         </div>
                     )}
+                    {showTestRules && (
+                        <div className="flex gap-2 text-gray-600">
+                            <span className="font-semibold">Preguntas Test:</span>
+                            <span>{grading.testQuestionCount}</span>
+                        </div>
+                    )}
+                    {showTestRules && (
+                        <div className="flex gap-2 text-gray-600">
+                            <span className="font-semibold">Acierto / Error:</span>
+                            <span>{grading.testPointsPerQuestion.toFixed(2)} / -{grading.testPenaltyPerError.toFixed(2)}</span>
+                        </div>
+                    )}
                 </div>
 
                 <div className="mt-6 flex flex-col gap-2">
@@ -182,7 +200,7 @@ export function ExamPreview({ header, sections, formatting }: Props) {
                                 {(section.questions || '').trim().startsWith('<') ? (
                                     <div dangerouslySetInnerHTML={{ __html: processHtmlContent(section.questions || '') }} />
                                 ) : (
-                                    formatDevelopQuestions(section.questions || '', formatting.questionsBold ?? true)
+                                    formatDevelopQuestions(section.questions || '')
                                 )}
                             </div>
                         )}
@@ -288,7 +306,7 @@ function formatTestQuestions(text: string, boldQuestions: boolean) {
     })
 }
 
-function formatDevelopQuestions(text: string, boldQuestions: boolean) {
+function formatDevelopQuestions(text: string) {
     return text.split('\n').filter(line => line.trim().length > 0).map((line, i) => {
         // Regex to match score patterns like (2 pts), (1.5 puntos), (2pt), etc.
         const scoreRegex = /(\(\s*\d+(?:[.,]\d+)?\s*(?:pts|puntos|ptos|p|punto)\.?\s*\))/i

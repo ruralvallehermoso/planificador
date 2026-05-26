@@ -41,6 +41,7 @@ interface GradingRules {
     testPointsPerQuestion: number
     testPenaltyPerError: number
     testMaxScore: number
+    testQuestionCount?: number | null
 }
 
 type ExamTemplateRecord = {
@@ -62,13 +63,15 @@ type ExamTemplateRecord = {
     testPointsPerQuestion?: number | null
     testPenaltyPerError?: number | null
     testMaxScore?: number | null
+    testQuestionCount?: number | null
     manualSolution?: string | null
 }
 
 const DEFAULT_GRADING: GradingRules = {
     testPointsPerQuestion: 1.0,
     testPenaltyPerError: 0.33,
-    testMaxScore: 10.0
+    testMaxScore: 10.0,
+    testQuestionCount: null
 }
 
 interface ExamFormBuilderProps {
@@ -121,7 +124,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         p2: parsePercentageValue(header.part2Percentage, 50)
     }), [header.part1Percentage, header.part2Percentage])
 
-    const testQuestionCount = useMemo(() => countTestQuestions(sections), [sections])
+    const detectedTestQuestionCount = useMemo(() => countTestQuestions(sections), [sections])
+    const testQuestionCount = grading.testQuestionCount ?? detectedTestQuestionCount
     const autoTestGrading = useMemo(
         () => calculateAutoTestGradingRules(weights.p1, testQuestionCount),
         [weights.p1, testQuestionCount]
@@ -130,8 +134,13 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         ...grading,
         testPointsPerQuestion: autoTestGrading?.testPointsPerQuestion ?? 0,
         testPenaltyPerError: autoTestGrading?.testPenaltyPerError ?? 0,
-        testMaxScore: 10.0
+        testMaxScore: 10.0,
+        testQuestionCount: grading.testQuestionCount ?? null
     }), [autoTestGrading, grading])
+    const displayGrading = useMemo<GradingRules>(() => ({
+        ...resolvedGrading,
+        testQuestionCount: autoTestGrading?.questionCount ?? null
+    }), [autoTestGrading, resolvedGrading])
 
     // Load templates on mount
     useEffect(() => {
@@ -181,7 +190,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         setGrading({
             testPointsPerQuestion: template.testPointsPerQuestion ?? 1.0,
             testPenaltyPerError: template.testPenaltyPerError ?? 0.33,
-            testMaxScore: template.testMaxScore ?? 10.0
+            testMaxScore: template.testMaxScore ?? 10.0,
+            testQuestionCount: template.testQuestionCount ?? null
         })
         setManualSolution(template.manualSolution || "")
     }
@@ -331,6 +341,11 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                     <tr>
                         <td>${header.part1Percentage ? `<strong>Parte 1 (Test):</strong> ${header.part1Percentage}` : ''}</td>
                         <td>${header.part2Percentage ? `<strong>Parte 2 (Desarrollo):</strong> ${header.part2Percentage}` : ''}</td>
+                    </tr>` : ''}
+                    ${displayGrading.testQuestionCount && displayGrading.testQuestionCount > 0 ? `
+                    <tr>
+                        <td><strong>Preguntas Test:</strong> ${displayGrading.testQuestionCount}</td>
+                        <td><strong>Acierto / Error:</strong> ${displayGrading.testPointsPerQuestion.toFixed(2)} / -${displayGrading.testPenaltyPerError.toFixed(2)}</td>
                     </tr>` : ''}
                 </table>
 
@@ -667,6 +682,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                             onChange={setHeader}
                             grading={resolvedGrading}
                             autoTestGrading={autoTestGrading}
+                            detectedTestQuestionCount={detectedTestQuestionCount}
+                            onGradingChange={setGrading}
                         />
                         <ExamSectionsBuilder sections={sections} onChange={setSections} />
                         <ExamFormattingForm data={formatting} onChange={setFormatting} />
@@ -697,6 +714,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                         <ExamGrader
                                             sections={sections}
                                             gradingRules={resolvedGrading}
+                                            detectedQuestionCount={detectedTestQuestionCount}
+                                            onGradingChange={setGrading}
                                             part1Weight={weights.p1}
                                             part2Weight={weights.p2}
                                             onWeightsChange={(p1, p2) => setHeader(prev => ({
@@ -831,7 +850,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                 </div>
 
                                 <TabsContent value="preview" className="mt-0 outline-none">
-                                    <ExamPreview header={header} sections={sections} formatting={formatting} />
+                                    <ExamPreview header={header} sections={sections} formatting={formatting} grading={displayGrading} />
                                 </TabsContent>
                                 {/* ... other tabs ... */}
                                 <TabsContent value="solution" className="mt-0 outline-none">

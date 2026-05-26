@@ -335,6 +335,7 @@ model ExamTemplate {
   testPointsPerQuestion Float            @default(1.0)
   testPenaltyPerError   Float            @default(0.33)
   testMaxScore          Float            @default(10.0)
+  testQuestionCount     Int?
   manualSolution        String?
   gradeReport           ExamGradeReport?
 

@@ -137,19 +137,39 @@ export function ExamPreview({ header, sections, formatting, grading }: Props) {
                     </div>
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-700">
+                <div className="mt-4 flex flex-col gap-y-3 text-sm text-gray-700">
                     {header.raEvaluated.length > 0 ? (
                         header.raEvaluated.map((ra) => (
-                            <div key={ra} className="flex gap-2 items-end">
-                                <span className="font-bold text-gray-900">{ra}</span>
-                                <span>Calificación:</span>
-                                <div className="border-b border-gray-400 w-16 mb-1"></div>
+                            <div key={ra} className="flex flex-wrap gap-x-6 gap-y-2 items-end">
+                                <span className="font-bold text-gray-900 min-w-[40px]">{ra}</span>
+                                <div className="flex gap-2 items-end">
+                                    <span>Nota Test:</span>
+                                    <div className="border-b border-gray-400 w-16 mb-1"></div>
+                                </div>
+                                <div className="flex gap-2 items-end">
+                                    <span>Nota Des.:</span>
+                                    <div className="border-b border-gray-400 w-16 mb-1"></div>
+                                </div>
+                                <div className="flex gap-2 items-end font-semibold">
+                                    <span>Nota Total:</span>
+                                    <div className="border-b border-gray-400 w-16 mb-1"></div>
+                                </div>
                             </div>
                         ))
                     ) : (
-                        <div className="flex gap-2 items-end">
-                            <span className="font-semibold text-gray-900">Calificación:</span>
-                            <div className="border-b border-gray-400 w-16 mb-1"></div>
+                        <div className="flex flex-wrap gap-x-6 gap-y-2 items-end">
+                            <div className="flex gap-2 items-end">
+                                <span className="font-semibold text-gray-900">Nota Test:</span>
+                                <div className="border-b border-gray-400 w-16 mb-1"></div>
+                            </div>
+                            <div className="flex gap-2 items-end">
+                                <span className="font-semibold text-gray-900">Nota Des.:</span>
+                                <div className="border-b border-gray-400 w-16 mb-1"></div>
+                            </div>
+                            <div className="flex gap-2 items-end font-bold">
+                                <span className="text-gray-900">Nota Total:</span>
+                                <div className="border-b border-gray-400 w-16 mb-1"></div>
+                            </div>
                         </div>
                     )}
                 </div>

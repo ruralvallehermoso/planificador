@@ -380,9 +380,9 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                 <!-- RA Ratings -->
                 <div style="margin-bottom: 20px;">
                     ${header.raEvaluated.map(ra =>
-            `<span style="margin-right: 30px;"><strong>${ra}</strong> Calificación: ________</span>`
+            `<div style="margin-bottom: 10px;"><strong>${ra}</strong> &nbsp;&nbsp;&nbsp;&nbsp; Nota Test: ________ &nbsp;&nbsp;&nbsp;&nbsp; Nota Des.: ________ &nbsp;&nbsp;&nbsp;&nbsp; Nota Total: ________</div>`
         ).join('')}
-                    ${header.raEvaluated.length === 0 ? '<span><strong>Calificación:</strong> ________</span>' : ''}
+                    ${header.raEvaluated.length === 0 ? '<div><strong>Nota Test:</strong> ________ &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nota Des.:</strong> ________ &nbsp;&nbsp;&nbsp;&nbsp; <strong>Nota Total:</strong> ________</div>' : ''}
                 </div>
 
                 <!-- Description -->

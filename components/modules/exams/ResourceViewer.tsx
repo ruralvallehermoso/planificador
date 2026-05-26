@@ -5,8 +5,8 @@ import { Document, Page, pdfjs } from "react-pdf"
 import mammoth from "mammoth"
 import { Loader2, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import "react-pdf/dist/esm/Page/AnnotationLayer.css"
-import "react-pdf/dist/esm/Page/TextLayer.css"
+import "react-pdf/dist/Page/AnnotationLayer.css"
+import "react-pdf/dist/Page/TextLayer.css"
 
 // Configure worker for react-pdf
 if (typeof window !== "undefined") {

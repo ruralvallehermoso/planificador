@@ -1,5 +1,5 @@
 import { put } from '@vercel/blob'
-import { NextResponse } from 'next/ NextResponse'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/auth'
 

@@ -204,8 +204,8 @@ export function ExamHeaderForm({ data, grading, autoTestGrading, detectedTestQue
                     <Label className="text-purple-700 font-bold">Reglas de Calificación (Test)</Label>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-purple-50/50 p-6 rounded-2xl border border-purple-100">
-                    <div className="space-y-2">
-                        <Label className="text-xs">Preguntas Test</Label>
+                    <div className="flex flex-col gap-2 justify-end">
+                        <Label className="text-xs min-h-[2rem] flex items-end">Preguntas Test</Label>
                         <Input
                             type="number"
                             min="1"
@@ -218,24 +218,24 @@ export function ExamHeaderForm({ data, grading, autoTestGrading, detectedTestQue
                             <p className="text-[11px] text-purple-600">Detectadas: {detectedTestQuestionCount}</p>
                         )}
                     </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs">Valor Total Test</Label>
+                    <div className="flex flex-col gap-2 justify-end">
+                        <Label className="text-xs min-h-[2rem] flex items-end">Valor Total Test</Label>
                         <Input
                             readOnly
                             value={formatAutoValue(autoTestGrading?.testTotalPoints)}
                             className="bg-white/70"
                         />
                     </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs">Puntos por Acierto</Label>
+                    <div className="flex flex-col gap-2 justify-end">
+                        <Label className="text-xs min-h-[2rem] flex items-end">Puntos por Acierto</Label>
                         <Input
                             readOnly
                             value={formatAutoValue(grading.testPointsPerQuestion)}
                             className="bg-white/70"
                         />
                     </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs">Penalización Error</Label>
+                    <div className="flex flex-col gap-2 justify-end">
+                        <Label className="text-xs min-h-[2rem] flex items-end">Penalización Error</Label>
                         <Input
                             readOnly
                             value={formatAutoValue(grading.testPenaltyPerError)}

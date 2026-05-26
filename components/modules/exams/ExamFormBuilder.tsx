@@ -683,6 +683,21 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                             </DialogContent>
                         </Dialog>
 
+                        <Button 
+                            size="sm" 
+                            className={cn(
+                                "h-8 rounded-full transition-all font-medium",
+                                showResources 
+                                    ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                                    : "text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100 hover:text-blue-800"
+                            )}
+                            variant={showResources ? "default" : "outline"}
+                            onClick={() => { setViewMode('preview'); setShowResources(!showResources); setShowNotebook(false); setShowGrading(false) }}
+                        >
+                            <Library className="h-3.5 w-3.5 sm:mr-1.5" />
+                            <span className="hidden sm:inline">Recursos</span>
+                        </Button>
+
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button size="sm" variant="outline" className="h-8 rounded-full text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-800 transition-all font-medium">
@@ -699,10 +714,6 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                 <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowNotebook(!showNotebook); setShowGrading(false); setShowResources(false) }} className="cursor-pointer text-sm py-2 text-orange-700 focus:bg-orange-50 focus:text-orange-800">
                                     <BookOpen className="h-4 w-4 mr-2" />
                                     Pegar NotebookLM
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowResources(!showResources); setShowNotebook(false); setShowGrading(false) }} className="cursor-pointer text-sm py-2 text-blue-700 focus:bg-blue-50 focus:text-blue-800">
-                                    <Library className="h-4 w-4 mr-2" />
-                                    Ver Recursos
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuLabel className="text-xs text-gray-500 font-semibold px-2">UTILIDADES</DropdownMenuLabel>

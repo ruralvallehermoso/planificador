@@ -1,4 +1,4 @@
-import { Calendar, BookOpen, GraduationCap, Library, Globe, ClipboardCheck, Bookmark } from "lucide-react"
+import { Calendar, BookOpen, GraduationCap, Library, Globe, ClipboardCheck, Bookmark, FileText } from "lucide-react"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { SidebarTaskManager } from "@/components/modules/teacher/SidebarTaskManager"
@@ -33,6 +33,16 @@ const DASHBOARD_CARDS = [
         bgColor: "bg-amber-100",
         borderColor: "border-amber-200",
         hoverBorder: "hover:border-amber-300",
+    },
+    {
+        title: "Recursos",
+        description: "Gestiona documentos PDF y Word para usarlos en exámenes.",
+        icon: FileText,
+        href: "/fp-informatica/recursos",
+        color: "text-cyan-600",
+        bgColor: "bg-cyan-100",
+        borderColor: "border-cyan-200",
+        hoverBorder: "hover:border-cyan-300",
     },
     {
         title: "Asignaturas",

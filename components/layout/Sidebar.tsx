@@ -55,9 +55,9 @@ const allNavigation: NavItem[] = [
             { name: 'Asignaturas', href: '/fp-informatica/subjects', icon: Library },
             { name: 'Clases', href: '/fp-informatica/classes', icon: BookOpen },
             { name: 'Exámenes', href: '/fp-informatica/exams', icon: ClipboardList },
+            { name: 'Recursos', href: '/fp-informatica/recursos', icon: FileText },
             { name: 'Evaluaciones', href: '/fp-informatica/evaluations', icon: ClipboardCheck },
             { name: 'Temas Pendientes', href: '/fp-informatica#tasks', icon: Target },
-
             { name: 'Proyectos', href: '/fp-informatica/projects', icon: Package },
         ]
     },

@@ -1,14 +1,15 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ExamHeaderData } from "@/lib/actions/exams"
-import { CalendarIcon, Sparkles, FileText, Settings, BadgeInfo } from "lucide-react"
+import type { ExamHeaderData } from "@/lib/actions/exams"
+import { CalendarIcon, Sparkles, FileText, Settings } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import type { AutoTestGradingRules } from "./grading-utils"
 
 
 interface GradingRules {
@@ -20,23 +21,23 @@ interface GradingRules {
 interface ExamHeaderFormProps {
     data: ExamHeaderData
     grading: GradingRules
+    autoTestGrading: AutoTestGradingRules | null
     onChange: (data: ExamHeaderData) => void
-    onGradingChange: (data: GradingRules) => void
 }
 
-export function ExamHeaderForm({ data, grading, onChange, onGradingChange }: ExamHeaderFormProps) {
-    const handleChange = (field: keyof ExamHeaderData, value: any) => {
+export function ExamHeaderForm({ data, grading, autoTestGrading, onChange }: ExamHeaderFormProps) {
+    const handleChange = <K extends keyof ExamHeaderData>(field: K, value: ExamHeaderData[K]) => {
         onChange({ ...data, [field]: value })
-    }
-
-    const handleGradingChange = (field: keyof GradingRules, value: number) => {
-        onGradingChange({ ...grading, [field]: value })
     }
 
     const handleRAChange = (value: string) => {
         const ras = value.split(",").map(s => s.trim()).filter(s => s)
         handleChange("raEvaluated", ras)
     }
+
+    const formatAutoValue = (value: number | undefined) => (
+        autoTestGrading && value !== undefined ? value.toFixed(2) : ""
+    )
 
     return (
         <div className="space-y-6 bg-white p-8 rounded-2xl shadow-md border-l-4 border-l-indigo-400 hover:shadow-lg transition-all duration-300">
@@ -125,7 +126,6 @@ export function ExamHeaderForm({ data, grading, onChange, onGradingChange }: Exa
                         onClick={() => {
                             const desc = data.description || ""
                             // Parse Logic
-                            const rules: Partial<GradingRules> = {}
                             const headerUpdates: Partial<ExamHeaderData> = {}
 
                             // 1. Test Percentage
@@ -135,17 +135,8 @@ export function ExamHeaderForm({ data, grading, onChange, onGradingChange }: Exa
                                 headerUpdates.part2Percentage = (100 - parseInt(testPctMatch[1])) + "%"
                             }
 
-                            // 2. Points per Question
-                            const pointsMatch = desc.match(/(\d+(?:[.,]\d+)?)\s*punt(?:os|o)?\s*por\s*acierto/i)
-                            if (pointsMatch) rules.testPointsPerQuestion = parseFloat(pointsMatch[1].replace(',', '.'))
-
-                            // 3. Penalty
-                            const penaltyMatch = desc.match(/(\d+(?:[.,]\d+)?)\s*penaliza(?:ción)?/i) || desc.match(/resta\s*(\d+(?:[.,]\d+)?)/i)
-                            if (penaltyMatch) rules.testPenaltyPerError = parseFloat(penaltyMatch[1].replace(',', '.'))
-
                             // Apply
                             if (Object.keys(headerUpdates).length > 0) onChange({ ...data, ...headerUpdates })
-                            if (Object.keys(rules).length > 0) onGradingChange({ ...grading, ...rules })
                         }}
                     >
                         <Sparkles className="w-3 h-3 mr-1" />
@@ -176,32 +167,37 @@ export function ExamHeaderForm({ data, grading, onChange, onGradingChange }: Exa
                     <Settings className="w-4 h-4 text-purple-600" />
                     <Label className="text-purple-700 font-bold">Reglas de Calificación (Test)</Label>
                 </div>
-                <div className="grid grid-cols-3 gap-4 bg-purple-50/50 p-6 rounded-2xl border border-purple-100">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-purple-50/50 p-6 rounded-2xl border border-purple-100">
+                    <div className="space-y-2">
+                        <Label className="text-xs">Preguntas Test</Label>
+                        <Input
+                            readOnly
+                            value={autoTestGrading ? autoTestGrading.questionCount : ""}
+                            className="bg-white/70"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs">Valor Total Test</Label>
+                        <Input
+                            readOnly
+                            value={formatAutoValue(autoTestGrading?.testTotalPoints)}
+                            className="bg-white/70"
+                        />
+                    </div>
                     <div className="space-y-2">
                         <Label className="text-xs">Puntos por Acierto</Label>
                         <Input
-                            type="number"
-                            step="0.1"
-                            value={grading.testPointsPerQuestion}
-                            onChange={e => handleGradingChange("testPointsPerQuestion", parseFloat(e.target.value))}
+                            readOnly
+                            value={formatAutoValue(grading.testPointsPerQuestion)}
+                            className="bg-white/70"
                         />
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs">Penalización Error</Label>
                         <Input
-                            type="number"
-                            step="0.01"
-                            value={grading.testPenaltyPerError}
-                            onChange={e => handleGradingChange("testPenaltyPerError", parseFloat(e.target.value))}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs">Nota Máxima Test</Label>
-                        <Input
-                            type="number"
-                            step="0.1"
-                            value={grading.testMaxScore}
-                            onChange={e => handleGradingChange("testMaxScore", parseFloat(e.target.value))}
+                            readOnly
+                            value={formatAutoValue(grading.testPenaltyPerError)}
+                            className="bg-white/70"
                         />
                     </div>
                 </div>

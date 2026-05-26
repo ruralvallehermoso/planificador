@@ -1,17 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { ExamHeaderForm } from "./ExamHeaderForm"
 import { ExamSectionsBuilder } from "./ExamSectionsBuilder"
 import { ExamFormattingForm } from "./ExamFormattingForm"
 import { ExamPreview } from "./ExamPreview"
 import { ExamGrader } from "./ExamGrader"
-import { ExamHeaderData, ExamSection, ExamFormatting, saveExamTemplate, getExamTemplates, deleteTemplate, ExamTemplateData, generateExamSolution } from "@/lib/actions/exams"
+import { saveExamTemplate, getExamTemplates, deleteTemplate, generateExamSolution } from "@/lib/actions/exams"
+import type { ExamHeaderData, ExamSection, ExamFormatting, ExamTemplateData } from "@/lib/actions/exams"
 import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Settings2, Sparkles, Check, Copy, AlertCircle, Calculator, PanelLeft, PanelRight, Columns, BookOpen, ChevronDown } from "lucide-react"
+import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Sparkles, Check, Copy, Calculator, PanelLeft, PanelRight, Columns, BookOpen, ChevronDown } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
@@ -24,6 +25,7 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
+import { calculateAutoTestGradingRules, countTestQuestions, parsePercentageValue } from "./grading-utils"
 
 const DEFAULT_HEADER: ExamHeaderData = {
     cycle: "", course: "", evaluation: "", duration: "", date: "",
@@ -41,6 +43,28 @@ interface GradingRules {
     testMaxScore: number
 }
 
+type ExamTemplateRecord = {
+    id: string
+    name: string
+    logoUrl?: string | null
+    cycle?: string | null
+    course?: string | null
+    evaluation?: string | null
+    duration?: string | null
+    date?: Date | string | null
+    subject?: string | null
+    raEvaluated?: string | null
+    description?: string | null
+    part1Percentage?: string | null
+    part2Percentage?: string | null
+    sections: string
+    formatting: string
+    testPointsPerQuestion?: number | null
+    testPenaltyPerError?: number | null
+    testMaxScore?: number | null
+    manualSolution?: string | null
+}
+
 const DEFAULT_GRADING: GradingRules = {
     testPointsPerQuestion: 1.0,
     testPenaltyPerError: 0.33,
@@ -48,7 +72,13 @@ const DEFAULT_GRADING: GradingRules = {
 }
 
 interface ExamFormBuilderProps {
-    initialData?: any
+    initialData?: ExamTemplateRecord | null
+}
+
+const withoutMarkdownNode = <T extends { node?: unknown }>(props: T): Omit<T, "node"> => {
+    const rest = { ...props }
+    delete rest.node
+    return rest
 }
 
 export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
@@ -56,7 +86,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     const [sections, setSections] = useState<ExamSection[]>([])
     const [formatting, setFormatting] = useState<ExamFormatting>(DEFAULT_FORMATTING)
     const [grading, setGrading] = useState<GradingRules>(DEFAULT_GRADING)
-    const [templates, setTemplates] = useState<any[]>([])
+    const [templates, setTemplates] = useState<ExamTemplateRecord[]>([])
     const [isSaving, setIsSaving] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [newTemplateName, setNewTemplateName] = useState("")
@@ -86,6 +116,23 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     const router = useRouter()
     const urlTemplateId = searchParams.get('id')
 
+    const weights = useMemo(() => ({
+        p1: parsePercentageValue(header.part1Percentage, 50),
+        p2: parsePercentageValue(header.part2Percentage, 50)
+    }), [header.part1Percentage, header.part2Percentage])
+
+    const testQuestionCount = useMemo(() => countTestQuestions(sections), [sections])
+    const autoTestGrading = useMemo(
+        () => calculateAutoTestGradingRules(weights.p1, testQuestionCount),
+        [weights.p1, testQuestionCount]
+    )
+    const resolvedGrading = useMemo<GradingRules>(() => ({
+        ...grading,
+        testPointsPerQuestion: autoTestGrading?.testPointsPerQuestion ?? 0,
+        testPenaltyPerError: autoTestGrading?.testPenaltyPerError ?? 0,
+        testMaxScore: 10.0
+    }), [autoTestGrading, grading])
+
     // Load templates on mount
     useEffect(() => {
         loadTemplates()
@@ -101,7 +148,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     // Sync validation with URL ID
     useEffect(() => {
         if (urlTemplateId && templates.length > 0 && !initialData && !selectedTemplateId) {
-            const template = templates.find((tmpl: any) => tmpl.id === urlTemplateId)
+            const template = templates.find((tmpl) => tmpl.id === urlTemplateId)
             if (template) {
                 loadTemplateData(template)
             }
@@ -113,7 +160,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         setTemplates(t)
     }
 
-    const loadTemplateData = (template: any) => {
+    const loadTemplateData = (template: ExamTemplateRecord) => {
         setSelectedTemplateId(template.id)
         setNewTemplateName(template.name)
         setHeader({
@@ -165,7 +212,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
             header,
             sections,
             formatting,
-            grading,
+            grading: resolvedGrading,
             manualSolution
         }
         // If selectedTemplateId exists and not saving as new, update existing
@@ -343,7 +390,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
             header,
             sections,
             formatting,
-            grading
+            grading: resolvedGrading
         }
 
         try {
@@ -397,19 +444,6 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         `)
         printWindow.document.close()
     }
-
-    // Helper to parse weights
-    const getWeights = () => {
-        const w1 = parseFloat(header.part1Percentage?.replace('%', '') || '50')
-        const w2 = parseFloat(header.part2Percentage?.replace('%', '') || '50')
-        // Normalize if NaN
-        return {
-            p1: isNaN(w1) ? 50 : w1,
-            p2: isNaN(w2) ? 50 : w2
-        }
-    }
-
-    const weights = getWeights()
 
     const quickAnswers = (() => {
         if (!manualSolution) return []
@@ -631,8 +665,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                         <ExamHeaderForm
                             data={header}
                             onChange={setHeader}
-                            grading={grading}
-                            onGradingChange={setGrading}
+                            grading={resolvedGrading}
+                            autoTestGrading={autoTestGrading}
                         />
                         <ExamSectionsBuilder sections={sections} onChange={setSections} />
                         <ExamFormattingForm data={formatting} onChange={setFormatting} />
@@ -662,8 +696,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                         </div>
                                         <ExamGrader
                                             sections={sections}
-                                            gradingRules={grading}
-                                            onGradingChange={setGrading}
+                                            gradingRules={resolvedGrading}
                                             part1Weight={weights.p1}
                                             part2Weight={weights.p2}
                                             onWeightsChange={(p1, p2) => setHeader(prev => ({
@@ -763,16 +796,16 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                                             remarkPlugins={[remarkGfm, remarkMath]}
                                                             rehypePlugins={[rehypeKatex]}
                                                             components={{
-                                                                table: ({ node, ...props }) => <table className="w-full border-collapse border border-gray-300 my-4" {...props} />,
-                                                                th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 bg-gray-100 font-bold text-left" {...props} />,
-                                                                td: ({ node, ...props }) => <td className="border border-gray-300 px-4 py-2" {...props} />,
-                                                                p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-gray-800" {...props} />,
-                                                                ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-2" {...props} />,
-                                                                ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...props} />,
-                                                                li: ({ node, ...props }) => <li className="pl-1" {...props} />,
-                                                                h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-8 mb-4 border-b pb-2 text-orange-800" {...props} />,
-                                                                h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-6 mb-3 text-orange-700" {...props} />,
-                                                                h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-5 mb-2 text-gray-900" {...props} />,
+                                                                table: (props) => <table className="w-full border-collapse border border-gray-300 my-4" {...withoutMarkdownNode(props)} />,
+                                                                th: (props) => <th className="border border-gray-300 px-4 py-2 bg-gray-100 font-bold text-left" {...withoutMarkdownNode(props)} />,
+                                                                td: (props) => <td className="border border-gray-300 px-4 py-2" {...withoutMarkdownNode(props)} />,
+                                                                p: (props) => <p className="mb-4 leading-relaxed text-gray-800" {...withoutMarkdownNode(props)} />,
+                                                                ul: (props) => <ul className="list-disc pl-6 mb-4 space-y-2" {...withoutMarkdownNode(props)} />,
+                                                                ol: (props) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...withoutMarkdownNode(props)} />,
+                                                                li: (props) => <li className="pl-1" {...withoutMarkdownNode(props)} />,
+                                                                h1: (props) => <h1 className="text-2xl font-bold mt-8 mb-4 border-b pb-2 text-orange-800" {...withoutMarkdownNode(props)} />,
+                                                                h2: (props) => <h2 className="text-xl font-bold mt-6 mb-3 text-orange-700" {...withoutMarkdownNode(props)} />,
+                                                                h3: (props) => <h3 className="text-lg font-bold mt-5 mb-2 text-gray-900" {...withoutMarkdownNode(props)} />,
                                                             }}
                                                         >
                                                             {manualSolution}

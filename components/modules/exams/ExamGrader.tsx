@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { ExamSection } from "@/lib/actions/exams"
-import { Calculator, Save, AlertCircle, Settings2, RefreshCcw } from "lucide-react"
+import type { ExamSection } from "@/lib/actions/exams"
+import { Calculator, AlertCircle, Settings2, RefreshCcw } from "lucide-react"
+import { countTestQuestions } from "./grading-utils"
 
 interface GradingRules {
     testPointsPerQuestion: number
@@ -18,7 +19,6 @@ interface GradingRules {
 interface ExamGraderProps {
     sections: ExamSection[]
     gradingRules: GradingRules
-    onGradingChange?: (rules: GradingRules) => void
     part1Weight?: number // 0-100
     part2Weight?: number // 0-100
     onWeightsChange?: (p1: number, p2: number) => void
@@ -34,7 +34,6 @@ interface ExamGraderProps {
 export function ExamGrader({
     sections,
     gradingRules,
-    onGradingChange,
     part1Weight = 50,
     part2Weight = 50,
     onWeightsChange,
@@ -43,18 +42,12 @@ export function ExamGrader({
 }: ExamGraderProps) {
 
     // Auto-detect questions
-    const detectedQuestions = sections
-        .filter(s => s.type === 'TEST')
-        .reduce((acc, s) => {
-            if (!s.questions) return acc
-            return acc + s.questions.split('\n').filter(l => /^\d+[\.\)]/.test(l.trim())).length
-        }, 0)
+    const detectedQuestions = countTestQuestions(sections)
 
     // State (Internal fallback if not provided, though we intend to provide it)
     const [testHitsLocal, setTestHitsLocal] = useState(0)
     const [testErrorsLocal, setTestErrorsLocal] = useState(0)
     const [manualScoresLocal, setManualScoresLocal] = useState<Record<string, number>>({})
-    const [customTotalQuestions, setCustomTotalQuestions] = useState<number | null>(null)
 
     // Use props if available, otherwise local
     const testHits = gradingValues ? gradingValues.hits : testHitsLocal
@@ -71,17 +64,7 @@ export function ExamGrader({
         }
     }
 
-    const totalQuestions = customTotalQuestions ?? detectedQuestions
-
-    // Handlers for configuration changes
-    const handleGradingChange = (field: keyof GradingRules, value: number) => {
-        if (onGradingChange) {
-            onGradingChange({
-                ...gradingRules,
-                [field]: value
-            })
-        }
-    }
+    const totalQuestions = detectedQuestions
 
     const handleWeightChange = (p1: number) => {
         if (onWeightsChange) {
@@ -119,29 +102,25 @@ export function ExamGrader({
                     <div className="space-y-1">
                         <Label className="text-xs text-slate-500">Preguntas Test</Label>
                         <Input
-                            type="number"
-                            min="1"
-                            value={totalQuestions}
-                            onChange={(e) => setCustomTotalQuestions(Number(e.target.value))}
-                            className="h-8 bg-white"
+                            readOnly
+                            value={totalQuestions > 0 ? totalQuestions : ""}
+                            className="h-8 bg-slate-50"
                         />
                     </div>
                     <div className="space-y-1">
                         <Label className="text-xs text-slate-500">Acierto (+)</Label>
                         <Input
-                            type="number" step="0.1"
-                            value={gradingRules.testPointsPerQuestion}
-                            onChange={(e) => handleGradingChange('testPointsPerQuestion', parseFloat(e.target.value))}
-                            className="h-8 bg-white"
+                            readOnly
+                            value={totalQuestions > 0 ? gradingRules.testPointsPerQuestion.toFixed(2) : ""}
+                            className="h-8 bg-slate-50"
                         />
                     </div>
                     <div className="space-y-1">
                         <Label className="text-xs text-slate-500">Fallo (-)</Label>
                         <Input
-                            type="number" step="0.1"
-                            value={gradingRules.testPenaltyPerError}
-                            onChange={(e) => handleGradingChange('testPenaltyPerError', parseFloat(e.target.value))}
-                            className="h-8 bg-white"
+                            readOnly
+                            value={totalQuestions > 0 ? gradingRules.testPenaltyPerError.toFixed(2) : ""}
+                            className="h-8 bg-slate-50"
                         />
                     </div>
                     <div className="space-y-1">

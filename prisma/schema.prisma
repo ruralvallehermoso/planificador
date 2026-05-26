@@ -372,6 +372,18 @@ model FpEvaluation {
   @@schema("public")
 }
 
+model FpExamResource {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   // 'pdf' or 'docx'
+  url       String
+  size      Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("public")
+}
+
 model Asset {
   id           String   @id @default(cuid()) @db.VarChar
   name         String   @db.VarChar

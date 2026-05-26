@@ -26,6 +26,11 @@ import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
 import { calculateAutoTestGradingRules, countTestQuestions, parsePercentageValue } from "./grading-utils"
+import { ResourcesList } from "./ResourcesList"
+import { ResourceViewer } from "./ResourceViewer"
+import { getFpExamResources } from "@/lib/actions/fp-exam-resources"
+import type { FpExamResource } from "@prisma/client"
+import { Library } from "lucide-react"
 
 const DEFAULT_HEADER: ExamHeaderData = {
     cycle: "", course: "", evaluation: "", duration: "", date: "",
@@ -105,6 +110,11 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     // Panel Visibility States
     const [showGrading, setShowGrading] = useState(false)
     const [showNotebook, setShowNotebook] = useState(false)
+    const [showResources, setShowResources] = useState(false)
+    
+    // Resources state
+    const [fpResources, setFpResources] = useState<FpExamResource[]>([])
+    const [selectedResource, setSelectedResource] = useState<FpExamResource | null>(null)
 
     // Grader Persistence State
     const [gradingValues, setGradingValues] = useState<{ hits: number, errors: number, manualScores: Record<string, number> }>({
@@ -146,6 +156,15 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     useEffect(() => {
         loadTemplates()
     }, [])
+
+    // Fetch resources if panel opened
+    useEffect(() => {
+        if (showResources && fpResources.length === 0) {
+            getFpExamResources().then(res => {
+                if (res.success && res.data) setFpResources(res.data)
+            })
+        }
+    }, [showResources, fpResources.length])
 
     // Initialize with initialData if provided
     useEffect(() => {
@@ -484,6 +503,29 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         printWindow.document.close()
     }
 
+    const handleAddFromResource = (text: string, mode: "TEST" | "STANDARD" | "DEVELOP") => {
+        const sectionType = mode === "STANDARD" ? "DEVELOP" : mode
+        setSections(prev => {
+            const newSections = [...prev]
+            let targetIdx = newSections.findLastIndex(s => s.type === sectionType)
+            if (targetIdx === -1) {
+                targetIdx = newSections.length
+                newSections.push({
+                    id: crypto.randomUUID(),
+                    title: sectionType === "TEST" ? "Preguntas Tipo Test" : "Preguntas a Desarrollar",
+                    type: sectionType,
+                    content: "",
+                    questions: "",
+                    ra: []
+                })
+            }
+            const targetSection = { ...newSections[targetIdx] }
+            targetSection.questions = targetSection.questions ? `${targetSection.questions}\n\n${text}` : text
+            newSections[targetIdx] = targetSection
+            return newSections
+        })
+    }
+
     const quickAnswers = (() => {
         if (!manualSolution) return []
         const answersMap = new Map<number, string>()
@@ -654,13 +696,17 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                     {isGeneratingSolution ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
                                     Resolver Test con IA
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowNotebook(!showNotebook); setShowGrading(false) }} className="cursor-pointer text-sm py-2 text-orange-700 focus:bg-orange-50 focus:text-orange-800">
+                                <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowNotebook(!showNotebook); setShowGrading(false); setShowResources(false) }} className="cursor-pointer text-sm py-2 text-orange-700 focus:bg-orange-50 focus:text-orange-800">
                                     <BookOpen className="h-4 w-4 mr-2" />
                                     Pegar NotebookLM
                                 </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowResources(!showResources); setShowNotebook(false); setShowGrading(false) }} className="cursor-pointer text-sm py-2 text-blue-700 focus:bg-blue-50 focus:text-blue-800">
+                                    <Library className="h-4 w-4 mr-2" />
+                                    Ver Recursos
+                                </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuLabel className="text-xs text-gray-500 font-semibold px-2">UTILIDADES</DropdownMenuLabel>
-                                <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowGrading(!showGrading); setShowNotebook(false) }} className="cursor-pointer text-sm py-2 text-emerald-700 focus:text-emerald-800 focus:bg-emerald-50">
+                                <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowGrading(!showGrading); setShowNotebook(false); setShowResources(false) }} className="cursor-pointer text-sm py-2 text-emerald-700 focus:text-emerald-800 focus:bg-emerald-50">
                                     <Calculator className="h-4 w-4 mr-2" />
                                     Calculadora Notas
                                 </DropdownMenuItem>
@@ -717,11 +763,11 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                     <div className={cn(
                         "print:w-full print:static h-full transition-all duration-300",
                         viewMode === 'editor' ? "hidden" : "block",
-                        viewMode === 'preview' ? ((showNotebook || showGrading) ? "max-w-[95vw] mx-auto" : "max-w-[210mm] mx-auto") : ""
+                        viewMode === 'preview' ? ((showNotebook || showGrading || showResources) ? "max-w-[95vw] mx-auto" : "max-w-[210mm] mx-auto") : ""
                     )}>
-                        <div className="print:static sticky top-6 space-y-4">
+                        <div className={cn("print:static sticky top-6 space-y-4", (showNotebook || showGrading || showResources) ? "h-[calc(100vh-6rem)]" : "")}>
                             <div className={cn(
-                                "grid gap-6 transition-all duration-300",
+                                "grid gap-6 transition-all duration-300 h-full",
                                 (showGrading && showNotebook) ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"
                             )}>
 
@@ -854,6 +900,43 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                                             {manualSolution}
                                                         </ReactMarkdown>
                                                     </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Resources Panel */}
+                                {showResources && (
+                                    <div className="bg-white p-6 shadow-lg rounded-lg border border-blue-100 animate-in slide-in-from-top-2 flex flex-col h-full max-h-full">
+                                        <div className="mb-6 flex items-center justify-between shrink-0">
+                                            <div>
+                                                <h3 className="font-bold text-lg text-blue-900 flex items-center gap-2">
+                                                    <Library className="h-5 w-5 text-blue-600" />
+                                                    Recursos
+                                                </h3>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Button variant="ghost" size="sm" onClick={() => setShowResources(false)}><ArrowLeft className="h-4 w-4 rotate-90" /></Button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex-1 overflow-hidden min-h-[400px]">
+                                            {selectedResource ? (
+                                                <ResourceViewer 
+                                                    url={selectedResource.url} 
+                                                    type={selectedResource.type} 
+                                                    onClose={() => setSelectedResource(null)} 
+                                                    onAddContent={handleAddFromResource}
+                                                />
+                                            ) : (
+                                                <div className="h-full overflow-y-auto pr-2">
+                                                    <ResourcesList 
+                                                        resources={fpResources} 
+                                                        selectable 
+                                                        compact
+                                                        onSelect={(res) => setSelectedResource(res)} 
+                                                    />
                                                 </div>
                                             )}
                                         </div>

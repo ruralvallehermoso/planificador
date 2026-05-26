@@ -520,7 +520,31 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                 })
             }
             const targetSection = { ...newSections[targetIdx] }
-            targetSection.questions = targetSection.questions ? `${targetSection.questions}\n\n${text}` : text
+
+            let processedText = text
+            if (sectionType === "TEST") {
+                // Formatting for test questions
+                processedText = processedText.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
+                
+                // Count existing questions
+                const existingContent = targetSection.questions || ""
+                const matches = existingContent.match(/^\d+[\.\)]\s/gm)
+                let startNumber = (matches ? matches.length : 0) + 1
+
+                // Renumber the new ones
+                processedText = processedText.replace(/^\d+[\.\)]\s/gm, () => {
+                    return `${startNumber++}. `
+                })
+                
+                targetSection.questions = targetSection.questions ? `${targetSection.questions}\n\n${processedText}` : processedText
+            } else if (sectionType === "DEVELOP") {
+                // Formatting for Rich Text Editor (HTML)
+                const htmlText = `<p>${processedText.replace(/\n/g, '<br/>')}</p>`
+                targetSection.questions = targetSection.questions ? `${targetSection.questions}<br/>${htmlText}` : htmlText
+            } else {
+                targetSection.content = targetSection.content ? `${targetSection.content}\n\n${processedText}` : processedText
+            }
+
             newSections[targetIdx] = targetSection
             return newSections
         })

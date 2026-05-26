@@ -10,7 +10,10 @@ import "react-pdf/dist/Page/TextLayer.css"
 
 // Configure worker for react-pdf
 if (typeof window !== "undefined") {
-    pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/build/pdf.worker.min.js',
+        import.meta.url,
+    ).toString();
 }
 
 interface ResourceViewerProps {

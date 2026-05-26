@@ -370,11 +370,6 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                         <td>${header.part1Percentage ? `<strong>Parte 1 (Test):</strong> ${header.part1Percentage}` : ''}</td>
                         <td>${header.part2Percentage ? `<strong>Parte 2 (Desarrollo):</strong> ${header.part2Percentage}` : ''}</td>
                     </tr>` : ''}
-                    ${displayGrading.testQuestionCount && displayGrading.testQuestionCount > 0 ? `
-                    <tr>
-                        <td><strong>Preguntas Test:</strong> ${displayGrading.testQuestionCount}</td>
-                        <td><strong>Acierto / Error:</strong> ${displayGrading.testPointsPerQuestion.toFixed(2)} / -${displayGrading.testPenaltyPerError.toFixed(2)}</td>
-                    </tr>` : ''}
                 </table>
 
                 <!-- Name Field -->

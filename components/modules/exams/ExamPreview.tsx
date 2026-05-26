@@ -128,18 +128,6 @@ export function ExamPreview({ header, sections, formatting, grading }: Props) {
                             <span>{header.part2Percentage}</span>
                         </div>
                     )}
-                    {showTestRules && (
-                        <div className="flex gap-2 text-gray-600">
-                            <span className="font-semibold">Preguntas Test:</span>
-                            <span>{grading.testQuestionCount}</span>
-                        </div>
-                    )}
-                    {showTestRules && (
-                        <div className="flex gap-2 text-gray-600">
-                            <span className="font-semibold">Acierto / Error:</span>
-                            <span>{grading.testPointsPerQuestion.toFixed(2)} / -{grading.testPenaltyPerError.toFixed(2)}</span>
-                        </div>
-                    )}
                 </div>
 
                 <div className="mt-6 flex flex-col gap-2">

@@ -164,6 +164,34 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         }
     }, [urlTemplateId, templates, initialData, selectedTemplateId])
 
+    // Sync description with auto calculated grading rules
+    useEffect(() => {
+        if (!autoTestGrading) return
+
+        const pointsStr = resolvedGrading.testPointsPerQuestion.toFixed(2)
+        const penaltyStr = resolvedGrading.testPenaltyPerError.toFixed(2)
+
+        const currentDesc = header.description || ""
+        let newDesc = currentDesc
+
+        const pointsRegex = /(correcta\s*\+\s*)\d+(?:[.,]\d+)?/gi
+        const penaltyRegex = /(err[óo]nea\s*-\s*)\d+(?:[.,]\d+)?/gi
+
+        let hasChanges = false
+        if (pointsRegex.test(currentDesc)) {
+            newDesc = newDesc.replace(pointsRegex, `$1${pointsStr}`)
+            hasChanges = true
+        }
+        if (penaltyRegex.test(currentDesc)) {
+            newDesc = newDesc.replace(penaltyRegex, `$1${penaltyStr}`)
+            hasChanges = true
+        }
+
+        if (hasChanges && newDesc !== currentDesc) {
+            setHeader(prev => ({ ...prev, description: newDesc }))
+        }
+    }, [resolvedGrading.testPointsPerQuestion, resolvedGrading.testPenaltyPerError, autoTestGrading])
+
     const loadTemplates = async () => {
         const t = await getExamTemplates()
         setTemplates(t)

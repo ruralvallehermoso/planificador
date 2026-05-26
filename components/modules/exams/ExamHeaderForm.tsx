@@ -157,6 +157,31 @@ export function ExamHeaderForm({ data, grading, autoTestGrading, detectedTestQue
                 <Textarea
                     value={data.description}
                     onChange={e => handleChange("description", e.target.value)}
+                    onBlur={() => {
+                        if (autoTestGrading) {
+                            const pointsStr = grading.testPointsPerQuestion.toFixed(2)
+                            const penaltyStr = grading.testPenaltyPerError.toFixed(2)
+                            const currentDesc = data.description || ""
+                            let newDesc = currentDesc
+
+                            const pointsRegex = /(correcta\s*\+\s*)\d+(?:[.,]\d+)?/gi
+                            const penaltyRegex = /(err[óo]nea\s*-\s*)\d+(?:[.,]\d+)?/gi
+
+                            let hasChanges = false
+                            if (pointsRegex.test(currentDesc)) {
+                                newDesc = newDesc.replace(pointsRegex, `$1${pointsStr}`)
+                                hasChanges = true
+                            }
+                            if (penaltyRegex.test(currentDesc)) {
+                                newDesc = newDesc.replace(penaltyRegex, `$1${penaltyStr}`)
+                                hasChanges = true
+                            }
+
+                            if (hasChanges && newDesc !== currentDesc) {
+                                handleChange("description", newDesc)
+                            }
+                        }
+                    }}
                     placeholder="Instrucciones generales para el alumno..."
                     className="h-20"
                 />

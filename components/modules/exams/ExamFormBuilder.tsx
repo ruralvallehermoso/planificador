@@ -526,15 +526,19 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
 
             let processedText = text
             if (sectionType === "TEST") {
-                // Formatting for test questions
-                processedText = processedText.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
-                
-                // Count existing questions
-                const existingContent = targetSection.questions || ""
-                const matches = existingContent.match(/^\d+[\.\)]\s/gm)
-                let startNumber = (matches ? matches.length : 0) + 1
+                // Step 1: Insert line breaks before question numbers found mid-text
+                // Matches patterns like "... text 2. Next question" or "... text 2) Next question"
+                processedText = processedText.replace(/([^\n])\s+(\d+[\.\.\)]\s)/g, '$1\n\n$2')
 
-                // Renumber the new ones
+                // Step 2: Insert line breaks before answer options (a), b), c), etc.)
+                processedText = processedText.replace(/([^\n])\s+([a-eA-E][\)])/g, '$1\n$2')
+
+                // Step 3: Count existing questions to continue numbering
+                const existingContent = targetSection.questions || ""
+                const existingMatches = existingContent.match(/^\d+[\.\)]\s/gm)
+                let startNumber = (existingMatches ? existingMatches.length : 0) + 1
+
+                // Step 4: Renumber questions sequentially
                 processedText = processedText.replace(/^\d+[\.\)]\s/gm, () => {
                     return `${startNumber++}. `
                 })

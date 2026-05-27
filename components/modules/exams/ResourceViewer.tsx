@@ -47,10 +47,10 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
         }
     }, [url, type])
 
-    // Auto-hide toast after 2.5s
+    // Auto-hide toast after 3s
     useEffect(() => {
         if (toast.visible) {
-            const timer = setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 2500)
+            const timer = setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000)
             return () => clearTimeout(timer)
         }
     }, [toast.visible])
@@ -129,16 +129,16 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
                 </div>
             </div>
 
-            {/* Toast notification */}
+            {/* Toast notification — fixed position for guaranteed visibility */}
             {toast.visible && (
-                <div className={`absolute top-16 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2.5 rounded-lg shadow-lg text-sm font-medium animate-in fade-in slide-in-from-top-2 duration-200 ${
+                <div className={`fixed bottom-6 right-6 z-[100] flex items-center gap-2.5 px-5 py-3 rounded-xl shadow-2xl text-sm font-semibold animate-in fade-in slide-in-from-bottom-4 duration-300 ${
                     toast.success
-                        ? "bg-emerald-600 text-white"
-                        : "bg-red-600 text-white"
+                        ? "bg-emerald-600 text-white ring-2 ring-emerald-400/30"
+                        : "bg-red-600 text-white ring-2 ring-red-400/30"
                 }`}>
                     {toast.success
-                        ? <CheckCircle2 className="h-4 w-4 shrink-0" />
-                        : <XCircle className="h-4 w-4 shrink-0" />
+                        ? <CheckCircle2 className="h-5 w-5 shrink-0" />
+                        : <XCircle className="h-5 w-5 shrink-0" />
                     }
                     {toast.message}
                 </div>

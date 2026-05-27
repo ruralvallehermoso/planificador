@@ -1,19 +1,16 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
 import mammoth from "mammoth"
-import { Loader2, ArrowLeft } from "lucide-react"
+import { Loader2, ArrowLeft, CheckCircle2, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import "react-pdf/dist/Page/AnnotationLayer.css"
 import "react-pdf/dist/Page/TextLayer.css"
 
-// Configure worker for react-pdf
+// Configure worker for react-pdf — must match the version bundled by react-pdf
 if (typeof window !== "undefined") {
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-        'pdfjs-dist/build/pdf.worker.min.js',
-        import.meta.url,
-    ).toString();
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 }
 
 interface ResourceViewerProps {
@@ -21,6 +18,12 @@ interface ResourceViewerProps {
     type: string // "pdf" | "docx"
     onClose: () => void
     onAddContent: (text: string, mode: "TEST" | "STANDARD") => void
+}
+
+type ToastState = {
+    visible: boolean
+    success: boolean
+    message: string
 }
 
 export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceViewerProps) {
@@ -34,11 +37,23 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
     // Selection popup state
     const [selection, setSelection] = useState<{ text: string, x: number, y: number } | null>(null)
 
+    // Adding content state (loading + feedback toast)
+    const [isAdding, setIsAdding] = useState(false)
+    const [toast, setToast] = useState<ToastState>({ visible: false, success: false, message: "" })
+
     useEffect(() => {
         if (type === "docx") {
             loadDocx()
         }
     }, [url, type])
+
+    // Auto-hide toast after 2.5s
+    useEffect(() => {
+        if (toast.visible) {
+            const timer = setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 2500)
+            return () => clearTimeout(timer)
+        }
+    }, [toast.visible])
 
     const loadDocx = async () => {
         setLoading(true)
@@ -62,38 +77,48 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
         setLoading(false)
     }
 
-    const handleMouseUp = () => {
+    const handleMouseUp = useCallback(() => {
         setTimeout(() => {
             const sel = window.getSelection()
             if (sel && sel.toString().trim().length > 0) {
                 const range = sel.getRangeAt(0)
                 const rect = range.getBoundingClientRect()
-                
-                // Get container coordinates
+
                 const containerRect = containerRef.current?.getBoundingClientRect()
                 if (!containerRect) return
 
                 setSelection({
                     text: sel.toString().trim(),
                     x: rect.left - containerRect.left + (rect.width / 2),
-                    y: rect.top - containerRect.top - 10 // A bit above
+                    y: rect.top - containerRect.top - 10 + (containerRef.current?.scrollTop || 0)
                 })
             } else {
                 setSelection(null)
             }
-        }, 10)
-    }
+        }, 50) // Slightly longer delay to ensure PDF text layer selection completes
+    }, [])
 
-    const handleAdd = (mode: "TEST" | "STANDARD") => {
-        if (selection) {
+    const handleAdd = async (mode: "TEST" | "STANDARD") => {
+        if (!selection) return
+        setIsAdding(true)
+
+        try {
             onAddContent(selection.text, mode)
             window.getSelection()?.removeAllRanges()
             setSelection(null)
+
+            const label = mode === "TEST" ? "Test" : "Desarrollo"
+            setToast({ visible: true, success: true, message: `Añadido a ${label} correctamente` })
+        } catch (err) {
+            console.error("Error adding from resource:", err)
+            setToast({ visible: true, success: false, message: "Error al añadir el contenido" })
+        } finally {
+            setIsAdding(false)
         }
     }
 
     return (
-        <div className="relative flex flex-col h-full bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm" ref={containerRef}>
+        <div className="relative flex flex-col h-full bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
             <div className="flex items-center gap-2 p-3 border-b bg-slate-50 sticky top-0 z-10">
                 <Button variant="ghost" size="sm" onClick={onClose} className="shrink-0 h-8">
                     <ArrowLeft className="h-4 w-4 mr-2" />
@@ -104,7 +129,23 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
                 </div>
             </div>
 
-            <div 
+            {/* Toast notification */}
+            {toast.visible && (
+                <div className={`absolute top-16 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2.5 rounded-lg shadow-lg text-sm font-medium animate-in fade-in slide-in-from-top-2 duration-200 ${
+                    toast.success
+                        ? "bg-emerald-600 text-white"
+                        : "bg-red-600 text-white"
+                }`}>
+                    {toast.success
+                        ? <CheckCircle2 className="h-4 w-4 shrink-0" />
+                        : <XCircle className="h-4 w-4 shrink-0" />
+                    }
+                    {toast.message}
+                </div>
+            )}
+
+            <div
+                ref={containerRef}
                 className="flex-1 overflow-auto p-4 relative"
                 onMouseUp={handleMouseUp}
             >
@@ -115,8 +156,12 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
                 )}
 
                 {errorMsg && (
-                    <div className="flex items-center justify-center h-full text-red-500 text-sm">
-                        {errorMsg}
+                    <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
+                        <XCircle className="h-10 w-10 text-red-300" />
+                        <p className="text-red-500 text-sm">{errorMsg}</p>
+                        <Button variant="outline" size="sm" onClick={() => { setErrorMsg(null); setLoading(true); if (type === "docx") loadDocx() }}>
+                            Reintentar
+                        </Button>
                     </div>
                 )}
 
@@ -126,19 +171,20 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
                             file={proxyUrl}
                             onLoadSuccess={onDocumentLoadSuccess}
                             onLoadError={(err) => {
-                                console.error(err)
-                                setErrorMsg("Error cargando el PDF. Puede que el archivo esté corrupto.")
+                                console.error("PDF load error:", err)
+                                setErrorMsg("Error cargando el PDF. Puede que el archivo esté corrupto o no sea accesible.")
                                 setLoading(false)
                             }}
-                            loading={<div className="p-8"><Loader2 className="h-8 w-8 animate-spin text-slate-400" /></div>}
+                            loading={<div className="flex items-center justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-slate-400" /></div>}
                             className="flex flex-col gap-4"
                         >
-                            {Array.from(new Array(numPages), (el, index) => (
+                            {Array.from(new Array(numPages), (_, index) => (
                                 <div key={`page_${index + 1}`} className="shadow-md rounded-sm overflow-hidden bg-white border">
-                                    <Page 
-                                        pageNumber={index + 1} 
-                                        width={800} // Set a fixed width or make it responsive
+                                    <Page
+                                        pageNumber={index + 1}
+                                        width={Math.min(800, (typeof window !== 'undefined' ? window.innerWidth : 900) - 100)}
                                         renderAnnotationLayer={false}
+                                        renderTextLayer={true}
                                     />
                                 </div>
                             ))}
@@ -147,7 +193,7 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
                 )}
 
                 {type === "docx" && docxHtml && (
-                    <div 
+                    <div
                         className="prose prose-sm max-w-none prose-slate bg-white p-8 shadow-sm rounded-sm border min-h-full"
                         dangerouslySetInnerHTML={{ __html: docxHtml }}
                     />
@@ -155,26 +201,30 @@ export function ResourceViewer({ url, type, onClose, onAddContent }: ResourceVie
 
                 {/* Popover Tooltip for text selection */}
                 {selection && (
-                    <div 
+                    <div
                         className="absolute z-50 bg-slate-800 text-white shadow-xl rounded-lg flex flex-col overflow-hidden text-sm animate-in fade-in zoom-in-95 duration-200"
-                        style={{ 
-                            left: Math.max(10, selection.x - 75), 
-                            top: Math.max(10, selection.y - 80) // Positioned above selection
+                        style={{
+                            left: Math.max(10, Math.min(selection.x - 75, (containerRef.current?.clientWidth || 300) - 170)),
+                            top: Math.max(10, selection.y - 80)
                         }}
                     >
                         <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-700 text-xs font-semibold text-slate-300">
                             ¿Añadir selección?
                         </div>
-                        <button 
-                            className="px-4 py-2 hover:bg-blue-600 text-left transition-colors whitespace-nowrap"
+                        <button
+                            className="px-4 py-2 hover:bg-blue-600 text-left transition-colors whitespace-nowrap flex items-center gap-2 disabled:opacity-50"
                             onClick={() => handleAdd("TEST")}
+                            disabled={isAdding}
                         >
+                            {isAdding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
                             Añadir a <b>Test</b>
                         </button>
-                        <button 
-                            className="px-4 py-2 hover:bg-emerald-600 text-left transition-colors whitespace-nowrap"
+                        <button
+                            className="px-4 py-2 hover:bg-emerald-600 text-left transition-colors whitespace-nowrap flex items-center gap-2 disabled:opacity-50"
                             onClick={() => handleAdd("STANDARD")}
+                            disabled={isAdding}
                         >
+                            {isAdding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
                             Añadir a <b>Desarrollo</b>
                         </button>
                     </div>

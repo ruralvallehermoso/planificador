@@ -157,14 +157,17 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
         loadTemplates()
     }, [])
 
-    // Fetch resources if panel opened
+    // Fetch resources when panel opens
+    const refreshResources = async () => {
+        const res = await getFpExamResources()
+        if (res.success && res.data) setFpResources(res.data)
+    }
+
     useEffect(() => {
-        if (showResources && fpResources.length === 0) {
-            getFpExamResources().then(res => {
-                if (res.success && res.data) setFpResources(res.data)
-            })
+        if (showResources) {
+            refreshResources()
         }
-    }, [showResources, fpResources.length])
+    }, [showResources])
 
     // Initialize with initialData if provided
     useEffect(() => {
@@ -716,7 +719,15 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                     : "text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100 hover:text-blue-800"
                             )}
                             variant={showResources ? "default" : "outline"}
-                            onClick={() => { setViewMode('preview'); setShowResources(!showResources); setShowNotebook(false); setShowGrading(false) }}
+                            onClick={() => {
+                                const next = !showResources
+                                setShowResources(next)
+                                setShowNotebook(false)
+                                setShowGrading(false)
+                                if (next) {
+                                    setViewMode('split')
+                                }
+                            }}
                         >
                             <Library className="h-3.5 w-3.5 sm:mr-1.5" />
                             <span className="hidden sm:inline">Recursos</span>
@@ -798,7 +809,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                     <div className={cn(
                         "print:w-full print:static h-full transition-all duration-300",
                         viewMode === 'editor' ? "hidden" : "block",
-                        viewMode === 'preview' ? ((showNotebook || showGrading || showResources) ? "max-w-[95vw] mx-auto" : "max-w-[210mm] mx-auto") : ""
+                        viewMode === 'preview' ? ((showNotebook || showGrading) ? "max-w-[95vw] mx-auto" : "max-w-[210mm] mx-auto") : "",
+                        showResources ? "" : ""
                     )}>
                         <div className={cn("print:static sticky top-6 space-y-4", (showNotebook || showGrading || showResources) ? "h-[calc(100vh-6rem)]" : "")}>
                             <div className={cn(
@@ -970,7 +982,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                                         resources={fpResources} 
                                                         selectable 
                                                         compact
-                                                        onSelect={(res) => setSelectedResource(res)} 
+                                                        onSelect={(res) => setSelectedResource(res)}
+                                                        onUploadSuccess={refreshResources}
                                                     />
                                                 </div>
                                             )}
@@ -979,6 +992,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                 )}
                             </div>
 
+                            {/* Exam Preview Tabs — hidden when resources are active */}
+                            {!showResources && (
                             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                                 <div className="mb-4 flex items-center justify-between print:hidden">
                                     <TabsList className="bg-gray-100">
@@ -1047,6 +1062,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                 </TabsContent>
 
                             </Tabs>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -11,12 +11,12 @@ const FINANZAS_BACKEND_URL = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'ht
 // Build Content-Security-Policy
 const cspDirectives = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com`,
-  `worker-src 'self' blob: https://unpkg.com`,
+  `script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com`,
+  `worker-src 'self' blob: https://unpkg.com https://cdnjs.cloudflare.com`,
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `img-src 'self' data: blob: https:`,
   `font-src 'self' https://fonts.gstatic.com`,
-  `connect-src 'self' https://vercel.com ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL} ${FINANZAS_BACKEND_URL} https://unpkg.com`,
+  `connect-src 'self' https://vercel.com ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL} ${FINANZAS_BACKEND_URL} https://unpkg.com https://cdnjs.cloudflare.com`,
   `frame-src 'self' ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL}`,
   "frame-ancestors 'self'",
   "base-uri 'self'",

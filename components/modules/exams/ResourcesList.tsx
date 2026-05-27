@@ -13,9 +13,10 @@ interface ResourcesListProps {
     onSelect?: (resource: FpExamResource) => void
     selectable?: boolean
     compact?: boolean
+    onUploadSuccess?: () => void
 }
 
-export function ResourcesList({ resources, onSelect, selectable = false, compact = false }: ResourcesListProps) {
+export function ResourcesList({ resources, onSelect, selectable = false, compact = false, onUploadSuccess }: ResourcesListProps) {
     const [isDeleting, setIsDeleting] = useState<string | null>(null)
     const [isUploading, setIsUploading] = useState(false)
     const router = useRouter()
@@ -51,6 +52,7 @@ export function ResourcesList({ resources, onSelect, selectable = false, compact
             if (!res.ok) throw new Error("Failed to upload")
             
             router.refresh()
+            onUploadSuccess?.()
         } catch (error) {
             console.error(error)
             alert("Error subiendo el archivo")

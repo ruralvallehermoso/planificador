@@ -678,7 +678,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                             <DropdownMenuTrigger asChild>
                                 <Button size="sm" variant="outline" className="h-8 rounded-full text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-800 transition-all font-medium">
                                     <Sparkles className="h-3.5 w-3.5 sm:mr-1.5" />
-                                    <span className="hidden sm:inline">IA y Herramientas</span>
+                                    <span className="hidden sm:inline">Herramientas</span>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-52 bg-white">

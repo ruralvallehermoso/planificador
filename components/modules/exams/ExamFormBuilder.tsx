@@ -750,186 +750,180 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                         showResources ? "" : ""
                     )}>
                         <div className={cn("print:static sticky top-6 space-y-4", (showNotebook || showGrading || showResources) ? "h-[calc(100vh-6rem)]" : "")}>
-                            <div className={cn(
-                                "grid gap-6 transition-all duration-300 h-full",
-                                (showGrading && showNotebook) ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"
-                            )}>
+                            {/* Grading Panel */}
+                            {showGrading && !showNotebook && !showResources && (
+                                <div className="bg-white p-6 shadow-lg rounded-lg border border-emerald-100 animate-in slide-in-from-top-2 h-fit">
+                                    <div className="mb-4 flex items-center justify-between">
+                                        <h3 className="font-bold text-lg text-emerald-900 flex items-center gap-2">
+                                            <Calculator className="h-5 w-5 text-emerald-600" />
+                                            Calculadora de Calificaciones
+                                        </h3>
+                                        <Button variant="ghost" size="sm" onClick={() => setShowGrading(false)}><ArrowLeft className="h-4 w-4 rotate-90" /></Button>
+                                    </div>
+                                    <ExamGrader
+                                        sections={sections}
+                                        gradingRules={resolvedGrading}
+                                        detectedQuestionCount={detectedTestQuestionCount}
+                                        onGradingChange={setGrading}
+                                        part1Weight={weights.p1}
+                                        part2Weight={weights.p2}
+                                        onWeightsChange={(p1, p2) => setHeader(prev => ({
+                                            ...prev,
+                                            part1Percentage: p1 + '%',
+                                            part2Percentage: p2 + '%'
+                                        }))}
+                                        gradingValues={gradingValues}
+                                        onQuestionValuesChange={setGradingValues}
+                                    />
+                                </div>
+                            )}
 
-                                {/* Grading Panel */}
-                                {showGrading && (
-                                    <div className="bg-white p-6 shadow-lg rounded-lg border border-emerald-100 animate-in slide-in-from-top-2 h-fit">
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-bold text-lg text-emerald-900 flex items-center gap-2">
-                                                <Calculator className="h-5 w-5 text-emerald-600" />
-                                                Calculadora de Calificaciones
+                            {/* Notebook Panel */}
+                            {showNotebook && !showGrading && !showResources && (
+                                <div className="bg-white p-6 shadow-lg rounded-lg border border-orange-100 animate-in slide-in-from-top-2 h-fit">
+                                    <div className="mb-6 flex items-center justify-between">
+                                        <div>
+                                            <h3 className="font-bold text-lg text-orange-900 flex items-center gap-2">
+                                                <BookOpen className="h-5 w-5 text-orange-600" />
+                                                Solución Manual / NotebookLM
                                             </h3>
-                                            <Button variant="ghost" size="sm" onClick={() => setShowGrading(false)}><ArrowLeft className="h-4 w-4 rotate-90" /></Button>
+                                            <p className="text-sm text-gray-500">Pega aquí el contenido generado por NotebookLM u otra fuente.</p>
                                         </div>
-                                        <ExamGrader
-                                            sections={sections}
-                                            gradingRules={resolvedGrading}
-                                            detectedQuestionCount={detectedTestQuestionCount}
-                                            onGradingChange={setGrading}
-                                            part1Weight={weights.p1}
-                                            part2Weight={weights.p2}
-                                            onWeightsChange={(p1, p2) => setHeader(prev => ({
-                                                ...prev,
-                                                part1Percentage: p1 + '%',
-                                                part2Percentage: p2 + '%'
-                                            }))}
-                                            gradingValues={gradingValues}
-                                            onQuestionValuesChange={setGradingValues}
-                                        />
+                                        <div className="flex gap-2">
+                                            <Button variant="outline" size="sm" onClick={() => {
+                                                const printWindow = window.open('', '_blank')
+                                                if (!printWindow) return
+                                                printWindow.document.write(`
+                                                    <html>
+                                                        <head>
+                                                            <title>Solucionario: ${header.subject || 'Examen'}</title>
+                                                            <style>
+                                                                body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; }
+                                                                h1 { color: #ea580c; border-bottom: 2px solid #ea580c; padding-bottom: 10px; }
+                                                                strong { font-weight: bold; color: #000; }
+                                                                h2, h3 { color: #333; margin-top: 20px; }
+                                                                ul { padding-left: 20px; }
+                                                                li { margin-bottom: 5px; }
+                                                                code { background: #f3f4f6; padding: 2px 4px; rounded: 4px; font-family: monospace; }
+                                                            </style>
+                                                        </head>
+                                                        <body>
+                                                            <h1>Solucionario: ${header.subject || 'Examen'}</h1>
+                                                            <div style="white-space: pre-wrap;">${manualSolution}</div>
+                                                            <script>window.onload = () => { window.print(); window.close(); }</script>
+                                                        </body>
+                                                    </html>
+                                                `)
+                                                printWindow.document.close()
+                                            }}>
+                                                <Printer className="h-4 w-4 mr-2" />
+                                                Imprimir
+                                            </Button>
+                                            <Button variant="ghost" size="sm" onClick={() => setShowNotebook(false)}><ArrowLeft className="h-4 w-4 rotate-90" /></Button>
+                                        </div>
                                     </div>
-                                )}
 
-                                {/* Notebook Panel */}
-                                {showNotebook && (
-                                    <div className="bg-white p-6 shadow-lg rounded-lg border border-orange-100 animate-in slide-in-from-top-2 h-fit">
-                                        <div className="mb-6 flex items-center justify-between">
-                                            <div>
-                                                <h3 className="font-bold text-lg text-orange-900 flex items-center gap-2">
-                                                    <BookOpen className="h-5 w-5 text-orange-600" />
-                                                    Solución Manual / NotebookLM
-                                                </h3>
-                                                <p className="text-sm text-gray-500">Pega aquí el contenido generado por NotebookLM u otra fuente.</p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Button variant="outline" size="sm" onClick={() => {
-                                                    const printWindow = window.open('', '_blank')
-                                                    if (!printWindow) return
-                                                    printWindow.document.write(`
-                                                        <html>
-                                                            <head>
-                                                                <title>Solucionario: ${header.subject || 'Examen'}</title>
-                                                                <style>
-                                                                    body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; }
-                                                                    h1 { color: #ea580c; border-bottom: 2px solid #ea580c; padding-bottom: 10px; }
-                                                                    strong { font-weight: bold; color: #000; }
-                                                                    h2, h3 { color: #333; margin-top: 20px; }
-                                                                    ul { padding-left: 20px; }
-                                                                    li { margin-bottom: 5px; }
-                                                                    code { background: #f3f4f6; padding: 2px 4px; rounded: 4px; font-family: monospace; }
-                                                                </style>
-                                                            </head>
-                                                            <body>
-                                                                <h1>Solucionario: ${header.subject || 'Examen'}</h1>
-                                                                <div style="white-space: pre-wrap;">${manualSolution}</div>
-                                                                <script>window.onload = () => { window.print(); window.close(); }</script>
-                                                            </body>
-                                                        </html>
-                                                    `)
-                                                    printWindow.document.close()
-                                                }}>
-                                                    <Printer className="h-4 w-4 mr-2" />
-                                                    Imprimir
-                                                </Button>
-                                                <Button variant="ghost" size="sm" onClick={() => setShowNotebook(false)}><ArrowLeft className="h-4 w-4 rotate-90" /></Button>
-                                            </div>
+                                    <div className="space-y-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="notebook-input" className="text-orange-800">Pegar Contenido</Label>
+                                            <textarea
+                                                id="notebook-input"
+                                                className="flex min-h-[150px] w-full rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-sm placeholder:text-orange-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                                placeholder="Pega aquí el texto extraído de NotebookLM..."
+                                                value={manualSolution}
+                                                onChange={(e) => setManualSolution(e.target.value)}
+                                            />
                                         </div>
 
-                                        <div className="space-y-6">
+                                        {manualSolution && (
                                             <div className="space-y-2">
-                                                <Label htmlFor="notebook-input" className="text-orange-800">Pegar Contenido</Label>
-                                                <textarea
-                                                    id="notebook-input"
-                                                    className="flex min-h-[150px] w-full rounded-md border border-orange-200 bg-orange-50 px-3 py-2 text-sm placeholder:text-orange-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
-                                                    placeholder="Pega aquí el texto extraído de NotebookLM..."
-                                                    value={manualSolution}
-                                                    onChange={(e) => setManualSolution(e.target.value)}
-                                                />
-                                            </div>
+                                                <div className="flex items-center gap-2 text-orange-800 font-medium">
+                                                    <Sparkles className="h-4 w-4" />
+                                                    Vista Previa Formateada
+                                                </div>
 
-                                            {manualSolution && (
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2 text-orange-800 font-medium">
-                                                        <Sparkles className="h-4 w-4" />
-                                                        Vista Previa Formateada
-                                                    </div>
-
-                                                    {quickAnswers.length > 0 && (
-                                                        <div className="p-6 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
-                                                            <div className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                                                <Check className="h-3 w-3" />
-                                                                Soluciones Rápidas (Test)
-                                                            </div>
-                                                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 lg:grid-cols-10 gap-3">
-                                                                {quickAnswers.map((ans, i) => (
-                                                                    <div key={i} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-orange-100 shadow-sm transition-transform hover:scale-105">
-                                                                        <span className="text-[10px] font-bold text-orange-400 uppercase leading-none mb-1">{ans.q}</span>
-                                                                        <span className="text-3xl font-black text-orange-950 font-mono leading-none">{ans.a}</span>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
+                                                {quickAnswers.length > 0 && (
+                                                    <div className="p-6 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
+                                                        <div className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                            <Check className="h-3 w-3" />
+                                                            Soluciones Rápidas (Test)
                                                         </div>
-                                                    )}
-
-                                                    <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-inner prose prose-sm max-w-none prose-orange">
-                                                        <ReactMarkdown
-                                                            remarkPlugins={[remarkGfm, remarkMath]}
-                                                            rehypePlugins={[rehypeKatex]}
-                                                            components={{
-                                                                table: (props) => <table className="w-full border-collapse border border-gray-300 my-4" {...withoutMarkdownNode(props)} />,
-                                                                th: (props) => <th className="border border-gray-300 px-4 py-2 bg-gray-100 font-bold text-left" {...withoutMarkdownNode(props)} />,
-                                                                td: (props) => <td className="border border-gray-300 px-4 py-2" {...withoutMarkdownNode(props)} />,
-                                                                p: (props) => <p className="mb-4 leading-relaxed text-gray-800" {...withoutMarkdownNode(props)} />,
-                                                                ul: (props) => <ul className="list-disc pl-6 mb-4 space-y-2" {...withoutMarkdownNode(props)} />,
-                                                                ol: (props) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...withoutMarkdownNode(props)} />,
-                                                                li: (props) => <li className="pl-1" {...withoutMarkdownNode(props)} />,
-                                                                h1: (props) => <h1 className="text-2xl font-bold mt-8 mb-4 border-b pb-2 text-orange-800" {...withoutMarkdownNode(props)} />,
-                                                                h2: (props) => <h2 className="text-xl font-bold mt-6 mb-3 text-orange-700" {...withoutMarkdownNode(props)} />,
-                                                                h3: (props) => <h3 className="text-lg font-bold mt-5 mb-2 text-gray-900" {...withoutMarkdownNode(props)} />,
-                                                            }}
-                                                        >
-                                                            {manualSolution}
-                                                        </ReactMarkdown>
+                                                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 lg:grid-cols-10 gap-3">
+                                                            {quickAnswers.map((ans, i) => (
+                                                                <div key={i} className="flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-orange-100 shadow-sm transition-transform hover:scale-105">
+                                                                    <span className="text-[10px] font-bold text-orange-400 uppercase leading-none mb-1">{ans.q}</span>
+                                                                    <span className="text-3xl font-black text-orange-950 font-mono leading-none">{ans.a}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
+                                                )}
+
+                                                <div className="p-6 bg-white border border-gray-100 rounded-lg shadow-inner prose prose-sm max-w-none prose-orange">
+                                                    <ReactMarkdown
+                                                        remarkPlugins={[remarkGfm, remarkMath]}
+                                                        rehypePlugins={[rehypeKatex]}
+                                                        components={{
+                                                            table: (props) => <table className="w-full border-collapse border border-gray-300 my-4" {...withoutMarkdownNode(props)} />,
+                                                            th: (props) => <th className="border border-gray-300 px-4 py-2 bg-gray-100 font-bold text-left" {...withoutMarkdownNode(props)} />,
+                                                            td: (props) => <td className="border border-gray-300 px-4 py-2" {...withoutMarkdownNode(props)} />,
+                                                            p: (props) => <p className="mb-4 leading-relaxed text-gray-800" {...withoutMarkdownNode(props)} />,
+                                                            ul: (props) => <ul className="list-disc pl-6 mb-4 space-y-2" {...withoutMarkdownNode(props)} />,
+                                                            ol: (props) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...withoutMarkdownNode(props)} />,
+                                                            li: (props) => <li className="pl-1" {...withoutMarkdownNode(props)} />,
+                                                            h1: (props) => <h1 className="text-2xl font-bold mt-8 mb-4 border-b pb-2 text-orange-800" {...withoutMarkdownNode(props)} />,
+                                                            h2: (props) => <h2 className="text-xl font-bold mt-6 mb-3 text-orange-700" {...withoutMarkdownNode(props)} />,
+                                                            h3: (props) => <h3 className="text-lg font-bold mt-5 mb-2 text-gray-900" {...withoutMarkdownNode(props)} />,
+                                                        }}
+                                                    >
+                                                        {manualSolution}
+                                                    </ReactMarkdown>
                                                 </div>
-                                            )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Resources Panel */}
+                            {showResources && !showGrading && !showNotebook && (
+                                <div className="bg-white p-6 shadow-lg rounded-lg border border-blue-100 animate-in slide-in-from-top-2 flex flex-col h-full max-h-full">
+                                    <div className="mb-6 flex items-center justify-between shrink-0">
+                                        <div>
+                                            <h3 className="font-bold text-lg text-blue-900 flex items-center gap-2">
+                                                <Library className="h-5 w-5 text-blue-600" />
+                                                Recursos
+                                            </h3>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button variant="ghost" size="sm" onClick={() => setShowResources(false)}><ArrowLeft className="h-4 w-4 rotate-90" /></Button>
                                         </div>
                                     </div>
-                                )}
-
-                                {/* Resources Panel */}
-                                {showResources && (
-                                    <div className="bg-white p-6 shadow-lg rounded-lg border border-blue-100 animate-in slide-in-from-top-2 flex flex-col h-full max-h-full">
-                                        <div className="mb-6 flex items-center justify-between shrink-0">
-                                            <div>
-                                                <h3 className="font-bold text-lg text-blue-900 flex items-center gap-2">
-                                                    <Library className="h-5 w-5 text-blue-600" />
-                                                    Recursos
-                                                </h3>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Button variant="ghost" size="sm" onClick={() => setShowResources(false)}><ArrowLeft className="h-4 w-4 rotate-90" /></Button>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="flex-1 overflow-hidden min-h-[400px]">
-                                            {selectedResource ? (
-                                                <ResourceViewer 
-                                                    url={selectedResource.url} 
-                                                    type={selectedResource.type} 
-                                                    onClose={() => setSelectedResource(null)} 
-                                                    onAddContent={handleAddFromResource}
+                                    
+                                    <div className="flex-1 overflow-hidden min-h-[400px]">
+                                        {selectedResource ? (
+                                            <ResourceViewer 
+                                                url={selectedResource.url} 
+                                                type={selectedResource.type} 
+                                                onClose={() => setSelectedResource(null)} 
+                                                onAddContent={handleAddFromResource}
+                                            />
+                                        ) : (
+                                            <div className="h-full overflow-y-auto pr-2">
+                                                <ResourcesList 
+                                                    resources={fpResources} 
+                                                    selectable 
+                                                    compact
+                                                    onSelect={(res) => setSelectedResource(res)}
+                                                    onUploadSuccess={refreshResources}
                                                 />
-                                            ) : (
-                                                <div className="h-full overflow-y-auto pr-2">
-                                                    <ResourcesList 
-                                                        resources={fpResources} 
-                                                        selectable 
-                                                        compact
-                                                        onSelect={(res) => setSelectedResource(res)}
-                                                        onUploadSuccess={refreshResources}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
 
-                            {/* Exam Preview — hidden when resources, notebook or grading are active */}
+                            {/* Exam Preview — only when no panel is active */}
                             {!showResources && !showNotebook && !showGrading && (
                                 <ExamPreview header={header} sections={sections} formatting={formatting} grading={displayGrading} />
                             )}

@@ -6,13 +6,13 @@ import { ExamSectionsBuilder } from "./ExamSectionsBuilder"
 import { ExamFormattingForm } from "./ExamFormattingForm"
 import { ExamPreview } from "./ExamPreview"
 import { ExamGrader } from "./ExamGrader"
-import { saveExamTemplate, getExamTemplates, deleteTemplate, generateExamSolution } from "@/lib/actions/exams"
+import { saveExamTemplate, getExamTemplates, deleteTemplate } from "@/lib/actions/exams"
 import type { ExamHeaderData, ExamSection, ExamFormatting, ExamTemplateData } from "@/lib/actions/exams"
 import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Sparkles, Check, Copy, Calculator, PanelLeft, PanelRight, Columns, BookOpen, ChevronDown } from "lucide-react"
+
+import { Printer, Save, Loader2, ArrowLeft, Download, Trash2, Sparkles, Check, Calculator, PanelLeft, PanelRight, Columns, BookOpen, ChevronDown } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
@@ -100,11 +100,8 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     const [newTemplateName, setNewTemplateName] = useState("")
     const [saveDialogOpen, setSaveDialogOpen] = useState(false)
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
-    const [isGeneratingSolution, setIsGeneratingSolution] = useState(false)
-    const [activeTab, setActiveTab] = useState("preview")
-    const [copiedSolution, setCopiedSolution] = useState(false)
 
-    const [solutionHtml, setSolutionHtml] = useState("")
+
     const [manualSolution, setManualSolution] = useState("") // NotebookLM/Manual content
 
     // Panel Visibility States
@@ -444,67 +441,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
     }
 
 
-    const handleGenerateSolution = async () => {
-        setIsGeneratingSolution(true)
-        const data: ExamTemplateData = {
-            name: newTemplateName || 'Borrador',
-            header,
-            sections,
-            formatting,
-            grading: resolvedGrading
-        }
 
-        try {
-            const result = await generateExamSolution(data)
-            if (result.success && result.solution) {
-                setSolutionHtml(result.solution)
-                setActiveTab("solution")
-            } else {
-                alert("Error generando el solucionario: " + result.error)
-            }
-        } catch (error) {
-            console.error(error)
-            alert("Error al conectar con Gemini")
-        } finally {
-            setIsGeneratingSolution(false)
-            if (!isGeneratingSolution) { // simple check to avoid race conditions visually
-                setActiveTab("solution")
-            }
-        }
-    }
-
-    const handleCopySolution = () => {
-        const text = new DOMParser().parseFromString(solutionHtml, "text/html").body.textContent || ""
-        navigator.clipboard.writeText(text)
-        setCopiedSolution(true)
-        setTimeout(() => setCopiedSolution(false), 2000)
-    }
-
-    const handlePrintSolution = () => {
-        const printWindow = window.open('', '_blank')
-        if (!printWindow) return
-
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Solucionario: ${header.subject || 'Examen'}</title>
-                    <style>
-                        body { font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333; }
-                        h1 { color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
-                        strong { font-weight: bold; color: #000; }
-                    </style>
-                </head>
-                <body>
-                    <h1>Solucionario: ${header.subject || 'Examen'}</h1>
-                    ${solutionHtml}
-                    <script>
-                        window.onload = () => { window.print(); window.close(); }
-                    </script>
-                </body>
-            </html>
-        `)
-        printWindow.document.close()
-    }
 
     const handleAddFromResource = (text: string, mode: "TEST" | "STANDARD" | "DEVELOP") => {
         const sectionType = mode === "STANDARD" ? "DEVELOP" : mode
@@ -745,11 +682,7 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-52 bg-white">
-                                <DropdownMenuLabel className="text-xs text-gray-500 font-semibold px-2">ASISTENTE IA</DropdownMenuLabel>
-                                <DropdownMenuItem onClick={handleGenerateSolution} disabled={isGeneratingSolution || sections.length === 0} className="text-indigo-700 focus:bg-indigo-50 cursor-pointer text-sm py-2">
-                                    {isGeneratingSolution ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
-                                    Resolver Test con IA
-                                </DropdownMenuItem>
+                                <DropdownMenuLabel className="text-xs text-gray-500 font-semibold px-2">HERRAMIENTAS</DropdownMenuLabel>
                                 <DropdownMenuItem onClick={() => { setViewMode('preview'); setShowNotebook(!showNotebook); setShowGrading(false); setShowResources(false) }} className="cursor-pointer text-sm py-2 text-orange-700 focus:bg-orange-50 focus:text-orange-800">
                                     <BookOpen className="h-4 w-4 mr-2" />
                                     Pegar NotebookLM
@@ -996,76 +929,9 @@ export function ExamFormBuilder({ initialData }: ExamFormBuilderProps) {
                                 )}
                             </div>
 
-                            {/* Exam Preview Tabs — hidden when resources are active */}
-                            {!showResources && (
-                            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                                <div className="mb-4 flex items-center justify-between print:hidden">
-                                    <TabsList className="bg-gray-100">
-                                        <TabsTrigger value="preview" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Vista Previa</TabsTrigger>
-                                        <TabsTrigger value="solution" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                                            <Sparkles className="h-3 w-3 mr-2 text-purple-600" />
-                                            Solucionario IA
-                                        </TabsTrigger>
-                                    </TabsList>
-                                    {/* ... existing span ... */}
-                                </div>
-
-                                <TabsContent value="preview" className="mt-0 outline-none">
-                                    <ExamPreview header={header} sections={sections} formatting={formatting} grading={displayGrading} />
-                                </TabsContent>
-                                {/* ... other tabs ... */}
-                                <TabsContent value="solution" className="mt-0 outline-none">
-                                    <div className="bg-white p-8 shadow-lg min-h-[500px] rounded-lg border border-purple-100">
-                                        {/* ... solution content ... */}
-                                        {solutionHtml ? (
-                                            <div className="space-y-6">
-                                                <div className="flex items-center justify-between border-b pb-4">
-                                                    <div>
-                                                        <h3 className="font-bold text-lg text-purple-900 flex items-center gap-2">
-                                                            <Sparkles className="h-5 w-5 text-purple-600" />
-                                                            Solucionario Generado
-                                                        </h3>
-                                                        <p className="text-sm text-gray-500">Basado en el contenido actual del examen</p>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <Button variant="outline" size="sm" onClick={handleCopySolution}>
-                                                            {copiedSolution ? <Check className="h-4 w-4 mr-2 text-green-600" /> : <Copy className="h-4 w-4 mr-2" />}
-                                                            Copiar
-                                                        </Button>
-                                                        <Button variant="outline" size="sm" onClick={handlePrintSolution}>
-                                                            <Printer className="h-4 w-4 mr-2" />
-                                                            Imprimir
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    className="prose prose-sm max-w-none text-gray-800"
-                                                    dangerouslySetInnerHTML={{ __html: solutionHtml }}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="h-[400px] flex flex-col items-center justify-center text-center text-gray-500 space-y-4">
-                                                <div className="h-16 w-16 bg-purple-50 rounded-full flex items-center justify-center">
-                                                    <Sparkles className="h-8 w-8 text-purple-300" />
-                                                </div>
-                                                <div className="max-w-xs mx-auto">
-                                                    <h3 className="font-semibold text-gray-900 mb-1">Sin Solucionario</h3>
-                                                    <p className="text-sm">Genera una propuesta de resolución y corrección para este examen utilizando IA.</p>
-                                                </div>
-                                                <Button
-                                                    onClick={handleGenerateSolution}
-                                                    disabled={isGeneratingSolution || sections.length === 0}
-                                                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                                                >
-                                                    {isGeneratingSolution ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
-                                                    Generar Solucionario Ahora
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </TabsContent>
-
-                            </Tabs>
+                            {/* Exam Preview — hidden when resources, notebook or grading are active */}
+                            {!showResources && !showNotebook && !showGrading && (
+                                <ExamPreview header={header} sections={sections} formatting={formatting} grading={displayGrading} />
                             )}
                         </div>
                     </div>

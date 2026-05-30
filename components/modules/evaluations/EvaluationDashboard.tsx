@@ -1,17 +1,21 @@
 "use client"
 
-import { useState, useMemo, useRef } from "react"
+import { useState, useMemo, useRef, useEffect } from "react"
 import { FpEvaluation } from "@prisma/client"
-import { updateFpEvaluationData } from "@/lib/actions/fp-evaluations"
+import { updateFpEvaluationData, updateFpEvaluation } from "@/lib/actions/fp-evaluations"
+import { useRouter } from "next/navigation"
 import { read, utils } from "xlsx"
 import {
     UploadCloud, Save, BarChart3, Grip, ArrowLeft,
     Search, Trash2, CheckSquare, Square, Filter, X,
-    Copy
+    Copy, MessageSquare, Settings, Edit2, Plus, Check,
+    Loader2
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, LabelList, Cell } from "recharts"
 
 interface EvaluationDashboardProps {
@@ -19,6 +23,8 @@ interface EvaluationDashboardProps {
 }
 
 export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
+    const router = useRouter()
+
     // 1. STATE INITIALIZATION
     const [studentsData, setStudentsData] = useState<any[]>(() => {
         if (typeof evaluation.studentsData === 'string') {
@@ -40,6 +46,56 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
     const [heatmapSearchTerm, setHeatmapSearchTerm] = useState("")
     const [page, setPage] = useState(1)
     const [copiedSummary, setCopiedSummary] = useState(false)
+
+    // Tab Navigation state
+    const [activeTab, setActiveTab] = useState<"dashboard" | "messages" | "settings">("dashboard")
+
+    // Standard Messages state
+    const [standardMessages, setStandardMessages] = useState<{ id: string; title: string; content: string }[]>([])
+    const [msgTitle, setMsgTitle] = useState("")
+    const [msgContent, setMsgContent] = useState("")
+    const [editingMsgId, setEditingMsgId] = useState<string | null>(null)
+    const [copiedMsgId, setCopiedMsgId] = useState<string | null>(null)
+
+    // Inline Settings Edit state
+    const [editName, setEditName] = useState(evaluation.name || "")
+    const [editSubject, setEditSubject] = useState(evaluation.subject || "")
+    const [editCycle, setEditCycle] = useState(evaluation.cycle || "DAM")
+    const [editCourse, setEditCourse] = useState(evaluation.course || "1º")
+    const [editEvaluation, setEditEvaluation] = useState(evaluation.evaluation || "1ª Evaluación")
+    const [editDescription, setEditDescription] = useState(evaluation.description || "")
+    const [isEditingSaving, setIsEditingSaving] = useState(false)
+
+    // Load standard messages from localStorage
+    useEffect(() => {
+        const stored = localStorage.getItem("fp_evaluations_standard_messages")
+        if (stored) {
+            try {
+                setStandardMessages(JSON.parse(stored))
+            } catch (e) {
+                console.error(e)
+            }
+        } else {
+            const defaults = [
+                { id: "1", title: "Aprobado Sobresaliente", content: "¡Enhorabuena! Has realizado un trabajo excelente en esta evaluación. Has demostrado un gran dominio de los contenidos y un alto nivel de esfuerzo. Sigue así." },
+                { id: "2", title: "Aprobado Normal", content: "¡Felicidades! Has superado la evaluación con una buena nota. Has asimilado bien los conceptos principales, aunque te animo a seguir profundizando en los detalles para el próximo bloque." },
+                { id: "3", title: "Aprobado Raspado", content: "Has superado la evaluación, pero de manera muy justa. Te recomiendo repasar las partes en las que has tenido más dificultades para evitar problemas en el futuro y asegurar una buena base." },
+                { id: "4", title: "Suspenso con opción a recuperar", content: "No has logrado superar esta evaluación. Debes presentarte a la prueba de recuperación. Te recomiendo centrar tu estudio en los criterios de evaluación no superados (los que tienen una nota inferior a 5)." }
+            ]
+            setStandardMessages(defaults)
+            localStorage.setItem("fp_evaluations_standard_messages", JSON.stringify(defaults))
+        }
+    }, [])
+
+    // Sync settings states when evaluation prop updates
+    useEffect(() => {
+        setEditName(evaluation.name || "")
+        setEditSubject(evaluation.subject || "")
+        setEditCycle(evaluation.cycle || "DAM")
+        setEditCourse(evaluation.course || "1º")
+        setEditEvaluation(evaluation.evaluation || "1ª Evaluación")
+        setEditDescription(evaluation.description || "")
+    }, [evaluation])
 
     // NEW Filter states for bar clicks
     const [criteriaFilter, setCriteriaFilter] = useState<{ criteria: string, status: 'Aprobados' | 'Suspendidos' } | null>(null)
@@ -193,6 +249,79 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         navigator.clipboard.writeText(rowsText)
         setCopiedSummary(true)
         setTimeout(() => setCopiedSummary(false), 2000)
+    }
+
+    const handleSaveMessage = (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!msgTitle.trim() || !msgContent.trim()) return
+
+        let updated: { id: string; title: string; content: string }[] = []
+        if (editingMsgId) {
+            updated = standardMessages.map(m => m.id === editingMsgId ? { ...m, title: msgTitle, content: msgContent } : m)
+            setEditingMsgId(null)
+        } else {
+            const newMsg = {
+                id: Date.now().toString(),
+                title: msgTitle,
+                content: msgContent
+            }
+            updated = [...standardMessages, newMsg]
+        }
+
+        setStandardMessages(updated)
+        localStorage.setItem("fp_evaluations_standard_messages", JSON.stringify(updated))
+        setMsgTitle("")
+        setMsgContent("")
+    }
+
+    const handleDeleteMessage = (id: string) => {
+        if (!confirm("¿Deseas eliminar este mensaje estándar?")) return
+        const updated = standardMessages.filter(m => m.id !== id)
+        setStandardMessages(updated)
+        localStorage.setItem("fp_evaluations_standard_messages", JSON.stringify(updated))
+        if (editingMsgId === id) {
+            setEditingMsgId(null)
+            setMsgTitle("")
+            setMsgContent("")
+        }
+    }
+
+    const handleEditMessage = (msg: { id: string; title: string; content: string }) => {
+        setEditingMsgId(msg.id)
+        setMsgTitle(msg.title)
+        setMsgContent(msg.content)
+    }
+
+    const handleCopyMessage = (msg: { id: string; content: string }) => {
+        navigator.clipboard.writeText(msg.content)
+        setCopiedMsgId(msg.id)
+        setTimeout(() => setCopiedMsgId(null), 2000)
+    }
+
+    const handleSaveSettings = async () => {
+        setIsEditingSaving(true)
+        try {
+            const result = await updateFpEvaluation(evaluation.id, {
+                name: editName,
+                subject: editSubject,
+                cycle: editCycle,
+                course: editCourse,
+                evaluation: editEvaluation,
+                description: editDescription
+            })
+            if (result.success) {
+                router.refresh()
+                alert("Detalles de la evaluación actualizados correctamente.")
+                setActiveTab("dashboard")
+            } else {
+                alert("Error al actualizar la evaluación")
+            }
+        } catch (error) {
+            console.error(error)
+            alert("Error al guardar la evaluación")
+        } finally {
+            setIsEditingSaving(false)
+        }
     }
 
     // Graph Data formatting
@@ -571,562 +700,854 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                         <span>{evaluation.course}</span>
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
-                    <Button
-                        variant="ghost"
-                        onClick={clearData}
-                        disabled={studentsData.length === 0 || isSaving}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                    >
-                        <Trash2 className="h-4 w-4 mr-2" /> Limpiar Datos
-                    </Button>
-                    <Button
-                        onClick={saveChanges}
-                        disabled={isSaving || studentsData.length === 0}
-                        className="bg-indigo-600 hover:bg-indigo-700"
-                    >
-                        <Save className="h-4 w-4 mr-2" />
-                        {isSaving ? "Guardando..." : "Guardar Avances"}
-                    </Button>
-                </div>
-            </div>
-
-            {/* ---- EXCEL UPLOAD ZONE ---- */}
-            {studentsData.length === 0 ? (
-                <div className="w-full">
-                    <input
-                        type="file"
-                        accept=".xlsx, .xls, .csv"
-                        className="hidden"
-                        ref={fileInputRef}
-                        onChange={handleFileUpload}
-                        disabled={isUploading}
-                    />
-                    <div
-                        onClick={() => fileInputRef.current?.click()}
-                        className="border-2 border-dashed border-indigo-200 rounded-2xl bg-indigo-50/30 p-12 text-center cursor-pointer hover:bg-indigo-50/60 transition-colors hover:border-indigo-300"
-                    >
-                        <div className="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-4">
-                            <UploadCloud className="h-8 w-8 text-indigo-500" />
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">Sube el archivo de notas (Excel)</h3>
-                        <p className="text-gray-500 mb-6 max-w-sm mx-auto text-sm">
-                            El archivo debe contener los nombres/apellidos en las primeras columnas y los diferentes criterios de evaluación en las demás cabeceras.
-                        </p>
-                        <Button className="bg-white text-indigo-700 border border-indigo-200 hover:bg-indigo-50 shadow-sm pointer-events-none">
-                            Seleccionar Archivo .xlsx
+                {activeTab === "dashboard" && (
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="ghost"
+                            onClick={clearData}
+                            disabled={studentsData.length === 0 || isSaving}
+                            className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                        >
+                            <Trash2 className="h-4 w-4 mr-2" /> Limpiar Datos
+                        </Button>
+                        <Button
+                            onClick={saveChanges}
+                            disabled={isSaving || studentsData.length === 0}
+                            className="bg-indigo-600 hover:bg-indigo-700"
+                        >
+                            <Save className="h-4 w-4 mr-2" />
+                            {isSaving ? "Guardando..." : "Guardar Avances"}
                         </Button>
                     </div>
-                </div>
-            ) : (
-                <div className="space-y-8">
-                    {/* ---- CRITERIA SELECTOR ---- */}
-                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-                        <h3 className="text-base font-bold text-gray-900 flex items-center gap-2 mb-4">
-                            <CheckSquare className="h-5 w-5 text-indigo-600" />
-                            Selección de Criterios (Ejes X)
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {availableCriteria.map(crit => {
-                                const isSelected = selectedCriteria.includes(crit)
-                                return (
-                                    <button
-                                        key={crit}
-                                        onClick={() => toggleCriterion(crit)}
-                                        className={`px-3 py-1.5 rounded-md text-sm font-medium border transition-colors flex items-center gap-2 ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
-                                            }`}
-                                    >
-                                        {isSelected ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4 text-gray-400" />}
-                                        {crit}
-                                    </button>
-                                )
-                            })}
-                        </div>
-                        {selectedCriteria.length === 0 && <p className="text-sm text-rose-500 mt-3 font-medium">Selecciona al menos un criterio para habilitar gráficas.</p>}
-                    </div>
+                )}
+            </div>
 
-                    {/* ---- VISUALIZATIONS GRID ---- */}
-                    {selectedCriteria.length > 0 && (
-                        <div className="space-y-6">
+            {/* ---- TABS NAVIGATION ---- */}
+            <div className="flex items-center border-b border-gray-200">
+                <button
+                    onClick={() => setActiveTab("dashboard")}
+                    className={`flex items-center gap-2 px-5 py-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+                        activeTab === "dashboard"
+                            ? "border-indigo-600 text-indigo-600 bg-indigo-50/10"
+                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200"
+                    }`}
+                >
+                    <BarChart3 className="h-4 w-4" />
+                    Notas y Análisis
+                </button>
+                <button
+                    onClick={() => setActiveTab("messages")}
+                    className={`flex items-center gap-2 px-5 py-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+                        activeTab === "messages"
+                            ? "border-indigo-600 text-indigo-600 bg-indigo-50/10"
+                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200"
+                    }`}
+                >
+                    <MessageSquare className="h-4 w-4" />
+                    Mensajes Estándar
+                </button>
+                <button
+                    onClick={() => setActiveTab("settings")}
+                    className={`flex items-center gap-2 px-5 py-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
+                        activeTab === "settings"
+                            ? "border-indigo-600 text-indigo-600 bg-indigo-50/10"
+                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200"
+                    }`}
+                >
+                    <Settings className="h-4 w-4" />
+                    Editar Detalles
+                </button>
+            </div>
 
-                            {/* Charts Row */}
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-
-                                {/* Bar Chart Global */}
-                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
-                                    <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                        <BarChart3 className="h-5 w-5 text-emerald-500" /> Rendimiento Global
-                                    </h3>
-                                    <div className="flex-1 w-full min-h-[300px]">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={graphData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
-                                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
-                                                <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-                                                <Legend wrapperStyle={{ paddingTop: '30px' }} />
-                                                <Bar
-                                                    dataKey="Aprobados" stackId="a" fill="#10B981" radius={[0, 0, 4, 4]} barSize={40}
-                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                    onClick={(e) => {
-                                                        setCriteriaFilter({ criteria: e.name || e.payload?.name || '', status: 'Aprobados' })
-                                                        document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
-                                                    }}
-                                                />
-                                                <Bar
-                                                    dataKey="Suspendidos" stackId="a" fill="#EF4444" radius={[4, 4, 0, 0]}
-                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                    onClick={(e) => {
-                                                        setCriteriaFilter({ criteria: e.name || e.payload?.name || '', status: 'Suspendidos' })
-                                                        document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
-                                                    }}
-                                                />
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                </div>
-
-                                {/* Distribution Chart */}
-                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
-                                    <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                        <BarChart3 className="h-5 w-5 text-amber-500" /> Distribución de Suspensos
-                                    </h3>
-                                    <div className="flex-1 w-full min-h-[300px]">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={failsDistributionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
-                                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
-                                                <RechartsTooltip content={<CustomDistributionTooltip />} cursor={{ fill: 'transparent' }} />
-                                                <Legend wrapperStyle={{ paddingTop: '30px' }} />
-                                                <Bar
-                                                    dataKey="Alumnos" fill="#F59E0B" radius={[4, 4, 0, 0]} barSize={40}
-                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                    onClick={(e) => {
-                                                        const failsCount = e.payload?.failsCount
-                                                        if (failsCount !== undefined) {
-                                                            setDistributionFilter(failsCount)
-                                                            setCriteriaFilter(null) // Reset the other filter just in case
-                                                            document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
-                                                        }
-                                                    }}
-                                                />
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                </div>
+            {/* ---- TAB CONTENT ---- */}
+            {activeTab === "dashboard" && (
+                studentsData.length === 0 ? (
+                    <div className="w-full">
+                        <input
+                            type="file"
+                            accept=".xlsx, .xls, .csv"
+                            className="hidden"
+                            ref={fileInputRef}
+                            onChange={handleFileUpload}
+                            disabled={isUploading}
+                        />
+                        <div
+                            onClick={() => fileInputRef.current?.click()}
+                            className="border-2 border-dashed border-indigo-200 rounded-2xl bg-indigo-50/30 p-12 text-center cursor-pointer hover:bg-indigo-50/60 transition-colors hover:border-indigo-300"
+                        >
+                            <div className="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-4">
+                                <UploadCloud className="h-8 w-8 text-indigo-500" />
                             </div>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">Sube el archivo de notas (Excel)</h3>
+                            <p className="text-gray-500 mb-6 max-w-sm mx-auto text-sm">
+                                El archivo debe contener los nombres/apellidos en las primeras columnas y los diferentes criterios de evaluación en las demás cabeceras.
+                            </p>
+                            <Button className="bg-white text-indigo-700 border border-indigo-200 hover:bg-indigo-50 shadow-sm pointer-events-none">
+                                Seleccionar Archivo .xlsx
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-8">
+                        {/* ---- CRITERIA SELECTOR ---- */}
+                        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+                            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2 mb-4">
+                                <CheckSquare className="h-5 w-5 text-indigo-600" />
+                                Selección de Criterios (Ejes X)
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {availableCriteria.map(crit => {
+                                    const isSelected = selectedCriteria.includes(crit)
+                                    return (
+                                        <button
+                                            key={crit}
+                                            onClick={() => toggleCriterion(crit)}
+                                            className={`px-3 py-1.5 rounded-md text-sm font-medium border transition-colors flex items-center gap-2 ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                                                }`}
+                                        >
+                                            {isSelected ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4 text-gray-400" />}
+                                            {crit}
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                            {selectedCriteria.length === 0 && <p className="text-sm text-rose-500 mt-3 font-medium">Selecciona al menos un criterio para habilitar gráficas.</p>}
+                        </div>
 
-                            {/* RA Recovery Chart */}
-                            {raRecoveryData.length > 0 && (
-                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
-                                    <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                        <BarChart3 className="h-5 w-5 text-violet-500" /> Recuperación por RA
-                                    </h3>
-                                    <div className="w-full h-[350px]">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={raRecoveryData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
-                                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
-                                                <RechartsTooltip content={<CustomRARecoveryTooltip />} cursor={{ fill: 'transparent' }} />
-                                                <Legend wrapperStyle={{ paddingTop: '30px' }} />
-                                                <Bar
-                                                    dataKey="Aprobados" stackId="ra" fill="#10B981" radius={[0, 0, 4, 4]} barSize={40}
-                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                    onClick={(e) => {
-                                                        setRaRecoveryFilter(e.name || e.payload?.name || '')
-                                                        setCriteriaFilter(null)
-                                                        setDistributionFilter(null)
-                                                        setRaDistributionFilter(null)
-                                                        document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
-                                                    }}
-                                                >
-                                                    <LabelList dataKey="Aprobados" position="center" fill="#fff" fontSize={12} fontWeight={700}
-                                                        formatter={(v: any) => v > 0 ? v : ''} />
-                                                </Bar>
-                                                <Bar
-                                                    dataKey="Recuperar" stackId="ra" fill="#EF4444" radius={[4, 4, 0, 0]}
-                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                    onClick={(e) => {
-                                                        setRaRecoveryFilter(e.name || e.payload?.name || '')
-                                                        setCriteriaFilter(null)
-                                                        setDistributionFilter(null)
-                                                        setRaDistributionFilter(null)
-                                                        document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
-                                                    }}
-                                                >
-                                                    <LabelList dataKey="Recuperar" position="center" fill="#fff" fontSize={12} fontWeight={700}
-                                                        formatter={(v: any) => v > 0 ? v : ''} />
-                                                </Bar>
-                                            </BarChart>
-                                        </ResponsiveContainer>
+                        {/* ---- VISUALIZATIONS GRID ---- */}
+                        {selectedCriteria.length > 0 && (
+                            <div className="space-y-6">
+
+                                {/* Charts Row */}
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+                                    {/* Bar Chart Global */}
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
+                                        <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                            <BarChart3 className="h-5 w-5 text-emerald-500" /> Rendimiento Global
+                                        </h3>
+                                        <div className="flex-1 w-full min-h-[300px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart data={graphData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
+                                                    <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+                                                    <Legend wrapperStyle={{ paddingTop: '30px' }} />
+                                                    <Bar
+                                                        dataKey="Aprobados" stackId="a" fill="#10B981" radius={[0, 0, 4, 4]} barSize={40}
+                                                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                        onClick={(e) => {
+                                                            setCriteriaFilter({ criteria: e.name || e.payload?.name || '', status: 'Aprobados' })
+                                                            document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                        }}
+                                                    />
+                                                    <Bar
+                                                        dataKey="Suspendidos" stackId="a" fill="#EF4444" radius={[4, 4, 0, 0]}
+                                                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                        onClick={(e) => {
+                                                            setCriteriaFilter({ criteria: e.name || e.payload?.name || '', status: 'Suspendidos' })
+                                                            document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                        }}
+                                                    />
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </div>
+
+                                    {/* Distribution Chart */}
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
+                                        <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                            <BarChart3 className="h-5 w-5 text-amber-500" /> Distribución de Suspensos
+                                        </h3>
+                                        <div className="flex-1 w-full min-h-[300px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart data={failsDistributionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
+                                                    <RechartsTooltip content={<CustomDistributionTooltip />} cursor={{ fill: 'transparent' }} />
+                                                    <Legend wrapperStyle={{ paddingTop: '30px' }} />
+                                                    <Bar
+                                                        dataKey="Alumnos" fill="#F59E0B" radius={[4, 4, 0, 0]} barSize={40}
+                                                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                        onClick={(e) => {
+                                                            const failsCount = e.payload?.failsCount
+                                                            if (failsCount !== undefined) {
+                                                                setDistributionFilter(failsCount)
+                                                                setCriteriaFilter(null) // Reset the other filter just in case
+                                                                document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                            }
+                                                        }}
+                                                    />
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
                                     </div>
                                 </div>
-                            )}
 
-                            {/* RA Distribution Chart - Aprobados vs Suspensos por RA */}
-                            {raFailsDistributionData.length > 0 && (
-                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
-                                    <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                        <BarChart3 className="h-5 w-5 text-violet-500" /> Suspensos por RA (Total)
-                                    </h3>
-                                    <div className="w-full h-[350px]">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={raFailsDistributionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
-                                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
-                                                <RechartsTooltip content={<CustomRADistributionTooltip />} cursor={{ fill: 'transparent' }} />
-                                                <Bar
-                                                    dataKey="Alumnos" radius={[4, 4, 0, 0]} barSize={50}
-                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                    onClick={(e) => {
-                                                        const type = e.payload?.type
-                                                        if (type) {
-                                                            setRaDistributionFilter(type)
+                                {/* RA Recovery Chart */}
+                                {raRecoveryData.length > 0 && (
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
+                                        <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                            <BarChart3 className="h-5 w-5 text-violet-500" /> Recuperación por RA
+                                        </h3>
+                                        <div className="w-full h-[350px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart data={raRecoveryData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
+                                                    <RechartsTooltip content={<CustomRARecoveryTooltip />} cursor={{ fill: 'transparent' }} />
+                                                    <Legend wrapperStyle={{ paddingTop: '30px' }} />
+                                                    <Bar
+                                                        dataKey="Aprobados" stackId="ra" fill="#10B981" radius={[0, 0, 4, 4]} barSize={40}
+                                                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                        onClick={(e) => {
+                                                            setRaRecoveryFilter(e.name || e.payload?.name || '')
                                                             setCriteriaFilter(null)
                                                             setDistributionFilter(null)
-                                                            setRaRecoveryFilter(null)
-                                                            document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
-                                                        }
-                                                    }}
-                                                >
-                                                    <LabelList dataKey="Alumnos" position="center" fill="#fff" fontSize={14} fontWeight={700}
-                                                        formatter={(v: any) => v > 0 ? v : ''} />
-                                                    {raFailsDistributionData.map((entry, index) => (
-                                                        <Cell key={index} fill={entry.type === 'passed' ? '#10B981' : '#EF4444'} />
-                                                    ))}
-                                                </Bar>
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Heatmap / Matricial View */}
-                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[450px]">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                                    <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                                        <Grip className="h-5 w-5 text-blue-500" /> Mapa de Calor Aprobados/Suspensos
-                                    </h3>
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
-                                        <Input
-                                            placeholder="Buscar en el mapa..."
-                                            value={heatmapSearchTerm}
-                                            onChange={(e) => setHeatmapSearchTerm(e.target.value)}
-                                            className="pl-8 h-9 text-sm w-full sm:w-[220px] bg-gray-50 border-gray-200"
-                                        />
-                                        {heatmapSearchTerm && (
-                                            <button className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setHeatmapSearchTerm("")}>
-                                                <X className="h-3.5 w-3.5" />
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex-1 overflow-auto rounded-xl border border-gray-200 bg-white custom-scrollbar relative shadow-inner">
-                                    <table className="w-full text-left border-collapse min-w-max">
-                                        <thead className="sticky top-0 z-20 bg-gray-50 shadow-sm">
-                                            <tr>
-                                                <th className="sticky left-0 z-30 bg-gray-50 w-[240px] md:w-[300px] p-3 text-xs font-semibold text-gray-500 uppercase tracking-wider shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-b border-gray-200">
-                                                    Alumno
-                                                </th>
-                                                {selectedCriteria.map(crit => (
-                                                    <th key={crit} className="p-2 text-center text-[10px] font-bold text-gray-600 w-[70px] border-b border-gray-200 border-l border-gray-100">
-                                                        <div className="mx-auto truncate max-w-[65px]" title={crit}>{crit}</div>
-                                                    </th>
-                                                ))}
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white">
-                                            {filteredHeatmapStudents.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan={selectedCriteria.length + 1} className="p-8 text-center text-gray-500 text-sm">
-                                                        No hay resultados para "{heatmapSearchTerm}"
-                                                    </td>
-                                                </tr>
-                                            ) : (
-                                                filteredHeatmapStudents.slice(0, 100).map((student, i) => (
-                                                    <tr key={i}
-                                                        className="group hover:bg-indigo-50/40 cursor-pointer border-b border-gray-100 transition-colors"
-                                                        onClick={() => {
-                                                            setSearchTerm(getStudentFullName(student)); setPage(1);
+                                                            setRaDistributionFilter(null)
                                                             document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
                                                         }}
                                                     >
-                                                        <td className="sticky left-0 z-10 bg-white group-hover:bg-indigo-50/80 p-3 text-sm font-medium text-gray-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors border-r border-gray-100">
-                                                            <span className="line-clamp-1" title={getStudentFullName(student)}>{getStudentFullName(student)}</span>
-                                                        </td>
-                                                        {selectedCriteria.map(crit => {
-                                                            const rawVal = student[crit]
-                                                            let isPassed = false, isMissing = rawVal === null || rawVal === undefined || rawVal === ''
-                                                            const numVal = parseFloat(rawVal)
-                                                            if (!isNaN(numVal)) isPassed = numVal >= 5.0
-                                                            else if (typeof rawVal === 'string') isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(rawVal.toLowerCase().trim())
-
-                                                            let cellColor = isMissing ? "bg-gray-100 border-gray-200 text-gray-400" : isPassed ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-rose-50 border-rose-200 text-rose-700"
-
-                                                            return (
-                                                                <td key={crit} className="p-1 border-l border-gray-50 align-middle">
-                                                                    <div className={`w-[60px] h-7 mx-auto rounded flex items-center justify-center text-[11px] font-bold border opacity-90 group-hover:opacity-100 transition-opacity ${cellColor}`} title={`${getStudentFullName(student)}: ${rawVal}`}>
-                                                                        {isMissing ? '-' : rawVal}
-                                                                    </div>
-                                                                </td>
-                                                            )
-                                                        })}
-                                                    </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div className="mt-3 text-xs text-gray-400 font-medium flex justify-between">
-                                    <span>Click en el alumno para buscarlo en la tabla principal.</span>
-                                    <span>Mostrando máx 100 resultados.</span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* ---- DETAILED TABLE VIEW ---- */}
-                    <div id="table-view" className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden scroll-mt-6">
-                        <div className="p-5 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                            <div className="flex flex-wrap items-center gap-3">
-                                <h3 className="text-base font-bold text-gray-900">Datos Detallados</h3>
-
-                                {criteriaFilter && (
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-indigo-50 border border-indigo-100 rounded-full text-xs font-semibold text-indigo-700">
-                                        <Filter className="h-3 w-3" />
-                                        <span>{criteriaFilter.criteria}: {criteriaFilter.status === 'Aprobados' ? 'Aprobados' : 'Suspendidos'}</span>
-                                        <button onClick={() => { setCriteriaFilter(null); setPage(1) }} className="hover:bg-indigo-200 rounded-full p-0.5 transition-colors">
-                                            <X className="h-3 w-3" />
-                                        </button>
+                                                        <LabelList dataKey="Aprobados" position="center" fill="#fff" fontSize={12} fontWeight={700}
+                                                            formatter={(v: any) => v > 0 ? v : ''} />
+                                                    </Bar>
+                                                    <Bar
+                                                        dataKey="Recuperar" stackId="ra" fill="#EF4444" radius={[4, 4, 0, 0]}
+                                                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                        onClick={(e) => {
+                                                            setRaRecoveryFilter(e.name || e.payload?.name || '')
+                                                            setCriteriaFilter(null)
+                                                            setDistributionFilter(null)
+                                                            setRaDistributionFilter(null)
+                                                            document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                        }}
+                                                    >
+                                                        <LabelList dataKey="Recuperar" position="center" fill="#fff" fontSize={12} fontWeight={700}
+                                                            formatter={(v: any) => v > 0 ? v : ''} />
+                                                    </Bar>
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
                                     </div>
                                 )}
 
-                                {distributionFilter !== null && (
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full text-xs font-semibold text-amber-700">
-                                        <Filter className="h-3 w-3" />
-                                        <span>Filtro de Suspensos: {distributionFilter === 0 ? 'Pleno (0)' : distributionFilter}</span>
-                                        <button onClick={() => { setDistributionFilter(null); setPage(1) }} className="hover:bg-amber-200 rounded-full p-0.5 transition-colors">
-                                            <X className="h-3 w-3" />
-                                        </button>
-                                    </div>
-                                )}
-
-                                {raRecoveryFilter && (
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-violet-50 border border-violet-100 rounded-full text-xs font-semibold text-violet-700">
-                                        <Filter className="h-3 w-3" />
-                                        <span>Recuperación: {raRecoveryFilter}</span>
-                                        <button onClick={() => { setRaRecoveryFilter(null); setPage(1) }} className="hover:bg-violet-200 rounded-full p-0.5 transition-colors">
-                                            <X className="h-3 w-3" />
-                                        </button>
-                                    </div>
-                                )}
-
-                                {raDistributionFilter !== null && (
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-violet-50 border border-violet-100 rounded-full text-xs font-semibold text-violet-700">
-                                        <Filter className="h-3 w-3" />
-                                        <span>RA: {raDistributionFilter === 'passed' ? 'Todo aprobado' : '≥1 RA suspenso'}</span>
-                                        <button onClick={() => { setRaDistributionFilter(null); setPage(1) }} className="hover:bg-violet-200 rounded-full p-0.5 transition-colors">
-                                            <X className="h-3 w-3" />
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                <Input
-                                    placeholder={`Buscar por nombre o apellido...`} value={searchTerm}
-                                    onChange={(e) => { setSearchTerm(e.target.value); setPage(1) }}
-                                    className="pl-9 w-full md:w-[320px] bg-gray-50 border-gray-200"
-                                />
-                                {searchTerm && (
-                                    <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" onClick={() => { setSearchTerm(""); setPage(1) }}>
-                                        <X className="h-3.5 w-3.5" />
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-gray-50/80 text-gray-500 font-medium border-b border-gray-100">
-                                    <tr>
-                                        {detailedTableColumns.map(col => <th key={col} className="px-6 py-3 whitespace-nowrap">{col}</th>)}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {paginatedStudents.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={detailedTableColumns.length} className="px-6 py-12 text-center text-gray-500">
-                                                <div className="flex flex-col items-center justify-center">
-                                                    <Search className="h-8 w-8 text-gray-300 mb-3" />
-                                                    <p>No se encontraron alumnos bajo estos filtros.</p>
-                                                    {(searchTerm || criteriaFilter || distributionFilter !== null || raRecoveryFilter || raDistributionFilter !== null) && (
-                                                        <Button variant="link" onClick={() => { setSearchTerm(""); setCriteriaFilter(null); setDistributionFilter(null); setRaRecoveryFilter(null); setRaDistributionFilter(null); setPage(1); }} className="text-indigo-600 mt-2">
-                                                            Limpiar todos los filtros
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        paginatedStudents.map((row, i) => (
-                                            <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                                                {detailedTableColumns.map((col, j) => {
-                                                    const val = row[col]
-                                                    let badgeColor = ""
-                                                    if (selectedCriteria.includes(col)) {
-                                                        const numVal = parseFloat(val)
-                                                        if (!isNaN(numVal)) badgeColor = numVal >= 5 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
-                                                        else if (typeof val === 'string') {
-                                                            const clean = val.toLowerCase().trim()
-                                                            if (['apto', 'aprobado'].includes(clean)) badgeColor = "bg-emerald-100 text-emerald-700"
-                                                            else if (['no apto', 'suspenso'].includes(clean)) badgeColor = "bg-rose-100 text-rose-700"
-                                                        }
-                                                    }
-
-                                                    if (/grupo/i.test(col)) {
-                                                        let inferredGroup = val;
-                                                        if (!inferredGroup || inferredGroup === "") {
-                                                            for (const key of Object.keys(row)) {
-                                                                const rowStr = String(row[key]).toLowerCase();
-                                                                const match = rowStr.match(/(smr|daw|dam|asir)\d?([ab])/i);
-                                                                if (match) {
-                                                                    inferredGroup = match[2].toUpperCase();
-                                                                    break;
-                                                                }
+                                {/* RA Distribution Chart - Aprobados vs Suspensos por RA */}
+                                {raFailsDistributionData.length > 0 && (
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col min-h-[400px]">
+                                        <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                            <BarChart3 className="h-5 w-5 text-violet-500" /> Suspensos por RA (Total)
+                                        </h3>
+                                        <div className="w-full h-[350px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <BarChart data={raFailsDistributionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
+                                                    <RechartsTooltip content={<CustomRADistributionTooltip />} cursor={{ fill: 'transparent' }} />
+                                                    <Bar
+                                                        dataKey="Alumnos" radius={[4, 4, 0, 0]} barSize={50}
+                                                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                        onClick={(e) => {
+                                                            const type = e.payload?.type
+                                                            if (type) {
+                                                                setRaDistributionFilter(type)
+                                                                setCriteriaFilter(null)
+                                                                setDistributionFilter(null)
+                                                                setRaRecoveryFilter(null)
+                                                                document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
                                                             }
-                                                        }
+                                                        }}
+                                                    >
+                                                        <LabelList dataKey="Alumnos" position="center" fill="#fff" fontSize={14} fontWeight={700}
+                                                            formatter={(v: any) => v > 0 ? v : ''} />
+                                                        {raFailsDistributionData.map((entry, index) => (
+                                                            <Cell key={index} fill={entry.type === 'passed' ? '#10B981' : '#EF4444'} />
+                                                        ))}
+                                                    </Bar>
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </div>
+                                )}
 
-                                                        return (
-                                                            <td key={j} className="px-6 py-3">
-                                                                <select
-                                                                    className="border-gray-200 bg-gray-50/50 hover:bg-gray-100 rounded-md text-sm py-1 pl-2 pr-6 focus:ring-indigo-500 focus:border-indigo-500 transition-colors cursor-pointer"
-                                                                    value={inferredGroup || ""}
-                                                                    onChange={(e) => {
-                                                                        const newData = [...studentsData]
-                                                                        const realIndex = studentsData.findIndex(s => s === row)
-                                                                        if (realIndex !== -1) {
-                                                                            newData[realIndex][col] = e.target.value
-                                                                            setStudentsData(newData)
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <option value="">-</option>
-                                                                    <option value="A">A</option>
-                                                                    <option value="B">B</option>
-                                                                </select>
-                                                            </td>
-                                                        )
-                                                    }
-
-                                                    return (
-                                                        <td key={j} className={`px-6 py-3 ${nameColumns.includes(col) ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
-                                                            {badgeColor ? <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}`}>{val}</span> : <span className="truncate max-w-[200px] inline-block">{val !== null && val !== undefined && val !== '' ? String(val) : '-'}</span>}
+                                {/* Heatmap / Matricial View */}
+                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[450px]">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                                        <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                                            <Grip className="h-5 w-5 text-blue-500" /> Mapa de Calor Aprobados/Suspensos
+                                        </h3>
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                                            <Input
+                                                placeholder="Buscar en el mapa..."
+                                                value={heatmapSearchTerm}
+                                                onChange={(e) => setHeatmapSearchTerm(e.target.value)}
+                                                className="pl-8 h-9 text-sm w-full sm:w-[220px] bg-gray-50 border-gray-200"
+                                            />
+                                            {heatmapSearchTerm && (
+                                                <button className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" onClick={() => setHeatmapSearchTerm("")}>
+                                                    <X className="h-3.5 w-3.5" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 overflow-auto rounded-xl border border-gray-200 bg-white custom-scrollbar relative shadow-inner">
+                                        <table className="w-full text-left border-collapse min-w-max">
+                                            <thead className="sticky top-0 z-20 bg-gray-50 shadow-sm">
+                                                <tr>
+                                                    <th className="sticky left-0 z-30 bg-gray-50 w-[240px] md:w-[300px] p-3 text-xs font-semibold text-gray-500 uppercase tracking-wider shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-b border-gray-200">
+                                                        Alumno
+                                                    </th>
+                                                    {selectedCriteria.map(crit => (
+                                                        <th key={crit} className="p-2 text-center text-[10px] font-bold text-gray-600 w-[70px] border-b border-gray-200 border-l border-gray-100">
+                                                            <div className="mx-auto truncate max-w-[65px]" title={crit}>{crit}</div>
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white">
+                                                {filteredHeatmapStudents.length === 0 ? (
+                                                    <tr>
+                                                        <td colSpan={selectedCriteria.length + 1} className="p-8 text-center text-gray-500 text-sm">
+                                                            No hay resultados para "{heatmapSearchTerm}"
                                                         </td>
-                                                    )
-                                                })}
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                                    </tr>
+                                                ) : (
+                                                    filteredHeatmapStudents.slice(0, 100).map((student, i) => (
+                                                        <tr key={i}
+                                                            className="group hover:bg-indigo-50/40 cursor-pointer border-b border-gray-100 transition-colors"
+                                                            onClick={() => {
+                                                                setSearchTerm(getStudentFullName(student)); setPage(1);
+                                                                document.getElementById('table-view')?.scrollIntoView({ behavior: 'smooth' })
+                                                            }}
+                                                        >
+                                                            <td className="sticky left-0 z-10 bg-white group-hover:bg-indigo-50/80 p-3 text-sm font-medium text-gray-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors border-r border-gray-100">
+                                                                <span className="line-clamp-1" title={getStudentFullName(student)}>{getStudentFullName(student)}</span>
+                                                            </td>
+                                                            {selectedCriteria.map(crit => {
+                                                                const rawVal = student[crit]
+                                                                let isPassed = false, isMissing = rawVal === null || rawVal === undefined || rawVal === ''
+                                                                const numVal = parseFloat(rawVal)
+                                                                if (!isNaN(numVal)) isPassed = numVal >= 5.0
+                                                                else if (typeof rawVal === 'string') isPassed = ['apto', 'aprobado', 'si', 'yes', 'superado'].includes(rawVal.toLowerCase().trim())
 
-                        {totalPages > 1 && (
-                            <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100 bg-gray-50/40">
-                                <span className="text-sm text-gray-500">
-                                    Mostrando {(page - 1) * ITEMS_PER_PAGE + 1} a {Math.min(page * ITEMS_PER_PAGE, filteredStudents.length)} de {filteredStudents.length}
-                                </span>
-                                <div className="flex gap-2">
-                                    <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>Anterior</Button>
-                                    <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Siguiente</Button>
+                                                                let cellColor = isMissing ? "bg-gray-100 border-gray-200 text-gray-400" : isPassed ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-rose-50 border-rose-200 text-rose-700"
+
+                                                                return (
+                                                                    <td key={crit} className="p-1 border-l border-gray-50 align-middle">
+                                                                        <div className={`w-[60px] h-7 mx-auto rounded flex items-center justify-center text-[11px] font-bold border opacity-90 group-hover:opacity-100 transition-opacity ${cellColor}`} title={`${getStudentFullName(student)}: ${rawVal}`}>
+                                                                            {isMissing ? '-' : rawVal}
+                                                                        </div>
+                                                                    </td>
+                                                                )
+                                                            })}
+                                                        </tr>
+                                                    ))
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="mt-3 text-xs text-gray-400 font-medium flex justify-between">
+                                        <span>Click en el alumno para buscarlo en la tabla principal.</span>
+                                        <span>Mostrando máx 100 resultados.</span>
+                                    </div>
                                 </div>
                             </div>
                         )}
+
+                        {/* ---- DETAILED TABLE VIEW ---- */}
+                        <div id="table-view" className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden scroll-mt-6">
+                            <div className="p-5 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <h3 className="text-base font-bold text-gray-900">Datos Detallados</h3>
+
+                                    {criteriaFilter && (
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-indigo-50 border border-indigo-100 rounded-full text-xs font-semibold text-indigo-700">
+                                            <Filter className="h-3 w-3" />
+                                            <span>{criteriaFilter.criteria}: {criteriaFilter.status === 'Aprobados' ? 'Aprobados' : 'Suspendidos'}</span>
+                                            <button onClick={() => { setCriteriaFilter(null); setPage(1) }} className="hover:bg-indigo-200 rounded-full p-0.5 transition-colors">
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {distributionFilter !== null && (
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full text-xs font-semibold text-amber-700">
+                                            <Filter className="h-3 w-3" />
+                                            <span>Filtro de Suspensos: {distributionFilter === 0 ? 'Pleno (0)' : distributionFilter}</span>
+                                            <button onClick={() => { setDistributionFilter(null); setPage(1) }} className="hover:bg-amber-200 rounded-full p-0.5 transition-colors">
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {raRecoveryFilter && (
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-violet-50 border border-violet-100 rounded-full text-xs font-semibold text-violet-700">
+                                            <Filter className="h-3 w-3" />
+                                            <span>Recuperación: {raRecoveryFilter}</span>
+                                            <button onClick={() => { setRaRecoveryFilter(null); setPage(1) }} className="hover:bg-violet-200 rounded-full p-0.5 transition-colors">
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {raDistributionFilter !== null && (
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-violet-50 border border-violet-100 rounded-full text-xs font-semibold text-violet-700">
+                                            <Filter className="h-3 w-3" />
+                                            <span>RA: {raDistributionFilter === 'passed' ? 'Todo aprobado' : '≥1 RA suspenso'}</span>
+                                            <button onClick={() => { setRaDistributionFilter(null); setPage(1) }} className="hover:bg-violet-200 rounded-full p-0.5 transition-colors">
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <Input
+                                        placeholder={`Buscar por nombre o apellido...`} value={searchTerm}
+                                        onChange={(e) => { setSearchTerm(e.target.value); setPage(1) }}
+                                        className="pl-9 w-full md:w-[320px] bg-gray-50 border-gray-200"
+                                    />
+                                    {searchTerm && (
+                                        <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" onClick={() => { setSearchTerm(""); setPage(1) }}>
+                                            <X className="h-3.5 w-3.5" />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-gray-50/80 text-gray-500 font-medium border-b border-gray-100">
+                                        <tr>
+                                            {detailedTableColumns.map(col => <th key={col} className="px-6 py-3 whitespace-nowrap">{col}</th>)}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {paginatedStudents.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={detailedTableColumns.length} className="px-6 py-12 text-center text-gray-500">
+                                                    <div className="flex flex-col items-center justify-center">
+                                                        <Search className="h-8 w-8 text-gray-300 mb-3" />
+                                                        <p>No se encontraron alumnos bajo estos filtros.</p>
+                                                        {(searchTerm || criteriaFilter || distributionFilter !== null || raRecoveryFilter || raDistributionFilter !== null) && (
+                                                            <Button variant="link" onClick={() => { setSearchTerm(""); setCriteriaFilter(null); setDistributionFilter(null); setRaRecoveryFilter(null); setRaDistributionFilter(null); setPage(1); }} className="text-indigo-600 mt-2">
+                                                                Limpiar todos los filtros
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            paginatedStudents.map((row, i) => (
+                                                <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                                                    {detailedTableColumns.map((col, j) => {
+                                                        const val = row[col]
+                                                        let badgeColor = ""
+                                                        if (selectedCriteria.includes(col)) {
+                                                            const numVal = parseFloat(val)
+                                                            if (!isNaN(numVal)) badgeColor = numVal >= 5 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
+                                                            else if (typeof val === 'string') {
+                                                                const clean = val.toLowerCase().trim()
+                                                                if (['apto', 'aprobado'].includes(clean)) badgeColor = "bg-emerald-100 text-emerald-700"
+                                                                else if (['no apto', 'suspenso'].includes(clean)) badgeColor = "bg-rose-100 text-rose-700"
+                                                            }
+                                                        }
+
+                                                        if (/grupo/i.test(col)) {
+                                                            let inferredGroup = val;
+                                                            if (!inferredGroup || inferredGroup === "") {
+                                                                for (const key of Object.keys(row)) {
+                                                                    const rowStr = String(row[key]).toLowerCase();
+                                                                    const match = rowStr.match(/(smr|daw|dam|asir)\d?([ab])/i);
+                                                                    if (match) {
+                                                                        inferredGroup = match[2].toUpperCase();
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            return (
+                                                                <td key={j} className="px-6 py-3">
+                                                                    <select
+                                                                        className="border-gray-200 bg-gray-50/50 hover:bg-gray-100 rounded-md text-sm py-1 pl-2 pr-6 focus:ring-indigo-500 focus:border-indigo-500 transition-colors cursor-pointer"
+                                                                        value={inferredGroup || ""}
+                                                                        onChange={(e) => {
+                                                                            const newData = [...studentsData]
+                                                                            const realIndex = studentsData.findIndex(s => s === row)
+                                                                            if (realIndex !== -1) {
+                                                                                newData[realIndex][col] = e.target.value
+                                                                                setStudentsData(newData)
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <option value="">-</option>
+                                                                        <option value="A">A</option>
+                                                                        <option value="B">B</option>
+                                                                    </select>
+                                                                </td>
+                                                            )
+                                                        }
+
+                                                        return (
+                                                            <td key={j} className={`px-6 py-3 ${nameColumns.includes(col) ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
+                                                                {badgeColor ? <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}`}>{val}</span> : <span className="truncate max-w-[200px] inline-block">{val !== null && val !== undefined && val !== '' ? String(val) : '-'}</span>}
+                                                            </td>
+                                                        )
+                                                    })}
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {totalPages > 1 && (
+                                <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100 bg-gray-50/40">
+                                    <span className="text-sm text-gray-500">
+                                        Mostrando {(page - 1) * ITEMS_PER_PAGE + 1} a {Math.min(page * ITEMS_PER_PAGE, filteredStudents.length)} de {filteredStudents.length}
+                                    </span>
+                                    <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>Anterior</Button>
+                                        <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Siguiente</Button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ---- FINAL GRADES SUMMARY SECTION ---- */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                    <h3 className="text-base font-bold text-gray-900">Resumen de Calificaciones Finales</h3>
+                                    <p className="text-xs text-gray-500 mt-0.5">Listado simplificado para exportación o consulta rápida de la nota final.</p>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleCopySummary}
+                                    className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 border-indigo-200 transition-all flex items-center gap-2"
+                                >
+                                    {copiedSummary ? (
+                                        <>
+                                            <CheckSquare className="h-4 w-4" />
+                                            ¡Copiado!
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Copy className="h-4 w-4" />
+                                            Copiar Listado (TSV)
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
+
+                            <div className="overflow-x-auto max-h-[400px] overflow-y-auto custom-scrollbar">
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-gray-50/80 text-gray-500 font-medium border-b border-gray-100 sticky top-0 z-10 shadow-sm">
+                                        <tr>
+                                            <th className="px-6 py-3 whitespace-nowrap">Nombre</th>
+                                            <th className="px-6 py-3 whitespace-nowrap">{totalCursoColumnKey}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white">
+                                        {filteredSummaryStudents.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={2} className="px-6 py-8 text-center text-gray-500">
+                                                    No hay resultados para "{searchTerm}"
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            filteredSummaryStudents.map((student, i) => {
+                                                const name = getStudentFullName(student)
+                                                const val = student[totalCursoColumnKey]
+                                                let badgeColor = ""
+                                                const numVal = parseFloat(val)
+                                                if (!isNaN(numVal)) {
+                                                    badgeColor = numVal >= 5 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
+                                                } else if (typeof val === 'string') {
+                                                    const clean = val.toLowerCase().trim()
+                                                    if (['apto', 'aprobado'].includes(clean)) badgeColor = "bg-emerald-100 text-emerald-700"
+                                                    else if (['no apto', 'suspenso'].includes(clean)) badgeColor = "bg-rose-100 text-rose-700"
+                                                }
+
+                                                return (
+                                                    <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                                                        <td className="px-6 py-3 font-medium text-gray-900">{name}</td>
+                                                        <td className="px-6 py-3">
+                                                            {badgeColor ? (
+                                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}`}>
+                                                                    {val}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-gray-600">
+                                                                    {val !== null && val !== undefined && val !== '' ? String(val) : '-'}
+                                                                </span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                )
+            )}
+
+            {/* ---- TAB 2: STANDARD MESSAGES ---- */}
+            {activeTab === "messages" && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Form Panel */}
+                    <div className="lg:col-span-1 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm h-fit">
+                        <h3 className="text-base font-bold text-gray-900 flex items-center gap-2 mb-4">
+                            {editingMsgId ? <Edit2 className="h-5 w-5 text-indigo-600" /> : <Plus className="h-5 w-5 text-indigo-600" />}
+                            {editingMsgId ? "Editar Mensaje Estándar" : "Nuevo Mensaje Estándar"}
+                        </h3>
+                        <form onSubmit={handleSaveMessage} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="msgTitle" className="text-sm font-semibold text-gray-700">Título / Estado</Label>
+                                <Input
+                                    id="msgTitle"
+                                    value={msgTitle}
+                                    onChange={(e) => setMsgTitle(e.target.value)}
+                                    placeholder="Ej: Aprobado con honores"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="msgContent" className="text-sm font-semibold text-gray-700">Contenido del Mensaje</Label>
+                                <Textarea
+                                    id="msgContent"
+                                    value={msgContent}
+                                    onChange={(e) => setMsgContent(e.target.value)}
+                                    placeholder="Escribe el mensaje estándar que copiarás para los alumnos..."
+                                    className="min-h-[160px] resize-y text-sm"
+                                    required
+                                />
+                            </div>
+                            <div className="flex gap-2 pt-2">
+                                <Button type="submit" className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+                                    {editingMsgId ? "Guardar Cambios" : "Añadir Mensaje"}
+                                </Button>
+                                {editingMsgId && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => {
+                                            setEditingMsgId(null)
+                                            setMsgTitle("")
+                                            setMsgContent("")
+                                        }}
+                                    >
+                                        Cancelar
+                                    </Button>
+                                )}
+                            </div>
+                        </form>
                     </div>
 
-                    {/* ---- FINAL GRADES SUMMARY SECTION ---- */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    {/* Messages List Panel */}
+                    <div className="lg:col-span-2 space-y-4">
+                        <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
                             <div>
-                                <h3 className="text-base font-bold text-gray-900">Resumen de Calificaciones Finales</h3>
-                                <p className="text-xs text-gray-500 mt-0.5">Listado simplificado para exportación o consulta rápida de la nota final.</p>
+                                <h3 className="text-base font-bold text-gray-900">Listado de Mensajes</h3>
+                                <p className="text-xs text-gray-500 mt-0.5">Define plantillas comunes y cópialas rápidamente con un clic.</p>
                             </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleCopySummary}
-                                className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 border-indigo-200 transition-all flex items-center gap-2"
-                            >
-                                {copiedSummary ? (
-                                    <>
-                                        <CheckSquare className="h-4 w-4" />
-                                        ¡Copiado!
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy className="h-4 w-4" />
-                                        Copiar Listado (TSV)
-                                    </>
-                                )}
-                            </Button>
+                            <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                                {standardMessages.length} plantillas
+                            </span>
                         </div>
 
-                        <div className="overflow-x-auto max-h-[400px] overflow-y-auto custom-scrollbar">
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-gray-50/80 text-gray-500 font-medium border-b border-gray-100 sticky top-0 z-10 shadow-sm">
-                                    <tr>
-                                        <th className="px-6 py-3 whitespace-nowrap">Nombre</th>
-                                        <th className="px-6 py-3 whitespace-nowrap">{totalCursoColumnKey}</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white">
-                                    {filteredSummaryStudents.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={2} className="px-6 py-8 text-center text-gray-500">
-                                                No hay resultados para "{searchTerm}"
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        filteredSummaryStudents.map((student, i) => {
-                                            const name = getStudentFullName(student)
-                                            const val = student[totalCursoColumnKey]
-                                            let badgeColor = ""
-                                            const numVal = parseFloat(val)
-                                            if (!isNaN(numVal)) {
-                                                badgeColor = numVal >= 5 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
-                                            } else if (typeof val === 'string') {
-                                                const clean = val.toLowerCase().trim()
-                                                if (['apto', 'aprobado'].includes(clean)) badgeColor = "bg-emerald-100 text-emerald-700"
-                                                else if (['no apto', 'suspenso'].includes(clean)) badgeColor = "bg-rose-100 text-rose-700"
-                                            }
+                        {standardMessages.length === 0 ? (
+                            <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center text-gray-500">
+                                <MessageSquare className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                                <p className="font-semibold text-gray-700">No hay mensajes guardados</p>
+                                <p className="text-xs text-gray-400 mt-1">Usa el formulario lateral para crear tu primera plantilla.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {standardMessages.map(msg => (
+                                    <div key={msg.id} className="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between group">
+                                        <div>
+                                            <div className="flex justify-between items-start gap-2 mb-2">
+                                                <h4 className="font-bold text-gray-800 text-sm line-clamp-1">{msg.title}</h4>
+                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button
+                                                        onClick={() => handleEditMessage(msg)}
+                                                        className="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                                                        title="Editar mensaje"
+                                                    >
+                                                        <Edit2 className="h-3.5 w-3.5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteMessage(msg.id)}
+                                                        className="p-1 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition-colors cursor-pointer"
+                                                        title="Eliminar"
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 rounded-xl p-3 border border-gray-100 whitespace-pre-wrap font-medium">
+                                                {msg.content}
+                                            </p>
+                                        </div>
+                                        <div className="mt-4 pt-3 border-t border-gray-100 flex justify-end">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleCopyMessage(msg)}
+                                                className="w-full text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 border-indigo-200 transition-all flex items-center justify-center gap-2"
+                                            >
+                                                {copiedMsgId === msg.id ? (
+                                                    <>
+                                                        <Check className="h-3.5 w-3.5 text-emerald-500" />
+                                                        ¡Mensaje Copiado!
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Copy className="h-3.5 w-3.5" />
+                                                        Copiar Mensaje
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
-                                            return (
-                                                <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                                                    <td className="px-6 py-3 font-medium text-gray-900">{name}</td>
-                                                    <td className="px-6 py-3">
-                                                        {badgeColor ? (
-                                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}`}>
-                                                                {val}
-                                                            </span>
-                                                        ) : (
-                                                            <span className="text-gray-600">
-                                                                {val !== null && val !== undefined && val !== '' ? String(val) : '-'}
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            )
-                                        })
-                                    )}
-                                </tbody>
-                            </table>
+            {/* ---- TAB 3: EDIT SETTINGS ---- */}
+            {activeTab === "settings" && (
+                <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8 space-y-6">
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900">Editar Datos Base</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">Modifica los detalles identificativos de esta evaluación.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="editName" className="text-sm font-semibold text-gray-700">Nombre Descriptivo</Label>
+                                <Input
+                                    id="editName"
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    placeholder="Ej: Notas Finales BD (Dic)"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="editSubject" className="text-sm font-semibold text-gray-700">Módulo (Asignatura)</Label>
+                                <Input
+                                    id="editSubject"
+                                    value={editSubject}
+                                    onChange={(e) => setEditSubject(e.target.value)}
+                                    placeholder="Ej: Bases de Datos"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-sm font-semibold text-gray-700">Ciclo Formativo</Label>
+                                <div className="flex gap-2">
+                                    {['DAM', 'DAW', 'ASIR', 'SMR'].map(opt => (
+                                        <Button
+                                            key={opt}
+                                            type="button"
+                                            variant={editCycle === opt ? 'default' : 'outline'}
+                                            onClick={() => setEditCycle(opt)}
+                                            className={editCycle === opt ? 'bg-indigo-600 hover:bg-indigo-700' : ''}
+                                        >
+                                            {opt}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="editCourse" className="text-sm font-semibold text-gray-700">Curso</Label>
+                                    <select
+                                        id="editCourse"
+                                        className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        value={editCourse}
+                                        onChange={(e) => setEditCourse(e.target.value)}
+                                    >
+                                        <option value="1º">1º</option>
+                                        <option value="2º">2º</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="editEvaluation" className="text-sm font-semibold text-gray-700">Evaluación</Label>
+                                    <select
+                                        id="editEvaluation"
+                                        className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        value={editEvaluation}
+                                        onChange={(e) => setEditEvaluation(e.target.value)}
+                                    >
+                                        <option value="1ª Evaluación">1ª</option>
+                                        <option value="2ª Evaluación">2ª</option>
+                                        <option value="3ª Evaluación">3ª</option>
+                                        <option value="Final">Final</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="editDescription" className="text-sm font-semibold text-gray-700">Notas / Descripción (Opcional)</Label>
+                            <Textarea
+                                id="editDescription"
+                                value={editDescription}
+                                onChange={(e) => setEditDescription(e.target.value)}
+                                placeholder="Añade contexto adicional sobre esta evaluación..."
+                                className="min-h-[100px] resize-y"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end pt-4 border-t border-gray-100 gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setEditName(evaluation.name || "")
+                                setEditSubject(evaluation.subject || "")
+                                setEditCycle(evaluation.cycle || "DAM")
+                                setEditCourse(evaluation.course || "1º")
+                                setEditEvaluation(evaluation.evaluation || "1ª Evaluación")
+                                setEditDescription(evaluation.description || "")
+                                setActiveTab("dashboard")
+                            }}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            onClick={handleSaveSettings}
+                            disabled={isEditingSaving || !editSubject || !editName}
+                            className="bg-indigo-600 hover:bg-indigo-700 min-w-[140px]"
+                        >
+                            {isEditingSaving ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Guardando...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="mr-2 h-4 w-4" />
+                                    Guardar Cambios
+                                </>
+                            )}
+                        </Button>
                     </div>
                 </div>
             )}

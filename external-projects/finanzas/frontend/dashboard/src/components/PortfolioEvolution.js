@@ -19,6 +19,13 @@ function isSameLocalDay(dateA, dateB) {
         dateA.getDate() === dateB.getDate();
 }
 
+function filterCurrentLocalSession(period, points) {
+    if (period !== '24h') return points;
+
+    const now = new Date();
+    return points.filter(point => isSameLocalDay(point.date, now));
+}
+
 function updateIntradayRange(period, chartPoints) {
     const rangeEl = document.getElementById('evolution-intraday');
     const currentEl = document.getElementById('evolution-intraday-current');
@@ -150,10 +157,12 @@ export async function renderPortfolioEvolution(period = '1m') {
         portfolioChart = null;
     }
 
-    const chartPoints = history
+    let chartPoints = history
         .map(h => ({ date: new Date(h.date), value: Number(h.value) }))
         .filter(point => Number.isFinite(point.date.getTime()) && Number.isFinite(point.value))
         .sort((a, b) => a.date - b.date);
+
+    chartPoints = filterCurrentLocalSession(period, chartPoints);
 
     const now = new Date();
     chartPoints.push({ date: now, value: currentValue });

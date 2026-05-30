@@ -11,6 +11,12 @@ import { fetchPortfolioHistory } from '../services/history.js';
 const FILTERS = ['All', 'Cripto', 'Acciones', 'Fondos'];
 const FILTER_LABELS = { 'All': 'TODO', 'Cripto': 'CRIPTO', 'Acciones': 'ACCIONES', 'Fondos': 'FONDOS' };
 
+function isSameLocalDay(dateA, dateB) {
+    return dateA.getFullYear() === dateB.getFullYear() &&
+        dateA.getMonth() === dateB.getMonth() &&
+        dateA.getDate() === dateB.getDate();
+}
+
 /**
  * Create header HTML
  */
@@ -229,8 +235,11 @@ export async function renderPortfolioSparkline(filter) {
         // Render sparkline and 24h change from the same 24h series.
         if (history && history.length > 0) {
             const values = history
-                .map(h => Number(h.value))
-                .filter(value => Number.isFinite(value));
+                .map(h => ({ date: new Date(h.date), value: Number(h.value) }))
+                .filter(point => Number.isFinite(point.date.getTime()) && Number.isFinite(point.value))
+                .filter(point => isSameLocalDay(point.date, new Date()))
+                .sort((a, b) => a.date - b.date)
+                .map(point => point.value);
 
             if (values.length === 0) return;
 

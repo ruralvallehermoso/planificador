@@ -6,7 +6,8 @@ import { updateFpEvaluationData } from "@/lib/actions/fp-evaluations"
 import { read, utils } from "xlsx"
 import {
     UploadCloud, Save, BarChart3, Grip, ArrowLeft,
-    Search, Trash2, CheckSquare, Square, Filter, X
+    Search, Trash2, CheckSquare, Square, Filter, X,
+    Copy
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -38,6 +39,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [heatmapSearchTerm, setHeatmapSearchTerm] = useState("")
     const [page, setPage] = useState(1)
+    const [copiedSummary, setCopiedSummary] = useState(false)
 
     // NEW Filter states for bar clicks
     const [criteriaFilter, setCriteriaFilter] = useState<{ criteria: string, status: 'Aprobados' | 'Suspendidos' } | null>(null)
@@ -127,6 +129,24 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
 
     const availableCriteria = useMemo(() => allColumns.filter(col => !nameColumns.includes(col)), [allColumns, nameColumns])
 
+    const totalCursoColumnKey = useMemo(() => {
+        const exactMatch = allColumns.find(col => col.trim() === "Total del curso (Real)")
+        if (exactMatch) return exactMatch
+        
+        const caseInsensitiveMatch = allColumns.find(col => col.toLowerCase().trim() === "total del curso (real)")
+        if (caseInsensitiveMatch) return caseInsensitiveMatch
+
+        const partialMatch = allColumns.find(col => col.toLowerCase().includes("total del curso"))
+        if (partialMatch) return partialMatch
+        
+        return "Total del curso (Real)"
+    }, [allColumns])
+
+    const filteredSummaryStudents = useMemo(() => {
+        if (!searchTerm) return studentsData
+        return studentsData.filter(student => getStudentFullName(student).toLowerCase().includes(searchTerm.toLowerCase()))
+    }, [studentsData, searchTerm, nameColumns])
+
     const detailedTableColumns = useMemo(() => {
         let cols = [...allColumns]
         const columnsToRemove = ["departamento", "institución", "número de id", "última descarga de este curso"]
@@ -162,6 +182,17 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
             if (raDistributionFilter !== null) setRaDistributionFilter(null)
             return next
         })
+    }
+
+    const handleCopySummary = () => {
+        const rowsText = studentsData.map(student => {
+            const name = getStudentFullName(student)
+            const grade = student[totalCursoColumnKey] !== undefined && student[totalCursoColumnKey] !== null ? student[totalCursoColumnKey] : ""
+            return `${name}\t${grade}`
+        }).join("\n")
+        navigator.clipboard.writeText(rowsText)
+        setCopiedSummary(true)
+        setTimeout(() => setCopiedSummary(false), 2000)
     }
 
     // Graph Data formatting
@@ -1017,6 +1048,85 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                 </div>
                             </div>
                         )}
+                    </div>
+
+                    {/* ---- FINAL GRADES SUMMARY SECTION ---- */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 className="text-base font-bold text-gray-900">Resumen de Calificaciones Finales</h3>
+                                <p className="text-xs text-gray-500 mt-0.5">Listado simplificado para exportación o consulta rápida de la nota final.</p>
+                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleCopySummary}
+                                className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 border-indigo-200 transition-all flex items-center gap-2"
+                            >
+                                {copiedSummary ? (
+                                    <>
+                                        <CheckSquare className="h-4 w-4" />
+                                        ¡Copiado!
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy className="h-4 w-4" />
+                                        Copiar Listado (TSV)
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+
+                        <div className="overflow-x-auto max-h-[400px] overflow-y-auto custom-scrollbar">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-gray-50/80 text-gray-500 font-medium border-b border-gray-100 sticky top-0 z-10 shadow-sm">
+                                    <tr>
+                                        <th className="px-6 py-3 whitespace-nowrap">Nombre</th>
+                                        <th className="px-6 py-3 whitespace-nowrap">{totalCursoColumnKey}</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white">
+                                    {filteredSummaryStudents.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={2} className="px-6 py-8 text-center text-gray-500">
+                                                No hay resultados para "{searchTerm}"
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        filteredSummaryStudents.map((student, i) => {
+                                            const name = getStudentFullName(student)
+                                            const val = student[totalCursoColumnKey]
+                                            let badgeColor = ""
+                                            const numVal = parseFloat(val)
+                                            if (!isNaN(numVal)) {
+                                                badgeColor = numVal >= 5 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
+                                            } else if (typeof val === 'string') {
+                                                const clean = val.toLowerCase().trim()
+                                                if (['apto', 'aprobado'].includes(clean)) badgeColor = "bg-emerald-100 text-emerald-700"
+                                                else if (['no apto', 'suspenso'].includes(clean)) badgeColor = "bg-rose-100 text-rose-700"
+                                            }
+
+                                            return (
+                                                <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                                                    <td className="px-6 py-3 font-medium text-gray-900">{name}</td>
+                                                    <td className="px-6 py-3">
+                                                        {badgeColor ? (
+                                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}`}>
+                                                                {val}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-gray-600">
+                                                                {val !== null && val !== undefined && val !== '' ? String(val) : '-'}
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}

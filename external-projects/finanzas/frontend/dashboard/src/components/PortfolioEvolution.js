@@ -4,14 +4,52 @@
 
 import { Chart, LineController, LineElement, PointElement, LinearScale, TimeScale, Filler, Legend, Tooltip } from 'chart.js';
 import 'chartjs-adapter-date-fns';
-import { formatEUR, formatCurrency } from '../utils/formatters.js';
-import { fetchPortfolioHistory, fetchPortfolioPerformance } from '../services/history.js';
+import { formatCurrency } from '../utils/formatters.js';
+import { fetchPortfolioHistory } from '../services/history.js';
 import { getTotalValue, getDisplayCurrency, convertValue } from '../data/assets.js';
 
 // Register Chart.js components
 Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Filler, Legend, Tooltip);
 
 let portfolioChart = null;
+
+function isSameLocalDay(dateA, dateB) {
+    return dateA.getFullYear() === dateB.getFullYear() &&
+        dateA.getMonth() === dateB.getMonth() &&
+        dateA.getDate() === dateB.getDate();
+}
+
+function updateIntradayRange(period, chartPoints) {
+    const rangeEl = document.getElementById('evolution-intraday');
+    const currentEl = document.getElementById('evolution-intraday-current');
+    const minEl = document.getElementById('evolution-intraday-min');
+    const maxEl = document.getElementById('evolution-intraday-max');
+
+    if (!rangeEl || !currentEl || !minEl || !maxEl) return;
+
+    if (period !== '24h') {
+        rangeEl.hidden = true;
+        return;
+    }
+
+    const now = new Date();
+    const todayValues = chartPoints
+        .filter(point => isSameLocalDay(point.date, now))
+        .map(point => point.value)
+        .filter(value => Number.isFinite(value));
+
+    if (todayValues.length === 0) {
+        rangeEl.hidden = true;
+        return;
+    }
+
+    const currency = getDisplayCurrency();
+    const currentValue = chartPoints[chartPoints.length - 1]?.value;
+    currentEl.textContent = formatCurrency(convertValue(currentValue), currency);
+    minEl.textContent = formatCurrency(convertValue(Math.min(...todayValues)), currency);
+    maxEl.textContent = formatCurrency(convertValue(Math.max(...todayValues)), currency);
+    rangeEl.hidden = false;
+}
 
 /**
  * Create portfolio evolution container HTML
@@ -23,6 +61,20 @@ export function createPortfolioEvolution() {
             <div class="evolution-info">
                 <div class="evolution-value" id="evolution-value">--</div>
                 <div class="evolution-change" id="evolution-change">--%</div>
+                <div class="evolution-intraday" id="evolution-intraday" hidden>
+                    <span class="intraday-chip">
+                        <span class="intraday-label">Actual</span>
+                        <strong id="evolution-intraday-current">--</strong>
+                    </span>
+                    <span class="intraday-chip intraday-min">
+                        <span class="intraday-label">Min</span>
+                        <strong id="evolution-intraday-min">--</strong>
+                    </span>
+                    <span class="intraday-chip intraday-max">
+                        <span class="intraday-label">Max</span>
+                        <strong id="evolution-intraday-max">--</strong>
+                    </span>
+                </div>
             </div>
             <div class="evolution-periods">
                 <button class="period-btn active" data-period="24h">24H</button>
@@ -70,32 +122,17 @@ export async function renderPortfolioEvolution(period = '1m') {
         return;
     }
 
-    // Fetch data
-    const [history, performance] = await Promise.all([
-        fetchPortfolioHistory(period),
-        fetchPortfolioPerformance(period)
-    ]);
+    const history = await fetchPortfolioHistory(period);
 
-    console.log('📊 History data points:', history?.length, 'Performance:', performance);
+    console.log('📊 History data points:', history?.length);
 
     // Update value and change using FRONTEND current value (backend may have stale prices)
     const currentValue = getTotalValue('All');
 
-    if (valueEl && changeEl) {
+    if (valueEl) {
         const currency = getDisplayCurrency();
         const displayValue = convertValue(currentValue);
         valueEl.textContent = formatCurrency(displayValue, currency);
-
-        // Calculate change using frontend's live current value vs backend's historical previous value
-        if (performance && performance.previous_value > 0) {
-            const changeAbsolute = currentValue - performance.previous_value;
-            const changePercent = (changeAbsolute / performance.previous_value) * 100;
-            const displayAbsolute = convertValue(changeAbsolute);
-
-            const sign = changePercent >= 0 ? '+' : '';
-            changeEl.textContent = `${sign}${changePercent.toFixed(2)}% (${sign}${formatCurrency(displayAbsolute, currency)})`;
-            changeEl.className = `evolution-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
-        }
     }
 
     // Render chart
@@ -113,17 +150,38 @@ export async function renderPortfolioEvolution(period = '1m') {
         portfolioChart = null;
     }
 
-    // Build chart data from history, injecting current live value as the last point
-    const labels = history.map(h => new Date(h.date));
-    const values = history.map(h => h.value);
+    const chartPoints = history
+        .map(h => ({ date: new Date(h.date), value: Number(h.value) }))
+        .filter(point => Number.isFinite(point.date.getTime()) && Number.isFinite(point.value))
+        .sort((a, b) => a.date - b.date);
 
-    // Add current live value as the final point (now) so chart reflects actual current state
     const now = new Date();
-    labels.push(now);
-    values.push(currentValue);
+    chartPoints.push({ date: now, value: currentValue });
 
-    // Determine color based on actual change: current value vs first historical value
-    const isPositive = currentValue >= values[0];
+    if (chartPoints.length < 2) {
+        console.warn('Not enough valid history data for portfolio evolution chart');
+        return;
+    }
+
+    const labels = chartPoints.map(point => point.date);
+    const values = chartPoints.map(point => point.value);
+    const firstValue = values[0];
+    const periodChangeAbsolute = currentValue - firstValue;
+    const periodChangePercent = firstValue > 0 ? (periodChangeAbsolute / firstValue) * 100 : 0;
+
+    if (changeEl) {
+        const currency = getDisplayCurrency();
+        const displayAbsolute = convertValue(periodChangeAbsolute);
+        const sign = periodChangePercent >= 0 ? '+' : '';
+
+        changeEl.textContent = `${sign}${periodChangePercent.toFixed(2)}% (${sign}${formatCurrency(displayAbsolute, currency)})`;
+        changeEl.className = `evolution-change ${periodChangePercent >= 0 ? 'positive' : 'negative'}`;
+    }
+
+    updateIntradayRange(period, chartPoints);
+
+    const isPositive = periodChangePercent >= 0;
+    const timeUnit = period === '24h' ? 'hour' : period === '7d' ? 'day' : 'week';
 
     // Get parent height for gradient (canvas.height may be 0 initially)
     const parent = canvas.parentElement;
@@ -185,12 +243,23 @@ export async function renderPortfolioEvolution(period = '1m') {
                         titleFont: { size: 12, weight: '500' },
                         bodyFont: { size: 16, weight: '600' },
                         callbacks: {
-                            title: (items) => new Date(items[0].parsed.x).toLocaleDateString('es-ES', {
-                                weekday: 'short',
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric'
-                            }),
+                            title: (items) => {
+                                const date = new Date(items[0].parsed.x);
+                                return period === '24h'
+                                    ? date.toLocaleString('es-ES', {
+                                        weekday: 'short',
+                                        day: 'numeric',
+                                        month: 'short',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })
+                                    : date.toLocaleDateString('es-ES', {
+                                        weekday: 'short',
+                                        day: 'numeric',
+                                        month: 'short',
+                                        year: 'numeric'
+                                    });
+                            },
                             label: (item) => formatCurrency(convertValue(item.parsed.y), getDisplayCurrency())
                         }
                     }
@@ -199,9 +268,9 @@ export async function renderPortfolioEvolution(period = '1m') {
                     x: {
                         type: 'time',
                         time: {
-                            // Backend provides daily data, so always use 'day' as base unit
-                            unit: period === '24h' || period === '7d' ? 'day' : 'week',
+                            unit: timeUnit,
                             displayFormats: {
+                                hour: 'HH:mm',
                                 day: 'dd MMM',
                                 week: 'dd MMM'
                             }
@@ -211,7 +280,7 @@ export async function renderPortfolioEvolution(period = '1m') {
                         ticks: {
                             color: isDark ? '#64748b' : '#94a3b8',
                             font: { size: 11 },
-                            maxTicksLimit: 6
+                            maxTicksLimit: period === '24h' ? 8 : 6
                         }
                     },
                     y: {

@@ -2,11 +2,11 @@
  * Header component
  */
 
-import { formatEUR, formatCurrency } from '../utils/formatters.js';
-import { getActiveFilter, setActiveFilter, getTotalValue, getUsdToEur, getDisplayCurrency, setDisplayCurrency, convertValue } from '../data/assets.js';
+import { formatCurrency } from '../utils/formatters.js';
+import { getActiveFilter, setActiveFilter, getTotalValue, getDisplayCurrency, setDisplayCurrency, convertValue } from '../data/assets.js';
 import { toggleTheme, updateThemeIcons } from '../utils/theme.js';
 import { renderSparkline } from './SparklineChart.js';
-import { fetchPortfolioHistory, fetchPortfolioPerformance } from '../services/history.js';
+import { fetchPortfolioHistory } from '../services/history.js';
 
 const FILTERS = ['All', 'Cripto', 'Acciones', 'Fondos'];
 const FILTER_LABELS = { 'All': 'TODO', 'Cripto': 'CRIPTO', 'Acciones': 'ACCIONES', 'Fondos': 'FONDOS' };
@@ -221,31 +221,32 @@ export async function renderPortfolioSparkline(filter) {
     try {
         // Fetch data based on filter
         const category = filter === 'All' ? null : filter;
-        const [history, perf24h] = await Promise.all([
-            fetchPortfolioHistory('7d', category, null),
-            fetchPortfolioPerformance('24h', category, null)
-        ]);
+        const history = await fetchPortfolioHistory('24h', category, null);
 
         // Get frontend's live current value
         const currentValue = getTotalValue(filter);
 
-        // Render sparkline - add current value as last point for accuracy
+        // Render sparkline and 24h change from the same 24h series.
         if (history && history.length > 0) {
-            const values = history.map(h => h.value);
+            const values = history
+                .map(h => Number(h.value))
+                .filter(value => Number.isFinite(value));
+
+            if (values.length === 0) return;
+
             values.push(currentValue); // Add live value as last point
-            const isPositive = currentValue >= values[0];
+            const firstValue = values[0];
+            const changeAbsolute = currentValue - firstValue;
+            const changePercent = firstValue > 0 ? (changeAbsolute / firstValue) * 100 : 0;
+            const isPositive = changePercent >= 0;
+
             renderSparkline('portfolio-sparkline', values, isPositive, 100, 40);
-        }
 
-        // Update 24h change display using frontend's live value
-        if (changeEl && perf24h && perf24h.previous_value > 0) {
-            // Calculate change using frontend's current value vs backend's previous value
-            const changeAbsolute = currentValue - perf24h.previous_value;
-            const changePercent = (changeAbsolute / perf24h.previous_value) * 100;
-
-            const sign = changePercent >= 0 ? '+' : '';
-            changeEl.textContent = `24h: ${sign}${changePercent.toFixed(2)}%`;
-            changeEl.className = `total-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+            if (changeEl) {
+                const sign = changePercent >= 0 ? '+' : '';
+                changeEl.textContent = `24h: ${sign}${changePercent.toFixed(2)}%`;
+                changeEl.className = `total-change ${isPositive ? 'positive' : 'negative'}`;
+            }
         }
     } catch (e) {
         console.error('Error rendering portfolio sparkline:', e);

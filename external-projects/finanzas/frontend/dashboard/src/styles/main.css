@@ -1497,6 +1497,49 @@ body {
     color: var(--danger);
 }
 
+.evolution-intraday {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+}
+
+.evolution-intraday[hidden] {
+    display: none;
+}
+
+.intraday-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.45rem;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.52);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.dark .intraday-chip {
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.intraday-label {
+    color: var(--text-muted);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+}
+
+.intraday-min strong {
+    color: var(--warning);
+}
+
+.intraday-max strong {
+    color: var(--success);
+}
+
 .evolution-periods {
     display: flex;
     background: var(--bg-main);

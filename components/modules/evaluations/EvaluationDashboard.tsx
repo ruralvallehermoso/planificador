@@ -46,6 +46,7 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
     const [heatmapSearchTerm, setHeatmapSearchTerm] = useState("")
     const [page, setPage] = useState(1)
     const [copiedSummary, setCopiedSummary] = useState(false)
+    const [copiedFilteredNames, setCopiedFilteredNames] = useState(false)
 
     // Tab Navigation state
     const [activeTab, setActiveTab] = useState<"dashboard" | "messages" | "settings">("dashboard")
@@ -249,6 +250,13 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
         navigator.clipboard.writeText(rowsText)
         setCopiedSummary(true)
         setTimeout(() => setCopiedSummary(false), 2000)
+    }
+
+    const handleCopyFilteredNames = () => {
+        const namesText = filteredStudents.map(student => getStudentFullName(student)).join("\n")
+        navigator.clipboard.writeText(namesText)
+        setCopiedFilteredNames(true)
+        setTimeout(() => setCopiedFilteredNames(false), 2000)
     }
 
     const handleSaveMessage = (e: React.FormEvent) => {
@@ -1105,18 +1113,38 @@ export function EvaluationDashboard({ evaluation }: EvaluationDashboardProps) {
                                     )}
                                 </div>
 
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        placeholder={`Buscar por nombre o apellido...`} value={searchTerm}
-                                        onChange={(e) => { setSearchTerm(e.target.value); setPage(1) }}
-                                        className="pl-9 w-full md:w-[320px] bg-gray-50 border-gray-200"
-                                    />
-                                    {searchTerm && (
-                                        <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" onClick={() => { setSearchTerm(""); setPage(1) }}>
-                                            <X className="h-3.5 w-3.5" />
-                                        </button>
-                                    )}
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleCopyFilteredNames}
+                                        className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 border-indigo-200 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
+                                    >
+                                        {copiedFilteredNames ? (
+                                            <>
+                                                <Check className="h-4 w-4 text-emerald-500" />
+                                                ¡Copiado!
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy className="h-4 w-4" />
+                                                Copiar Nombres
+                                            </>
+                                        )}
+                                    </Button>
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                        <Input
+                                            placeholder={`Buscar por nombre o apellido...`} value={searchTerm}
+                                            onChange={(e) => { setSearchTerm(e.target.value); setPage(1) }}
+                                            className="pl-9 w-full md:w-[320px] bg-gray-50 border-gray-200"
+                                        />
+                                        {searchTerm && (
+                                            <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" onClick={() => { setSearchTerm(""); setPage(1) }}>
+                                                <X className="h-3.5 w-3.5" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 

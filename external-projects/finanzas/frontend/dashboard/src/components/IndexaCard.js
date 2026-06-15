@@ -2,8 +2,8 @@
  * Indexa Card component - Shows Indexa Capital accounts with sparkline charts
  */
 
-import { formatEUR } from '../utils/formatters.js';
-import { getAssets, getIndexaConnected } from '../data/assets.js';
+import { formatCurrency } from '../utils/formatters.js';
+import { getAssets, getDisplayCurrency, getIndexaConnected, convertValue } from '../data/assets.js';
 import { renderSparkline } from './SparklineChart.js';
 import { fetchPortfolioHistory } from '../services/history.js';
 
@@ -65,8 +65,9 @@ export async function renderIndexaCard() {
 
     // Calculate total
     const total = indexaAssets.reduce((sum, a) => sum + (a.price * a.qty), 0);
+    const currency = getDisplayCurrency();
     if (totalEl) {
-        totalEl.textContent = formatEUR(total);
+        totalEl.textContent = formatCurrency(convertValue(total), currency);
     }
 
     // Calculate weighted 24h variation from API data
@@ -100,7 +101,7 @@ export async function renderIndexaCard() {
                     <div class="indexa-account-name">${account.name}</div>
                 </div>
                 <div class="indexa-account-values">
-                    <div class="indexa-account-value">${formatEUR(value)}</div>
+                    <div class="indexa-account-value">${formatCurrency(convertValue(value), currency)}</div>
                     <div class="indexa-account-var ${varClass}">${sign}${change24h.toFixed(2)}%</div>
                 </div>
             </div>

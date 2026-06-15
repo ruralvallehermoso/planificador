@@ -166,6 +166,6 @@ function getIconHtml(item) {
 export function updateUsdRate(rate) {
     const el = document.getElementById('usd-rate');
     if (el) {
-        el.textContent = `USD: ${rate.toFixed(4)}`;
+        el.textContent = `1$ = ${rate.toFixed(4)}€`;
     }
 }

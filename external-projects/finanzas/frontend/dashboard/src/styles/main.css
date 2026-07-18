@@ -2084,12 +2084,13 @@ body {
     white-space: nowrap;
 }
 
-.net-gain-stat-deduction strong {
+.net-gain-stat-cost strong {
     color: #f97316;
 }
 
+.net-gain-stat-profit strong,
 .net-gain-stat-result strong {
-    color: var(--net-gain-accent);
+    color: var(--success);
 }
 
 .net-gain-stat small {

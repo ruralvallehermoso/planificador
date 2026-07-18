@@ -69,20 +69,20 @@ export function createSimulatorView() {
                         <div class="net-gain-ring-caption">Balance / base</div>
                     </div>
                     <div class="net-gain-breakdown">
-                        <div class="net-gain-stat">
+                        <div class="net-gain-stat net-gain-stat-cost">
+                            <span>Coste hipotecario</span>
+                            <strong id="sim-net-mortgage-cost">--</strong>
+                            <small>intereses pagados</small>
+                        </div>
+                        <div class="net-gain-stat net-gain-stat-profit">
                             <span>Beneficio neto cartera</span>
                             <strong id="sim-net-profit-value">--</strong>
                             <small id="sim-net-profit-pct">--%</small>
                         </div>
-                        <div class="net-gain-stat net-gain-stat-deduction">
+                        <div class="net-gain-stat">
                             <span>Impuestos estimados</span>
                             <strong id="sim-net-tax-value">--</strong>
                             <small id="sim-net-tax-note">a restar</small>
-                        </div>
-                        <div class="net-gain-stat">
-                            <span>Coste hipotecario</span>
-                            <strong id="sim-net-mortgage-cost">--</strong>
-                            <small>intereses pagados</small>
                         </div>
                         <div class="net-gain-stat net-gain-stat-result">
                             <span>Balance neto</span>

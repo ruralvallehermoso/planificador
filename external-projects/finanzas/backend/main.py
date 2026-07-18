@@ -232,7 +232,7 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
         import market_client
         # SIMULATOR CONFIG: Weights for specific Indexa accounts (Legacy Logic)
         SIM_WEIGHTS = {
-            "76B4EQKT": 0.5383,   # Margarita (reajustado tras nueva retirada de Indexa, 2026-07-18)
+            "76B4EQKT": 0.5939,   # Margarita: calibrado para que initial_val = 69.693,84€ (ver raw_initial más abajo, junto a "150209")
             "2RALDY9V": 0.0,      # Marcos (Excluded)
             "23LLWQDX": 1.0       # Carmelo (Full)
         }
@@ -333,10 +333,14 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
                  # Override for Carmelo (23LLWQDX) to match user specific data: 32196 EUR on Nov 24.
                  if "23LLWQDX" in a.id or (is_indexa_sub and weight == 1.0): 
                       raw_initial = 32196.0
-                 # Override for Margarita (76B4EQKT) to match user specific data: 66092 EUR (Weighted).
-                 # So Raw = 66092 / 0.44
+                 # Override for Margarita (76B4EQKT): valor bruto de la cuenta en 2025-11-24 = 150.209€.
+                 # IMPORTANTE: cada reembolso/retirada posterior de ESTA cuenta se resta AQUÍ, en bruto
+                 # (antes de aplicar el peso), no se ajusta el peso de SIM_WEIGHTS por la retirada en sí.
+                 # El peso solo debe recalibrarse si cambia el reparto entre la parte "comparada" y el
+                 # resto de la cuenta (ver objetivo: los 4 valores iniciales deben sumar 127.000€).
+                 # Reembolsos restados hasta ahora: 9.531€ + 12.612,86€ + 10.715,03€
                  elif "76B4EQKT" in a.id:
-                      raw_initial = (150209 - 9531)
+                      raw_initial = (150209 - 9531 - 12612.86 - 10715.03)
                  #elif total_indexa_live > 0 and idx_master_start_val > 0:
                  #     ratio = real_account_val / total_indexa_live
                  #     raw_initial = idx_master_start_val * ratio

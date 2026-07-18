@@ -527,6 +527,14 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
         ]
         TOTAL_REEMBOLSOS_MARGARITA = sum(amount for _, amount in REEMBOLSOS_MARGARITA)
 
+        # Mismo caso para Carmelo: los 5.000€ que ya se restan de su base inicial (más abajo,
+        # "Specific Adjustments") corresponden a una retirada real que liquidó el 2025-12-04
+        # (32.892€ → 27.844€ en el histórico guardado).
+        REEMBOLSOS_CARMELO = [
+            (date(2025, 12, 4), 5000.0),
+        ]
+        TOTAL_REEMBOLSOS_CARMELO = sum(amount for _, amount in REEMBOLSOS_CARMELO)
+
         carmelo_hist = indexa_hist_maps.get(CARMELO_ID, {})
         margarita_hist = indexa_hist_maps.get(MARGARITA_ID, {})
 
@@ -578,13 +586,16 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
                  if MARGARITA_ID in live_indexa_map:
                      margarita_price_d = live_indexa_map[MARGARITA_ID]
 
-             # Pre-restar los reembolsos que a fecha 'd' AÚN NO habían ocurrido, para que el
-             # componente de Margarita use siempre la misma base "ya neta de reembolsos" que el
-             # peso de SIM_WEIGHTS espera (ver comparison() de hoy, que usa raw_initial reducido).
-             cumulative_reembolso_d = sum(amount for r_date, amount in REEMBOLSOS_MARGARITA if r_date <= d)
-             margarita_adjusted_raw = margarita_price_d + cumulative_reembolso_d - TOTAL_REEMBOLSOS_MARGARITA
+             # Pre-restar los reembolsos que a fecha 'd' AÚN NO habían ocurrido, para que los
+             # componentes usen siempre la misma base "ya neta de reembolsos" que el peso/ajuste
+             # fijo de arriba espera (ver comparison() de hoy, que usa raw_initial reducido).
+             cumulative_reembolso_margarita_d = sum(amount for r_date, amount in REEMBOLSOS_MARGARITA if r_date <= d)
+             margarita_adjusted_raw = margarita_price_d + cumulative_reembolso_margarita_d - TOTAL_REEMBOLSOS_MARGARITA
 
-             carmelo_component = carmelo_price_d * carmelo_weight
+             cumulative_reembolso_carmelo_d = sum(amount for r_date, amount in REEMBOLSOS_CARMELO if r_date <= d)
+             carmelo_adjusted_raw = carmelo_price_d + cumulative_reembolso_carmelo_d - TOTAL_REEMBOLSOS_CARMELO
+
+             carmelo_component = carmelo_adjusted_raw * carmelo_weight
              margarita_component = margarita_adjusted_raw * margarita_weight
              idx_component = carmelo_component + margarita_component
              daily_val += idx_component

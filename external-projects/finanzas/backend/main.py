@@ -561,7 +561,9 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
         if req.start_date == date(2025, 11, 24):
              for oid in other_assets_ids:
                  override_price = HISTORICAL_BASIS_OVERRIDE.get(oid)
-                 raw_at_start = other_hist_maps[oid].get(req.start_date)
+                 # Ancla sobre el mismo valor usado para rellenar hacia atrás (last_known_prices_other),
+                 # que puede venir de una fecha posterior a start_date si no hay dato exacto ese día.
+                 raw_at_start = other_hist_maps[oid].get(req.start_date) or last_known_prices_other.get(oid)
                  if override_price and raw_at_start and raw_at_start > 0:
                      other_scale_factors[oid] = override_price / raw_at_start
 

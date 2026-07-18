@@ -551,6 +551,20 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
                  if sorted_keys:
                      last_known_prices_other[oid] = other_hist_maps[oid][sorted_keys[0]]
 
+        # El histórico guardado en BD para gold/myinv no tiene dato fiable tan atrás como
+        # 2025-11-24 (arrastra el primer precio disponible, más alto que el real de esa fecha).
+        # Se ancla la serie completa a la misma base fija que usa el cálculo de "hoy" (líneas de
+        # arriba, "Real Historical Basis"), preservando la forma real día a día vía un factor de
+        # escala, igual que se hace con el histórico de Indexa.
+        HISTORICAL_BASIS_OVERRIDE = {"myinv": 12.24, "gold": 69.00}
+        other_scale_factors = {}
+        if req.start_date == date(2025, 11, 24):
+             for oid in other_assets_ids:
+                 override_price = HISTORICAL_BASIS_OVERRIDE.get(oid)
+                 raw_at_start = other_hist_maps[oid].get(req.start_date)
+                 if override_price and raw_at_start and raw_at_start > 0:
+                     other_scale_factors[oid] = override_price / raw_at_start
+
         portfolio_history = []
         asset_qtys = {a.id: a.quantity for a in all_assets}
         debug_log = []
@@ -601,6 +615,7 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
              daily_val += idx_component
 
              # II. Other Assets Component (Direct Sum) with Forward Fill
+             other_detail = []
              for oid in other_assets_ids:
                   # WEEKEND PROTECTION: If Sat/Sun, force usage of last_known for Non-Crypto
                   # helping to avoid 0.0 or bad data from APIs that don't trade on weekends.
@@ -622,14 +637,15 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
                   if price is not None and price > 0:
                       last_known_prices_other[oid] = price
                   
-                  val_price = last_known_prices_other.get(oid, 0.0)
+                  val_price = last_known_prices_other.get(oid, 0.0) * other_scale_factors.get(oid, 1.0)
                   qty = asset_qtys.get(oid, 0.0)
                   comp_val = val_price * qty
                   daily_val += comp_val
                   other_component += comp_val
+                  other_detail.append(f"{oid}:{val_price:.2f}x{qty}={comp_val:.1f}")
              
              
-             debug_log.append(f"D:{d} V:{daily_val:.1f} Idx:{idx_component:.1f} Oth:{other_component:.1f}")
+             debug_log.append(f"D:{d} V:{daily_val:.1f} Idx:{idx_component:.1f} Oth:{other_component:.1f} Car:{carmelo_component:.1f} Mar:{margarita_component:.1f} CarRaw:{carmelo_price_d:.1f} MarRaw:{margarita_price_d:.1f} | {' '.join(other_detail)}")
              
              if daily_val > 0:
                  portfolio_history.append({"date": d, "value": daily_val})
@@ -652,6 +668,7 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
             "asset_breakdown": asset_breakdown,
             "debug_info": {
                 "log_tail": debug_log[-10:] if 'debug_log' in locals() else [],
+                "log_head": debug_log[:5] if 'debug_log' in locals() else [],
                 "dates_diag": {
                     "len_sorted": len(sorted_dates) if 'sorted_dates' in locals() else -1,
                     "len_all": len(all_dates) if 'all_dates' in locals() else -1,

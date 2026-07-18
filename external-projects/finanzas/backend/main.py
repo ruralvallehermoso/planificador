@@ -518,10 +518,12 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
         # fechas anteriores a que ocurrieran, para que sean consistentes con el peso de arriba
         # (calibrado asumiendo que los tres ya están restados). Cuando haya un reembolso nuevo,
         # añadirlo aquí (fecha, importe) — no hace falta tocar el peso de SIM_WEIGHTS por esto.
+        # NOTA: la fecha es la de LIQUIDACIÓN real (cuando cae el valor en el histórico guardado),
+        # no la fecha de solicitud — suele ir 3-5 días por detrás de cuando se pide el reembolso.
         REEMBOLSOS_MARGARITA = [
-            (date(2026, 1, 14), 9531.57),
-            (date(2026, 6, 30), 12612.86),
-            (date(2026, 7, 14), 10715.03),
+            (date(2026, 1, 17), 9531.57),   # solicitado 14-01-2026
+            (date(2026, 7, 5), 12612.86),   # solicitado 30-06-2026
+            (date(2026, 7, 18), 10715.03),  # solicitado 14-07-2026
         ]
         TOTAL_REEMBOLSOS_MARGARITA = sum(amount for _, amount in REEMBOLSOS_MARGARITA)
 

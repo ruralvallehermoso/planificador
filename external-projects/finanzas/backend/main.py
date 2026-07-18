@@ -232,7 +232,7 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
         import market_client
         # SIMULATOR CONFIG: Weights for specific Indexa accounts (Legacy Logic)
         SIM_WEIGHTS = {
-            "76B4EQKT": 0.4796,   # Margarita (recalculado tras retirada de 12.612,86€: 0.44 * (140030,10+12612,86)/140030,10)
+            "76B4EQKT": 0.5383,   # Margarita (reajustado tras nueva retirada de Indexa, 2026-07-18)
             "2RALDY9V": 0.0,      # Marcos (Excluded)
             "23LLWQDX": 1.0       # Carmelo (Full)
         }

@@ -300,7 +300,8 @@ def get_assets_with_performance(db: Session, category: Optional[str] = None) -> 
     may be ephemeral on serverless deployments.
     """
     import requests
-    
+    import market_client
+
     # 1. Fetch Assets
     if category and category.lower() != "all":
         ids_query = select(models.Asset).where(models.Asset.category == category)
@@ -336,6 +337,18 @@ def get_assets_with_performance(db: Session, category: Optional[str] = None) -> 
             except Exception as e:
                 print(f"⚠️ Yahoo change fetch error for {asset.id}: {e}")
 
+    # 2b. Fetch live current values for Indexa accounts. asset.price_eur solo se actualiza cuando
+    # corre /api/update_markets, así que puede estar desactualizado; el 24h% de Indexa necesita el
+    # valor EN VIVO como "actual" (el histórico de BD sí sirve como "hace 24h").
+    indexa_live_values = {}
+    try:
+        idata = market_client.fetch_indexa_accounts()
+        if idata and idata.get("success"):
+            for acc in idata.get("accounts", []):
+                indexa_live_values[f"idx_{acc['account_number']}"] = acc["market_value"]
+    except Exception as e:
+        print(f"⚠️ Indexa live fetch error (24h change): {e}")
+
     # 3. Fallback: use DB historical prices for any remaining assets
     today = date.today()
     since_date = today - timedelta(days=14) # Búsqueda hasta 10 días para sortear fines de semana
@@ -365,7 +378,7 @@ def get_assets_with_performance(db: Session, category: Optional[str] = None) -> 
             change = yahoo_changes[asset.id]
         elif asset.id in history_by_asset:
             asset_history = history_by_asset[asset.id]
-            current = asset.price_eur
+            current = indexa_live_values.get(asset.id, asset.price_eur)
             previous = None
             
             # Buscar el primer precio histórico que difiera del precio actual (último cierre distinto)

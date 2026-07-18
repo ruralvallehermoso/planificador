@@ -569,6 +569,10 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
 
         portfolio_history = []
         asset_qtys = {a.id: a.quantity for a in all_assets}
+        # a.price_eur ya incluye el hotfix del oro aplicado en el bucle de asset_breakdown de más
+        # arriba (misma lista all_assets). Se usa para anclar el punto de HOY del histórico al
+        # mismo precio en vivo que ya usa el snapshot, en vez del histórico escalado.
+        live_price_other = {a.id: a.price_eur for a in all_assets}
         debug_log = []
 
         last_carmelo_price = 0.0
@@ -640,6 +644,11 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
                       last_known_prices_other[oid] = price
                   
                   val_price = last_known_prices_other.get(oid, 0.0) * other_scale_factors.get(oid, 1.0)
+
+                  # Anchor to exact live price on today's point (mismo criterio que Carmelo/Margarita)
+                  if is_today and oid in live_price_other:
+                      val_price = live_price_other[oid]
+
                   qty = asset_qtys.get(oid, 0.0)
                   comp_val = val_price * qty
                   daily_val += comp_val

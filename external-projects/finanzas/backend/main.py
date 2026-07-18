@@ -558,12 +558,15 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
              is_weekend = d.weekday() >= 5
 
              # I. Indexa Component (per-account, Carmelo + Margarita only)
-             c_price = None if is_weekend else carmelo_hist.get(d)
+             # NOTA: a diferencia de otros activos, aquí NO se ignora el fin de semana — Indexa no
+             # cotiza en bolsa, el dato guardado es válido el día que se capturó (y algunas
+             # liquidaciones de reembolsos caen justo en sábado/domingo).
+             c_price = carmelo_hist.get(d)
              if c_price is not None and c_price > 0:
                  last_carmelo_price = c_price
              carmelo_price_d = last_carmelo_price
 
-             m_price = None if is_weekend else margarita_hist.get(d)
+             m_price = margarita_hist.get(d)
              if m_price is not None and m_price > 0:
                  last_margarita_price = m_price
              margarita_price_d = last_margarita_price

@@ -14,6 +14,7 @@ import {
     getCryptoAssets,
     setIndexaConnected,
     getAssets,
+    getAssetById,
     getTotalValue,
     loadAssetsFromAPI
 } from './data/assets.js';
@@ -458,8 +459,13 @@ async function updateIndexa() {
 
         // Add each account as a separate asset
         result.accounts.forEach(account => {
+            const id = `idx_${account.account_number}`;
+            // fetchIndexaAccounts() no trae el % de 24h (eso solo lo da /api/assets, ya cargado
+            // en loadAssetsFromAPI). Como addAsset() reemplaza el objeto entero, hay que
+            // conservarlo explícitamente o se pierde y queda a 0%.
+            const existing = getAssetById(id);
             addAsset({
-                id: `idx_${account.account_number}`,
+                id,
                 name: account.name,
                 ticker: 'IDX',
                 cat: 'Fondos',
@@ -469,6 +475,7 @@ async function updateIndexa() {
                 indexa_api: true,
                 risk_profile: account.risk_profile,
                 variation_pct: account.variation_pct,
+                change24h: existing?.change24h ?? 0,
                 img: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://indexacapital.com&size=64'
             });
         });

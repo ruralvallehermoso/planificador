@@ -505,10 +505,29 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
         sorted_dates = sorted(list(all_dates))
         sorted_dates = [d for d in sorted_dates if d >= req.start_date and d <= date.today()]
         
-        # C. Build Composite Master with Forward Fill
-        composite_master_hist = {}
-        last_known_prices = {} # aid -> price
-        
+        # C. Build per-account forward-filled series for Carmelo & Margarita (Marcos stays excluded,
+        # weight 0.0). Reemplaza el antiguo "Composite Master + factor de escala único", que aplicaba
+        # el peso de HOY (ya con todos los reembolsos restados) a todo el histórico por igual y por
+        # eso inflaba los días anteriores a que los reembolsos ocurrieran de verdad.
+        CARMELO_ID = "idx_23LLWQDX"
+        MARGARITA_ID = "idx_76B4EQKT"
+        carmelo_weight = SIM_WEIGHTS.get("23LLWQDX", 1.0)
+        margarita_weight = SIM_WEIGHTS.get("76B4EQKT", 1.0)
+
+        # Reembolsos (retiradas) de Indexa Margarita: se restan en TODO el histórico, incluso en
+        # fechas anteriores a que ocurrieran, para que sean consistentes con el peso de arriba
+        # (calibrado asumiendo que los tres ya están restados). Cuando haya un reembolso nuevo,
+        # añadirlo aquí (fecha, importe) — no hace falta tocar el peso de SIM_WEIGHTS por esto.
+        REEMBOLSOS_MARGARITA = [
+            (date(2026, 1, 14), 9531.57),
+            (date(2026, 6, 30), 12612.86),
+            (date(2026, 7, 14), 10715.03),
+        ]
+        TOTAL_REEMBOLSOS_MARGARITA = sum(amount for _, amount in REEMBOLSOS_MARGARITA)
+
+        carmelo_hist = indexa_hist_maps.get(CARMELO_ID, {})
+        margarita_hist = indexa_hist_maps.get(MARGARITA_ID, {})
+
         # Initialize Other Assets Forward Fill dict OUTSIDE loop
         last_known_prices_other = {}
         # Pre-seed Other Assets
@@ -521,48 +540,50 @@ def get_simulator_comparison(req: schemas.SimulatorRequest, db: Session = Depend
                  sorted_keys = sorted(other_hist_maps[oid].keys())
                  if sorted_keys:
                      last_known_prices_other[oid] = other_hist_maps[oid][sorted_keys[0]]
-        
-        for d in sorted_dates:
-            daily_sum = 0.0
-            is_weekend = d.weekday() >= 5
-            
-            for aid in indexa_assets_all:
-                price = indexa_hist_maps[aid].get(d)
-                
-                if is_weekend:
-                    price = None
-                    
-                if price is not None and price > 0:
-                    last_known_prices[aid] = price
-                
-                # Use last known price (Forward Fill)
-                daily_sum += last_known_prices.get(aid, 0.0)
-            
-            composite_master_hist[d] = daily_sum
 
         portfolio_history = []
         asset_qtys = {a.id: a.quantity for a in all_assets}
         debug_log = []
-        
+
+        last_carmelo_price = 0.0
+        last_margarita_price = 0.0
+
         for d in sorted_dates:
              daily_val = 0.0
              idx_component = 0.0
              other_component = 0.0
              is_today = (d == date.today())
-             
-             # I. Indexa Component (Scaled Composite)
-             if is_today and sim_indexa_current_sum > 0:
-                 # Anchor to exact live value
-                 daily_val += sim_indexa_current_sum
-             else:
-                 master_val = composite_master_hist.get(d, 0.0)
-                 if master_val > 0:
-                      weighted_val = master_val * indexa_scale_factor
-                      
-                      daily_val += weighted_val
-                      idx_component = weighted_val
+             is_weekend = d.weekday() >= 5
 
-             
+             # I. Indexa Component (per-account, Carmelo + Margarita only)
+             c_price = None if is_weekend else carmelo_hist.get(d)
+             if c_price is not None and c_price > 0:
+                 last_carmelo_price = c_price
+             carmelo_price_d = last_carmelo_price
+
+             m_price = None if is_weekend else margarita_hist.get(d)
+             if m_price is not None and m_price > 0:
+                 last_margarita_price = m_price
+             margarita_price_d = last_margarita_price
+
+             # Anchor to exact live values on today's point (avoids DB staleness)
+             if is_today:
+                 if CARMELO_ID in live_indexa_map:
+                     carmelo_price_d = live_indexa_map[CARMELO_ID]
+                 if MARGARITA_ID in live_indexa_map:
+                     margarita_price_d = live_indexa_map[MARGARITA_ID]
+
+             # Pre-restar los reembolsos que a fecha 'd' AÚN NO habían ocurrido, para que el
+             # componente de Margarita use siempre la misma base "ya neta de reembolsos" que el
+             # peso de SIM_WEIGHTS espera (ver comparison() de hoy, que usa raw_initial reducido).
+             cumulative_reembolso_d = sum(amount for r_date, amount in REEMBOLSOS_MARGARITA if r_date <= d)
+             margarita_adjusted_raw = margarita_price_d + cumulative_reembolso_d - TOTAL_REEMBOLSOS_MARGARITA
+
+             carmelo_component = carmelo_price_d * carmelo_weight
+             margarita_component = margarita_adjusted_raw * margarita_weight
+             idx_component = carmelo_component + margarita_component
+             daily_val += idx_component
+
              # II. Other Assets Component (Direct Sum) with Forward Fill
              for oid in other_assets_ids:
                   # WEEKEND PROTECTION: If Sat/Sun, force usage of last_known for Non-Crypto

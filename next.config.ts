@@ -20,7 +20,10 @@ const cspDirectives = [
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `img-src 'self' data: blob: https:`,
   `font-src 'self' https://fonts.gstatic.com`,
-  `connect-src 'self' https://vercel.com ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL} ${FINANZAS_BACKEND_URL} https://unpkg.com https://cdnjs.cloudflare.com`,
+  // corsproxy.io y api.coingecko.com: Portfolio Master los usa para cotizaciones de
+  // bolsa (Yahoo, vía proxy CORS) y cripto en vivo; sin ellos en el allowlist esas
+  // peticiones se bloquean en silencio y los precios nunca se refrescan.
+  `connect-src 'self' https://vercel.com ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL} ${FINANZAS_BACKEND_URL} https://unpkg.com https://cdnjs.cloudflare.com https://corsproxy.io https://api.coingecko.com`,
   `frame-src 'self' ${PORTFOLIO_URL} ${CASARURAL_URL} ${HOGAR_URL}`,
   "frame-ancestors 'self'",
   "base-uri 'self'",

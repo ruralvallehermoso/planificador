@@ -6,7 +6,11 @@ const isDev = process.env.NODE_ENV !== 'production';
 const PORTFOLIO_URL = process.env.NEXT_PUBLIC_PORTFOLIO_URL || (isDev ? 'http://localhost:5173' : 'https://finanzas-tau-ten.vercel.app');
 const CASARURAL_URL = process.env.NEXT_PUBLIC_CASARURAL_URL || (isDev ? 'http://localhost:3002' : 'https://casa-rural-web-alpha.vercel.app');
 const HOGAR_URL = process.env.NEXT_PUBLIC_HOGAR_URL || (isDev ? 'http://localhost:3003' : 'https://hogar-web.vercel.app');
-const FINANZAS_BACKEND_URL = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
+// backend-rho-two-p1x4gg922k.vercel.app es un despliegue de Vercel huérfano,
+// desconectado del repo, congelado en el commit inicial del proyecto Finanzas
+// (sin la ruta POST /api/assets ni el resto de la API actual). El backend
+// real y desplegado desde git vive dentro del propio proyecto "finanzas".
+const FINANZAS_BACKEND_URL = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://finanzas-tau-ten.vercel.app';
 
 // Build Content-Security-Policy
 const cspDirectives = [

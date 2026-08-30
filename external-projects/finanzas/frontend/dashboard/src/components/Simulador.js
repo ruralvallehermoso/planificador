@@ -1,128 +1,26 @@
 /**
  * Simulator component - Interactive mortgage vs investment analysis
  */
-import { Chart } from 'chart.js';
-import zoomPlugin from 'chartjs-plugin-zoom';
-import 'hammerjs';
-import { formatEUR, formatPercent } from '../utils/formatters.js';
+import { Chart, LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Legend, Tooltip } from 'chart.js';
+import { formatEUR } from '../utils/formatters.js';
 import { BACKEND_URL } from '../config.js';
 
-Chart.register(zoomPlugin);
+Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Legend, Tooltip);
 
-let simulatorChartInstance = null;
-let currentSimData = null;
+let balanceChartInstance = null;
+let scenarioChartInstance = null;
+
+const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000;
 
 /**
  * Create simulator view container HTML
  */
 export function createSimulatorView() {
     return `
-    <style>
-      .metric-card.interactive {
-          cursor: pointer;
-          transition: transform 0.2s, box-shadow 0.2s;
-          position: relative;
-          border: 1px solid transparent;
-      }
-      .metric-card.interactive:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-          border-color: var(--primary);
-      }
-      .metric-card.interactive::after {
-          content: '👆 Ver detalle';
-          position: absolute;
-          bottom: 4px;
-          right: 8px;
-          font-size: 0.65rem;
-          color: var(--primary);
-          opacity: 0;
-          transition: opacity 0.2s;
-          font-weight: bold;
-      }
-      .metric-card.interactive:hover::after {
-          opacity: 1;
-      }
-      
-      /* Detail Modal Styles */
-      .detail-section {
-          margin-bottom: 20px;
-          padding: 15px;
-          background: var(--bg-main);
-          border-radius: 8px;
-      }
-      .detail-row {
-          display: flex;
-          justify-content: space-between;
-          padding: 8px 0;
-          border-bottom: 1px solid var(--border-color);
-      }
-      .detail-row.total {
-          font-weight: bold;
-          border-top: 2px solid var(--border-color);
-          border-bottom: double var(--border-color);
-          margin-top: 10px;
-          font-size: 1.1em;
-      }
-      .detail-explanation {
-          font-size: 0.85em;
-          color: var(--text-muted);
-          margin-bottom: 15px;
-          font-style: italic;
-          line-height: 1.5;
-      }
-      .detail-table {
-          width: 100%;
-          font-size: 0.8rem;
-          border-collapse: collapse;
-      }
-      .detail-table th {
-          text-align: left;
-          background: var(--bg-card);
-          padding: 8px;
-          position: sticky;
-          top: 0;
-      }
-      .detail-table td {
-          padding: 6px 8px;
-          border-bottom: 1px solid var(--border-color);
-      }
-      .badge-math {
-          display: inline-block;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-size: 0.7em;
-          font-weight: bold;
-          margin-right: 8px;
-          width: 24px;
-          text-align: center;
-      }
-      .bg-plus { background: #dcfce7; color: #166534; }
-      .bg-minus { background: #fee2e2; color: #991b1b; }
-      .bg-equals { background: #e0e7ff; color: #3730a3; }
-      
-      .simulator-card:fullscreen {
-          background: var(--bg-card);
-          padding: 20px;
-          border-radius: 0;
-          height: 100vh;
-          width: 100vw;
-          overflow-y: auto;
-      }
-      .chart-controls {
-          display: flex;
-          gap: 10px;
-      }
-      .btn-small {
-          padding: 4px 10px;
-          font-size: 0.8em;
-      }
-    </style>
-
     <div class="simulator-container">
         <div class="simulator-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <div>
-                <h2 class="simulator-title">Simulador: Inversión vs Deuda <span style="font-size: 0.6em; color: #94a3b8; font-weight: normal;">(v1.9-INTERACTIVE)</span></h2>
+                <h2 class="simulator-title">Simulador: Inversión vs Deuda <span style="font-size: 0.6em; color: #94a3b8; font-weight: normal;">(v1.6)</span></h2>
                 <p class="simulator-subtitle">Compara si es más rentable mantener tu inversión o amortizar la hipoteca.</p>
             </div>
             <button id="open-config-btn" class="btn-secondary">
@@ -142,29 +40,81 @@ export function createSimulatorView() {
                         <span class="metric-label">Valor Actual Cartera</span>
                         <span class="metric-value" id="sim-portfolio-value">--</span>
                     </div>
-                    <div class="metric-card interactive" id="sim-mortgage-card">
+                    <div class="metric-card">
                         <span class="metric-label">Coste Hipoteca (Intereses)</span>
                         <span class="metric-value" id="sim-mortgage-cost">--</span>
-                        <div style="font-size:0.6rem; color:#64748b; margin-top:4px;">Haz clic para ver desglose</div>
                     </div>
-                    <div class="metric-card interactive" id="sim-net-card">
+                    <div class="metric-card" id="sim-net-card">
                         <span class="metric-label">Ganancia Neta Operación</span>
                         <span class="metric-value" id="sim-net-balance">--</span>
                         <span class="metric-delta" id="sim-roi">--%</span>
-                        <div style="font-size:0.6rem; color:#64748b; margin-top:4px;">Ult. Pago: <span id="sim-debug-date">--</span></div>
                     </div>
                 </div>
 
-                <div class="simulator-card chart-card" id="sim-chart-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 class="card-title" style="margin: 0;">Evolución Comparativa</h3>
-                        <div class="chart-controls">
-                            <button id="reset-zoom-btn" class="btn-secondary btn-small" style="display: none;">🔄 Reset Zoom</button>
-                            <button id="fullscreen-chart-btn" class="btn-secondary btn-small">⛶ Pantalla Completa</button>
+                <div class="net-gain-panel" id="sim-net-gain-panel">
+                    <div class="net-gain-copy">
+                        <span class="net-gain-eyebrow">Rentabilidad de la operación</span>
+                        <div class="net-gain-title-row">
+                            <span class="net-gain-percent" id="sim-net-gain-pct">--%</span>
+                            <span class="net-gain-badge" id="sim-net-gain-badge">Pendiente de cálculo</span>
+                        </div>
+                        <p id="sim-net-gain-copy">
+                            Calculando el porcentaje de ganancia neta frente a la base invertida.
+                        </p>
+                    </div>
+                    <div class="net-gain-visual" aria-hidden="true">
+                        <div class="net-gain-ring" id="sim-net-gain-ring">
+                            <span id="sim-net-gain-ring-value">--%</span>
+                        </div>
+                        <div class="net-gain-ring-caption">Balance / base</div>
+                    </div>
+                    <div class="net-gain-breakdown">
+                        <div class="net-gain-stat net-gain-stat-cost">
+                            <span>Coste hipotecario</span>
+                            <strong id="sim-net-mortgage-cost">--</strong>
+                            <small>intereses pagados</small>
+                        </div>
+                        <div class="net-gain-stat net-gain-stat-profit">
+                            <span>Beneficio neto cartera</span>
+                            <strong id="sim-net-profit-value">--</strong>
+                            <small id="sim-net-profit-pct">--%</small>
+                        </div>
+                        <div class="net-gain-stat">
+                            <span>Impuestos estimados</span>
+                            <strong id="sim-net-tax-value">--</strong>
+                            <small id="sim-net-tax-note">a restar</small>
+                        </div>
+                        <div class="net-gain-stat net-gain-stat-result">
+                            <span>Balance neto</span>
+                            <strong id="sim-net-operation-balance">--</strong>
+                            <small id="sim-net-operation-note">resultado final</small>
                         </div>
                     </div>
-                    <div class="simulator-chart-container" style="flex-grow: 1; min-height: 300px;">
-                        <canvas id="simulatorChart"></canvas>
+                </div>
+
+                <div class="simulator-card chart-card">
+                    <div class="balance-card-header">
+                        <h3 class="card-title">Balance Neto</h3>
+                        <div class="balance-summary-row">
+                            <div class="balance-summary-box" id="balance-current-box">
+                                <span class="balance-summary-label">Balance actual</span>
+                                <span class="balance-summary-value" id="balance-current-value">--</span>
+                            </div>
+                            <div class="balance-summary-box" id="balance-status-box">
+                                <span class="balance-summary-label">Estado</span>
+                                <span class="balance-summary-value" id="balance-status-value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="simulator-chart-container">
+                        <canvas id="simulatorBalanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="simulator-card chart-card">
+                    <h3 class="card-title">Escenarios Futuro</h3>
+                    <div class="simulator-chart-container">
+                        <canvas id="simulatorScenarioChart"></canvas>
                     </div>
                 </div>
                 
@@ -232,7 +182,7 @@ export function createSimulatorView() {
     </div>
 
     <!-- Configuration Modal -->
-    <div id="simulator-config-modal" class="modal-overlay-v2">
+    <div id="simulator-config-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Configuración de Hipoteca</h3>
@@ -262,21 +212,26 @@ export function createSimulatorView() {
                         <label for="tax-rate">Impuestos Plusvalía (%)</label>
                         <input type="number" id="tax-rate" value="19" step="1">
                     </div>
+                    <hr class="separator">
+                    <div class="scenario-settings">
+                        <div class="scenario-settings-title">Escenarios futuros</div>
+                        <div class="scenario-input-grid">
+                            <div class="form-group">
+                                <label for="scenario-conservative-rate">Conservador (%)</label>
+                                <input type="number" id="scenario-conservative-rate" value="2" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="scenario-base-rate">Base (%)</label>
+                                <input type="number" id="scenario-base-rate" value="5" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="scenario-optimistic-rate">Optimista (%)</label>
+                                <input type="number" id="scenario-optimistic-rate" value="8" step="0.1">
+                            </div>
+                        </div>
+                    </div>
                     <button id="calculate-simulator" class="btn-primary">Recalcular y Guardar</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Detail Information Modal -->
-    <div id="simulator-detail-modal" class="modal-overlay-v2">
-        <div class="modal-content" style="max-width: 600px; max-height: 85vh; display: flex; flex-direction: column;">
-            <div class="modal-header">
-                <h3 class="modal-title" id="detail-modal-title">Detalle</h3>
-                <button id="close-detail-modal-btn" class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body" id="detail-modal-body" style="overflow-y: auto;">
-                <!-- Dynamic Content -->
             </div>
         </div>
     </div>
@@ -291,210 +246,36 @@ export function setupSimulatorListeners() {
     if (btn) {
         btn.addEventListener('click', () => {
             updateSimulator();
+            // Close modal
             const modal = document.getElementById('simulator-config-modal');
             if (modal) modal.classList.remove('open');
         });
     }
 
-    // Config Modal Listeners
+    // Modal Interactions
     const openBtn = document.getElementById('open-config-btn');
     const closeBtn = document.getElementById('close-modal-btn');
     const modal = document.getElementById('simulator-config-modal');
 
-    if (openBtn) openBtn.addEventListener('click', () => modal && modal.classList.add('open'));
-    if (closeBtn) closeBtn.addEventListener('click', () => modal && modal.classList.remove('open'));
-    if (modal) modal.addEventListener('click', (e) => e.target === modal && modal.classList.remove('open'));
-
-    // Detail Modal Listeners
-    const closeDetailBtn = document.getElementById('close-detail-modal-btn');
-    const detailModal = document.getElementById('simulator-detail-modal');
-
-    if (closeDetailBtn) closeDetailBtn.addEventListener('click', () => detailModal && detailModal.classList.remove('open'));
-    if (detailModal) detailModal.addEventListener('click', (e) => e.target === detailModal && detailModal.classList.remove('open'));
-
-    // Card Interaction Listeners
-    const mortgageCard = document.getElementById('sim-mortgage-card');
-    const netCard = document.getElementById('sim-net-card');
-
-    if (mortgageCard) {
-        mortgageCard.addEventListener('click', () => showDetailModal('mortgage'));
-    }
-    if (netCard) {
-        netCard.addEventListener('click', () => showDetailModal('net'));
-    }
-
-    // Chart Controls Listeners
-    const resetZoomBtn = document.getElementById('reset-zoom-btn');
-    const fullscreenBtn = document.getElementById('fullscreen-chart-btn');
-    const chartCard = document.getElementById('sim-chart-card');
-
-    if (resetZoomBtn) {
-        resetZoomBtn.addEventListener('click', () => {
-            if (simulatorChartInstance) {
-                simulatorChartInstance.resetZoom();
-                resetZoomBtn.style.display = 'none';
-            }
+    if (openBtn) {
+        openBtn.addEventListener('click', () => {
+            if (modal) modal.classList.add('open');
         });
     }
 
-    if (fullscreenBtn && chartCard) {
-        fullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                chartCard.requestFullscreen().catch(err => {
-                    console.error(`Error attempting to enable full-screen mode: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            if (modal) modal.classList.remove('open');
         });
+    }
 
-        document.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement === chartCard) {
-                fullscreenBtn.textContent = '❌ Salir Pantalla Completa';
-                chartCard.style.display = 'flex';
-                chartCard.style.flexDirection = 'column';
-            } else {
-                fullscreenBtn.textContent = '⛶ Pantalla Completa';
-                chartCard.style.display = 'block';
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('open');
             }
         });
     }
-}
-
-/**
- * Show Detail Modal with specific content
- */
-function showDetailModal(type) {
-    if (!currentSimData) return;
-
-    const modal = document.getElementById('simulator-detail-modal');
-    const title = document.getElementById('detail-modal-title');
-    const body = document.getElementById('detail-modal-body');
-
-    if (!modal || !title || !body) return;
-
-    if (type === 'mortgage') {
-        title.textContent = "📜 Desglose Coste Hipoteca";
-
-        // Find paid installments
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // Use globalSchedule or currentSimData.amortization_schedule
-        const paidItems = (currentSimData.amortization_schedule || [])
-            .filter(item => {
-                // Parse date
-                let d = item.date;
-                if (typeof d === "string") {
-                    if (d.includes("/")) {
-                        const parts = d.split("/");
-                        d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-                    } else {
-                        d = new Date(d);
-                    }
-                }
-                return d <= today;
-            })
-            .sort((a, b) => new Date(b.date) - new Date(a.date)); // Newest first
-
-        const totalInterest = currentSimData.total_interest_paid;
-
-        body.innerHTML = `
-            <div class="detail-explanation">
-                Este valor representa el dinero que has pagado en concepto de <b>Intereses</b> hasta la fecha. 
-                <br><br>
-                ⚠️ <b>Nota importante:</b> La parte del pago correspondiente a la <i>Amortización de Capital</i> NO se considera coste, ya que reduce tu deuda (es dinero que pasa de tu banco al valor de tu casa).
-            </div>
-
-            <div class="detail-section">
-                <table class="detail-table">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th style="text-align:right">Cuota Total</th>
-                            <th style="text-align:right">Interés (Coste)</th>
-                            <th style="text-align:right">Amortización</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${paidItems.map(item => `
-                            <tr>
-                                <td>${item.date}</td>
-                                <td style="text-align:right; color:#94a3b8">${formatEUR(item.payment)}</td>
-                                <td style="text-align:right; font-weight:bold; color:#ef4444">${formatEUR(item.interest)}</td>
-                                <td style="text-align:right; color:#10b981">${formatEUR(item.principal)}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                    <tfoot>
-                        <tr style="font-weight:bold; background:#f8fafc">
-                            <td>TOTAL</td>
-                            <td></td>
-                            <td style="text-align:right; color:#ef4444">${formatEUR(totalInterest)}</td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        `;
-    }
-    else if (type === 'net') {
-        title.textContent = "💰 Cálculo Ganancia Neta";
-
-        const gross = currentSimData.portfolio_value - currentSimData.portfolio_basis;
-        const taxes = Math.max(0, gross * 0.19); // Approx, actually backend sends it within net_benefit logic but we can estimate or use if passed
-        // Actually, backend sends: net_benefit = gross - taxes.
-        // And balance = net_benefit - interest.
-
-        // Let's reconstruct or use data if available.
-        // We can infer taxes: Gross - NetBenefit = Taxes.
-        const netBenefitPortfolio = currentSimData.net_benefit; // After taxes, before mortgage
-        const inferredTaxes = gross - currentSimData.net_benefit;
-        const interest = currentSimData.total_interest_paid;
-        const finalBalance = currentSimData.balance;
-
-        body.innerHTML = `
-            <div class="detail-explanation">
-                Explicación paso a paso de cómo se calcula la rentabilidad real de la operación ("Ganancia Neta").
-                Se restan los impuestos y el coste de oportunidad (intereses hipoteca pagados).
-            </div>
-
-            <div class="detail-section">
-                <div class="detail-row">
-                    <span>Valor Actual Cartera</span>
-                    <span>${formatEUR(currentSimData.portfolio_value)}</span>
-                </div>
-                <div class="detail-row">
-                    <span>Coste Inicial (Inversión)</span>
-                    <span style="color:#94a3b8">-${formatEUR(currentSimData.portfolio_basis)}</span>
-                </div>
-                <div class="detail-row" style="border-top:1px dashed #e2e8f0; margin-top:5px; padding-top:5px">
-                    <span class="badge-math bg-plus">+</span>
-                    <span>Ganancia Bruta</span>
-                    <span style="font-weight:bold">${formatEUR(gross)}</span>
-                </div>
-                
-                <div class="detail-row">
-                    <span class="badge-math bg-minus">-</span>
-                    <span>Impuestos (aprox 19%)</span>
-                    <span style="color:#ef4444">${formatEUR(inferredTaxes)}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="badge-math bg-minus">-</span>
-                    <span>Coste Hipoteca (Intereses pagados)</span>
-                    <span style="color:#ef4444">${formatEUR(interest)}</span>
-                </div>
-                
-                <div class="detail-row total">
-                    <span class="badge-math bg-equals">=</span>
-                    <span>GANANCIA NETA FINAL</span>
-                    <span style="color:${finalBalance >= 0 ? '#10b981' : '#ef4444'}">${formatEUR(finalBalance)}</span>
-                </div>
-            </div>
-        `;
-    }
-
-    modal.classList.add('open');
 }
 
 /**
@@ -539,8 +320,6 @@ export async function updateSimulator() {
  * Render results in the UI
  */
 function renderSimulatorResults(data) {
-    currentSimData = data; // Store globally
-
     // 1. Update Metrics
     document.getElementById('sim-portfolio-basis').textContent = formatEUR(data.portfolio_basis);
     document.getElementById('sim-portfolio-value').textContent = formatEUR(data.portfolio_value);
@@ -553,16 +332,6 @@ function renderSimulatorResults(data) {
     balanceEl.textContent = formatEUR(data.balance);
     roiEl.textContent = `${data.roi_pct > 0 ? '+' : ''}${data.roi_pct.toFixed(2)}%`;
 
-    // Enhanced Debug Display
-    const debugEl = document.getElementById('sim-debug-date');
-    if (data.last_paid_date) {
-        debugEl.textContent = data.last_paid_date;
-        debugEl.style.color = "#10b981"; // Green
-    } else {
-        debugEl.innerHTML = `<span style="color:red">NULL</span> <br>Today: ${data.server_today}`;
-        console.log("SIM DEBUG LOG:", data.debug_log);
-    }
-
     // UI color styling
     if (data.is_profitable) {
         cardEl.classList.add('profitable');
@@ -572,12 +341,101 @@ function renderSimulatorResults(data) {
         cardEl.classList.remove('profitable');
     }
 
-    // 2. Render Chart (Historical)
-    renderSimulatorChart(data.daily_history);
+    updateNetGainPanel(data);
+
+    // 2. Render Charts
+    renderBalanceChart(data.daily_history);
+    renderScenarioChart(data);
 
     // 3. Render Tables
     renderAssetBreakdown(data.asset_breakdown);
     renderAmortizationTable(data.amortization_schedule);
+}
+
+function updateNetGainPanel(data) {
+    const operationPct = Number.isFinite(data.roi_pct) ? data.roi_pct : calculatePercentage(data.balance, data.portfolio_basis);
+    const portfolioNetPct = calculatePercentage(data.net_benefit, data.portfolio_basis);
+    const grossBenefit = data.portfolio_value - data.portfolio_basis;
+    const estimatedTaxes = Math.max(0, grossBenefit - data.net_benefit);
+    const taxRate = readNumberInput('tax-rate', 19);
+    const status = getNetGainStatus(operationPct);
+    const progress = Math.min(Math.abs(operationPct), 100);
+
+    const panel = document.getElementById('sim-net-gain-panel');
+    const percent = document.getElementById('sim-net-gain-pct');
+    const badge = document.getElementById('sim-net-gain-badge');
+    const copy = document.getElementById('sim-net-gain-copy');
+    const ring = document.getElementById('sim-net-gain-ring');
+    const ringValue = document.getElementById('sim-net-gain-ring-value');
+    const netProfitValue = document.getElementById('sim-net-profit-value');
+    const netProfitPct = document.getElementById('sim-net-profit-pct');
+    const taxValue = document.getElementById('sim-net-tax-value');
+    const taxNote = document.getElementById('sim-net-tax-note');
+    const mortgageCost = document.getElementById('sim-net-mortgage-cost');
+    const operationBalance = document.getElementById('sim-net-operation-balance');
+    const operationNote = document.getElementById('sim-net-operation-note');
+
+    if (panel) {
+        panel.classList.remove('positive', 'negative', 'neutral');
+        panel.classList.add(status.className);
+        panel.style.setProperty('--net-gain-progress', `${progress}%`);
+    }
+
+    if (percent) percent.textContent = formatSignedPercentage(operationPct);
+    if (badge) badge.textContent = status.label;
+    if (ringValue) ringValue.textContent = formatSignedPercentage(operationPct);
+    if (ring) ring.setAttribute('aria-label', `Porcentaje de ganancia neta ${formatSignedPercentage(operationPct)}`);
+    if (netProfitValue) netProfitValue.textContent = formatSignedEUR(data.net_benefit);
+    if (netProfitPct) netProfitPct.textContent = `${formatSignedPercentage(portfolioNetPct)} sobre base`;
+    if (taxValue) taxValue.textContent = formatDeductionEUR(estimatedTaxes);
+    if (taxNote) taxNote.textContent = `a restar (${formatRate(taxRate)}%)`;
+    if (mortgageCost) mortgageCost.textContent = formatEUR(data.total_interest_paid);
+    if (operationBalance) operationBalance.textContent = formatSignedEUR(data.balance);
+    if (operationNote) operationNote.textContent = data.balance >= 0 ? 'después de intereses' : 'por debajo del coste';
+
+    if (copy) {
+        copy.textContent = `La operación acumula ${formatSignedEUR(data.balance)}: ${formatSignedEUR(grossBenefit)} de plusvalía bruta, ${formatDeductionEUR(estimatedTaxes)} en impuestos estimados y ${formatDeductionEUR(data.total_interest_paid)} de coste hipotecario.`;
+    }
+}
+
+function getNetGainStatus(value) {
+    if (value > 0) {
+        return { className: 'positive', label: 'Resultado positivo' };
+    }
+
+    if (value < 0) {
+        return { className: 'negative', label: 'Resultado negativo' };
+    }
+
+    return { className: 'neutral', label: 'Punto de equilibrio' };
+}
+
+function calculatePercentage(value, base) {
+    if (!Number.isFinite(value) || !Number.isFinite(base) || base === 0) {
+        return 0;
+    }
+
+    return (value / base) * 100;
+}
+
+function formatSignedPercentage(value) {
+    const safeValue = Number.isFinite(value) ? value : 0;
+    return `${safeValue > 0 ? '+' : ''}${safeValue.toFixed(2)}%`;
+}
+
+function formatSignedEUR(value) {
+    const safeValue = Number.isFinite(value) ? value : 0;
+    return `${safeValue > 0 ? '+' : ''}${formatEUR(safeValue)}`;
+}
+
+function formatDeductionEUR(value) {
+    const safeValue = Number.isFinite(value) ? Math.max(0, value) : 0;
+    return safeValue > 0 ? `-${formatEUR(safeValue)}` : formatEUR(0);
+}
+
+function formatRate(value) {
+    const safeValue = Number.isFinite(value) ? value : 0;
+    return Number.isInteger(safeValue) ? String(safeValue) : safeValue.toFixed(1);
 }
 
 /**
@@ -603,75 +461,123 @@ function renderAssetBreakdown(breakdown) {
     `).join('');
 }
 
-/**
- * Render comparison chart
- */
-function renderSimulatorChart(history) {
-    const canvas = document.getElementById('simulatorChart');
+function renderBalanceChart(history) {
+    const canvas = document.getElementById('simulatorBalanceChart');
     if (!canvas) return;
 
-    if (simulatorChartInstance) {
-        simulatorChartInstance.destroy();
+    if (balanceChartInstance) {
+        balanceChartInstance.destroy();
     }
 
-    const isDark = document.documentElement.classList.contains('dark');
-
-    // Format dates for labels
-    const labels = history.map(h => {
-        const d = new Date(h.date);
-        return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-    });
-
-    const benefitData = history.map(h => h.net_benefit);
-    const interestData = history.map(h => h.interest_paid);
-    const balanceData = history.map(h => h.balance);
-
     const ctx = canvas.getContext('2d');
+    const isDark = document.documentElement.classList.contains('dark');
+    const balanceSeries = buildBalanceChartSeries(history);
+    const currentBalanceData = history.map(h => h.balance);
+    const yRange = getPaddedRange([
+        ...balanceSeries.balance,
+        ...balanceSeries.interest
+    ]);
+    updateBalanceSummary(currentBalanceData);
 
-    simulatorChartInstance = new Chart(ctx, {
+    balanceChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels,
+            labels: balanceSeries.labels,
             datasets: [
                 {
-                    label: 'Beneficio Neto Cartera',
-                    data: benefitData,
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.1
+                    label: 'Balance Neto',
+                    data: balanceSeries.positiveBalance,
+                    borderColor: '#0f766e',
+                    backgroundColor: 'rgba(16, 185, 129, 0.18)',
+                    borderWidth: 3,
+                    fill: {
+                        target: 'origin',
+                        above: 'rgba(16, 185, 129, 0.18)',
+                        below: 'rgba(16, 185, 129, 0)'
+                    },
+                    tension: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBorderWidth: 2,
+                    pointHoverBackgroundColor: '#ffffff',
+                    spanGaps: false,
+                    order: 1
+                },
+                {
+                    label: 'Balance Neto (negativo)',
+                    data: balanceSeries.negativeBalance,
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.16)',
+                    borderWidth: 3,
+                    fill: {
+                        target: 'origin',
+                        above: 'rgba(239, 68, 68, 0)',
+                        below: 'rgba(239, 68, 68, 0.16)'
+                    },
+                    tension: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBorderWidth: 2,
+                    pointHoverBackgroundColor: '#ffffff',
+                    spanGaps: false,
+                    order: 1
                 },
                 {
                     label: 'Coste Acumulado Hipoteca',
-                    data: interestData,
-                    borderColor: '#ef4444',
-                    borderDash: [5, 5],
-                    borderWidth: 2,
+                    data: balanceSeries.interest,
+                    borderColor: '#f97316',
+                    backgroundColor: '#f97316',
+                    borderWidth: 4,
+                    borderDash: [12, 5],
                     fill: false,
-                    tension: 0.1
-                },
-                {
-                    label: '⭐ Ganancia Neta Operación',
-                    data: balanceData,
-                    borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.08)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: '#f59e0b'
+                    stepped: true,
+                    tension: 0,
+                    pointRadius: (ctx) => ctx.dataIndex === ctx.dataset.data.length - 1 ? 4 : 0,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#f97316',
+                    pointBorderColor: isDark ? '#0f172a' : '#ffffff',
+                    pointBorderWidth: 1.5,
+                    order: 0
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: isDark ? '#e2e8f0' : '#1e293b',
+                        filter: (item) => item.text !== 'Balance Neto (negativo)'
+                    }
+                },
+                tooltip: {
+                    ...getEuroTooltipOptions(isDark),
+                    callbacks: {
+                        label: (ctx) => {
+                            const label = ctx.dataset.label === 'Balance Neto (negativo)' ? 'Balance Neto' : ctx.dataset.label;
+                            let val = ctx.parsed.y;
+                            if (label === 'Balance Neto' && balanceSeries.rawPoints[ctx.dataIndex]) {
+                                val = balanceSeries.rawPoints[ctx.dataIndex].balance;
+                            }
+                            return `${label}: ${formatEUR(val)}`;
+                        }
+                    }
+                }
+            },
             scales: {
                 y: {
-                    beginAtZero: true,
-                    grid: { color: isDark ? '#334155' : '#e2e8f0' },
+                    suggestedMin: yRange.min,
+                    suggestedMax: yRange.max,
+                    grid: {
+                        color: (ctx) => ctx.tick.value === 0 ? (isDark ? '#94a3b8' : '#475569') : (isDark ? '#334155' : '#e2e8f0'),
+                        lineWidth: (ctx) => ctx.tick.value === 0 ? 1.4 : 1
+                    },
                     ticks: {
                         color: isDark ? '#94a3b8' : '#64748b',
                         callback: (v) => formatEUR(v)
@@ -679,40 +585,306 @@ function renderSimulatorChart(history) {
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: isDark ? '#94a3b8' : '#64748b' }
+                    ticks: {
+                        color: isDark ? '#94a3b8' : '#64748b',
+                        maxTicksLimit: 8
+                    }
                 }
+            }
+        }
+    });
+}
+
+function buildBalanceChartSeries(history) {
+    const points = [];
+
+    history.forEach((entry, index) => {
+        points.push(toBalanceChartPoint(entry));
+
+        const nextEntry = history[index + 1];
+        if (!nextEntry || !crossesZero(entry.balance, nextEntry.balance)) {
+            return;
+        }
+
+        const ratio = Math.abs(entry.balance) / (Math.abs(entry.balance) + Math.abs(nextEntry.balance));
+        const crossingDate = interpolateDate(entry.date, nextEntry.date, ratio);
+        points.push({
+            label: formatShortDate(crossingDate),
+            balance: 0,
+            net_benefit: interpolateNumber(entry.net_benefit, nextEntry.net_benefit, ratio),
+            interest_paid: interpolateNumber(entry.interest_paid, nextEntry.interest_paid, ratio)
+        });
+    });
+
+    return {
+        labels: points.map(point => point.label),
+        positiveBalance: points.map(point => point.balance >= 0 ? point.balance : null),
+        negativeBalance: points.map(point => point.balance <= 0 ? point.balance : null),
+        balance: points.map(point => point.balance),
+        benefit: points.map(point => point.net_benefit),
+        interest: points.map(point => point.interest_paid),
+        rawPoints: points
+    };
+}
+
+function toBalanceChartPoint(entry) {
+    return {
+        label: formatShortDate(entry.date),
+        balance: entry.balance,
+        net_benefit: entry.net_benefit,
+        interest_paid: entry.interest_paid
+    };
+}
+
+function crossesZero(currentBalance, nextBalance) {
+    return currentBalance !== 0 && nextBalance !== 0 && Math.sign(currentBalance) !== Math.sign(nextBalance);
+}
+
+function interpolateNumber(start, end, ratio) {
+    return start + (end - start) * ratio;
+}
+
+function interpolateDate(startValue, endValue, ratio) {
+    const startDate = parseScheduleDate(startValue);
+    const endDate = parseScheduleDate(endValue);
+    if (!startDate || !endDate) return startValue;
+    return new Date(startDate.getTime() + (endDate.getTime() - startDate.getTime()) * ratio);
+}
+
+function updateBalanceSummary(balanceData) {
+    const currentBalance = balanceData[balanceData.length - 1] ?? 0;
+    const status = currentBalance > 0 ? 'Favorable' : currentBalance < 0 ? 'Desfavorable' : 'Equilibrado';
+    const statusClass = currentBalance > 0 ? 'positive' : currentBalance < 0 ? 'negative' : 'neutral';
+
+    const currentBox = document.getElementById('balance-current-box');
+    const currentValue = document.getElementById('balance-current-value');
+    const statusBox = document.getElementById('balance-status-box');
+    const statusValue = document.getElementById('balance-status-value');
+
+    if (currentValue) {
+        currentValue.textContent = `${currentBalance > 0 ? '+' : ''}${formatEUR(currentBalance)}`;
+    }
+
+    if (statusValue) {
+        statusValue.textContent = status;
+    }
+
+    [currentBox, statusBox].forEach(box => {
+        if (!box) return;
+        box.classList.remove('positive', 'negative', 'neutral');
+        box.classList.add(statusClass);
+    });
+}
+
+function renderScenarioChart(data) {
+    const canvas = document.getElementById('simulatorScenarioChart');
+    if (!canvas) return;
+
+    if (scenarioChartInstance) {
+        scenarioChartInstance.destroy();
+    }
+
+    const ctx = canvas.getContext('2d');
+    const isDark = document.documentElement.classList.contains('dark');
+    const settings = getScenarioSettings();
+    const projection = buildScenarioProjection(data, settings);
+    const allValues = [
+        ...projection.conservative,
+        ...projection.base,
+        ...projection.optimistic
+    ];
+    const yRange = getPaddedRange(allValues);
+
+    scenarioChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: projection.labels,
+            datasets: [
+                {
+                    label: `Conservador (${formatScenarioRate(settings.conservative)}%)`,
+                    data: projection.conservative,
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.08)',
+                    borderWidth: 2,
+                    borderDash: [6, 6],
+                    fill: false,
+                    tension: 0.25,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                },
+                {
+                    label: `Base (${formatScenarioRate(settings.base)}%)`,
+                    data: projection.base,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.25,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                },
+                {
+                    label: `Optimista (${formatScenarioRate(settings.optimistic)}%)`,
+                    data: projection.optimistic,
+                    borderColor: '#16a34a',
+                    backgroundColor: 'rgba(22, 163, 74, 0.08)',
+                    borderWidth: 2,
+                    borderDash: [6, 6],
+                    fill: false,
+                    tension: 0.25,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
             },
             plugins: {
                 legend: {
                     position: 'top',
                     labels: { color: isDark ? '#e2e8f0' : '#1e293b' }
                 },
-                zoom: {
-                    pan: {
-                        enabled: true,
-                        mode: 'xy',
-                        onPanStart({chart}) {
-                            const btn = document.getElementById('reset-zoom-btn');
-                            if (btn) btn.style.display = 'inline-block';
-                        }
+                tooltip: getEuroTooltipOptions(isDark)
+            },
+            scales: {
+                y: {
+                    suggestedMin: yRange.min,
+                    suggestedMax: yRange.max,
+                    grid: {
+                        color: (ctx) => ctx.tick.value === 0 ? (isDark ? '#94a3b8' : '#475569') : (isDark ? '#334155' : '#e2e8f0'),
+                        lineWidth: (ctx) => ctx.tick.value === 0 ? 1.4 : 1
                     },
-                    zoom: {
-                        wheel: {
-                            enabled: true,
-                        },
-                        pinch: {
-                            enabled: true
-                        },
-                        mode: 'xy',
-                        onZoom({chart}) {
-                            const btn = document.getElementById('reset-zoom-btn');
-                            if (btn) btn.style.display = 'inline-block';
-                        }
+                    ticks: {
+                        color: isDark ? '#94a3b8' : '#64748b',
+                        callback: (v) => formatEUR(v)
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        color: isDark ? '#94a3b8' : '#64748b',
+                        maxTicksLimit: 9
                     }
                 }
             }
         }
     });
+}
+
+function getScenarioSettings() {
+    return {
+        conservative: readNumberInput('scenario-conservative-rate', 2),
+        base: readNumberInput('scenario-base-rate', 5),
+        optimistic: readNumberInput('scenario-optimistic-rate', 8),
+        taxRate: readNumberInput('tax-rate', 19)
+    };
+}
+
+function buildScenarioProjection(data, settings) {
+    const today = getStartOfDay(new Date());
+    const futureSchedule = (data.amortization_schedule || [])
+        .map(point => ({ ...point, parsedDate: parseScheduleDate(point.date) }))
+        .filter(point => point.parsedDate && point.parsedDate > today)
+        .sort((a, b) => a.parsedDate - b.parsedDate);
+
+    const labels = ['Hoy'];
+    const conservative = [data.balance];
+    const base = [data.balance];
+    const optimistic = [data.balance];
+
+    futureSchedule.forEach(point => {
+        labels.push(formatMonthYear(point.parsedDate));
+        conservative.push(calculateProjectedBalance(data, settings.conservative, settings.taxRate, point, today));
+        base.push(calculateProjectedBalance(data, settings.base, settings.taxRate, point, today));
+        optimistic.push(calculateProjectedBalance(data, settings.optimistic, settings.taxRate, point, today));
+    });
+
+    return { labels, conservative, base, optimistic };
+}
+
+function calculateProjectedBalance(data, annualRate, taxRate, schedulePoint, today) {
+    const elapsedYears = Math.max(0, (schedulePoint.parsedDate - today) / MS_PER_YEAR);
+    const projectedPortfolioValue = data.portfolio_value * Math.pow(1 + annualRate / 100, elapsedYears);
+    const grossBenefit = projectedPortfolioValue - data.portfolio_basis;
+    const taxes = Math.max(0, grossBenefit * (taxRate / 100));
+    const netBenefit = grossBenefit - taxes;
+    return Math.round((netBenefit - schedulePoint.cumulative_interest) * 100) / 100;
+}
+
+function getEuroTooltipOptions(isDark) {
+    return {
+        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+        titleColor: isDark ? '#e2e8f0' : '#1e293b',
+        bodyColor: isDark ? '#cbd5e1' : '#64748b',
+        borderColor: isDark ? '#334155' : '#e2e8f0',
+        borderWidth: 1,
+        padding: 12,
+        callbacks: {
+            label: (ctx) => {
+                const label = ctx.dataset.label === 'Balance Neto (negativo)' ? 'Balance Neto' : ctx.dataset.label;
+                return `${label}: ${formatEUR(ctx.parsed.y)}`;
+            }
+        }
+    };
+}
+
+function getPaddedRange(values) {
+    const finiteValues = values.filter(Number.isFinite);
+    if (finiteValues.length === 0) {
+        return { min: -1000, max: 1000 };
+    }
+
+    const min = Math.min(0, ...finiteValues);
+    const max = Math.max(0, ...finiteValues);
+    const span = Math.max(max - min, 1000);
+    return {
+        min: min - span * 0.12,
+        max: max + span * 0.12
+    };
+}
+
+function readNumberInput(id, fallback) {
+    const input = document.getElementById(id);
+    const value = parseFloat(input?.value);
+    return Number.isFinite(value) ? value : fallback;
+}
+
+function parseScheduleDate(value) {
+    if (!value) return null;
+    if (typeof value === 'string') {
+        const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (isoMatch) {
+            return new Date(Number(isoMatch[1]), Number(isoMatch[2]) - 1, Number(isoMatch[3]));
+        }
+    }
+
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : getStartOfDay(date);
+}
+
+function getStartOfDay(date) {
+    const copy = new Date(date);
+    copy.setHours(0, 0, 0, 0);
+    return copy;
+}
+
+function formatShortDate(value) {
+    const date = parseScheduleDate(value);
+    if (!date) return '';
+    return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+}
+
+function formatMonthYear(date) {
+    return date.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' });
+}
+
+function formatScenarioRate(rate) {
+    return Number.isInteger(rate) ? String(rate) : rate.toFixed(1);
 }
 
 
@@ -823,7 +995,7 @@ function renderAmortizationTable(schedule) {
         const rowDate = new Date(s.date);
         rowDate.setHours(0, 0, 0, 0);
 
-        const isPaid = (rowDate <= today);
+        const isPaid = (rowDate < today);
         const isNext = (i === nextIndex);
 
         if (isPaid) {

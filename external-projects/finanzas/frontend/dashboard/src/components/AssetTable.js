@@ -132,6 +132,9 @@ function getBadgeHtml(item, indexaConnected) {
     if (item.indexa_api) {
         return `<span class="badge badge-live">${indexaConnected ? 'LIVE' : 'OFFLINE'}</span>`;
     }
+    if (item.cat === 'Renta Fija' || item.coupon_rate) {
+        return `<span class="badge badge-bono badge-editable" data-id="${item.id}">BONO</span>`;
+    }
     if (item.manual) {
         return `<span class="badge badge-manual badge-editable" data-id="${item.id}">EDIT</span>`;
     }
@@ -163,9 +166,25 @@ function getIconHtml(item) {
 /**
  * Update USD rate display
  */
-export function updateUsdRate(rate) {
+export function updateUsdRate(rate, source) {
     const el = document.getElementById('usd-rate');
     if (el) {
-        el.textContent = `1$ = ${rate.toFixed(4)}€`;
+        let label = 'USD';
+        // Remove old color classes
+        el.classList.remove('text-emerald-500', 'text-amber-500', 'text-slate-400');
+
+        if (source === 'C') {
+            label = 'USD (C)';
+            el.classList.add('text-emerald-500');
+            el.title = "Rate from CoinGecko (Crypto)";
+        } else if (source === 'Y') {
+            label = 'USD (Y)';
+            el.classList.add('text-amber-500');
+            el.title = "Rate from Yahoo Finance (Fallback)";
+        } else {
+            el.classList.add('text-slate-400');
+        }
+
+        el.textContent = `${label}: ${rate.toFixed(4)}`;
     }
 }

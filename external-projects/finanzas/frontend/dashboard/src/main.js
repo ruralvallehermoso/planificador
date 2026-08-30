@@ -14,6 +14,7 @@ import {
     getCryptoAssets,
     setIndexaConnected,
     getAssets,
+    getAssetById,
     getTotalValue,
     loadAssetsFromAPI
 } from './data/assets.js';
@@ -30,7 +31,7 @@ import { createAssetTable, renderAssetTable, updateUsdRate } from './components/
 import { createChartContainer, renderChart } from './components/Chart.js';
 import { createTopAssets, renderTopAssets } from './components/TopAssets.js';
 import { createIndexaCard, renderIndexaCard } from './components/IndexaCard.js';
-import { createModal, setupModalListeners, openModal, openAddAssetModal } from './components/Modal.js';
+import { createModal, setupModalListeners, openModal } from './components/Modal.js';
 import { createPortfolioEvolution, setupEvolutionListeners, renderPortfolioEvolution } from './components/PortfolioEvolution.js';
 import {
     createHistoryChartContainer,
@@ -49,6 +50,7 @@ let currentView = 'portfolio'; // 'portfolio' or 'history'
 let currentPeriod = '24h';  // Must match the default active button in HistoryChart.js
 let currentCategory = null;
 let currentAssetId = null;
+let historyRequestId = 0;
 
 /**
  * Initialize the application
@@ -108,7 +110,7 @@ async function init() {
     `;
 
     // Setup event listeners
-    setupHeaderListeners(updateMarkets, handleFilterChange, openAddAssetModal);
+    setupHeaderListeners(updateMarkets, handleFilterChange);
     setupModalListeners(handleModalSave);
     setupViewToggle();
     setupHistoryListeners();
@@ -204,7 +206,7 @@ function setupHistoryListeners() {
             currentAssetId = null;
 
             // Update asset selector based on category
-            populateAssetSelector(getAssets(), currentCategory);
+            populateAssetSelector(getAssets(), currentCategory, currentAssetId);
 
             updateHistoryData();
         });
@@ -221,20 +223,29 @@ function setupHistoryListeners() {
     }
 
     // Populate asset selector with current assets
-    populateAssetSelector(getAssets());
+    populateAssetSelector(getAssets(), currentCategory, currentAssetId);
 }
 
 /**
  * Update history chart and performance data
  */
 async function updateHistoryData() {
+    const requestId = ++historyRequestId;
+    const selectedPeriod = currentPeriod;
+    const selectedCategory = currentCategory;
+    const selectedAssetId = currentAssetId;
+
     try {
         // Fetch history and performance data in parallel
         const [history, performance, perf24h] = await Promise.all([
-            fetchPortfolioHistory(currentPeriod, currentCategory, currentAssetId),
-            fetchPortfolioPerformance(currentPeriod, currentCategory, currentAssetId),
-            fetchPortfolioPerformance('24h', currentCategory, currentAssetId)
+            fetchPortfolioHistory(selectedPeriod, selectedCategory, selectedAssetId),
+            fetchPortfolioPerformance(selectedPeriod, selectedCategory, selectedAssetId),
+            fetchPortfolioPerformance('24h', selectedCategory, selectedAssetId)
         ]);
+
+        if (requestId !== historyRequestId) {
+            return;
+        }
 
         // Use frontend's live current value (backend may have stale prices)
         let adjustedPerformance = performance;
@@ -243,16 +254,16 @@ async function updateHistoryData() {
         // Calculate current value from frontend data
         let currentValue = 0;
 
-        if (currentAssetId) {
+        if (selectedAssetId) {
             // Individual asset - find it in frontend data
             const assets = getAssets('All');
-            const asset = assets.find(a => a.id === currentAssetId);
+            const asset = assets.find(a => a.id === selectedAssetId);
             if (asset) {
                 currentValue = asset.price * asset.qty;
             }
-        } else if (currentCategory) {
+        } else if (selectedCategory) {
             // Category view - sum assets in that category
-            const assets = getAssets(currentCategory);
+            const assets = getAssets(selectedCategory);
             currentValue = assets.reduce((sum, a) => sum + (a.price * a.qty), 0);
         } else {
             // Global portfolio
@@ -263,7 +274,7 @@ async function updateHistoryData() {
         if (currentValue > 0) {
             // For 24h period, use the dedicated perf24h calculation for both displays
             // This ensures consistency since daily historical data doesn't have hourly granularity
-            const perfForPeriod = currentPeriod === '24h' ? perf24h : performance;
+            const perfForPeriod = selectedPeriod === '24h' ? perf24h : performance;
 
             if (perfForPeriod && perfForPeriod.previous_value > 0) {
                 const changeAbsolute = currentValue - perfForPeriod.previous_value;
@@ -291,21 +302,20 @@ async function updateHistoryData() {
         // Determine if change is positive
         const isPositive = adjustedPerformance ? adjustedPerformance.change_percent >= 0 : true;
 
-        // Inject current live value as the last point in history so chart reflects actual state
+        // Inject current live value for aggregate views only. Individual asset histories
+        // come from the market provider with real intraday timestamps.
         let adjustedHistory = history || [];
-        if (adjustedHistory.length > 0 && currentValue > 0) {
+        if (!selectedAssetId && adjustedHistory.length > 0 && currentValue > 0) {
             // Add current value as the final data point (now)
-            const now = (currentPeriod === '24h' || currentPeriod === '7d')
-                ? new Date().toISOString()
-                : new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+            const now = new Date().toISOString();
             adjustedHistory = [...adjustedHistory, { date: now, value: currentValue }];
         }
 
         // Render chart with adjusted history
-        renderHistoryChart(adjustedHistory, isPositive, currentPeriod);
+        renderHistoryChart(adjustedHistory, isPositive, selectedPeriod);
 
         // Update performance display
-        updatePerformanceDisplay(adjustedPerformance, adjustedPerf24h);
+        updatePerformanceDisplay(adjustedPerformance, adjustedPerf24h, selectedPeriod);
 
     } catch (e) {
         console.error('Error updating history data:', e);
@@ -339,8 +349,7 @@ function handleFilterChange(filter) {
 /**
  * Handle modal save
  */
-async function handleModalSave() {
-    await loadAssetsFromAPI();
+function handleModalSave() {
     render();
 }
 
@@ -351,31 +360,11 @@ async function updateMarkets() {
     setLoading(true);
 
     try {
-        // 1. Obtener Ratio USD/EUR desde USDC (CoinGecko) para consistencia
-        // Yahoo daba ~0.847 mientras el mercado crypto operaba a ~0.89-0.91, causando discrepancias.
-        try {
-            const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=eur&_=${new Date().getTime()}`);
-            const d = await res.json();
-            if (d['usd-coin'] && d['usd-coin'].eur) {
-                const rate = d['usd-coin'].eur;
-                setUsdToEur(rate);
-                updateUsdRate(rate, 'C'); // 'C' for Crypto/CoinGecko
-                console.log("Flux Rate (USDC):", rate);
-            } else {
-                throw new Error("No USDC data");
-            }
-        } catch (e) {
-            console.error("Error USD/EUR (USDC), probando Yahoo:", e);
-            // Fallback a Yahoo si CoinGecko falla
-            try {
-                const rate = await fetchUsdEurRate();
-                if (rate) {
-                    setUsdToEur(rate);
-                    updateUsdRate(rate, 'Y'); // 'Y' for Yahoo
-                }
-            } catch (e2) {
-                console.error("Error USD/EUR (Yahoo):", e2);
-            }
+        // 1. Fetch USD/EUR rate
+        const rate = await fetchUsdEurRate();
+        if (rate) {
+            setUsdToEur(rate);
+            updateUsdRate(rate);
         }
 
         // 2. Fetch stock prices
@@ -460,21 +449,7 @@ async function updateMarkets() {
  * Update Indexa Capital data
  */
 async function updateIndexa() {
-    // Fetch Indexa accounts and 24h changes concurrently to avoid blocking
-    const [result, changesRes] = await Promise.all([
-        fetchIndexaAccounts(),
-        fetch(`${BACKEND_URL}/api/assets/changes?min_value=0`).catch(() => ({ ok: false }))
-    ]);
-
-    let changesMap = {};
-    if (changesRes && changesRes.ok) {
-        try {
-            const changes = await changesRes.json();
-            changes.forEach(c => { changesMap[c.id] = c.change_24h_pct; });
-        } catch (e) {
-            console.error('Error parsing indexa changes:', e);
-        }
-    }
+    const result = await fetchIndexaAccounts();
 
     if (result.success && result.accounts.length > 0) {
         setIndexaConnected(true);
@@ -484,9 +459,13 @@ async function updateIndexa() {
 
         // Add each account as a separate asset
         result.accounts.forEach(account => {
-            const assetId = `idx_${account.account_number}`;
+            const id = `idx_${account.account_number}`;
+            // fetchIndexaAccounts() no trae el % de 24h (eso solo lo da /api/assets, ya cargado
+            // en loadAssetsFromAPI). Como addAsset() reemplaza el objeto entero, hay que
+            // conservarlo explícitamente o se pierde y queda a 0%.
+            const existing = getAssetById(id);
             addAsset({
-                id: assetId,
+                id,
                 name: account.name,
                 ticker: 'IDX',
                 cat: 'Fondos',
@@ -494,9 +473,9 @@ async function updateIndexa() {
                 qty: 1,
                 price: account.market_value,
                 indexa_api: true,
-                change24h: changesMap[assetId] || 0.0,
                 risk_profile: account.risk_profile,
                 variation_pct: account.variation_pct,
+                change24h: existing?.change24h ?? 0,
                 img: 'https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://indexacapital.com&size=64'
             });
         });
@@ -507,7 +486,7 @@ async function updateIndexa() {
         if (historyView && !historyView.classList.contains('hidden')) {
             const viewSelect = document.getElementById('history-view-select');
             const category = viewSelect ? (viewSelect.value === 'global' ? null : viewSelect.value) : null;
-            populateAssetSelector(getAssets(), category);
+            populateAssetSelector(getAssets(), category, currentAssetId);
         }
     } else {
 

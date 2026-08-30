@@ -2,14 +2,20 @@
  * Header component
  */
 
-import { formatEUR, formatCurrency } from '../utils/formatters.js';
-import { getActiveFilter, setActiveFilter, getTotalValue, getUsdToEur, getDisplayCurrency, setDisplayCurrency, convertValue } from '../data/assets.js';
+import { formatCurrency } from '../utils/formatters.js';
+import { getActiveFilter, setActiveFilter, getTotalValue, getDisplayCurrency, setDisplayCurrency, convertValue } from '../data/assets.js';
 import { toggleTheme, updateThemeIcons } from '../utils/theme.js';
 import { renderSparkline } from './SparklineChart.js';
-import { fetchPortfolioHistory, fetchPortfolioPerformance } from '../services/history.js';
+import { fetchPortfolioHistory } from '../services/history.js';
 
-const FILTERS = ['All', 'Cripto', 'Acciones', 'Fondos', 'Renta Fija'];
-const FILTER_LABELS = { 'All': 'TODO', 'Cripto': 'CRIPTO', 'Acciones': 'ACCIONES', 'Fondos': 'FONDOS', 'Renta Fija': 'RENTA FIJA' };
+const FILTERS = ['All', 'Cripto', 'Acciones', 'Fondos'];
+const FILTER_LABELS = { 'All': 'TODO', 'Cripto': 'CRIPTO', 'Acciones': 'ACCIONES', 'Fondos': 'FONDOS' };
+
+function isSameLocalDay(dateA, dateB) {
+    return dateA.getFullYear() === dateB.getFullYear() &&
+        dateA.getMonth() === dateB.getMonth() &&
+        dateA.getDate() === dateB.getDate();
+}
 
 /**
  * Create header HTML
@@ -26,8 +32,11 @@ export function createHeader() {
                     </svg>
                 </div>
                 <div class="logo-text">
-                    <h1>Master Portfolio <span style="font-size: 9px; font-weight: normal; color: #94a3b8;">v2.2</span></h1>
-
+                    <h1>Master Portfolio</h1>
+                    <div class="status-area" id="status-area">
+                        <span class="status-dot" id="status-dot"></span>
+                        <span class="status-text" id="status-text">LISTO</span>
+                    </div>
                 </div>
             </div>
 
@@ -40,12 +49,6 @@ export function createHeader() {
             </div>
 
             <div class="header-right">
-                <button class="icon-btn" id="add-asset-btn" title="Añadir Activo">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                </button>
-
                 <button class="icon-btn" id="theme-toggle" title="Cambiar Tema">
                     <svg id="theme-toggle-dark-icon" class="hidden" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
@@ -84,13 +87,7 @@ export function createHeader() {
 /**
  * Setup header event listeners
  */
-export function setupHeaderListeners(onRefresh, onFilterChange, onAddAsset) {
-    // Add asset button
-    const addAssetBtn = document.getElementById('add-asset-btn');
-    if (addAssetBtn && onAddAsset) {
-        addAssetBtn.addEventListener('click', onAddAsset);
-    }
-
+export function setupHeaderListeners(onRefresh, onFilterChange) {
     // Theme toggle
     const themeBtn = document.getElementById('theme-toggle');
     if (themeBtn) {
@@ -150,14 +147,13 @@ function updateFilterButtons(activeFilter) {
     const buttons = document.querySelectorAll('.filter-btn');
     buttons.forEach(btn => {
         const filter = btn.dataset.filter;
-        btn.classList.remove('active', 'filter-cripto', 'filter-acciones', 'filter-fondos', 'filter-renta-fija');
+        btn.classList.remove('active', 'filter-cripto', 'filter-acciones', 'filter-fondos');
 
         if (filter === activeFilter) {
             btn.classList.add('active');
             if (filter === 'Cripto') btn.classList.add('filter-cripto');
             if (filter === 'Acciones') btn.classList.add('filter-acciones');
             if (filter === 'Fondos') btn.classList.add('filter-fondos');
-            if (filter === 'Renta Fija') btn.classList.add('filter-renta-fija');
         }
     });
 }
@@ -231,31 +227,35 @@ export async function renderPortfolioSparkline(filter) {
     try {
         // Fetch data based on filter
         const category = filter === 'All' ? null : filter;
-        const [history, perf24h] = await Promise.all([
-            fetchPortfolioHistory('7d', category, null),
-            fetchPortfolioPerformance('24h', category, null)
-        ]);
+        const history = await fetchPortfolioHistory('24h', category, null);
 
         // Get frontend's live current value
         const currentValue = getTotalValue(filter);
 
-        // Render sparkline - add current value as last point for accuracy
+        // Render sparkline and 24h change from the same 24h series.
         if (history && history.length > 0) {
-            const values = history.map(h => h.value);
+            const values = history
+                .map(h => ({ date: new Date(h.date), value: Number(h.value) }))
+                .filter(point => Number.isFinite(point.date.getTime()) && Number.isFinite(point.value))
+                .filter(point => isSameLocalDay(point.date, new Date()))
+                .sort((a, b) => a.date - b.date)
+                .map(point => point.value);
+
+            if (values.length === 0) return;
+
             values.push(currentValue); // Add live value as last point
-            const isPositive = currentValue >= values[0];
+            const firstValue = values[0];
+            const changeAbsolute = currentValue - firstValue;
+            const changePercent = firstValue > 0 ? (changeAbsolute / firstValue) * 100 : 0;
+            const isPositive = changePercent >= 0;
+
             renderSparkline('portfolio-sparkline', values, isPositive, 100, 40);
-        }
 
-        // Update 24h change display using frontend's live value
-        if (changeEl && perf24h && perf24h.previous_value > 0) {
-            // Calculate change using frontend's current value vs backend's previous value
-            const changeAbsolute = currentValue - perf24h.previous_value;
-            const changePercent = (changeAbsolute / perf24h.previous_value) * 100;
-
-            const sign = changePercent >= 0 ? '+' : '';
-            changeEl.textContent = `24h: ${sign}${changePercent.toFixed(2)}%`;
-            changeEl.className = `total-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+            if (changeEl) {
+                const sign = changePercent >= 0 ? '+' : '';
+                changeEl.textContent = `24h: ${sign}${changePercent.toFixed(2)}%`;
+                changeEl.className = `total-change ${isPositive ? 'positive' : 'negative'}`;
+            }
         }
     } catch (e) {
         console.error('Error rendering portfolio sparkline:', e);

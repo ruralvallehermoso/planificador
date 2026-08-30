@@ -21,7 +21,7 @@ export function PortfolioCard() {
         setLoading(true);
         setError(false);
         try {
-            const finanzasBackendUrl = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
+            const finanzasBackendUrl = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://finanzas-tau-ten.vercel.app';
 
             // 1. Trigger market price update to ensure DB has fresh prices
             try {

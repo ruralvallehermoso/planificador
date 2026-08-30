@@ -12,7 +12,7 @@ export function PortfolioRefreshButton() {
         setLoading(true);
         setStatus("idle");
         try {
-            const finanzasBackendUrl = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
+            const finanzasBackendUrl = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://finanzas-tau-ten.vercel.app';
             const res = await fetch(`${finanzasBackendUrl}/api/update_markets`, {
                 method: 'POST',
             });

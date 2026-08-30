@@ -20,7 +20,7 @@ export function SimulatorCard() {
         setLoading(true);
         setError(false);
         try {
-            const finanzasBackendUrl = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://backend-rho-two-p1x4gg922k.vercel.app';
+            const finanzasBackendUrl = process.env.NEXT_PUBLIC_FINANZAS_BACKEND_URL || 'https://finanzas-tau-ten.vercel.app';
             // Use Client-side fetch
             const res = await fetch(`${finanzasBackendUrl}/api/simulator/compare`, {
                 method: 'POST',

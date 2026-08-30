@@ -327,9 +327,18 @@ def get_assets_with_performance(db: Session, category: Optional[str] = None) -> 
                 res = requests.get(url, headers=YAHOO_HEADERS, timeout=10)
                 if res.ok:
                     data = res.json()
-                    meta = data.get("chart", {}).get("result", [{}])[0].get("meta", {})
+                    result_chart = data.get("chart", {}).get("result", [{}])[0]
+                    meta = result_chart.get("meta", {})
                     current = meta.get("regularMarketPrice", 0)
-                    previous = meta.get("chartPreviousClose", 0) or meta.get("previousClose", 0)
+                    
+                    # IMPORTANT: chartPreviousClose returns the close at the START of range (5d ago),
+                    # not the previous trading session. We use the second-to-last daily candle instead.
+                    closes = result_chart.get("indicators", {}).get("quote", [{}])[0].get("close", [])
+                    valid_closes = [c for c in closes if c is not None]
+                    
+                    previous = None
+                    if len(valid_closes) >= 2:
+                        previous = valid_closes[-2]
                     
                     if previous and previous > 0 and current and current > 0:
                         change = ((current - previous) / previous) * 100

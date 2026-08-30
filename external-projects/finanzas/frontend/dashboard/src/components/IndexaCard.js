@@ -2,12 +2,12 @@
  * Indexa Card component - Shows Indexa Capital accounts with sparkline charts
  */
 
-import { formatCurrency } from '../utils/formatters.js';
-import { getAssets, getDisplayCurrency, getIndexaConnected, convertValue } from '../data/assets.js';
+import { formatEUR } from '../utils/formatters.js';
+import { getAssets, getIndexaConnected } from '../data/assets.js';
 import { renderSparkline } from './SparklineChart.js';
 import { fetchPortfolioHistory } from '../services/history.js';
 
-
+import { BACKEND_URL } from '../config.js';
 
 /**
  * Create Indexa card container HTML
@@ -32,12 +32,19 @@ export function createIndexaCard() {
 }
 
 /**
- * Get 24h changes for Indexa accounts from already-loaded asset data.
- * Uses the change24h field populated from /api/assets (change_24h_pct).
+ * Fetch 24h changes for Indexa accounts from backend
  */
-function getIndexa24hChanges() {
-    const indexaAssets = getAssets('Fondos').filter(a => a.id && a.id.startsWith('idx_'));
-    return indexaAssets.map(a => ({ id: a.id, change_24h_pct: a.change24h || 0 }));
+async function fetchIndexa24hChanges() {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/assets/changes?min_value=0`);
+        if (!res.ok) throw new Error('Failed to fetch changes');
+        const data = await res.json();
+        // Filter only Indexa accounts
+        return data.filter(a => a.id.startsWith('idx_'));
+    } catch (e) {
+        console.error('Error fetching Indexa 24h changes:', e);
+        return [];
+    }
 }
 
 /**
@@ -52,8 +59,8 @@ export async function renderIndexaCard() {
     const connected = getIndexaConnected();
     const indexaAssets = getAssets('Fondos').filter(a => a.id && a.id.startsWith('idx_'));
 
-    // Get 24h changes from already-loaded asset data
-    const changes24h = getIndexa24hChanges();
+    // Fetch 24h changes from backend
+    const changes24h = await fetchIndexa24hChanges();
     const changesMap = {};
     changes24h.forEach(c => { changesMap[c.id] = c.change_24h_pct; });
 
@@ -65,9 +72,8 @@ export async function renderIndexaCard() {
 
     // Calculate total
     const total = indexaAssets.reduce((sum, a) => sum + (a.price * a.qty), 0);
-    const currency = getDisplayCurrency();
     if (totalEl) {
-        totalEl.textContent = formatCurrency(convertValue(total), currency);
+        totalEl.textContent = formatEUR(total);
     }
 
     // Calculate weighted 24h variation from API data
@@ -101,7 +107,7 @@ export async function renderIndexaCard() {
                     <div class="indexa-account-name">${account.name}</div>
                 </div>
                 <div class="indexa-account-values">
-                    <div class="indexa-account-value">${formatCurrency(convertValue(value), currency)}</div>
+                    <div class="indexa-account-value">${formatEUR(value)}</div>
                     <div class="indexa-account-var ${varClass}">${sign}${change24h.toFixed(2)}%</div>
                 </div>
             </div>

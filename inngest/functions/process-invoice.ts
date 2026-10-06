@@ -47,6 +47,7 @@ export const processInvoice = inngest.createFunction(
             - base: Base imponible (number)
             - iva: Cuota IVA (number)
             - supplierNif: NIF/CIF (supplier code)
+            - invoiceNumber: nº factura / número de factura
             - category: Categoría del gasto. DEBE SER UNA DE LAS SIGUIENTES (ESTRICTO): "LUZ", "AGUA", "GAS", "INTERNET", "TELEFONO", "MANTENIMIENTO", "IMPUESTOS", "SEGUROS", "GESTION", "COMISIONES", "LIMPIEZA", "OTROS".
             - type: "MONTHLY" (gastos recurrentes como luz, agua, internet, basuras) o "ANNUAL" (seguros, IBI, grandes reparaciones). Por defecto MONTHLY.
 
@@ -59,6 +60,7 @@ export const processInvoice = inngest.createFunction(
                 "iva": number,
                 "hasIva": boolean,
                 "nif": string,
+                "invoiceNumber": text,
                 "category": "LUZ" | "AGUA" | "GAS" | "INTERNET" | "TELEFONO" | "MANTENIMIENTO" | "IMPUESTOS" | "SEGUROS" | "GESTION" | "COMISIONES" | "LIMPIEZA" | "OTROS",
                 "type": "MONTHLY" | "ANNUAL"
             }
@@ -150,6 +152,7 @@ export const processInvoice = inngest.createFunction(
                     applicableYear: new Date(data.date).getFullYear(),
                     hasIva: hasIva,
                     supplierNif: data.nif,
+                    invoiceNumber: data.invoiceNumber,
                     pdfUrl: uploadedPdfUrl,
                 }
             });
